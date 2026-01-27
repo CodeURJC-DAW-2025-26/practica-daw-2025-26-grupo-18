@@ -1,4 +1,4 @@
-# [Nombre de la Aplicación]
+# Smart Courses & Academy Market (SCAM)
 
 ## 👥 Miembros del Equipo
 | Nombre y Apellidos | Correo URJC | Usuario GitHub |
@@ -13,43 +13,48 @@
 ## 🎭 **Preparación 1: Definición del Proyecto**
 
 ### **Descripción del Tema**
-[Escribe aquí una descripción breve y concisa de qué trata tu aplicación, el sector al que pertenece y qué valor aporta al usuario].
-
+Una aplicacion web para el desarrollo personal. Contiene cursos divididos en lecciones, a los cuales les puedes poner una reseña, y eventos
 ### **Entidades**
 Indicar las entidades principales que gestionará la aplicación y las relaciones entre ellas:
 
-1. **[Entidad 1]**: [Ej: Usuario]
-2. **[Entidad 2]**: [Ej: Producto]
-3. **[Entidad 3]**: [Ej: Pedido]
-4. **[Entidad 4]**: [Ej: Categoría]
+1. **Usuario** 
+2. **Curso**
+3. **Suscripción** 
+4. **Lección**
+5. **Evento**
+6. **Reseña**
 
 **Relaciones entre entidades:**
 - [Ej: Usuario - Pedido: Un usuario puede tener múltiples pedidos (1:N)]
-- [Ej: Pedido - Producto: Un pedido puede contener múltiples productos y un producto puede estar en múltiples pedidos (N:M)]
-- [Ej: Producto - Categoría: Un producto pertenece a una categoría (N:1)]
-- [Descripción de otras relaciones relevantes]
+- Usuario - Curso: Un usuario puede estar suscrito a múltiples cursos y un curso puede tener múltiples usuarios (N:M).
+- Curso - Lección: Un curso puede tener múltiples lecciones (1:N).
+- Curso - Evento: un curso puede tener múltiples eventos (1:N).
+- Curso - Reseña: un curso puede tener múltiples reseñas (1:N).
+- Usuario - Suscripcion: un usuario puede tener multiples suscripciones (1:N).
+- Suscrpicion - Curso: un curso puede tener varias suscripciones (N:1)
 
 ### **Permisos de los Usuarios**
 Describir los permisos de cada tipo de usuario e indicar de qué entidades es dueño:
 
 * **Usuario Anónimo**: 
-  - Permisos: [Ej: Visualización de catálogo, búsqueda de productos, registro]
+  - Permisos: Visualización de cursos y eventos, sin poder acceder a su contenido, ni poner reseñas.
   - No es dueño de ninguna entidad
 
 * **Usuario Registrado**: 
-  - Permisos: [Ej: Gestión de perfil, realizar pedidos, crear valoraciones]
-  - Es dueño de: [Ej: Sus propios Pedidos, su Perfil de Usuario, sus Valoraciones]
+  - Permisos: Posibilidad de suscribirse a los cursos y eventos para poder acceder a su contenido y poner reseñas, al igual que suscribirse a eventos. Tambien pueden suscribirse a la pagina para poder publicar tanto cursos como eventos
+  - Es dueño de: Sus cursos, sus eventos, sus reseñas y sus lecciones
 
 * **Administrador**: 
-  - Permisos: [Ej: Gestión completa de productos (CRUD), visualización de estadísticas, moderación de contenido]
-  - Es dueño de: [Ej: Productos, Categorías, puede gestionar todos los Pedidos y Usuarios]
+  - Permisos: Modificacion de todas las entidades de la aplicacion (Usuarios, Cursos, Lecciones, Eventos, Suscripciones y Reseñas)
+  - Es dueño de: Todas las entidades de la aplicación
 
 ### **Imágenes**
 Indicar qué entidades tendrán asociadas una o varias imágenes:
 
-- **[Entidad con imágenes 1]**: [Ej: Usuario - Una imagen de avatar por usuario]
-- **[Entidad con imágenes 2]**: [Ej: Producto - Múltiples imágenes por producto (galería)]
-- **[Entidad con imágenes 3]**: [Ej: Categoría - Una imagen representativa por categoría]
+- **Usuario - Una imagen de avatar por usuario**
+- **Curso - Una imagen de presentacion por curso**
+- **Leccion - Uno o varios videos por lección**
+- **Eventos - Una imagen de preview por evento**
 
 ### **Gráficos**
 Indicar qué información se mostrará usando gráficos y de qué tipo serán:
