@@ -3,10 +3,10 @@
 ## 👥 Miembros del Equipo
 | Nombre y Apellidos | Correo URJC | Usuario GitHub |
 |:--- |:--- |:--- |
-| [Nombre 1] | [email1]@alumnos.urjc.es | [User1] |
-| [Nombre 2] | [email2]@alumnos.urjc.es | [User2] |
-| [Nombre 3] | [email3]@alumnos.urjc.es | [User3] |
-| [Nombre 4] | [email4]@alumnos.urjc.es | [User4] |
+| Pau Calvo Jiménez | p.calvo.2023@aulmnos.urjc.es | PauCalvoJ |
+| Alberto Hontanilla Villanueva | a.hontanilla.2023@alumnos.urjc.es | albertohontanilla |
+| Gonzalo Andrés Zurdo Patino | ga.zurdo.2023@alumnos.urjc.es | 51nga |
+| Jaime Sánchez Vázquez | j.sanchezva.2023@alumnos.urjc.es | jaimesnh |
 
 ---
 
@@ -25,7 +25,6 @@ Indicar las entidades principales que gestionará la aplicación y las relacione
 6. **Reseña**
 
 **Relaciones entre entidades:**
-- [Ej: Usuario - Pedido: Un usuario puede tener múltiples pedidos (1:N)]
 - Usuario - Curso: Un usuario puede estar suscrito a múltiples cursos y un curso puede tener múltiples usuarios (N:M).
 - Curso - Lección: Un curso puede tener múltiples lecciones (1:N).
 - Curso - Evento: un curso puede tener múltiples eventos (1:N).
