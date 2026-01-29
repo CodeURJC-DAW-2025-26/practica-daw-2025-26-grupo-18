@@ -58,27 +58,32 @@ Indicar qué entidades tendrán asociadas una o varias imágenes:
 ### **Gráficos**
 Indicar qué información se mostrará usando gráficos y de qué tipo serán:
 
-- **Gráfico 1**: [Ej: Ventas mensuales - Gráfico de barras]
-- **Gráfico 2**: [Ej: Productos más vendidos - Gráfico de tarta/circular]
-- **Gráfico 3**: [Ej: Evolución de usuarios registrados - Gráfico de líneas]
-- **Gráfico 4**: [Ej: Distribución de pedidos por categoría - Gráfico de barras horizontales]
-
+- **Porcentaje de cursos y estado: Cantidad de cursos que tienes y su estado (completado, en curso) - Grafico de tarta/circular**
+- **Personas que han hecho tu curso: Cantidad de personas que han hecho tu curso separadas por edades - Gráfico de barras**
+- **Lecciones completadas por dia: Numero de lecciones completadas en los ultimos 7 dias - Gráfico de barras**
+- **Personas dentro de un curso: Numero de personas que han interactuado con un curso por estados (visitado, en curso y completado) - Gráfico de tarta/circulo**
+  
 ### **Tecnología Complementaria**
 Indicar qué tecnología complementaria se empleará:
 
-- [Ej: Envío de correos electrónicos automáticos mediante JavaMailSender]
-- [Ej: Generación de PDFs de facturas usando iText o similar]
-- [Ej: Sistema de autenticación OAuth2 o JWT]
-- [Otras tecnologías externas que se integrarán]
+- Envío de correos electrónicos automáticos de confirmacion de compra y registro mediante JavaMailSender 
+- Generación de PDFs de facturas usando iText o similar
+- Sistema de autenticación OAuth2 o JWT
+- Generación de calendario para regustrar compras y próximos eventos mediante google calendar
+- Frameworks para generar gráficos como google charts o similares
+- Indicar localizacion de eventos mediante google maps js api o Leaflet
+
 
 ### **Algoritmo o Consulta Avanzada**
 Indicar cuál será el algoritmo o consulta avanzada que se implementará:
 
-- **Algoritmo/Consulta**: [Ej: Sistema de recomendaciones basado en el historial de compras del usuario]
-- **Descripción**: [Ej: Analiza los productos comprados previamente y sugiere productos similares o complementarios utilizando filtrado colaborativo]
-- **Alternativa**: [Ej: Consulta compleja que agrupe ventas por categoría, mes y región, con cálculo de tendencias]
+- **Algoritmo: Sistema de recomendacion basada en tu historial de visualizaciones**
+- **Descripción: Ordenar los cursos basados en etiquetas de tus cursos recientes**
+- **Alternativa: Recomendacion de cursos en base a lo mas popular**
 
----
+- **Algoritmo: Algoritmo de análisis de tiempo de finalizacion de curso**
+- **Descripcion: Estima el tiempo promedio que un usuario tardara en completar un curso**
+- **Alternativa: Análisis por características de cada usuario**
 
 ## 🛠 **Preparación 2: Maquetación de páginas con HTML y CSS**
 
