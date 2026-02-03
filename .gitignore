@@ -1,16 +1,60 @@
-# Compiled class file
-*.class
+# Sistema operativo
+.DS_Store
+Thumbs.db
+Desktop.ini
 
-# Log file
+# OneDrive temporary files
+~$*
+
+# Node / JavaScript
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
+dist/
+build/
+out/
+.cache/
+.parcel-cache/
+.vite/
+.next/
+
+# Environment files (may contain secrets)
+.env
+.env.*.local
+
+# Editor / IDE
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln
+*.swp
+.history/
+
+# Logs
 *.log
 
-# BlueJ files
-*.ctxt
+# Coverage
+coverage/
+.nyc_output/
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+# Sass / caches
+.sass-cache/
 
-# Package Files #
+# Python
+__pycache__/
+*.py[cod]
+
+# Java artifacts (kept from original template in case present)
+*.class
 *.jar
 *.war
 *.nar
@@ -18,15 +62,15 @@
 *.zip
 *.tar.gz
 *.rar
-
 .classpath
-.settings
-.vscode
 .project
 .factorypath
-target
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+target/
 hs_err_pid*
-.idea/
+
+# Misc
+.DS_Store
 .vscode/
+
+# Allow vendor/ and assets/ to be tracked (they are part of the site)
+# If you want to ignore a specific vendor package, add it explicitly.
