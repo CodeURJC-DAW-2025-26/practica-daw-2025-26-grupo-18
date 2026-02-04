@@ -1,32 +1,402 @@
-<!--
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <title>Detalles del Curso - SCAM</title>
+        <meta name="description" content="Curso de Diseño Web Avanzado" />
 
-    El header y footer se referencian desde el archivo header.html y footer.html respectivamente.
-    Este archivo contiene solo el contenido principal de la vista del curso.
-    ---- Header del curso ----
-    - Titulo
-    - Pequeña descripcion
-    - Autor/es (+ link a sus perfiles) (solo su nombre)
-    - Ultima actualización - idioma
-    - Cuadro con Valoracion (valoracion media + estrellas sobre 5 + numero de reseñas)
-    - numero de estudiantes
-    
-    ---- Body del curso ----
-    - Que va a aprender el estudiante (lista de puntos)
-    - Temas relacionados (con links)
-    - Que incluye el curso (lista de puntos)
-        - Horas - Tareas - Numero de articulos - Subtitulos - Certificado de finalización
-    - Contenido:
-        - Modulos (expandibles)
-            - Lecciones (con duracion)
-            - En caso de que el usuario no este registrado solo ve el titulo de las lecciones
-            - En caso de que el usuario este registrado ve un boton para iniciar la leccion
-            - En caso de iniciar la sesion, le enviara a un link externo (simulando la leccion)
-    - Requisitos previos para el curso (lista de puntos)
-    - Descripcion del curso (texto largo)
-    - Reseñas de estudiantes (con valoracion en estrellas y texto)
-    - Instructor/es (foto + nombre + descripcion + link a perfil)
-    - Mas cursos del instructor/es (con links)
-    - Denunciar por uso indevido
-        - En caso de que el usuario no este registrado le envia a la pagina de registro
-        - En caso de que el usuario este registrado le abre un formulario para denunciar el curso
--->
+        <link href="../img/favicon.png" rel="icon" />
+        <link href="../img/apple-touch-icon.png" rel="apple-touch-icon" />
+
+        <link href="https://fonts.googleapis.com" rel="preconnect" />
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+            rel="stylesheet" />
+
+        <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="../vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet" />
+        <link href="../vendor/aos/aos.css" rel="stylesheet" />
+        <link href="../vendor/glightbox/css/glightbox.min.css" rel="stylesheet" />
+        <link href="../vendor/swiper/swiper-bundle.min.css" rel="stylesheet" />
+
+        <link href="../css/main.css" rel="stylesheet" />
+    </head>
+
+    <body class="service-details-page">
+        <header id="header" class="header d-flex align-items-center sticky-top">
+            <div class="container position-relative d-flex align-items-center justify-content-between">
+                <a href="index.html" class="logo d-flex align-items-center me-auto me-xl-0">
+                    <!-- Uncomment the line below if you also wish to use an image logo -->
+                    <!-- <img src="src/img/logo.webp" alt=""> -->
+                    <h1 class="sitename">Landify</h1>
+                </a>
+
+                <nav id="navmenu" class="navmenu">
+                    <ul>
+                        <li><a href="init.html">Inicio</a></li>
+                        <li><a href="">Cursos</a></li>
+                        <li><a href="#features">Cursos suscrito</a></li>
+                        <li><a href="events.html">Eventos</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li class="dropdown">
+                            <a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                            <ul>
+                                <li><a href="#">Dropdown 1</a></li>
+                                <li class="dropdown">
+                                    <a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                                    <ul>
+                                        <li><a href="#">Deep Dropdown 1</a></li>
+                                        <li><a href="#">Deep Dropdown 2</a></li>
+                                        <li><a href="#">Deep Dropdown 3</a></li>
+                                        <li><a href="#">Deep Dropdown 4</a></li>
+                                        <li><a href="#">Deep Dropdown 5</a></li>
+                                    </ul>
+                                </li>
+                                <li><a href="#">Dropdown 2</a></li>
+                                <li><a href="#">Dropdown 3</a></li>
+                                <li><a href="#">Dropdown 4</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                    <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+                </nav>
+
+                <div class="d-flex align-items-center">
+                    <a href="cart.html" class="me-3 fs-5 text-dark"><i class="bi bi-cart"></i></a>
+                    <a class="btn-getstarted" href="createUser.html">Iniciar sesión/Registrarse</a>
+                </div>
+            </div>
+        </header>
+
+        <main class="main">
+            <div class="container mt-3 pt-3">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mt-2">
+                        <li class="breadcrumb-item"><a href="../../index.html">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="#">Cursos</a></li>
+                        <li class="breadcrumb-item"><a href="#">Diseño</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Diseño Web Avanzado</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <section id="course-details" class="section pt-3">
+                <div class="container" data-aos="fade-up">
+                    <div class="row gy-5">
+                        <div class="col-lg-8">
+                            <div class="mb-5">
+                                <span class="badge bg-primary mb-2">Actualizado 2026</span>
+                                <h1 class="display-5 fw-bold text-dark mb-3">Curso de Diseño Web Avanzado: De Cero a Experto</h1>
+                                <p class="lead text-muted">Domina HTML5, CSS3, Grid, Flexbox y crea interfaces modernas y responsive. Aprende las mejores prácticas de UI/UX directamente aplicadas al código.</p>
+
+                                <div class="d-flex flex-wrap align-items-center gap-3 text-secondary mt-3 small">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-person-circle me-2 fs-5"></i>
+                                        <span>Por <a href="#" class="fw-bold text-decoration-none">Roberto García</a></span>
+                                    </div>
+                                    <div class="vr"></div>
+                                    <div class="d-flex align-items-center text-warning">
+                                        <span class="fw-bold me-1 text-dark">4.8</span>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i> <span class="text-muted ms-1">(1,240 reseñas)</span>
+                                    </div>
+                                    <div class="vr"></div>
+                                    <div><i class="bi bi-people me-1"></i> 3,500 estudiantes</div>
+                                    <div class="vr"></div>
+                                    <div><i class="bi bi-globe me-1"></i> Español</div>
+                                </div>
+                            </div>
+
+                            <div class="card border-0 shadow-sm mb-5 bg-light">
+                                <div class="card-body p-4">
+                                    <h3 class="h5 fw-bold mb-4">Lo que aprenderás</h3>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <ul class="feature-list list-unstyled">
+                                                <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i> Dominio de CSS Grid y Flexbox</li>
+                                                <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i> Animaciones y transiciones</li>
+                                                <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i> Arquitectura BEM</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <ul class="feature-list list-unstyled">
+                                                <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i> Sitios 100% Responsive</li>
+                                                <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i> Preprocesadores (SASS)</li>
+                                                <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i> Despliegue en la nube</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h3 class="h4 mb-4 fw-bold">Contenido del curso</h3>
+                            <div class="accordion mb-5" id="courseAccordion">
+                                <div class="accordion-item border mb-2 rounded overflow-hidden">
+                                    <h2 class="accordion-header" id="headingOne">
+                                        <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">Módulo 1: Introducción a la Web</button>
+                                    </h2>
+                                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#courseAccordion">
+                                        <div class="accordion-body p-0">
+                                            <div class="list-group list-group-flush">
+                                                <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-4 py-3">
+                                                    <div><i class="bi bi-play-circle me-2 text-secondary"></i> Cómo funciona internet</div>
+                                                    <span class="badge bg-light text-dark border fw-normal">10:05</span>
+                                                </a>
+                                                <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-4 py-3">
+                                                    <div><i class="bi bi-play-circle me-2 text-secondary"></i> Configurando VS Code</div>
+                                                    <span class="badge bg-light text-dark border fw-normal">15:20</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item border mb-2 rounded overflow-hidden">
+                                    <h2 class="accordion-header" id="headingTwo">
+                                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">Módulo 2: HTML5 Semántico</button>
+                                    </h2>
+                                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#courseAccordion">
+                                        <div class="accordion-body p-0">
+                                            <div class="list-group list-group-flush">
+                                                <div class="list-group-item d-flex justify-content-between align-items-center px-4 py-3 text-muted">
+                                                    <div><i class="bi bi-lock me-2"></i> Etiquetas estructurales</div>
+                                                    <span class="small">12:00</span>
+                                                </div>
+                                                <div class="list-group-item d-flex justify-content-between align-items-center px-4 py-3 text-muted">
+                                                    <div><i class="bi bi-lock me-2"></i> Formularios modernos</div>
+                                                    <span class="small">20:45</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item border mb-2 rounded overflow-hidden">
+                                    <h2 class="accordion-header" id="headingThree">
+                                        <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                            Módulo 3: CSS Grid & Flexbox
+                                        </button>
+                                    </h2>
+                                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#courseAccordion">
+                                        <div class="accordion-body p-0">
+                                            <div class="list-group list-group-flush">
+                                                <div class="list-group-item d-flex justify-content-between align-items-center px-4 py-3 text-muted">
+                                                    <div><i class="bi bi-lock me-2"></i> Contenedores Flex</div>
+                                                    <span class="small">15:30</span>
+                                                </div>
+                                                <div class="list-group-item d-flex justify-content-between align-items-center px-4 py-3 text-muted">
+                                                    <div><i class="bi bi-lock me-2"></i> Grid Areas</div>
+                                                    <span class="small">25:10</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h3 class="h4 mb-3 fw-bold">Requisitos previos</h3>
+                            <ul class="mb-5">
+                                <li class="mb-2">Ordenador con acceso a internet (Windows, Mac o Linux).</li>
+                                <li class="mb-2">No se requiere experiencia previa en programación.</li>
+                                <li class="mb-2">Ganas de aprender y practicar.</li>
+                            </ul>
+
+                            <h3 class="h4 mb-3 fw-bold">Descripción</h3>
+                            <div class="mb-5 text-secondary">
+                                <p>Este curso está diseñado para llevarte de la mano desde los conceptos más básicos hasta las técnicas más avanzadas de diseño web moderno. No solo aprenderás a escribir código, sino a pensar como un diseñador UI.</p>
+                                <p>
+                                    A lo largo de 5 módulos intensivos, construiremos 3 proyectos reales que podrás añadir a tu portafolio personal. Aprenderás a utilizar herramientas profesionales y flujos de trabajo reales que se utilizan en las
+                                    grandes empresas de tecnología.
+                                </p>
+                            </div>
+
+                            <h3 class="h4 mb-4 fw-bold">Instructor</h3>
+                            <div class="card border-0 shadow-sm mb-5">
+                                <div class="card-body p-4 d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start">
+                                    <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 100px; height: 100px; min-width: 100px">
+                                        <i class="bi bi-person-fill fs-1"></i>
+                                    </div>
+
+                                    <div class="text-center text-md-start">
+                                        <h4 class="h5 fw-bold mb-1">Roberto García</h4>
+                                        <p class="text-primary small mb-3">Senior Frontend Developer</p>
+                                        <p class="small text-muted mb-3">Con más de 10 años de experiencia liderando equipos de desarrollo en startups internacionales. Apasionado por el código limpio y la enseñanza accesible.</p>
+
+                                        <h6 class="small fw-bold text-uppercase text-muted mt-3">Más cursos de Roberto:</h6>
+                                        <div class="d-flex gap-2 justify-content-center justify-content-md-start">
+                                            <a href="#" class="badge bg-light text-dark border text-decoration-none">Master JavaScript</a>
+                                            <a href="#" class="badge bg-light text-dark border text-decoration-none">React Native</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h3 class="h4 mb-4 fw-bold" id="reviews">Reseñas de estudiantes</h3>
+                            <div class="vstack gap-4">
+                                <div class="card border-0 bg-light p-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center text-white small" style="width: 35px; height: 35px">AM</div>
+                                            <strong>Ana Martínez</strong>
+                                        </div>
+                                        <div class="text-warning small"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+                                    </div>
+                                    <p class="mb-0 text-secondary small">"Increíble curso. Por fin entiendo cómo funciona Grid y Flexbox juntos. Muy recomendado."</p>
+                                </div>
+
+                                <div class="card border-0 bg-light p-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center text-white small" style="width: 35px; height: 35px">CR</div>
+                                            <strong>Carlos Ruiz</strong>
+                                        </div>
+                                        <div class="text-warning small"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star"></i></div>
+                                    </div>
+                                    <p class="mb-0 text-secondary small">"Muy buen contenido, aunque el módulo de SASS va un poco rápido. El resto excelente."</p>
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <button type="button" class="btn btn-outline-secondary w-100 py-2" data-bs-toggle="modal" data-bs-target="#reportModal"><i class="bi bi-flag me-2"></i>Denunciar uso indebido</button>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="sticky-top" style="top: 100px; z-index: 10">
+                                <article class="price-card border-0 shadow-lg h-auto mb-4 bg-white">
+                                    <div class="card-head pt-4 pb-2 text-center">
+                                        <img src="../img/services/services-1.webp" alt="Imagen del curso" class="img-fluid rounded-4 mb-3 px-3" />
+                                        <span class="badge bg-danger mb-2">OFERTA ESPECIAL</span>
+                                        <h3 class="title fs-4 mb-0">Acceso Completo</h3>
+
+                                        <div class="price-wrap mt-3 mb-3 justify-content-center">
+                                            <span class="price display-4 fw-bold text-dark">49.99€</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="px-4 pb-4">
+                                        <div class="cta mb-4">
+                                            <a class="btn btn-choose w-100 py-3 fw-bold fs-5" style="background-color: #d96d3c; border-color: #d96d3c; color: white">Añadir al carrito</a>
+                                        </div>
+
+                                        <p class="fw-bold text-dark mb-2 small text-uppercase">Este curso incluye:</p>
+                                        <ul class="feature-list list-unstyled small text-secondary mb-4">
+                                            <li class="mb-2 d-flex align-items-center gap-2"><i class="bi bi-camera-video text-primary"></i> 24 horas de video</li>
+                                            <li class="mb-2 d-flex align-items-center gap-2"><i class="bi bi-file-earmark-arrow-down text-primary"></i> 15 recursos descargables</li>
+                                            <li class="mb-2 d-flex align-items-center gap-2"><i class="bi bi-code-slash text-primary"></i> 5 tareas prácticas</li>
+                                            <li class="mb-2 d-flex align-items-center gap-2"><i class="bi bi-cc-circle text-primary"></i> Subtítulos en español</li>
+                                            <li class="mb-2 d-flex align-items-center gap-2"><i class="bi bi-trophy text-primary"></i> Certificado digital</li>
+                                            <li class="mb-2 d-flex align-items-center gap-2"><i class="bi bi-infinity text-primary"></i> Acceso de por vida</li>
+                                        </ul>
+
+                                        <hr class="text-muted opacity-25" />
+
+                                        <div class="mb-3">
+                                            <span class="small fw-bold text-muted">Temas relacionados:</span>
+                                            <div class="d-flex flex-wrap gap-1 mt-2">
+                                                <a href="#" class="badge bg-light text-secondary text-decoration-none border">HTML5</a>
+                                                <a href="#" class="badge bg-light text-secondary text-decoration-none border">CSS3</a>
+                                                <a href="#" class="badge bg-light text-secondary text-decoration-none border">Frontend</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </article>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header border-0 pb-0">
+                            <h5 class="modal-title fw-bold" id="reportModalLabel">Denunciar Curso</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="small text-muted mb-3">Si crees que este contenido viola nuestras normas, por favor háznoslo saber.</p>
+                            <form>
+                                <div class="mb-3">
+                                    <label for="reportReason" class="form-label small fw-bold">Motivo de la denuncia</label>
+                                    <select class="form-select" id="reportReason">
+                                        <option selected>Selecciona un motivo...</option>
+                                        <option value="1">Contenido inapropiado</option>
+                                        <option value="2">Derechos de autor</option>
+                                        <option value="3">Spam o engaño</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="reportMessage" class="form-label small fw-bold">Descripción (Opcional)</label>
+                                    <textarea class="form-control" id="reportMessage" rows="3" placeholder="Detalles adicionales..."></textarea>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-danger" data-bs-dismiss="modal">Enviar Reporte</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer id="footer" class="footer position-relative dark-background">
+            <div class="container footer-top">
+                <div class="row gy-4">
+                    <div class="col-lg-5 col-md-12 footer-about">
+                        <a href="../../index.html" class="logo d-flex align-items-center">
+                            <span class="sitename">SCAM</span>
+                        </a>
+                        <p>
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam blanditiis architecto at, minus neque quo pariatur ipsa. Quas voluptatum dolor perspiciatis natus voluptates omnis saepe, magni, corporis, earum veritatis
+                            libero.
+                        </p>
+                    </div>
+
+                    <div class="col-lg-2 col-6 footer-links">
+                        <h4>Useful Links</h4>
+                        <ul>
+                            <li><a href="#">Home</a></li>
+                            <li><a href="#">Sobre nosotros</a></li>
+                            <li><a href="#">Terminos de servicio</a></li>
+                            <li><a href="#">Politica de privacidad</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-3 col-md-12 footer-contact text-center text-md-start">
+                        <h4>Contactanos</h4>
+                        <p>Calle Tulipán, s/n</p>
+                        <p>Móstoles (Madrid) - 28933</p>
+                        <p>España</p>
+                        <p class="mt-4"><strong>Phone:</strong> <span>+34 91 123 45 67</span></p>
+                        <p><strong>Email:</strong> <span>p.calvo.2023@aulmnos.urjc.es</span></p>
+                        <p><strong>Email:</strong> <span>a.hontanilla.2023@alumnos.urjc.es</span></p>
+                        <p><strong>Email:</strong> <span>ga.zurdo.2023@alumnos.urjc.es</span></p>
+                        <p><strong>Email:</strong> <span>j.sanchezva.2023@alumnos.urjc.es</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container copyright text-center mt-4">
+                <p>© <span>Copyright</span> <strong class="px-1 sitename">SCAM</strong> <span>All Rights Reserved</span></p>
+                <div class="credits">Designed by <a href="https://bootstrapmade.com/">Grupo 18</a> | <a href="https://bootstrapmade.com/tools/">SCAM</a></div>
+            </div>
+        </footer>
+
+        <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+        <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="../vendor/php-email-form/validate.js"></script>
+        <script src="../vendor/aos/aos.js"></script>
+        <script src="../vendor/glightbox/js/glightbox.min.js"></script>
+        <script src="../vendor/swiper/swiper-bundle.min.js"></script>
+        <script src="../vendor/purecounter/purecounter_vanilla.js"></script>
+
+        <script src="../js/main.js"></script>
+    </body>
+</html>
