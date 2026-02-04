@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Carrito de Compra - SCAM</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <!-- Favicons -->
+  <link href="../img/logo.png" rel="icon">
+  <link href="../img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="../vendor/aos/aos.css" rel="stylesheet">
+  <link href="../vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="../vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="../css/main.css" rel="stylesheet">
+</head>
+
+<body class="starter-page-page">
+
+   <header id="header" class="header d-flex align-items-center sticky-top">
+    <div class="container position-relative d-flex align-items-center justify-content-between">
+
+      <a href="../../index.html" class="logo d-flex align-items-center me-auto me-xl-0">
+        <!-- Uncomment the line below if you also wish to use an image logo -->
+        <img src="../img/logo.png" alt="">
+        <h1 class="sitename">SCAM</h1>
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="../../init.html">Inicio</a></li>
+          <li><a href="">Cursos</a></li>
+          <li><a href="../../index.html#features">Cursos suscrito</a></li>
+          <li><a href="../../events.html">Eventos</a></li>
+          <li><a href="../../index.html#pricing">Pricing</a></li>
+          <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              <li><a href="#">Dropdown 1</a></li>
+              <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                <ul>
+                  <li><a href="#">Deep Dropdown 1</a></li>
+                  <li><a href="#">Deep Dropdown 2</a></li>
+                  <li><a href="#">Deep Dropdown 3</a></li>
+                  <li><a href="#">Deep Dropdown 4</a></li>
+                  <li><a href="#">Deep Dropdown 5</a></li>
+                </ul>
+              </li>
+              <li><a href="#">Dropdown 2</a></li>
+              <li><a href="#">Dropdown 3</a></li>
+              <li><a href="#">Dropdown 4</a></li>
+            </ul>
+          </li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+
+      <div class="header-profile d-flex align-items-center gap-3" style="font-family: var(--nav-font); color: var(--nav-color); font-size: 16px;">
+        <span class="profile-name">sigma67</span>
+        <!-- Assuming path relative to src/views/cart.html needs to go to src/img/ -->
+        <img src="../img/descarga.jpg" alt="Profile" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+      </div>
+
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- Page Title -->
+    <div class="page-title light-background">
+      <div class="container">
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="../../index.html">Home</a></li>
+            <li class="current">Carrito</li>
+          </ol>
+        </nav>
+        <h1>Carrito de Compra</h1>
+      </div>
+    </div><!-- End Page Title -->
+
+    <!-- Cart Section -->
+    <section id="cart-section" class="section">
+      <div class="container" data-aos="fade-up">
+        
+        <!-- Back Button -->
+        <div class="mb-4">
+            <a href="../../index.html" class="btn btn-secondary d-inline-flex align-items-center gap-2" style="background-color: #85613D; border-color: #85613D;">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Cart Items -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0">Tu Pedido</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">Producto</th>
+                                        <th scope="col">Precio</th>
+                                        <th scope="col">Cantidad</th>
+                                        <th scope="col" class="text-end">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Static Item 1 -->
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <!-- Placeholder image if needed, or just text -->
+                                                <div class="ms-2">
+                                                    <h6 class="mb-0">Curso de Diseño Web</h6>
+                                                    <small class="text-muted">Diseño UI/UX</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>49.99€</td>
+                                        <td>
+                                            <div class="input-group input-group-sm" style="width: 100px;">
+                                                <button class="btn btn-outline-secondary" type="button">-</button>
+                                                <input type="text" class="form-control text-center" value="1" readonly>
+                                                <button class="btn btn-outline-secondary" type="button">+</button>
+                                            </div>
+                                        </td>
+                                        <td class="text-end">49.99€</td>
+                                    </tr>
+                                    <!-- Static Item 2 -->
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="ms-2">
+                                                    <h6 class="mb-0">Master en JavaScript</h6>
+                                                    <small class="text-muted">Desarrollo Frontend</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>59.99€</td>
+                                        <td>
+                                            <div class="input-group input-group-sm" style="width: 100px;">
+                                                <button class="btn btn-outline-secondary" type="button">-</button>
+                                                <input type="text" class="form-control text-center" value="1" readonly>
+                                                <button class="btn btn-outline-secondary" type="button">+</button>
+                                            </div>
+                                        </td>
+                                        <td class="text-end">59.99€</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Order Summary -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0">Resumen</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush mb-3">
+                            <li class="list-group-item d-flex justify-content-between border-0 px-0 pb-0">
+                                Subtotal
+                                <span>109.98€</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between border-0 px-0">
+                                Impuestos
+                                <span>23.10€</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between border-0 px-0 mb-3">
+                                <strong>Total</strong>
+                                <strong>133.08€</strong>
+                            </li>
+                        </ul>
+
+                        <!-- Pay Button -->
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary btn-lg" type="button" style="background-color: #D96D3C; border-color: #D96D3C;">
+                                Pagar Ahora
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+  nombre 
+  <input> nombre </input>
+  numero tarjeta
+
+
+  <footer id="footer" class="footer position-relative dark-background">
+    <div class="container footer-top">
+        <div class="row gy-4">
+            <div class="col-lg-5 col-md-12 footer-about">
+                <a href="index.html" class="logo d-flex align-items-center">
+                    <span class="sitename">SCAM</span>
+                </a>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam blanditiis architecto at, minus neque quo pariatur ipsa. Quas voluptatum dolor perspiciatis natus voluptates omnis saepe, magni, corporis, earum veritatis libero.</p>
+                
+            </div>
+
+            <div class="col-lg-2 col-6 footer-links">
+                <h4>Useful Links</h4>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Sobre nosotros</a></li>
+                    <li><a href="#">Terminos de servicio</a></li>
+                    <li><a href="#">Politica de privacidad</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3 col-md-12 footer-contact text-center text-md-start">
+                <h4>Contactanos</h4>
+                <p>Calle Tulipán, s/n</p>
+                <p>Móstoles (Madrid) - 28933</p>
+                <p>España</p>
+                <p class="mt-4"><strong>Phone:</strong> <span>+34 91 123 45 67</span></p>
+                <p><strong>Email:</strong> <span>p.calvo.2023@aulmnos.urjc.es</span></p>
+                <p><strong>Email:</strong> <span>a.hontanilla.2023@alumnos.urjc.es</span></p>
+                <p><strong>Email:</strong> <span>ga.zurdo.2023@alumnos.urjc.es</span></p>
+                <p><strong>Email:</strong> <span>j.sanchezva.2023@alumnos.urjc.es</span></p>
+                
+            </div>
+        </div>
+    </div>
+
+    <div class="container copyright text-center mt-4">
+        <p>© <span>Copyright</span> <strong class="px-1 sitename">SCAM</strong> <span>All Rights Reserved</span></p>
+        <div class="credits">
+            <!-- All the links in the footer should remain intact. -->
+            <!-- You can delete the links only if you've purchased the pro version. -->
+            Designed by <a href="https://bootstrapmade.com/">Grupo 18</a> | <a href="https://bootstrapmade.com/tools/">SCAM</a>
+        </div>
+    </div>
+</footer>
+
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Payment Popup (Visible for Screenshot) -->
+  <div class="modal fade show" id="paymentPopup" tabindex="-1" style="display: block; background-color: rgba(0,0,0,0.5);" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-4">
+            <div class="modal-header border-0 justify-content-center pb-0">
+                 <div class="footer-about">
+                    <a href="index.html" class="logo d-flex align-items-center text-decoration-none gap-2">
+                        <img src="../img/logo.png" alt="" style="max-height: 40px;">
+                        <span class="sitename" style="font-size: 2rem; font-weight: 700; color: #85613D;">SCAM</span>
+                    </a>
+                 </div>
+            </div>
+            <div class="modal-body text-start">
+                <h4 class="mb-4 text-center">Información de Pago</h4>
+                <form>
+                    <div class="mb-3">
+                        <label for="cardName" class="form-label">Nombre de usuario</label>
+                        <input type="text" class="form-control" id="cardName" placeholder="Nombre completo">
+                    </div>
+                    <div class="mb-3">
+                        <label for="cardNumber" class="form-label">Número de la tarjeta</label>
+                        <input type="text" class="form-control" id="cardNumber" placeholder="0000 0000 0000 0000">
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label for="cardExpiry" class="form-label">Fecha de caducidad</label>
+                            <input type="text" class="form-control" id="cardExpiry" placeholder="MM/YY">
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label for="cardCvv" class="form-label">CVV</label>
+                            <input type="text" class="form-control" id="cardCvv" placeholder="123">
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="button" class="btn btn-primary" style="background-color: #D96D3C; border-color: #D96D3C;">Pagar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+  </div>
+  <!--FInal pop up-->
+
+  <!-- Vendor JS Files -->
+  <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../vendor/php-email-form/validate.js"></script>
+  <script src="../vendor/aos/aos.js"></script>
+  <script src="../vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="../vendor/swiper/swiper-bundle.min.js"></script>
+  <script src="../vendor/purecounter/purecounter_vanilla.js"></script>
+
+  <!-- Main JS File -->
+  <script src="../js/main.js"></script>
+
+</body>
+</html>
