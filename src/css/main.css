@@ -1,10 +1,4 @@
-/**
-* Template Name: Landify
-* Template URL: https://bootstrapmade.com/landify-bootstrap-landing-page-template/
-* Updated: Aug 04 2025 with Bootstrap v5.3.7
-* Author: BootstrapMade.com
-* License: https://bootstrapmade.com/license/
-*/
+
 
 /*--------------------------------------------------------------
 # Font & Color Variables
@@ -681,6 +675,11 @@ section,
   padding: 30px 0;
   margin-bottom: 30px;
   position: relative;
+}
+
+.section-title.section-title-compact {
+  padding: 10px 0;
+  margin-bottom: 10px;
 }
 
 .section-title h2 {
@@ -1654,6 +1653,51 @@ section,
   border-radius: 50%;
   background-color: color-mix(in srgb, var(--accent-color), transparent 90%);
   margin-bottom: 20px;
+}
+
+.features-cards .feature-card .icon-box.icon-box-compact {
+  margin-bottom: 0;
+}
+
+.features-cards .feature-card .status-badge {
+  background-color: var(--accent-color);
+  color: var(--contrast-color);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.features-cards .feature-card .course-progress {
+  margin: 15px 0;
+}
+
+.features-cards .feature-card .course-progress-label {
+  color: #666;
+  font-weight: 600;
+}
+
+.features-cards .feature-card .course-progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #e0e0e0;
+  border-radius: 10px;
+  margin-top: 5px;
+  overflow: hidden;
+}
+
+.features-cards .feature-card .course-progress-fill {
+  height: 100%;
+  background-color: var(--accent-color);
+  border-radius: 10px;
+}
+
+.features-cards .feature-card .course-progress-fill--65 {
+  width: 65%;
+}
+
+.features-cards .feature-card .course-progress-fill--40 {
+  width: 40%;
 }
 
 .features-cards .feature-card .icon-box i {
@@ -2800,6 +2844,19 @@ section,
   line-height: 1.4;
 }
 
+.services .services-grid .course-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.services .services-grid .course-price {
+  color: var(--accent-color);
+  font-weight: 700;
+  font-size: 18px;
+}
+
 .services .services-grid .service-card .card-content .service-title a {
   color: var(--heading-color);
   text-decoration: none;
@@ -3941,7 +3998,205 @@ section,
     font-size: 16px;
   }
 }
+.icon-badge {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
 
+.btn-accent {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  color: var(--contrast-color);
+}
+
+.btn-accent:hover {
+  background-color: color-mix(in srgb, var(--accent-color), black 10%);
+  border-color: color-mix(in srgb, var(--accent-color), black 10%);
+  color: var(--contrast-color);
+}
+
+.btn-accent-outline {
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+.btn-accent-outline:hover {
+  background-color: var(--accent-color);
+  color: var(--contrast-color);
+  border-color: var(--accent-color);
+}
+
+.header-profile {
+  font-family: var(--nav-font);
+  color: var(--nav-color);
+  font-size: 16px;
+}
+
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+}
+
+.courses-catalog .course-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (min-width: 992px) {
+  .courses-catalog .course-controls {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .courses-catalog .course-search {
+    flex: 1;
+  }
+}
+
+.courses-catalog .course-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.courses-catalog .filter-chip {
+  border: 1px solid color-mix(in srgb, var(--accent-color), transparent 60%);
+  color: var(--accent-color);
+  background: transparent;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.courses-catalog .filter-chip:hover,
+.courses-catalog .filter-chip.active {
+  background: var(--accent-color);
+  color: var(--contrast-color);
+}
+
+.courses-catalog .course-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.courses-catalog .course-card-full {
+  background: var(--surface-color);
+  border: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--default-color), transparent 90%);
+}
+
+.courses-catalog .course-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.courses-catalog .course-card-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.courses-catalog .course-card-price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent-color);
+}
+
+.courses-catalog .course-card-desc {
+  margin-top: 12px;
+  color: color-mix(in srgb, var(--default-color), transparent 20%);
+}
+
+.course-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.course-tag {
+  background-color: #F3E4C9;
+  color: #85613D;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.course-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 14px;
+  color: color-mix(in srgb, var(--default-color), transparent 20%);
+  font-size: 14px;
+}
+
+.course-card-meta i {
+  color: var(--accent-color);
+  margin-right: 6px;
+}
+
+.course-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.course-rating-star {
+  color: #FFA500;
+  font-size: 14px;
+}
+
+.course-rating-value {
+  font-weight: 600;
+  color: var(--default-color);
+}
+
+.course-rating-count {
+  color: #999;
+  font-size: 13px;
+}
+
+.courses-catalog .course-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.courses-catalog .course-card-btn {
+  padding: 6px 16px;
+  font-weight: 600;
+}
+
+.modal-force-show {
+  display: block;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-logo {
+  max-height: 40px;
+}
+
+.modal-sitename {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #85613D;
+}
 /*--------------------------------------------------------------
 # Starter Section Section
 --------------------------------------------------------------*/
