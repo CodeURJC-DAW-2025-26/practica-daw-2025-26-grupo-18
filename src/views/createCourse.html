@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Crear Nuevo Curso - SCAM</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <!-- Favicons -->
+  <link href="../img/logo.png" rel="icon">
+  <link href="../img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="../vendor/aos/aos.css" rel="stylesheet">
+  <link href="../vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="../vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="../css/main.css" rel="stylesheet">
+  
+</head>
+
+<body class="starter-page-page">
+
+   <header id="header" class="header d-flex align-items-center sticky-top">
+    <div class="container position-relative d-flex align-items-center justify-content-between">
+
+      <a href="../../index.html" class="logo d-flex align-items-center me-auto me-xl-0">
+        <img src="../img/logo.png" alt="">
+        <h1 class="sitename">SCAM</h1>
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="../../init.html">Inicio</a></li>
+          <li><a href="">Cursos</a></li>
+          <li><a href="../../index.html#features">Cursos suscrito</a></li>
+          <li><a href="../../events.html">Eventos</a></li>
+          <li><a href="../../index.html#pricing">Pricing</a></li>
+          <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              <li><a href="#">Dropdown 1</a></li>
+              <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                <ul>
+                  <li><a href="#">Deep Dropdown 1</a></li>
+                  <li><a href="#">Deep Dropdown 2</a></li>
+                  <li><a href="#">Deep Dropdown 3</a></li>
+                  <li><a href="#">Deep Dropdown 4</a></li>
+                  <li><a href="#">Deep Dropdown 5</a></li>
+                </ul>
+              </li>
+              <li><a href="#">Dropdown 2</a></li>
+              <li><a href="#">Dropdown 3</a></li>
+              <li><a href="#">Dropdown 4</a></li>
+            </ul>
+          </li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+
+      <div class="header-profile d-flex align-items-center gap-3" style="font-family: var(--nav-font); color: var(--nav-color); font-size: 16px;">
+        <span class="profile-name">sigma67</span>
+        <img src="../img/descarga.jpg" alt="Profile" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+      </div>
+
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- Page Title -->
+    <div class="page-title light-background">
+      <div class="container">
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="../../index.html">Home</a></li>
+            <li class="current">Crear Curso</li>
+          </ol>
+        </nav>
+        <h1>Crear Nuevo Curso</h1>
+      </div>
+    </div><!-- End Page Title -->
+
+    <!-- Create Course Section -->
+    <section id="create-course-section" class="section">
+      <div class="container" data-aos="fade-up">
+        
+        <form class="needs-validation" onsubmit="event.preventDefault(); alert('Curso guardado correctamente (simulación)');">
+            
+            <div class="row g-4">
+                
+                <!-- Main Content Column -->
+                <div class="col-lg-8">
+                    
+                    <!-- Basic Info -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-white py-3">
+                            <h5 class="mb-0">Información Básica</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="courseImage" class="form-label">Imagen del Curso</label>
+                                <input type="file" class="form-control" id="courseImage" accept="image/*">
+                                <div class="form-text">Se recomienda una imagen de 1280x720 px.</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="courseTitle" class="form-label">Título del Curso</label>
+                                <input type="text" class="form-control" id="courseTitle" placeholder="Ej: Introducción a JavaScript" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="courseDescription" class="form-label">Descripción Breve</label>
+                                <textarea class="form-control" id="courseDescription" rows="3" placeholder="Resumen corto del curso..." required></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="courseLongDescription" class="form-label">Descripción Detallada</label>
+                                <textarea class="form-control" id="courseLongDescription" rows="6" placeholder="Detalles completos del curso..." required></textarea>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="courseCreators" class="form-label">Creadores</label>
+                                    <input type="text" class="form-control" id="courseCreators" placeholder="Nombres de instructores" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="courseLanguage" class="form-label">Idioma</label>
+                                    <select class="form-select" id="courseLanguage" required>
+                                        <option value="" selected disabled>Seleccionar...</option>
+                                        <option value="es">Español</option>
+                                        <option value="en">Inglés</option>
+                                        <option value="fr">Francés</option>
+                                        <option value="de">Alemán</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- What you will learn -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Lo que aprenderás</h5>
+                            <button type="button" class="btn btn-sm btn-add" onclick="addDynamicItem('learning-container', 'Nuevo objetivo de aprendizaje', 'bi-check-lg')">+ Añadir</button>
+                        </div>
+                        <div class="card-body">
+                            <div id="learning-container">
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text"><i class="bi bi-check-lg"></i></span>
+                                    <input type="text" class="form-control" placeholder="Ej: Dominar funciones asíncronas" required>
+                                    <button class="btn btn-delete" type="button" onclick="this.parentElement.remove()">×</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Related Topics -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Temas Relacionados</h5>
+                            <button type="button" class="btn btn-sm btn-add" onclick="addDynamicItem('topics-container', 'Nuevo tema relacionado', 'bi-tag')">+ Añadir</button>
+                        </div>
+                        <div class="card-body">
+                            <div id="topics-container">
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text"><i class="bi bi-tag"></i></span>
+                                    <input type="text" class="form-control" placeholder="Ej: Desarrollo Web" required>
+                                    <button class="btn btn-delete" type="button" onclick="this.parentElement.remove()">×</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modules & Lessons -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Contenido del Curso</h5>
+                            <button type="button" class="btn btn-sm btn-add" onclick="addModule()">+ Añadir Módulo</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Número total de módulos: <span id="moduleCount" class="fw-bold">1</span></label>
+                            </div>
+                            <div id="modules-container">
+                                <!-- Module 1 Initial State -->
+                                <div class="border rounded p-3 mb-3 module-item bg-light">
+                                    <div class="d-flex justify-content-between mb-3 align-items-center">
+                                        <div class="flex-grow-1 me-3">
+                                            <input type="text" class="form-control fw-bold" placeholder="Título del Módulo" value="Módulo 1: Introducción">
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-delete" onclick="removeModule(this)">Eliminar Módulo</button>
+                                    </div>
+                                    
+                                    <div class="lessons-container ms-3 border-start ps-3">
+                                        <label class="form-label small text-muted mb-2">Lecciones</label>
+                                        <div class="lessons-list">
+                                            <div class="input-group input-group-sm mb-2">
+                                                <span class="input-group-text bg-white"><i class="bi bi-play-circle"></i></span>
+                                                <input type="text" class="form-control" placeholder="Título de la lección">
+                                                <input type="text" class="form-control" placeholder="Enlace (URL)">
+                                                <button class="btn btn-delete" type="button" onclick="this.parentElement.remove()">×</button>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-add mt-2" onclick="addLesson(this)">+ Añadir Lección</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                </div>
+
+                <!-- Sidebar Details Column -->
+                <div class="col-lg-4">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-white py-3">
+                            <h5 class="mb-0">Detalles Adicionales</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="coursePrice" class="form-label">Precio (€)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">€</span>
+                                    <input type="number" class="form-control" id="coursePrice" placeholder="0.00" step="0.01" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="courseHours" class="form-label">Duración Total (Horas)</label>
+                                <input type="number" class="form-control" id="courseHours" placeholder="Ej: 10" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="courseResources" class="form-label">Recursos descargables</label>
+                                <input type="number" class="form-control" id="courseResources" placeholder="Ej: 5" value="0">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="courseAssignments" class="form-label">Tareas de práctica</label>
+                                <input type="number" class="form-control" id="courseAssignments" placeholder="Ej: 3" value="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Prerequisites -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-white py-3">
+                            <h5 class="mb-0">Requisitos Previos</h5>
+                        </div>
+                        <div class="card-body">
+                             <textarea class="form-control" id="coursePrerequisites" rows="4" placeholder="Ej: Conocimientos básicos de HTML y CSS..."></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            
+            <!-- Actions - Moved to bottom -->
+            <div class="row mt-4 mb-5">
+                <div class="col-12">
+                     <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg" style="background-color: #D96D3C; border-color: #D96D3C;">Publicar Curso</button>
+                        <a href="../../index.html" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer id="footer" class="footer position-relative dark-background">
+    <div class="container footer-top">
+        <div class="row gy-4">
+            <div class="col-lg-5 col-md-12 footer-about">
+                <a href="index.html" class="logo d-flex align-items-center">
+                    <span class="sitename">SCAM</span>
+                </a>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam blanditiis architecto at, minus neque quo pariatur ipsa. Quas voluptatum dolor perspiciatis natus voluptates omnis saepe, magni, corporis, earum veritatis libero.</p>
+                
+            </div>
+
+            <div class="col-lg-2 col-6 footer-links">
+                <h4>Useful Links</h4>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Sobre nosotros</a></li>
+                    <li><a href="#">Terminos de servicio</a></li>
+                    <li><a href="#">Politica de privacidad</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3 col-md-12 footer-contact text-center text-md-start">
+                <h4>Contactanos</h4>
+                <p>Calle Tulipán, s/n</p>
+                <p>Móstoles (Madrid) - 28933</p>
+                <p>España</p>
+                <p class="mt-4"><strong>Phone:</strong> <span>+34 91 123 45 67</span></p>
+                <p><strong>Email:</strong> <span>p.calvo.2023@aulmnos.urjc.es</span></p>
+                <p><strong>Email:</strong> <span>a.hontanilla.2023@alumnos.urjc.es</span></p>
+                <p><strong>Email:</strong> <span>ga.zurdo.2023@alumnos.urjc.es</span></p>
+                <p><strong>Email:</strong> <span>j.sanchezva.2023@alumnos.urjc.es</span></p>
+                
+            </div>
+        </div>
+    </div>
+
+    <div class="container copyright text-center mt-4">
+        <p>© <span>Copyright</span> <strong class="px-1 sitename">SCAM</strong> <span>All Rights Reserved</span></p>
+        <div class="credits">
+            Designed by <a href="https://bootstrapmade.com/">Grupo 18</a> | <a href="https://bootstrapmade.com/tools/">SCAM</a>
+        </div>
+    </div>
+</footer>
+
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Dynamic Fields Logic -->
+  <script>
+    function addDynamicItem(containerId, placeholder, iconClass) {
+        const container = document.getElementById(containerId);
+        const div = document.createElement('div');
+        div.className = 'input-group mb-2';
+        div.innerHTML = `
+            <span class="input-group-text"><i class="bi ${iconClass}"></i></span>
+            <input type="text" class="form-control" placeholder="${placeholder}" required>
+            <button class="btn btn-delete" type="button" onclick="this.parentElement.remove()">×</button>
+        `;
+        container.appendChild(div);
+    }
+
+    function addModule() {
+        const container = document.getElementById('modules-container');
+        const count = container.children.length + 1;
+        const div = document.createElement('div');
+        div.className = 'border rounded p-3 mb-3 module-item bg-light';
+        div.innerHTML = `
+            <div class="d-flex justify-content-between mb-3 align-items-center">
+                <div class="flex-grow-1 me-3">
+                    <input type="text" class="form-control fw-bold" placeholder="Título del Módulo" value="Módulo ${count}">
+                </div>
+                <button type="button" class="btn btn-sm btn-delete" onclick="removeModule(this)">Eliminar Módulo</button>
+            </div>
+            <div class="lessons-container ms-3 border-start ps-3">
+                <label class="form-label small text-muted mb-2">Lecciones</label>
+                <div class="lessons-list">
+                    <div class="input-group input-group-sm mb-2">
+                         <span class="input-group-text bg-white"><i class="bi bi-play-circle"></i></span>
+                        <input type="text" class="form-control" placeholder="Título de la lección">
+                        <input type="text" class="form-control" placeholder="Enlace (URL)">
+                        <button class="btn btn-delete" type="button" onclick="this.parentElement.remove()">×</button>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-sm btn-add mt-2" onclick="addLesson(this)">+ Añadir Lección</button>
+            </div>
+        `;
+        container.appendChild(div);
+        updateModuleCount();
+    }
+
+    function addLesson(btn) {
+        const lessonsList = btn.previousElementSibling; // The div.lessons-list is immediately before the button
+        const div = document.createElement('div');
+        div.className = 'input-group input-group-sm mb-2';
+        div.innerHTML = `
+            <span class="input-group-text bg-white"><i class="bi bi-play-circle"></i></span>
+            <input type="text" class="form-control" placeholder="Título de la lección">
+            <input type="text" class="form-control" placeholder="Enlace (URL)">
+            <button class="btn btn-delete" type="button" onclick="this.parentElement.remove()">×</button>
+        `;
+        lessonsList.appendChild(div);
+    }
+
+    function removeModule(btn) {
+        btn.closest('.module-item').remove();
+        updateModuleCount();
+    }
+
+    function updateModuleCount() {
+        const count = document.getElementById('modules-container').children.length;
+        document.getElementById('moduleCount').textContent = count;
+    }
+  </script>
+
+  <!-- Vendor JS Files -->
+  <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../vendor/php-email-form/validate.js"></script>
+  <script src="../vendor/aos/aos.js"></script>
+  <script src="../vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="../vendor/swiper/swiper-bundle.min.js"></script>
+  <script src="../vendor/purecounter/purecounter_vanilla.js"></script>
+
+  <!-- Main JS File -->
+  <script src="../js/main.js"></script>
+
+</body>
+</html>
