@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Dashboard de Administrador - SCAM</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <!-- Favicons -->
+  <link href="../img/logo.png" rel="icon">
+  <link href="../img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="../vendor/aos/aos.css" rel="stylesheet">
+  <link href="../vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="../vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="../css/main.css" rel="stylesheet">
+  
+  <style>
+      .card-courses, .card-comments {
+          background-color: #85613D; /* Gold/Bronze (Brand Color) */
+          color: white;
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .card-courses:hover, .card-comments:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 10px 20px rgba(133, 97, 61, 0.4) !important;
+          background-color: #6d4e30;
+      }
+      .card-courses .icon-box i, .card-comments .icon-box i {
+          color: white !important;
+      }
+      .card-courses .text-muted, .card-comments .text-muted {
+          color: rgba(255, 255, 255, 0.8) !important;
+      }
+      .card-courses .btn-action, .card-comments .btn-action {
+          background-color: white;
+          color: #85613D;
+          border: none;
+          font-weight: 600;
+      }
+      .card-courses .btn-action:hover, .card-comments .btn-action:hover {
+          background-color: #f8f9fa;
+          color: #6d4e30;
+      }
+  </style>
+</head>
+
+<body class="starter-page-page">
+
+   <header id="header" class="header d-flex align-items-center sticky-top">
+    <div class="container position-relative d-flex align-items-center justify-content-between">
+
+      <a href="../../index.html" class="logo d-flex align-items-center me-auto me-xl-0">
+        <img src="../img/logo.png" alt="">
+        <h1 class="sitename">SCAM</h1>
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="../../init.html">Inicio</a></li>
+          <li><a href="">Cursos</a></li>
+          <li><a href="../../index.html#features">Cursos suscrito</a></li>
+          <li><a href="../../events.html">Eventos</a></li>
+          <li><a href="../../index.html#pricing">Pricing</a></li>
+          <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <ul>
+              <li><a href="#">Dropdown 1</a></li>
+              <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                <ul>
+                  <li><a href="#">Deep Dropdown 1</a></li>
+                  <li><a href="#">Deep Dropdown 2</a></li>
+                  <li><a href="#">Deep Dropdown 3</a></li>
+                  <li><a href="#">Deep Dropdown 4</a></li>
+                  <li><a href="#">Deep Dropdown 5</a></li>
+                </ul>
+              </li>
+              <li><a href="#">Dropdown 2</a></li>
+              <li><a href="#">Dropdown 3</a></li>
+              <li><a href="#">Dropdown 4</a></li>
+            </ul>
+          </li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+
+      <div class="header-profile d-flex align-items-center gap-3" style="font-family: var(--nav-font); color: var(--nav-color); font-size: 16px;">
+        <span class="profile-name">sigma67</span>
+        <img src="../img/descarga.jpg" alt="Profile" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+      </div>
+
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- Page Title -->
+    <div class="page-title light-background">
+      <div class="container">
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="../../index.html">Home</a></li>
+            <li class="current">Dashboard</li>
+          </ol>
+        </nav>
+        <h1>Dashboard de Administrador</h1>
+      </div>
+    </div><!-- End Page Title -->
+
+    <!-- Admin Dashboard Section -->
+    <section id="admin-dashboard-section" class="section">
+      <div class="container" data-aos="fade-up">
+
+        <!-- User Search -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0">
+                     <div class="card-body p-4">
+                        <h4 class="mb-4 text-center">Gestión de Usuarios</h4>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+                            <input type="text" id="searchInput" class="form-control border-start-0 ps-0" placeholder="Buscar usuario por nombre o correo...">
+                            <button id="searchButton" class="btn btn-add" type="button">Buscar</button>
+                        </div>
+                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Actions -->
+        <div class="row justify-content-center g-4">
+            
+            <div class="col-md-5 col-lg-4">
+                <div class="card card-courses text-center h-100 border-0">
+                    <div class="card-body p-5 d-flex flex-column align-items-center justify-content-center">
+                        <div class="icon-box mb-4" style="font-size: 3rem;">
+                            <i class="bi bi-journal-text"></i>
+                        </div>
+                        <h3 class="card-title h4 mb-3 text-white">Revisar Cursos</h3>
+                        <p class="card-text text-muted mb-4">Gestionar, aprobar o editar los cursos publicados en la plataforma.</p>
+                        <a href="#" class="btn btn-lg btn-action px-4 w-100">Acceder</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-5 col-lg-4">
+                <div class="card card-comments text-center h-100 border-0">
+                    <div class="card-body p-5 d-flex flex-column align-items-center justify-content-center">
+                        <div class="icon-box mb-4" style="font-size: 3rem;">
+                            <i class="bi bi-chat-dots"></i>
+                        </div>
+                        <h3 class="card-title h4 mb-3 text-white">Revisar Comentarios</h3>
+                        <p class="card-text text-muted mb-4">Moderar las opiniones y discusiones de los estudiantes.</p>
+                        <button type="button" class="btn btn-lg btn-action px-4 w-100" data-bs-toggle="modal" data-bs-target="#commentsReviewModal">Acceder</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer id="footer" class="footer position-relative dark-background">
+    <div class="container footer-top">
+        <div class="row gy-4">
+            <div class="col-lg-5 col-md-12 footer-about">
+                <a href="index.html" class="logo d-flex align-items-center">
+                    <span class="sitename">SCAM</span>
+                </a>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam blanditiis architecto at, minus neque quo pariatur ipsa. Quas voluptatum dolor perspiciatis natus voluptates omnis saepe, magni, corporis, earum veritatis libero.</p>
+                
+            </div>
+
+            <div class="col-lg-2 col-6 footer-links">
+                <h4>Useful Links</h4>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Sobre nosotros</a></li>
+                    <li><a href="#">Terminos de servicio</a></li>
+                    <li><a href="#">Politica de privacidad</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3 col-md-12 footer-contact text-center text-md-start">
+                <h4>Contactanos</h4>
+                <p>Calle Tulipán, s/n</p>
+                <p>Móstoles (Madrid) - 28933</p>
+                <p>España</p>
+                <p class="mt-4"><strong>Phone:</strong> <span>+34 91 123 45 67</span></p>
+                <p><strong>Email:</strong> <span>p.calvo.2023@aulmnos.urjc.es</span></p>
+                <p><strong>Email:</strong> <span>a.hontanilla.2023@alumnos.urjc.es</span></p>
+                <p><strong>Email:</strong> <span>ga.zurdo.2023@alumnos.urjc.es</span></p>
+                <p><strong>Email:</strong> <span>j.sanchezva.2023@alumnos.urjc.es</span></p>
+                
+            </div>
+        </div>
+    </div>
+
+    <div class="container copyright text-center mt-4">
+        <p>© <span>Copyright</span> <strong class="px-1 sitename">SCAM</strong> <span>All Rights Reserved</span></p>
+        <div class="credits">
+            Designed by <a href="https://bootstrapmade.com/">Grupo 18</a> | <a href="https://bootstrapmade.com/tools/">SCAM</a>
+        </div>
+    </div>
+</footer>
+
+<!-- Comments Review Modal -->
+<div class="modal fade" id="commentsReviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header border-bottom-0 pb-0">
+          <h5 class="modal-title fw-bold ms-2">Revisión de Comentarios</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <!-- Comment Item 1 -->
+            <div class="p-3 mb-3 border-bottom">
+                <div class="d-flex gap-3">
+                    <img src="../img/descarga.jpg" alt="User" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <h6 class="mb-0 fw-bold">Juan Pérez</h6>
+                            <span class="text-warning small"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i></span>
+                        </div>
+                        <p class="text-muted mb-2 small">Hace 2 horas • Curso de JavaScript</p>
+                        <p class="mb-2">"Este curso es increíble, pero creo que falta profundizar más en las promesas. Por lo demás, excelente contenido."</p>
+                        <div class="d-flex gap-2">
+                             <button class="btn btn-add btn-sm px-3" onclick="this.closest('.p-3').remove()"><i class="bi bi-check-lg"></i> Aceptar</button>
+                             <button class="btn btn-delete btn-sm px-3" onclick="this.closest('.p-3').remove()"><i class="bi bi-trash"></i> Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Comment Item 2 -->
+             <div class="p-3 mb-3 border-bottom">
+                <div class="d-flex gap-3">
+                    <img src="../img/descarga.jpg" alt="User" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <h6 class="mb-0 fw-bold">Maria García</h6>
+                            <span class="text-warning small"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i></span>
+                        </div>
+                        <p class="text-muted mb-2 small">Hace 5 horas • Curso de CSS Avanzado</p>
+                        <p class="mb-2">"El audio en la sección 3 se escucha muy bajo. No pude seguir bien la lección."</p>
+                        <div class="d-flex gap-2">
+                             <button class="btn btn-add btn-sm px-3" onclick="this.closest('.p-3').remove()"><i class="bi bi-check-lg"></i> Aceptar</button>
+                             <button class="btn btn-delete btn-sm px-3" onclick="this.closest('.p-3').remove()"><i class="bi bi-trash"></i> Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comment Item 3 -->
+            <div class="p-3">
+                <div class="d-flex gap-3">
+                    <img src="../img/descarga.jpg" alt="User" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <h6 class="mb-0 fw-bold">Carlos Lopez</h6>
+                            <span class="text-warning small"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></span>
+                        </div>
+                        <p class="text-muted mb-2 small">Hace 1 día • Curso de Python</p>
+                        <p class="mb-2">"Simplemente perfecto. El mejor curso que he tomado."</p>
+                        <div class="d-flex gap-2">
+                             <button class="btn btn-add btn-sm px-3" onclick="this.closest('.p-3').remove()"><i class="bi bi-check-lg"></i> Aceptar</button>
+                             <button class="btn btn-delete btn-sm px-3" onclick="this.closest('.p-3').remove()"><i class="bi bi-trash"></i> Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+      </div>
+    </div>
+</div>
+
+  <!-- User Found Modal -->
+  <div class="modal fade" id="userFoundModal" tabindex="-1" aria-labelledby="userFoundModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center pb-5">
+            <div class="mb-3">
+                <img src="../img/descarga.jpg" alt="Profile" class="rounded-circle shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
+            </div>
+            <h3 class="mb-1">sigma67</h3>
+            <p class="text-muted" style="font-size: 0.9rem;">Usuario registrado</p>
+            
+            <div class="d-flex justify-content-center gap-2 mt-4">
+                <button type="button" class="btn btn-primary px-4" style="background-color: #85613D; border-color: #85613D;">Acceder al Perfil</button>
+                <button type="button" class="btn btn-outline-danger px-4">Banear</button>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../vendor/php-email-form/validate.js"></script>
+  <script src="../vendor/aos/aos.js"></script>
+  <script src="../vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="../vendor/swiper/swiper-bundle.min.js"></script>
+  <script src="../vendor/purecounter/purecounter_vanilla.js"></script>
+
+  <!-- Main JS File -->
+  <script src="../js/main.js"></script>
+
+  <script>
+    document.getElementById('searchButton').addEventListener('click', function() {
+        const query = document.getElementById('searchInput').value.trim();
+        if (query.toLowerCase() === 'sigma67') {
+            const modal = new bootstrap.Modal(document.getElementById('userFoundModal'));
+            modal.show();
+        } else if (query) {
+            alert('Usuario no encontrado. Prueba buscando "sigma67".');
+        }
+    });
+
+    // Also trigger search on Enter key
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            document.getElementById('searchButton').click();
+        }
+    });
+  </script>
+
+</body>
+</html>
