@@ -95,10 +95,20 @@ Indicar cuál será el algoritmo o consulta avanzada que se implementará:
 Diagrama que muestra cómo se navega entre las diferentes páginas de la aplicación:
 
 ![Diagrama de Navegación]
-En esta primera secuencia se muestra la pantalla inicial (sin iniciar sesión). A partir de esta se puede navegar hacia iniciar sesión, al dashboard de los administradores o ver cursos o eventos (sin poder suscribirse a estos a menos que se inicie sesión)
-<img width="308" height="290" alt="Primera secuencia" src="https://github.com/user-attachments/assets/42daeca2-6d81-4bda-8126-bdf7625c89b1" />
+<img width="1739" height="729" alt="Diagrama de navegación 1" src="https://github.com/user-attachments/assets/1717623d-bc5f-4065-aa92-df2811624a49" />
+> [Diagrama de navegación 1: En esta primera secuencia se muestra la pantalla inicial (sin iniciar sesión). A partir de esta se puede navegar hacia iniciar sesión,o ver cursos o eventos (sin poder suscribirse a estos a menos que se inicie sesión). En caso de haber iniciado sesión se puede acecder como administrador al dashboard]
+<img width="1156" height="898" alt="Diagrama de navegación 2" src="https://github.com/user-attachments/assets/00a50a0a-97fb-44e0-b079-d3957d90de56" />
 
-> [Descripción opcional del flujo de navegación: Ej: "El usuario puede acceder desde la página principal a todas las secciones mediante el menú de navegación. Los usuarios anónimos solo tienen acceso a las páginas públicas, mientras que los registrados pueden acceder a su perfil y panel de usuario."]
+> [Diagrama de navegación 2: En esta segunda imagen se muestra como se desarrolla el transcurso de visualizar los cursos disponibles o cursos suscrito. A partir de esta pestaña se puede acceder al curso y en caso de no tenerlo comprado acceder a la pestaña de pago.]
+<img width="572" height="631" alt="Diagrama de navegación 3" src="https://github.com/user-attachments/assets/ae46da2e-6203-4245-bcf0-e560b3c1c250" />
+
+> [Diagrama de navegación 3: En esta tercera imagen se muestra el transucros de ver los evento a suscribirse a uno. Tambien se pasaría a la pestaña de pago pero para no repetirla no la hemos añadido.]
+
+<img width="473" height="579" alt="Diagrama de navegación 4" src="https://github.com/user-attachments/assets/d526e476-34ed-471e-acbf-fb867109333f" />
+> [Diagrama de navegación 4: Se muestra el paso de acceder como admin a crear curso. Tambien en la pestaña del dashboard abría dos pop-up uno para mostrar los comentarios pendientes de revisar y otro para buscar perfiles.]
+
+<img width="1382" height="966" alt="Diagrama de navegación" src="https://github.com/user-attachments/assets/6cdc8ec0-4a33-4a65-b029-481e84fd9b94" />
+> [Diagrama de navegación completo: Aunque hayamos representado que todo sale de la pantalla principal o index, realmente se puede acceder a cursos, cursos sucrito, inicio o eventos desde cualquier pantalla desde el header. Desde el header tambien se puede acceder a la información de perfil. Para que el documento estuviera más limpio preferimos no representar todas estas flechas.]
 
 ### **Capturas de Pantalla y Descripción de Páginas**
 
