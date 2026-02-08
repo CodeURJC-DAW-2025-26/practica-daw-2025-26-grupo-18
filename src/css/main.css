@@ -4017,6 +4017,17 @@ section,
   color: var(--contrast-color);
 }
 
+.btn-accent:focus,
+.btn-accent:focus-visible {
+  box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--heading-color), transparent 70%);
+}
+
+.btn-accent:active {
+  background-color: var(--heading-color);
+  border-color: var(--heading-color);
+  color: var(--contrast-color);
+}
+
 .btn-accent-outline {
   color: var(--accent-color);
   border-color: var(--accent-color);
@@ -4026,6 +4037,82 @@ section,
   background-color: var(--accent-color);
   color: var(--contrast-color);
   border-color: var(--accent-color);
+}
+
+.btn-accent-outline:focus,
+.btn-accent-outline:focus-visible {
+  background-color: transparent;
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--heading-color), transparent 70%);
+}
+
+.btn-accent-outline:active {
+  background-color: var(--heading-color);
+  border-color: var(--heading-color);
+  color: var(--contrast-color);
+}
+
+.btn-accent-outline.active,
+.btn-check:checked + .btn-accent-outline {
+  background-color: var(--heading-color);
+  border-color: var(--heading-color);
+  color: var(--contrast-color);
+}
+
+.text-accent {
+  color: var(--accent-color);
+}
+
+/*--------------------------------------------------------------
+# Admin Dashboard
+--------------------------------------------------------------*/
+.admin-dashboard-card {
+  background-color: var(--heading-color);
+  color: var(--contrast-color);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.admin-dashboard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px color-mix(in srgb, var(--heading-color), transparent 60%);
+  background-color: color-mix(in srgb, var(--heading-color), black 15%);
+}
+
+.admin-dashboard-card .icon-box i {
+  color: var(--contrast-color);
+}
+
+.admin-dashboard-card .text-muted {
+  color: color-mix(in srgb, var(--contrast-color), transparent 20%);
+}
+
+.admin-dashboard-card .btn-action {
+  background-color: var(--surface-color);
+  color: var(--heading-color);
+  border: none;
+  font-weight: 600;
+}
+
+.admin-dashboard-card .btn-action:hover {
+  background-color: color-mix(in srgb, var(--surface-color), transparent 10%);
+  color: color-mix(in srgb, var(--heading-color), black 10%);
+}
+
+.admin-action-icon {
+  font-size: 3rem;
+}
+
+.admin-avatar-sm {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+
+.admin-avatar-lg {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
 }
 
 .header-profile {

@@ -26,35 +26,6 @@
 
   <!-- Main CSS File -->
   <link href="../css/main.css" rel="stylesheet">
-  
-  <style>
-      .card-courses, .card-comments {
-          background-color: #85613D; /* Gold/Bronze (Brand Color) */
-          color: white;
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-      }
-      .card-courses:hover, .card-comments:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 10px 20px rgba(133, 97, 61, 0.4) !important;
-          background-color: #6d4e30;
-      }
-      .card-courses .icon-box i, .card-comments .icon-box i {
-          color: white !important;
-      }
-      .card-courses .text-muted, .card-comments .text-muted {
-          color: rgba(255, 255, 255, 0.8) !important;
-      }
-      .card-courses .btn-action, .card-comments .btn-action {
-          background-color: white;
-          color: #85613D;
-          border: none;
-          font-weight: 600;
-      }
-      .card-courses .btn-action:hover, .card-comments .btn-action:hover {
-          background-color: #f8f9fa;
-          color: #6d4e30;
-      }
-  </style>
 </head>
 
 <body class="starter-page-page">
@@ -74,31 +45,13 @@
           <li><a href="../../index.html#features">Cursos suscrito</a></li>
           <li><a href="../../events.html">Eventos</a></li>
           <li><a href="../../index.html#pricing">Pricing</a></li>
-          <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              <li><a href="#">Dropdown 1</a></li>
-              <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-                <ul>
-                  <li><a href="#">Deep Dropdown 1</a></li>
-                  <li><a href="#">Deep Dropdown 2</a></li>
-                  <li><a href="#">Deep Dropdown 3</a></li>
-                  <li><a href="#">Deep Dropdown 4</a></li>
-                  <li><a href="#">Deep Dropdown 5</a></li>
-                </ul>
-              </li>
-              <li><a href="#">Dropdown 2</a></li>
-              <li><a href="#">Dropdown 3</a></li>
-              <li><a href="#">Dropdown 4</a></li>
-            </ul>
-          </li>
-          <li><a href="#contact">Contact</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
-      <div class="header-profile d-flex align-items-center gap-3" style="font-family: var(--nav-font); color: var(--nav-color); font-size: 16px;">
+      <div class="header-profile d-flex align-items-center gap-3">
         <span class="profile-name">sigma67</span>
-        <img src="../img/descarga.jpg" alt="Profile" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+        <img src="../img/descarga.jpg" alt="Profile" class="rounded-circle profile-avatar">
       </div>
 
     </div>
@@ -143,9 +96,9 @@
         <div class="row justify-content-center g-4">
             
             <div class="col-md-5 col-lg-4">
-                <div class="card card-courses text-center h-100 border-0">
+                <div class="card admin-dashboard-card text-center h-100 border-0">
                     <div class="card-body p-5 d-flex flex-column align-items-center justify-content-center">
-                        <div class="icon-box mb-4" style="font-size: 3rem;">
+                    <div class="icon-box admin-action-icon mb-4">
                             <i class="bi bi-journal-text"></i>
                         </div>
                         <h3 class="card-title h4 mb-3 text-white">Revisar Cursos</h3>
@@ -156,9 +109,9 @@
             </div>
 
             <div class="col-md-5 col-lg-4">
-                <div class="card card-comments text-center h-100 border-0">
+                <div class="card admin-dashboard-card text-center h-100 border-0">
                     <div class="card-body p-5 d-flex flex-column align-items-center justify-content-center">
-                        <div class="icon-box mb-4" style="font-size: 3rem;">
+                    <div class="icon-box admin-action-icon mb-4">
                             <i class="bi bi-chat-dots"></i>
                         </div>
                         <h3 class="card-title h4 mb-3 text-white">Revisar Comentarios</h3>
@@ -230,7 +183,7 @@
             <!-- Comment Item 1 -->
             <div class="p-3 mb-3 border-bottom">
                 <div class="d-flex gap-3">
-                    <img src="../img/descarga.jpg" alt="User" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                    <img src="../img/descarga.jpg" alt="User" class="rounded-circle admin-avatar-sm">
                     <div class="flex-grow-1">
                         <div class="d-flex justify-content-between align-items-center mb-1">
                             <h6 class="mb-0 fw-bold">Juan Pérez</h6>
@@ -249,7 +202,7 @@
             <!-- Comment Item 2 -->
              <div class="p-3 mb-3 border-bottom">
                 <div class="d-flex gap-3">
-                    <img src="../img/descarga.jpg" alt="User" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                    <img src="../img/descarga.jpg" alt="User" class="rounded-circle admin-avatar-sm">
                     <div class="flex-grow-1">
                         <div class="d-flex justify-content-between align-items-center mb-1">
                             <h6 class="mb-0 fw-bold">Maria García</h6>
@@ -268,7 +221,7 @@
             <!-- Comment Item 3 -->
             <div class="p-3">
                 <div class="d-flex gap-3">
-                    <img src="../img/descarga.jpg" alt="User" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                    <img src="../img/descarga.jpg" alt="User" class="rounded-circle admin-avatar-sm">
                     <div class="flex-grow-1">
                         <div class="d-flex justify-content-between align-items-center mb-1">
                             <h6 class="mb-0 fw-bold">Carlos Lopez</h6>
@@ -298,13 +251,13 @@
         </div>
         <div class="modal-body text-center pb-5">
             <div class="mb-3">
-                <img src="../img/descarga.jpg" alt="Profile" class="rounded-circle shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
+                <img src="../img/descarga.jpg" alt="Profile" class="rounded-circle shadow-sm admin-avatar-lg">
             </div>
             <h3 class="mb-1">sigma67</h3>
-            <p class="text-muted" style="font-size: 0.9rem;">Usuario registrado</p>
+            <p class="text-muted small">Usuario registrado</p>
             
             <div class="d-flex justify-content-center gap-2 mt-4">
-                <button type="button" class="btn btn-primary px-4" style="background-color: #85613D; border-color: #85613D;">Acceder al Perfil</button>
+                <button type="button" class="btn btn-accent px-4">Acceder al Perfil</button>
                 <button type="button" class="btn btn-outline-danger px-4">Banear</button>
             </div>
         </div>
