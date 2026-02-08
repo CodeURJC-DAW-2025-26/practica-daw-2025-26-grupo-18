@@ -94,7 +94,9 @@ Indicar cuál será el algoritmo o consulta avanzada que se implementará:
 ### **Diagrama de Navegación**
 Diagrama que muestra cómo se navega entre las diferentes páginas de la aplicación:
 
-![Diagrama de Navegación](images/navigation-diagram.png)
+![Diagrama de Navegación]
+En esta primera secuencia se muestra la pantalla inicial (sin iniciar sesión). A partir de esta se puede navegar hacia iniciar sesión, al dashboard de los administradores o ver cursos o eventos (sin poder suscribirse a estos a menos que se inicie sesión)
+<img width="308" height="290" alt="Primera secuencia" src="https://github.com/user-attachments/assets/42daeca2-6d81-4bda-8126-bdf7625c89b1" />
 
 > [Descripción opcional del flujo de navegación: Ej: "El usuario puede acceder desde la página principal a todas las secciones mediante el menú de navegación. Los usuarios anónimos solo tienen acceso a las páginas públicas, mientras que los registrados pueden acceder a su perfil y panel de usuario."]
 
