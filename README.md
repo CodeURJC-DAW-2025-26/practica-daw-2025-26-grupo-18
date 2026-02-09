@@ -88,26 +88,109 @@ Indicar cuál será el algoritmo o consulta avanzada que se implementará:
 ## 🛠 **Preparación 2: Maquetación de páginas con HTML y CSS**
 
 ### **Vídeo de Demostración**
-📹 **[Enlace al vídeo en YouTube](https://www.youtube.com/watch?v=x91MPoITQ3I)**
+📹 **[Enlace al vídeo en YouTube](https://youtu.be/Ja-Dd7REkR0)**
 > Vídeo mostrando las principales funcionalidades de la aplicación web.
 
 ### **Diagrama de Navegación**
 Diagrama que muestra cómo se navega entre las diferentes páginas de la aplicación:
 
-![Diagrama de Navegación](images/navigation-diagram.png)
+![Diagrama de Navegación]
+<img width="1739" height="729" alt="Diagrama de navegación 1" src="https://github.com/user-attachments/assets/1717623d-bc5f-4065-aa92-df2811624a49" />
 
-> [Descripción opcional del flujo de navegación: Ej: "El usuario puede acceder desde la página principal a todas las secciones mediante el menú de navegación. Los usuarios anónimos solo tienen acceso a las páginas públicas, mientras que los registrados pueden acceder a su perfil y panel de usuario."]
+Diagrama de navegación 1: En esta primera secuencia se muestra la pantalla inicial (sin iniciar sesión). A partir de esta se puede navegar hacia iniciar sesión,o ver cursos o eventos (sin poder suscribirse a estos a menos que se inicie sesión). En caso de haber iniciado sesión se puede acecder como administrador al dashboard
+
+
+
+<img width="1156" height="898" alt="Diagrama de navegación 2" src="https://github.com/user-attachments/assets/00a50a0a-97fb-44e0-b079-d3957d90de56" />
+
+Diagrama de navegación 2: En esta segunda imagen se muestra como se desarrolla el transcurso de visualizar los cursos disponibles o cursos suscrito. A partir de esta pestaña se puede acceder al curso y en caso de no tenerlo comprado acceder a la pestaña de pago.
+
+
+
+<img width="572" height="631" alt="Diagrama de navegación 3" src="https://github.com/user-attachments/assets/ae46da2e-6203-4245-bcf0-e560b3c1c250" />
+
+Diagrama de navegación 3: En esta tercera imagen se muestra el transucros de ver los evento a suscribirse a uno. Tambien se pasaría a la pestaña de pago pero para no repetirla no la hemos añadido.
+
+
+
+<img width="473" height="579" alt="Diagrama de navegación 4" src="https://github.com/user-attachments/assets/d526e476-34ed-471e-acbf-fb867109333f" />
+
+Diagrama de navegación 4: Se muestra el paso de acceder como admin a crear curso. Tambien en la pestaña del dashboard abría dos pop-up uno para mostrar los comentarios pendientes de revisar y otro para buscar perfiles.
+
+
+
+
+<img width="1382" height="966" alt="Diagrama de navegación" src="https://github.com/user-attachments/assets/6cdc8ec0-4a33-4a65-b029-481e84fd9b94" />
+
+Diagrama de navegación completo: Aunque hayamos representado que todo sale de la pantalla principal o index, realmente se puede acceder a cursos, cursos sucrito, inicio o eventos desde cualquier pantalla desde el header. Desde el header tambien se puede acceder a la información de perfil. Para que el documento estuviera más limpio preferimos no representar todas estas flechas.
 
 ### **Capturas de Pantalla y Descripción de Páginas**
 
 #### **1. Página Principal / Home**
-![Página Principal](images/home-page.png)
+![Página Principal]
+<img width="1807" height="864" alt="Página principal" src="https://github.com/user-attachments/assets/b8d3eed5-a9cf-42c6-9a9d-9a4de3e92b06" />
 
-> [Descripción breve: Ej: "Página de inicio que muestra los productos destacados, categorías principales y un banner promocional. Incluye barra de navegación y acceso a registro/login para usuarios no autenticados."]
+> Página que se abre por defecto. A través de ella se puede acceder a cursos, eventos o a iniciar sesión.
 
-#### **AQUÍ AÑADIR EL RESTO DE PÁGINAS**
 
----
+
+> ![Inicio de sesión]
+<img width="1802" height="866" alt="Iniciio de sesión" src="https://github.com/user-attachments/assets/e2f55c3f-a802-4064-b609-14c6f28145d4" />
+
+> Permite iniciar sesión si o registrar un nuevo usuario
+
+
+
+> ![Admin dashboard]
+<img width="1804" height="865" alt="Admin Dashboard" src="https://github.com/user-attachments/assets/6b277289-9999-4d03-a754-18ddbae06934" />
+
+> Pestaña donde el administrador podrá realizar sus funcionalidades
+
+
+
+> ![Crear curso]
+<img width="1817" height="859" alt="Crear curso" src="https://github.com/user-attachments/assets/a08da16a-c6a7-4a74-a33f-5dec84fc575f" />
+
+> Pestaña donde se introducirá la información para crear un curso
+
+
+
+> ![Eventos disponibles y cursos disponibles]
+<img width="1810" height="862" alt="Eventos disponibles y cursos disponibles 1" src="https://github.com/user-attachments/assets/fe6d38b9-b69f-4ac3-a6e2-fe193ccaba10" />
+<img width="1811" height="862" alt="Eventos disponibles y cursos disponibles 2" src="https://github.com/user-attachments/assets/bc52977a-a8d7-4c75-ad0b-35102c73fd3d" />
+
+> Al ser exactamente el mismo diseño se incluyen las dos a la vez. Mostrarán los cursos o eventos disponibles.
+
+
+
+> ![Cursos suscrito]
+<img width="1807" height="864" alt="Cursos suscrito" src="https://github.com/user-attachments/assets/1e59187f-df65-43f3-bd6c-78e787670126" />
+
+> Mostrará los cursos a lso que esta suscrito el usuario.
+
+
+
+> ![Evento y curso]
+<img width="1809" height="863" alt="Evento y curso 1" src="https://github.com/user-attachments/assets/5d7ff18d-3a68-4dad-b835-7aadb1e86c7f" />
+<img width="1806" height="864" alt="Evento y curso 2" src="https://github.com/user-attachments/assets/047cdfef-2afd-4d4b-bb55-d7b6c8a78105" />
+
+> De nuevo comparten diseño. Mostrarán la información de un curso o un evento.
+
+
+
+> ![Pago]
+<img width="1828" height="854" alt="Pago" src="https://github.com/user-attachments/assets/34599d08-1639-43b6-94f6-7bbfc9b76d0e" />
+
+Mostrará el contenido del carrito y saltará un pop-up para rellenar la informaciónd el pago
+
+
+
+>![Perfil]
+<img width="1804" height="865" alt="Perfil" src="https://github.com/user-attachments/assets/5cb123c4-cb0a-4d96-a0fe-3dee7f02cb91" />
+
+>Mostrará la información del usuario y permitirá editarla.
+
+
 
 ## 🛠 **Práctica 1: Web con HTML generado en servidor y AJAX**
 
