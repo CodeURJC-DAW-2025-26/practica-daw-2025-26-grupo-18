@@ -88,7 +88,7 @@ Indicar cuál será el algoritmo o consulta avanzada que se implementará:
 ## 🛠 **Preparación 2: Maquetación de páginas con HTML y CSS**
 
 ### **Vídeo de Demostración**
-📹 **[Enlace al vídeo en YouTube](https://www.youtube.com/watch?v=x91MPoITQ3I)**
+📹 **[Enlace al vídeo en YouTube](https://youtu.be/Ja-Dd7REkR0)**
 > Vídeo mostrando las principales funcionalidades de la aplicación web.
 
 ### **Diagrama de Navegación**
