@@ -1,79 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
+    {{>header}}
 
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Crear Nuevo Curso - SCAM</title>
-  <meta name="description" content="">
-  <meta name="keywords" content="">
-
-  <!-- Favicons -->
-  <link href="../img/logo.png" rel="icon">
-  <link href="../img/apple-touch-icon.png" rel="apple-touch-icon">
-
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com" rel="preconnect">
-  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-
-  <!-- Vendor CSS Files -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.min.css" rel="stylesheet">
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" rel="stylesheet">
-
-  <!-- Main CSS File -->
-  <link href="../css/main.css" rel="stylesheet">
-  
-</head>
-
-<body class="starter-page-page">
-
-    <header id="header" class="header d-flex align-items-center sticky-top">
-        <div class="container position-relative d-flex align-items-center justify-content-between">
-            <a href="../../index.html" class="logo d-flex align-items-center me-auto me-xl-0">
-                <img src="../img/logo.png" alt="">
-                <h1 class="sitename">SCAM</h1>
-            </a>
-            <nav id="navmenu" class="navmenu">
-                <ul>
-                <li><a href="index.html">Inicio</a></li>
-                <li><a href="courses.html">Cursos</a></li>
-                <li><a href="suscribedCourses.html">Cursos suscrito</a></li>
-                <li><a href="events.html">Eventos</a></li>
-                <li><a href="index.html#pricing">Pricing</a></li>
-                <li><a href="index.html#contact">Contactanos</a></li>
-                </ul>
-                <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-            </nav>
-
-            <div class="header-profile d-flex align-items-center gap-3" style="font-family: var(--nav-font); color: var(--nav-color); font-size: 16px;">
-                <span class="profile-name">sigma67</span>
-                <img src="../img/descarga.jpg" alt="Profile" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
-            </div>
-        </div>
-    </header>
-
-  <main class="main">
+    <main class="main">
 
     <!-- Page Title -->
     <div class="page-title light-background">
-      <div class="container">
+        <div class="container">
         <nav class="breadcrumbs">
-          <ol>
-            <li><a href="../../index.html">Home</a></li>
-            <li class="current">Crear Curso</li>
-          </ol>
+            <ol>
+                <li><a href="../../index.html">Home</a></li>
+                <li class="current">Crear Curso</li>
+            </ol>
         </nav>
         <h1>Crear Nuevo Curso</h1>
-      </div>
+        </div>
     </div><!-- End Page Title -->
 
     <!-- Create Course Section -->
     <section id="create-course-section" class="section">
-      <div class="container" data-aos="fade-up">
+        <div class="container" data-aos="fade-up">
         
         <form class="needs-validation" onsubmit="event.preventDefault(); alert('Curso guardado correctamente (simulación)');">
             
@@ -239,7 +183,7 @@
                             <h5 class="mb-0">Requisitos Previos</h5>
                         </div>
                         <div class="card-body">
-                             <textarea class="form-control" id="coursePrerequisites" rows="4" placeholder="Ej: Conocimientos básicos de HTML y CSS..."></textarea>
+                            <textarea class="form-control" id="coursePrerequisites" rows="4" placeholder="Ej: Conocimientos básicos de HTML y CSS..."></textarea>
                         </div>
                     </div>
 
@@ -250,7 +194,7 @@
             <!-- Actions - Moved to bottom -->
             <div class="row mt-4 mb-5">
                 <div class="col-12">
-                     <div class="d-grid gap-2">
+                    <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-primary btn-lg" style="background-color: #D96D3C; border-color: #D96D3C;">Publicar Curso</button>
                         <a href="../../index.html" class="btn btn-outline-secondary">Cancelar</a>
                     </div>
@@ -259,59 +203,18 @@
 
         </form>
 
-      </div>
+    </div>
     </section>
 
-  </main>
+    </main>
 
-  <footer id="footer" class="footer position-relative dark-background">
-    <div class="container footer-top">
-        <div class="row gy-4">
-            <div class="col-lg-5 col-md-12 footer-about">
-                <a href="index.html" class="logo d-flex align-items-center">
-                    <span class="sitename">SCAM</span>
-                </a>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam blanditiis architecto at, minus neque quo pariatur ipsa. Quas voluptatum dolor perspiciatis natus voluptates omnis saepe, magni, corporis, earum veritatis libero.</p>
-                
-            </div>
+    {{>footer}}
 
-            <div class="col-lg-2 col-6 footer-links">
-                <h4>Useful Links</h4>
-                <ul>
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Sobre nosotros</a></li>
-                    <li><a href="#">Terminos de servicio</a></li>
-                    <li><a href="#">Politica de privacidad</a></li>
-                </ul>
-            </div>
-            <div class="col-lg-3 col-md-12 footer-contact text-center text-md-start">
-                <h4>Contactanos</h4>
-                <p>Calle Tulipán, s/n</p>
-                <p>Móstoles (Madrid) - 28933</p>
-                <p>España</p>
-                <p class="mt-4"><strong>Phone:</strong> <span>+34 91 123 45 67</span></p>
-                <p><strong>Email:</strong> <span>p.calvo.2023@aulmnos.urjc.es</span></p>
-                <p><strong>Email:</strong> <span>a.hontanilla.2023@alumnos.urjc.es</span></p>
-                <p><strong>Email:</strong> <span>ga.zurdo.2023@alumnos.urjc.es</span></p>
-                <p><strong>Email:</strong> <span>j.sanchezva.2023@alumnos.urjc.es</span></p>
-                
-            </div>
-        </div>
-    </div>
+    <!-- Scroll Top -->
+    <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-    <div class="container copyright text-center mt-4">
-        <p>© <span>Copyright</span> <strong class="px-1 sitename">SCAM</strong> <span>All Rights Reserved</span></p>
-        <div class="credits">
-            Designed by <a href="https://bootstrapmade.com/">Grupo 18</a> | <a href="https://bootstrapmade.com/tools/">SCAM</a>
-        </div>
-    </div>
-</footer>
-
-  <!-- Scroll Top -->
-  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-
-  <!-- Dynamic Fields Logic -->
-  <script>
+    <!-- Dynamic Fields Logic -->
+    <script>
     function addDynamicItem(containerId, placeholder, iconClass) {
         const container = document.getElementById(containerId);
         const div = document.createElement('div');
@@ -340,7 +243,7 @@
                 <label class="form-label small text-muted mb-2">Lecciones</label>
                 <div class="lessons-list">
                     <div class="input-group input-group-sm mb-2">
-                         <span class="input-group-text bg-white"><i class="bi bi-play-circle"></i></span>
+                        <span class="input-group-text bg-white"><i class="bi bi-play-circle"></i></span>
                         <input type="text" class="form-control" placeholder="Título de la lección">
                         <input type="text" class="form-control" placeholder="Enlace (URL)">
                         <button class="btn btn-delete" type="button" onclick="this.parentElement.remove()">×</button>
@@ -375,17 +278,11 @@
         const count = document.getElementById('modules-container').children.length;
         document.getElementById('moduleCount').textContent = count;
     }
-  </script>
+    </script>
 
-  <!-- Vendor JS Files -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@srexi/purecounterjs/dist/purecounter_vanilla.js"></script>
 
-  <!-- Main JS File -->
-  <script src="../js/main.js"></script>
+    <!-- Main JS File -->
+    <script src="../js/main.js"></script>
 
 </body>
 </html>

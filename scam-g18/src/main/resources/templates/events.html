@@ -1,62 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Scam - Plataforma de Cursos Online</title>
-    <meta name="description" content="Aprende habilidades reales con expertos de la industria.">
-    <meta name="keywords" content="cursos online, programación, marketing, diseño, scam academy">
-
-    <!-- Favicons -->
-    <link href="../img/logo.png" rel="icon">
-    <link href="../img/apple-touch-icon.png" rel="apple-touch-icon">
-
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com" rel="preconnect">
-    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-        rel="stylesheet">
-
-    <!-- Vendor CSS Files -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" rel="stylesheet">
-
-    <!-- Main CSS File -->
-    <link href="../css/main.css" rel="stylesheet">
-
-</head>
-
-<body class="index-page">
-
-       <header id="header" class="header d-flex align-items-center sticky-top">
-    <div class="container position-relative d-flex align-items-center justify-content-between">
-
-      <a href="index.html" class="logo d-flex align-items-center me-auto me-xl-0">
-        <img src="../img/logo.png" alt="">
-        <h1>SCAM</h1>
-      </a>
-
-      <nav id="navmenu" class="navmenu">
-        <ul>
-          <li><a href="index.html">Inicio</a></li>
-          <li><a href="courses.html">Cursos</a></li>
-          <li><a href="suscribedCourses.html">Cursos suscrito</a></li>
-          <li><a href="events.html">Eventos</a></li>
-          <li><a href="index.html#pricing">Pricing</a></li>
-          <li><a href="index.html#contact">Contactanos</a></li>
-        </ul>
-        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-      </nav>
-
-      <a class="btn-getstarted" href="createUser.html">Iniciar sesión/Registrarse</a>
-
-    </div>
-  </header>
+    {{>header}}
 
     <main class="main">
         <!-- Page Title -->
@@ -249,65 +191,11 @@
         </section><!-- End Events Catalog -->
     </main>
 
-    <footer id="footer" class="footer position-relative dark-background">
-        <div class="container footer-top">
-            <div class="row gy-4">
-                <div class="col-lg-5 col-md-12 footer-about">
-                    <a href="index.html" class="logo d-flex align-items-center">
-                        <span class="sitename">SCAM</span>
-                    </a>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam blanditiis architecto at, minus
-                        neque quo pariatur ipsa. Quas voluptatum dolor perspiciatis natus voluptates omnis saepe, magni,
-                        corporis, earum veritatis libero.</p>
-
-                </div>
-
-                <div class="col-lg-2 col-6 footer-links">
-                    <h4>Useful Links</h4>
-                    <ul>
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#">Sobre nosotros</a></li>
-                        <li><a href="#">Terminos de servicio</a></li>
-                        <li><a href="#">Politica de privacidad</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-3 col-md-12 footer-contact text-center text-md-start">
-                    <h4>Contactanos</h4>
-                    <p>Calle Tulipán, s/n</p>
-                    <p>Móstoles (Madrid) - 28933</p>
-                    <p>España</p>
-                    <p class="mt-4"><strong>Phone:</strong> <span>+34 91 123 45 67</span></p>
-                    <p><strong>Email:</strong> <span>p.calvo.2023@aulmnos.urjc.es</span></p>
-                    <p><strong>Email:</strong> <span>a.hontanilla.2023@alumnos.urjc.es</span></p>
-                    <p><strong>Email:</strong> <span>ga.zurdo.2023@alumnos.urjc.es</span></p>
-                    <p><strong>Email:</strong> <span>j.sanchezva.2023@alumnos.urjc.es</span></p>
-
-                </div>
-            </div>
-        </div>
-
-        <div class="container copyright text-center mt-4">
-            <p>© <span>Copyright</span> <strong class="px-1 sitename">SCAM</strong> <span>All Rights Reserved</span></p>
-            <div class="credits">
-                <!-- All the links in the footer should remain intact. -->
-                <!-- You can delete the links only if you've purchased the pro version. -->
-                Designed by <a href="https://bootstrapmade.com/">Grupo 18</a> | <a
-                    href="https://bootstrapmade.com/tools/">SCAM</a>
-            </div>
-        </div>
-    </footer>
+    {{>footer}}
 
     <!-- Scroll Top -->
     <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
             class="bi bi-arrow-up-short"></i></a>
-
-    <!-- Vendor JS Files -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@srexi/purecounterjs/dist/purecounter_vanilla.js"></script>
-
     <!-- Main JS File -->
     <script src="../js/main.js"></script>
 
