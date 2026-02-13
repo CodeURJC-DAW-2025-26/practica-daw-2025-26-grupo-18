@@ -6,8 +6,8 @@
     <meta name="keywords" content="" />
 
     <!-- Favicons -->
-    <link href="src/img/favicon.png" rel="icon" />
-    <link href="src/img/apple-touch-icon.png" rel="apple-touch-icon" />
+    <link href="src/img/logo.png" rel="icon" />
+    <link href="src/img/logo.png" rel="apple-touch-icon" />
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com" rel="preconnect" />
@@ -25,14 +25,6 @@
 
     <!-- Main CSS File -->
     <link href="src/css/main.css" rel="stylesheet" />
-
-    <!-- =======================================================
-  * Template Name: Landify
-  * Template URL: https://bootstrapmade.com/landify-bootstrap-landing-page-template/
-  * Updated: Aug 04 2025 with Bootstrap v5.3.7
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
 </head>
 
 <body class="service-details-page">
@@ -54,8 +46,17 @@
                 </ul>
                 <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
             </nav>
-
+            {{#isUserLoggedIn}}
+            <div class="header-profile d-flex align-items-center gap-3"
+                style="font-family: var(--nav-font); color: var(--nav-color); font-size: 16px">
+                <span class="profile-name">sigma67</span> <!-- Aplicar mustache aqui -->
+                <img src="../img/descarga.jpg" alt="Profile" class="rounded-circle"
+                    style="width: 40px; height: 40px; object-fit: cover" />
+            </div>
+            {{/isUserLoggedIn}}
+            {{^isUserLoggedIn}}
             <a class="btn-getstarted" href="createUser.html">Iniciar sesión/Registrarse</a>
+            {{/isUserLoggedIn}}
         </div>
     </header>
 </body>
