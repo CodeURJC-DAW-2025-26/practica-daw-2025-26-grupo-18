@@ -34,6 +34,10 @@ public class Event {
     private String description;
     
     private String location;
+
+    private Double lat;
+
+    private Double lng;
     
     private Integer priceCents;
     
@@ -53,11 +57,13 @@ public class Event {
     
     public Event() {}
 
-    public Event(User creator, String title, String description, String location, Integer priceCents, LocalDateTime startDate, LocalDateTime endDate, String category, EventStatus status, String imageUrl) {
+    public Event(User creator, String title, String description, String location, Double lng, Double lat, Integer priceCents, LocalDateTime startDate, LocalDateTime endDate, String category, EventStatus status, String imageUrl) {
         this.creator = creator;
         this.title = title;
         this.description = description;
         this.location = location;
+        this.lat = lat;
+        this.lng = lng;
         this.priceCents = priceCents;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -104,6 +110,22 @@ public class Event {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public Double getLatitude() {
+        return lat;
+    }
+
+    public void setLatitude(Double lat) {
+        this.lat = lat;
+    }
+
+    public Double getLongitude() {
+        return lng;
+    }
+
+    public void setLongitude(Double lng) {
+        this.lng = lng;
     }
 
     public Integer getPriceCents() {
