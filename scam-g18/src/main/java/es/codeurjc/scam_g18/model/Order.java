@@ -1,49 +1,51 @@
 package es.codeurjc.scam_g18.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import jakarta.persistence.Column;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "reviews")
-public class Review {
+@Table(name = "orders")
+public class Order {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     @ManyToOne
-    @JoinColumn(name = "course_id")
-    private Course course;
-    
-    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
     
-    @Column(columnDefinition = "TEXT")
-    private String content;
+    private Integer totalAmountCents;
     
-    private Integer rating;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
     
     @CreationTimestamp
     private LocalDateTime createdAt;
     
-    public Review() {}
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderItem> items;
+    
+    public Order() {}
 
-    public Review(User user, Course course, String content, Integer rating) {
+    public Order(User user, Integer totalAmountCents, OrderStatus status) {
         this.user = user;
-        this.course = course;
-        this.content = content;
-        this.rating = rating;
+        this.totalAmountCents = totalAmountCents;
+        this.status = status;
     }
 
     public Long getId() {
@@ -54,14 +56,6 @@ public class Review {
         this.id = id;
     }
 
-    public Course getCourse() {
-        return course;
-    }
-
-    public void setCourse(Course course) {
-        this.course = course;
-    }
-
     public User getUser() {
         return user;
     }
@@ -70,20 +64,20 @@ public class Review {
         this.user = user;
     }
 
-    public String getContent() {
-        return content;
+    public Integer getTotalAmountCents() {
+        return totalAmountCents;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setTotalAmountCents(Integer totalAmountCents) {
+        this.totalAmountCents = totalAmountCents;
     }
 
-    public Integer getRating() {
-        return rating;
+    public OrderStatus getStatus() {
+        return status;
     }
 
-    public void setRating(Integer rating) {
-        this.rating = rating;
+    public void setStatus(OrderStatus status) {
+        this.status = status;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -92,5 +86,13 @@ public class Review {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public List<OrderItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<OrderItem> items) {
+        this.items = items;
     }
 }
