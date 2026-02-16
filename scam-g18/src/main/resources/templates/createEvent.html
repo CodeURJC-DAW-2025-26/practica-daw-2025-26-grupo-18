@@ -1,0 +1,233 @@
+{{>header}}
+
+<main class="main">
+
+    <!-- Page Title -->
+    <div class="page-title light-background">
+        <div class="container">
+            <nav class="breadcrumbs">
+                <ol>
+                    <li><a href="../../index.html">Home</a></li>
+                    <li class="current">Crear Evento</li>
+                </ol>
+            </nav>
+            <h1>Crear Nuevo Evento</h1>
+        </div>
+    </div><!-- End Page Title -->
+
+    <!-- Create Event Section -->
+    <section id="create-event-section" class="section">
+        <div class="container" data-aos="fade-up">
+
+            <form class="needs-validation"
+                onsubmit="event.preventDefault(); alert('Evento guardado correctamente (simulación)');">
+
+                <div class="row g-4">
+
+                    <!-- Main Content Column -->
+                    <div class="col-lg-8">
+
+                        <!-- Basic Info -->
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-white py-3">
+                                <h5 class="mb-0">Información Básica</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="eventImage" class="form-label">Imagen del Evento</label>
+                                    <input type="file" class="form-control" id="eventImage" accept="image/*">
+                                    <div class="form-text">Se recomienda una imagen de 1280x720 px.</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="eventTitle" class="form-label">Título del Evento</label>
+                                    <input type="text" class="form-control" id="eventTitle"
+                                        placeholder="Ej: Foro de Innovación & Startups 2026" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="eventDescription" class="form-label">Descripción Breve</label>
+                                    <textarea class="form-control" id="eventDescription" rows="3"
+                                        placeholder="Resumen corto del evento..." required></textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="eventLongDescription" class="form-label">Descripción Detallada</label>
+                                    <textarea class="form-control" id="eventLongDescription" rows="6"
+                                        placeholder="Detalles completos del evento..." required></textarea>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="eventDate" class="form-label">Fecha</label>
+                                        <input type="date" class="form-control" id="eventDate" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="eventTime" class="form-label">Hora</label>
+                                        <input type="time" class="form-control" id="eventTime" required>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="eventLocation" class="form-label">Ubicación</label>
+                                    <input type="text" class="form-control" id="eventLocation"
+                                        placeholder="Ej: IFEMA, Madrid" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Agenda -->
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Agenda</h5>
+                                <button type="button" class="btn btn-sm btn-add" onclick="addAgendaItem()">+ Añadir
+                                    Sesión</button>
+                            </div>
+                            <div class="card-body">
+                                <div id="agenda-container">
+                                    <!-- Agenda Item Initial State -->
+                                    <div class="border rounded p-3 mb-3 agenda-item bg-light">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <div class="fw-bold">Sesión 1</div>
+                                            <button type="button" class="btn btn-sm btn-delete"
+                                                onclick="this.closest('.agenda-item').remove()">Eliminar</button>
+                                        </div>
+                                        <div class="row g-2">
+                                            <div class="col-md-3">
+                                                <input type="time" class="form-control" required>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <input type="text" class="form-control"
+                                                    placeholder="Título de la sesión" required>
+                                            </div>
+                                            <div class="col-12">
+                                                <textarea class="form-control" rows="2"
+                                                    placeholder="Descripción de la sesión"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Speakers -->
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Ponentes</h5>
+                                <button type="button" class="btn btn-sm btn-add" onclick="addSpeaker()">+ Añadir
+                                    Ponente</button>
+                            </div>
+                            <div class="card-body">
+                                <div id="speakers-container">
+                                    <!-- Speaker Item Initial State -->
+                                    <div class="border rounded p-3 mb-3 speaker-item bg-light">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <div class="fw-bold">Ponente 1</div>
+                                            <button type="button" class="btn btn-sm btn-delete"
+                                                onclick="this.closest('.speaker-item').remove()">Eliminar</button>
+                                        </div>
+                                        <div class="row g-2">
+                                            <div class="col-md-6">
+                                                <input type="text" class="form-control" placeholder="Nombre completo"
+                                                    required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <input type="text" class="form-control" placeholder="Cargo / Empresa"
+                                                    required>
+                                            </div>
+                                            <div class="col-12">
+                                                <input type="file" class="form-control mb-2" accept="image/*">
+                                                <textarea class="form-control" rows="2"
+                                                    placeholder="Biografía breve"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Sidebar Details Column -->
+                    <div class="col-lg-4">
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-white py-3">
+                                <h5 class="mb-0">Detalles Adicionales</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="eventPrice" class="form-label">Precio (€)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">€</span>
+                                        <input type="number" class="form-control" id="eventPrice" placeholder="0.00"
+                                            step="0.01" required>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="eventCapacity" class="form-label">Capacidad (Personas)</label>
+                                    <input type="number" class="form-control" id="eventCapacity" placeholder="Ej: 650"
+                                        required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="eventType" class="form-label">Tipo de Evento</label>
+                                    <select class="form-select" id="eventType">
+                                        <option value="presencial">Presencial</option>
+                                        <option value="online">Online</option>
+                                        <option value="hibrido">Híbrido</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Info Override -->
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-white py-3">
+                                <h5 class="mb-0">Contacto del Organizador</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-2">
+                                    <input type="email" class="form-control" placeholder="Email de contacto"
+                                        value="eventos@scam.com">
+                                </div>
+                                <div>
+                                    <input type="tel" class="form-control" placeholder="Teléfono"
+                                        value="+34 91 123 45 67">
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Actions -->
+                <div class="row mt-4 mb-5">
+                    <div class="col-12">
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg"
+                                style="background-color: #D96D3C; border-color: #D96D3C;">Publicar Evento</button>
+                            <a href="../../index.html" class="btn btn-outline-secondary">Cancelar</a>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+    </section>
+
+</main>
+
+{{>footer}}
+
+<!-- Scroll Top -->
+<a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
+        class="bi bi-arrow-up-short"></i></a>
+
+
+
+</body>
+
+</html>
