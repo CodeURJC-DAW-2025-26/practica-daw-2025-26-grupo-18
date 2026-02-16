@@ -750,96 +750,27 @@
             </div>
           </div>
         </div>
+        
 
         <div class="services-grid mt-5">
           <div class="row g-4">
+            {{#courses}}
             <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
               <div class="service-card">
                 <div class="card-number">
-                  <span>01</span>
+                  <span>{{@index}}</span>
                 </div>
                 <div class="card-content">
                   <h5 class="service-title">
-                    <a href="#">Negocios Online Desde Cero</a>
+                    <a href="/course/{{id}}">{{title}}</a>
                   </h5>
-                  <p class="service-description">Todo lo que necesitas saber para crear tu primer negocio digital y generar ingresos reales.</p>
+                  <p class="service-description">{{description}}</p>
                 </div>
               </div>
             </div><!-- End Service Card -->
-
-            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-              <div class="service-card">
-                <div class="card-number">
-                  <span>02</span>
-                </div>
-                <div class="card-content">
-                  <h5 class="service-title">
-                    <a href="#">Marketing Digital para Emprendedores</a>
-                  </h5>
-                  <p class="service-description">Atrae clientes sin presupuesto. Estrategias de growth hacking que funcionan en 2025.</p>
-                </div>
-              </div>
-            </div><!-- End Service Card -->
-
-            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-              <div class="service-card">
-                <div class="card-number">
-                  <span>03</span>
-                </div>
-                <div class="card-content">
-                  <h5 class="service-title">
-                    <a href="#">Ingresos Pasivos Reales</a>
-                  </h5>
-                  <p class="service-description">Construye sistemas que generan dinero mientras duermes. Modelos comprobados.</p>
-                </div>
-              </div>
-            </div><!-- End Service Card -->
-
-            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-              <div class="service-card">
-                <div class="card-number">
-                  <span>04</span>
-                </div>
-                <div class="card-content">
-                  <h5 class="service-title">
-                    <a href="#">Freelancing de Alto Valor</a>
-                  </h5>
-                  <p class="service-description">Cobra $100+ por hora. Posiciónate como experto en tu nicho.</p>
-                </div>
-              </div>
-            </div><!-- End Service Card -->
-
-            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-              <div class="service-card">
-                <div class="card-number">
-                  <span>05</span>
-                </div>
-                <div class="card-content">
-                  <h5 class="service-title">
-                    <a href="#">Productización y Escalabilidad</a>
-                  </h5>
-                  <p class="service-description">Transforma tu servicio en producto. De servicios limitados a ganancias infinitas.</p>
-                </div>
-              </div>
-            </div><!-- End Service Card -->
-
-            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-              <div class="service-card">
-                <div class="card-number">
-                  <span>06</span>
-                </div>
-                <div class="card-content">
-                  <h5 class="service-title">
-                    <a href="#">Mentalidad Emprendedora</a>
-                  </h5>
-                  <p class="service-description">Desarrolla la psicología de los ricos. Mindset para ganar millones.</p>
-                </div>
-              </div>
-            </div><!-- End Service Card -->
-
+            {{/courses}}
           </div>
         </div>
-
       </div>
 
     </section><!-- /Services Section -->
