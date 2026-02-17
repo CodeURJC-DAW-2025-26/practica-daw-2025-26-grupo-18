@@ -4,6 +4,7 @@ import es.codeurjc.scam_g18.model.Course;
 import es.codeurjc.scam_g18.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.PageRequest;
 import java.util.List;
 
 @Service
@@ -13,7 +14,7 @@ public class CourseService {
     private CourseRepository courseRepository;
 
     public List<Course> getFeaturedCourses() {
-        return courseRepository.findTop6ByOrderByRatingDesc();
+        return courseRepository.findTopRated(PageRequest.of(0, 6));
     }
 
     public List<Course> getAllCourses() {

@@ -1,0 +1,1 @@
+CREATE DATABASE scam_db;

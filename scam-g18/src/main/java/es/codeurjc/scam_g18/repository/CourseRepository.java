@@ -4,6 +4,12 @@ import es.codeurjc.scam_g18.model.Course;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.domain.Pageable; // Correct import
+import java.util.List; // Ensure List is imported
+
 public interface CourseRepository extends JpaRepository<Course, Long> {
-    List<Course> findTop6ByOrderByRatingDesc();
+
+    @Query("SELECT c FROM Course c LEFT JOIN c.reviews r GROUP BY c ORDER BY AVG(r.rating) DESC")
+    List<Course> findTopRated(Pageable pageable);
 }
