@@ -19,6 +19,6 @@ public class UserService {
     
     public String getCurrentUserProfileImage() {
         // Obtener la imagen de perfil del usuario
-        return "/img/descarga.jpg"; // Por ahora valor por defecto
+        return ""; // Por ahora valor por defecto
     }
 }
