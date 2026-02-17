@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.domain.Pageable; // Correct import
-import java.util.List; // Ensure List is imported
 
 public interface CourseRepository extends JpaRepository<Course, Long> {
 
