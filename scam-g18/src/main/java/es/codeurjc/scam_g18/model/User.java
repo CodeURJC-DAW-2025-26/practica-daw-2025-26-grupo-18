@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -35,13 +37,16 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
     
+    @Column(columnDefinition = "ENUM('MALE', 'FEMALE', 'PREFER_NOT_TO_SAY') default 'PREFER_NOT_TO_SAY'")
     private String gender;
     
     private LocalDate birthDate;
     
     private String country;
     
-    private String avatarUrl;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id")
+    private Image image;
     
     @Column(columnDefinition = "boolean default true")
     private Boolean isActive = true;
@@ -59,14 +64,14 @@ public class User {
     
     public User() {}
 
-    public User(String username, String password, String email, String gender, LocalDate birthDate, String country, String avatarUrl) {
+    public User(String username, String password, String email, String gender, LocalDate birthDate, String country, Image image) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.gender = gender;
         this.birthDate = birthDate;
         this.country = country;
-        this.avatarUrl = avatarUrl;
+        this.image = image;
     }
 
     public Long getId() {
@@ -125,12 +130,12 @@ public class User {
         this.country = country;
     }
 
-    public String getAvatarUrl() {
-        return avatarUrl;
+    public Image getImage() {
+        return image;
     }
 
-    public void setAvatarUrl(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
+    public void setImage(Image image) {
+        this.image = image;
     }
 
     public Boolean getIsActive() {
