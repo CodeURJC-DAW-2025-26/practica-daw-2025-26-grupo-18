@@ -37,155 +37,34 @@
                 </div>
 
                 <div class="course-list">
+                    {{#events}}
                     <article class="course-card-full" data-aos="fade-up" data-aos-delay="50">
                         <div class="course-card-header">
                             <div>
-                                <h3 class="course-card-title">Foro de Innovación &amp; Startups 2026</h3>
+                                <h3 class="course-card-title">{{title}}</h3>
                                 <div class="course-tags">
-                                    <span class="course-tag">Conferencias</span>
-                                    <span class="course-tag">Networking</span>
-                                    <span class="course-tag">Emprendimiento</span>
+                                    {{#tags}}
+                                    <span class="course-tag">{{name}}</span>
+                                    {{/tags}}
                                 </div>
                             </div>
-                            <div class="course-card-price">25€</div>
+                            <div class="course-card-price">{{priceEuros}}€</div>
                         </div>
-                        <p class="course-card-desc">Un día completo con keynotes, paneles y ronda de inversión para conectar con líderes del ecosistema.</p>
+                        <p class="course-card-desc">{{description}}</p>
                         <div class="course-card-meta">
-                            <div><i class="bi bi-calendar-event"></i> 18 Feb 2026</div>
-                            <div><i class="bi bi-clock"></i> 09:30 - 18:00</div>
-                            <div><i class="bi bi-geo-alt"></i> Madrid, IFEMA</div>
-                            <div><i class="bi bi-people"></i> 650 plazas</div>
+                            <div><i class="bi bi-calendar-event"></i> {{formattedDate}}</div>
+                            <div><i class="bi bi-clock"></i> {{formattedTime}}</div>
+                            <div><i class="bi bi-geo-alt"></i> {{locationName}}</div>
                         </div>
                         <div class="course-card-actions">
-                            <a href="event.html" class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver detalles</a>
-                            <a href="event.html" class="btn btn-primary btn-sm btn-accent course-card-btn">Reservar plaza</a>
+                            <a href="/events/{{id}}" class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver detalles</a>
+                            <a href="/events/{{id}}" class="btn btn-primary btn-sm btn-accent course-card-btn">Reservar plaza</a>
                         </div>
                     </article>
-
-                    <article class="course-card-full" data-aos="fade-up" data-aos-delay="100">
-                        <div class="course-card-header">
-                            <div>
-                                <h3 class="course-card-title">Meet &amp; Greet con líderes Tech</h3>
-                                <div class="course-tags">
-                                    <span class="course-tag">Meet &amp; Greet</span>
-                                    <span class="course-tag">Networking</span>
-                                    <span class="course-tag">Carrera</span>
-                                </div>
-                            </div>
-                            <div class="course-card-price">Gratis</div>
-                        </div>
-                        <p class="course-card-desc">Sesión íntima para conectar con CTOs y product managers. Cupos reducidos y mentoría directa.</p>
-                        <div class="course-card-meta">
-                            <div><i class="bi bi-calendar-event"></i> 22 Feb 2026</div>
-                            <div><i class="bi bi-clock"></i> 18:30 - 20:00</div>
-                            <div><i class="bi bi-geo-alt"></i> SCAM Hub, Móstoles</div>
-                            <div><i class="bi bi-person"></i> Invitado: Laura Gómez</div>
-                        </div>
-                        <div class="course-card-actions">
-                            <a href="event.html" class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver detalles</a>
-                            <a href="event.html" class="btn btn-primary btn-sm btn-accent course-card-btn">Reservar plaza</a>
-                        </div>
-                    </article>
-
-                    <article class="course-card-full" data-aos="fade-up" data-aos-delay="150">
-                        <div class="course-card-header">
-                            <div>
-                                <h3 class="course-card-title">Charla: IA aplicada a Productividad</h3>
-                                <div class="course-tags">
-                                    <span class="course-tag">Charlas</span>
-                                    <span class="course-tag">IA</span>
-                                    <span class="course-tag">Online</span>
-                                </div>
-                            </div>
-                            <div class="course-card-price">10€</div>
-                        </div>
-                        <p class="course-card-desc">Casos reales y herramientas para automatizar tareas y escalar equipos sin perder foco.</p>
-                        <div class="course-card-meta">
-                            <div><i class="bi bi-calendar-event"></i> 26 Feb 2026</div>
-                            <div><i class="bi bi-clock"></i> 19:00 - 20:30</div>
-                            <div><i class="bi bi-broadcast"></i> Online en directo</div>
-                            <div><i class="bi bi-person"></i> Ponente: David Pérez</div>
-                        </div>
-                        <div class="course-card-actions">
-                            <a href="event.html" class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver detalles</a>
-                            <a href="event.html" class="btn btn-primary btn-sm btn-accent course-card-btn">Reservar plaza</a>
-                        </div>
-                    </article>
-
-                    <article class="course-card-full" data-aos="fade-up" data-aos-delay="200">
-                        <div class="course-card-header">
-                            <div>
-                                <h3 class="course-card-title">Workshop: Diseño de marca personal</h3>
-                                <div class="course-tags">
-                                    <span class="course-tag">Workshops</span>
-                                    <span class="course-tag">Marca personal</span>
-                                    <span class="course-tag">Creatividad</span>
-                                </div>
-                            </div>
-                            <div class="course-card-price">35€</div>
-                        </div>
-                        <p class="course-card-desc">Taller práctico para construir tu narrativa profesional, portfolio y presencia digital.</p>
-                        <div class="course-card-meta">
-                            <div><i class="bi bi-calendar-event"></i> 1 Mar 2026</div>
-                            <div><i class="bi bi-clock"></i> 10:00 - 13:30</div>
-                            <div><i class="bi bi-geo-alt"></i> Campus SCAM, Madrid</div>
-                            <div><i class="bi bi-people"></i> 40 plazas</div>
-                        </div>
-                        <div class="course-card-actions">
-                            <a href="event.html" class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver detalles</a>
-                            <a href="event.html" class="btn btn-primary btn-sm btn-accent course-card-btn">Reservar plaza</a>
-                        </div>
-                    </article>
-
-                    <article class="course-card-full" data-aos="fade-up" data-aos-delay="250">
-                        <div class="course-card-header">
-                            <div>
-                                <h3 class="course-card-title">Mesa redonda: Futuro del trabajo</h3>
-                                <div class="course-tags">
-                                    <span class="course-tag">Conferencias</span>
-                                    <span class="course-tag">Liderazgo</span>
-                                    <span class="course-tag">Talento</span>
-                                </div>
-                            </div>
-                            <div class="course-card-price">15€</div>
-                        </div>
-                        <p class="course-card-desc">Debate con founders y HR leaders sobre modelos híbridos, cultura y habilidades del 2026.</p>
-                        <div class="course-card-meta">
-                            <div><i class="bi bi-calendar-event"></i> 6 Mar 2026</div>
-                            <div><i class="bi bi-clock"></i> 17:00 - 19:00</div>
-                            <div><i class="bi bi-geo-alt"></i> Teatro Rey, Madrid</div>
-                            <div><i class="bi bi-person"></i> Moderador: Ana Martínez</div>
-                        </div>
-                        <div class="course-card-actions">
-                            <a href="event.html" class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver detalles</a>
-                            <a href="event.html" class="btn btn-primary btn-sm btn-accent course-card-btn">Reservar plaza</a>
-                        </div>
-                    </article>
-
-                    <article class="course-card-full" data-aos="fade-up" data-aos-delay="300">
-                        <div class="course-card-header">
-                            <div>
-                                <h3 class="course-card-title">Meetup: Comunidad SCAM Builders</h3>
-                                <div class="course-tags">
-                                    <span class="course-tag">Networking</span>
-                                    <span class="course-tag">Comunidad</span>
-                                    <span class="course-tag">Open Space</span>
-                                </div>
-                            </div>
-                            <div class="course-card-price">Gratis</div>
-                        </div>
-                        <p class="course-card-desc">Encuentro abierto para compartir proyectos, retos y oportunidades en un formato dinámico.</p>
-                        <div class="course-card-meta">
-                            <div><i class="bi bi-calendar-event"></i> 12 Mar 2026</div>
-                            <div><i class="bi bi-clock"></i> 19:00 - 21:00</div>
-                            <div><i class="bi bi-geo-alt"></i> SCAM Hub, Móstoles</div>
-                            <div><i class="bi bi-people"></i> 120 plazas</div>
-                        </div>
-                        <div class="course-card-actions">
-                            <a href="event.html" class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver detalles</a>
-                            <a href="event.html" class="btn btn-primary btn-sm btn-accent course-card-btn">Reservar plaza</a>
-                        </div>
-                    </article>
+                    {{/events}}
+                    {{^events}}
+                    <p>No hay eventos disponibles en este momento.</p>
+                    {{/events}}
                 </div>
             </div>
         </section><!-- End Events Catalog -->

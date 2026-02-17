@@ -37,6 +37,7 @@ public class CourseController {
                     course.getCreator() != null ? course.getCreator().getUsername() : "Desconocido");
             courseData.put("averageRating", String.format("%.1f", courseService.getAverageRating(course)));
             courseData.put("ratingCount", courseService.getRatingCount(course));
+            courseData.put("tags", course.getTags());
             enrichedCourses.add(courseData);
         }
 

@@ -44,9 +44,9 @@
                             <div>
                                 <h3 class="course-card-title">{{title}}</h3>
                                 <div class="course-tags">
-                                    <span class="course-tag">Motivación</span>
-                                    <span class="course-tag">Liderazgo</span>
-                                    <span class="course-tag">Inteligencia emocional</span>
+                                    {{#tags}}
+                                    <span class="course-tag">{{name}}</span>
+                                    {{/tags}}
                                 </div>
                             </div>
                             <div class="course-card-price">{{priceInEuros}}€</div>

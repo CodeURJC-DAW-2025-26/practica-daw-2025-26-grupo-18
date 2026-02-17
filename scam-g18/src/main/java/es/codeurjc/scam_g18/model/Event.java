@@ -135,13 +135,6 @@ public class Event {
         return priceCents;
     }
 
-    public int getPriceEuros() {
-        if (priceCents == null || priceCents == 0) {
-            return 0;
-        }
-        return priceCents / 100;
-    }
-
     public void setPriceCents(Integer priceCents) {
         this.priceCents = priceCents;
     }
