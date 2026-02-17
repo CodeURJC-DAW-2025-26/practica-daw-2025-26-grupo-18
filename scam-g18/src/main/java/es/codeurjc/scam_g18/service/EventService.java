@@ -21,6 +21,7 @@ public class EventService {
         if (event.getPriceCents() == null)
             return "0.00";
         return String.format("%.2f", event.getPriceCents() / 100.0);
+    }
 
     public java.util.Optional<Event> getEventById(long id) {
         return eventRepository.findById(id);
