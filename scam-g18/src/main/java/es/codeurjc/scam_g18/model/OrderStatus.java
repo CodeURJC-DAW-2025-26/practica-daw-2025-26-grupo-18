@@ -1,5 +1,6 @@
 package es.codeurjc.scam_g18.model;
 
 public enum OrderStatus {
-    PENDING, COMPLETED, FAILED, REFUNDED
+    PENDING, PAID, FAILED, REFUNDED
 }
+
