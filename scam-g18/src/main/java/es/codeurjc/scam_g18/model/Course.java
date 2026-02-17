@@ -18,56 +18,72 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.Table;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "courses")
 public class Course {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @ManyToOne
     @JoinColumn(name = "creator_id")
     private User creator;
-    
+
     @ManyToOne
     @JoinColumn(name = "reviewer_id")
     private User reviewer;
-    
+
     @Column(nullable = false)
     private String title;
-    
+
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    @ManyToMany
+    @JoinTable(
+        name = "course_tags",
+        joinColumns = @JoinColumn(name = "course_id"),
+        inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<Tag> tags = new HashSet<>();
     
     private String language;
-    
+
     private Integer durationMinutes;
-    
+
     private Integer priceCents;
-    
+
     @Enumerated(EnumType.STRING)
     private Status status;
     
-    private String thumbnailUrl;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id")
+    private Image image;
     
     @CreationTimestamp
     private LocalDateTime createdAt;
-    
+
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-    
+
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Module> modules = new ArrayList<>();
-    
+
     @OneToMany(mappedBy = "course")
     private List<Review> reviews = new ArrayList<>();
-    
+
     public Course() {}
 
-    public Course(User creator, String title, String description, String language, Integer durationMinutes, Integer priceCents, Status status) {
+    public Course(User creator, String title, String description, String language, Integer durationMinutes,
+            Integer priceCents, Status status) {
         this.creator = creator;
         this.title = title;
         this.description = description;
@@ -75,6 +91,14 @@ public class Course {
         this.durationMinutes = durationMinutes;
         this.priceCents = priceCents;
         this.status = status;
+    }
+
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
     }
 
     public Long getId() {
@@ -113,6 +137,14 @@ public class Course {
         return description;
     }
 
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
+
     public void setDescription(String description) {
         this.description = description;
     }
@@ -137,6 +169,13 @@ public class Course {
         return priceCents;
     }
 
+    public int getPriceEuros() {
+        if (priceCents == null || priceCents == 0) {
+            return 0;
+        }
+        return priceCents / 100;
+    }
+
     public void setPriceCents(Integer priceCents) {
         this.priceCents = priceCents;
     }
@@ -147,14 +186,6 @@ public class Course {
 
     public void setStatus(Status status) {
         this.status = status;
-    }
-
-    public String getThumbnailUrl() {
-        return thumbnailUrl;
-    }
-
-    public void setThumbnailUrl(String thumbnailUrl) {
-        this.thumbnailUrl = thumbnailUrl;
     }
 
     public LocalDateTime getCreatedAt() {

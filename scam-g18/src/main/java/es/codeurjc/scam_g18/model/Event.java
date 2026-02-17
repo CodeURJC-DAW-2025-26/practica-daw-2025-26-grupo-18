@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,7 +14,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.Table;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "events")
@@ -30,14 +36,15 @@ public class Event {
     @Column(nullable = false)
     private String title;
     
-    @Column(columnDefinition = "TEXT")
     private String description;
     
-    private String location;
+    @ManyToOne
+    @JoinColumn(name = "location_id")
+    private Location location;
 
-    private Double lat;
-
-    private Double lng;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id")
+    private Image image;
     
     private Integer priceCents;
     
@@ -46,30 +53,34 @@ public class Event {
     private LocalDateTime endDate;
     
     private String category;
-    
+    @ManyToMany
+    @JoinTable(
+        name = "event_tags",
+        joinColumns = @JoinColumn(name = "event_id"),
+        inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<Tag> tags = new HashSet<>();
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private EventStatus status;
-    
-    private String imageUrl;
     
     @CreationTimestamp
     private LocalDateTime createdAt;
     
     public Event() {}
 
-    public Event(User creator, String title, String description, String location, Double lng, Double lat, Integer priceCents, LocalDateTime startDate, LocalDateTime endDate, String category, EventStatus status, String imageUrl) {
+    public Event(User creator, Location location, Image image, String title, String description, Integer priceCents, LocalDateTime startDate, LocalDateTime endDate, String category, EventStatus status) {
         this.creator = creator;
+        this.location = location;
+        this.image = image;
         this.title = title;
         this.description = description;
-        this.location = location;
-        this.lat = lat;
-        this.lng = lng;
         this.priceCents = priceCents;
         this.startDate = startDate;
         this.endDate = endDate;
         this.category = category;
         this.status = status;
-        this.imageUrl = imageUrl;
     }
 
     public Long getId() {
@@ -104,32 +115,31 @@ public class Event {
         this.description = description;
     }
 
-    public String getLocation() {
+    public Location getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(Location location) {
         this.location = location;
     }
 
-    public Double getLatitude() {
-        return lat;
+    public Image getImage() {
+        return image;
     }
 
-    public void setLatitude(Double lat) {
-        this.lat = lat;
-    }
-
-    public Double getLongitude() {
-        return lng;
-    }
-
-    public void setLongitude(Double lng) {
-        this.lng = lng;
+    public void setImage(Image image) {
+        this.image = image;
     }
 
     public Integer getPriceCents() {
         return priceCents;
+    }
+
+    public int getPriceEuros() {
+        if (priceCents == null || priceCents == 0) {
+            return 0;
+        }
+        return priceCents / 100;
     }
 
     public void setPriceCents(Integer priceCents) {
@@ -156,6 +166,14 @@ public class Event {
         return category;
     }
 
+    public Set<Tag> getTags() {
+        return this.tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
+
     public void setCategory(String category) {
         this.category = category;
     }
@@ -168,14 +186,6 @@ public class Event {
         this.status = status;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -183,4 +193,6 @@ public class Event {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
+
 }

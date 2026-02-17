@@ -38,169 +38,34 @@
                 </div>
 
                 <div class="course-list">
+                    {{#courses}}
                     <article class="course-card-full">
                         <div class="course-card-header">
                             <div>
-                                <h3 class="course-card-title">Ruta de Desarrollo Personal</h3>
+                                <h3 class="course-card-title">{{title}}</h3>
                                 <div class="course-tags">
                                     <span class="course-tag">Motivación</span>
                                     <span class="course-tag">Liderazgo</span>
                                     <span class="course-tag">Inteligencia emocional</span>
                                 </div>
                             </div>
-                            <div class="course-card-price">49€</div>
+                            <div class="course-card-price">{{priceInEuros}}€</div>
                         </div>
-                        <p class="course-card-desc">Desarrolla hábitos, foco y habilidades de comunicación para potenciar tu crecimiento personal y profesional.</p>
+                        <p class="course-card-desc">{{description}}</p>
                         <div class="course-card-meta">
                             <div class="course-rating">
                                 <i class="bi bi-star-fill course-rating-star"></i>
-                                <span class="course-rating-value">4.8</span>
-                                <span class="course-rating-count">(342)</span>
+                                <span class="course-rating-value">{{averageRating}}</span>
+                                <span class="course-rating-count">({{ratingCount}})</span>
                             </div>
-                            <div class="course-card-students"><i class="bi bi-people"></i> 1.240 suscritos</div>
-                            <div class="course-card-author"><i class="bi bi-person-circle"></i> Ana Martínez</div>
+                            <div class="course-card-students"><i class="bi bi-people"></i> Por {{creatorUsername}}</div>
                         </div>
                         <div class="course-card-actions">
-                            <a href="course.html" class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver curso</a>
-                            <a href="course.html" class="btn btn-primary btn-sm btn-accent course-card-btn">Suscribirme</a>
+                            <a href="/course/{{id}}" class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver curso</a>
+                            <a href="/course/{{id}}" class="btn btn-primary btn-sm btn-accent course-card-btn">Suscribirme</a>
                         </div>
                     </article>
-
-                    <article class="course-card-full">
-                        <div class="course-card-header">
-                            <div>
-                                <h3 class="course-card-title">Creación de Startups</h3>
-                                <div class="course-tags">
-                                    <span class="course-tag">Emprendimiento</span>
-                                    <span class="course-tag">Negocios</span>
-                                    <span class="course-tag">Estrategia</span>
-                                </div>
-                            </div>
-                            <div class="course-card-price">79€</div>
-                        </div>
-                        <p class="course-card-desc">Valida ideas, construye tu modelo de negocio y aprende a financiar tu startup con mentores del sector.</p>
-                        <div class="course-card-meta">
-                            <div class="course-rating">
-                                <i class="bi bi-star-fill course-rating-star"></i>
-                                <span class="course-rating-value">4.9</span>
-                                <span class="course-rating-count">(567)</span>
-                            </div>
-                            <div class="course-card-students"><i class="bi bi-people"></i> 2.045 suscritos</div>
-                            <div class="course-card-author"><i class="bi bi-person-circle"></i> Carlos Ruiz</div>
-                        </div>
-                        <div class="course-card-actions">
-                            <a href="course.html" class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver curso</a>
-                            <a href="course.html" class="btn btn-primary btn-sm btn-accent course-card-btn">Suscribirme</a>
-                        </div>
-                    </article>
-
-                    <article class="course-card-full">
-                        <div class="course-card-header">
-                            <div>
-                                <h3 class="course-card-title">Gestión Emocional</h3>
-                                <div class="course-tags">
-                                    <span class="course-tag">Motivación</span>
-                                    <span class="course-tag">Inteligencia emocional</span>
-                                </div>
-                            </div>
-                            <div class="course-card-price">39€</div>
-                        </div>
-                        <p class="course-card-desc">Aprende técnicas para regular tus emociones, reducir estrés y tomar mejores decisiones.</p>
-                        <div class="course-card-meta">
-                            <div class="course-rating">
-                                <i class="bi bi-star-fill course-rating-star"></i>
-                                <span class="course-rating-value">4.7</span>
-                                <span class="course-rating-count">(289)</span>
-                            </div>
-                            <div class="course-card-students"><i class="bi bi-people"></i> 980 suscritos</div>
-                            <div class="course-card-author"><i class="bi bi-person-circle"></i> Laura Gómez</div>
-                        </div>
-                        <div class="course-card-actions">
-                            <a href="course.html" class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver curso</a>
-                            <a href="course.html" class="btn btn-primary btn-sm btn-accent course-card-btn">Suscribirme</a>
-                        </div>
-                    </article>
-
-                    <article class="course-card-full">
-                        <div class="course-card-header">
-                            <div>
-                                <h3 class="course-card-title">Productividad y Gestión del Tiempo</h3>
-                                <div class="course-tags">
-                                    <span class="course-tag">Productividad</span>
-                                    <span class="course-tag">Organización</span>
-                                </div>
-                            </div>
-                            <div class="course-card-price">29€</div>
-                        </div>
-                        <p class="course-card-desc">Implementa sistemas de trabajo y prioridades para duplicar tu rendimiento sin estrés.</p>
-                        <div class="course-card-meta">
-                            <div class="course-rating">
-                                <i class="bi bi-star-fill course-rating-star"></i>
-                                <span class="course-rating-value">4.6</span>
-                                <span class="course-rating-count">(478)</span>
-                            </div>
-                            <div class="course-card-students"><i class="bi bi-people"></i> 1.410 suscritos</div>
-                            <div class="course-card-author"><i class="bi bi-person-circle"></i> David Pérez</div>
-                        </div>
-                        <div class="course-card-actions">
-                            <a href="course.html" class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver curso</a>
-                            <a href="course.html" class="btn btn-primary btn-sm btn-accent course-card-btn">Suscribirme</a>
-                        </div>
-                    </article>
-
-                    <article class="course-card-full">
-                        <div class="course-card-header">
-                            <div>
-                                <h3 class="course-card-title">Finanzas para Emprendedores</h3>
-                                <div class="course-tags">
-                                    <span class="course-tag">Emprendimiento</span>
-                                    <span class="course-tag">Finanzas</span>
-                                </div>
-                            </div>
-                            <div class="course-card-price">59€</div>
-                        </div>
-                        <p class="course-card-desc">Domina flujo de caja, presupuestos y métricas financieras clave para escalar tu negocio.</p>
-                        <div class="course-card-meta">
-                            <div class="course-rating">
-                                <i class="bi bi-star-fill course-rating-star"></i>
-                                <span class="course-rating-value">4.8</span>
-                                <span class="course-rating-count">(412)</span>
-                            </div>
-                            <div class="course-card-students"><i class="bi bi-people"></i> 1.120 suscritos</div>
-                            <div class="course-card-author"><i class="bi bi-person-circle"></i> Marta López</div>
-                        </div>
-                        <div class="course-card-actions">
-                            <a href="course.html" class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver curso</a>
-                            <a href="course.html" class="btn btn-primary btn-sm btn-accent course-card-btn">Suscribirme</a>
-                        </div>
-                    </article>
-
-                    <article class="course-card-full">
-                        <div class="course-card-header">
-                            <div>
-                                <h3 class="course-card-title">Oratoria y Presentaciones Efectivas</h3>
-                                <div class="course-tags">
-                                    <span class="course-tag">Comunicación</span>
-                                    <span class="course-tag">Motivación</span>
-                                </div>
-                            </div>
-                            <div class="course-card-price">45€</div>
-                        </div>
-                        <p class="course-card-desc">Mejora tu presencia y capacidad de persuasión con técnicas de storytelling y speaking.</p>
-                        <div class="course-card-meta">
-                            <div class="course-rating">
-                                <i class="bi bi-star-fill course-rating-star"></i>
-                                <span class="course-rating-value">4.9</span>
-                                <span class="course-rating-count">(523)</span>
-                            </div>
-                            <div class="course-card-students"><i class="bi bi-people"></i> 1.780 suscritos</div>
-                            <div class="course-card-author"><i class="bi bi-person-circle"></i> Jorge Medina</div>
-                        </div>
-                        <div class="course-card-actions">
-                            <a href="course.html" class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver curso</a>
-                            <a href="course.html" class="btn btn-primary btn-sm btn-accent course-card-btn">Suscribirme</a>
-                        </div>
-                    </article>
+                    {{/courses}}
                 </div>
             </div>
         </section>
