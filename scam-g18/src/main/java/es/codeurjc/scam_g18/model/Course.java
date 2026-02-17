@@ -23,51 +23,53 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "courses")
 public class Course {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @ManyToOne
     @JoinColumn(name = "creator_id")
     private User creator;
-    
+
     @ManyToOne
     @JoinColumn(name = "reviewer_id")
     private User reviewer;
-    
+
     @Column(nullable = false)
     private String title;
-    
+
     @Column(columnDefinition = "TEXT")
     private String description;
-    
+
     private String language;
-    
+
     private Integer durationMinutes;
-    
+
     private Integer priceCents;
-    
+
     @Enumerated(EnumType.STRING)
     private Status status;
-    
+
     private String thumbnailUrl;
-    
+
     @CreationTimestamp
     private LocalDateTime createdAt;
-    
+
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-    
+
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Module> modules = new ArrayList<>();
-    
+
     @OneToMany(mappedBy = "course")
     private List<Review> reviews = new ArrayList<>();
-    
-    public Course() {}
 
-    public Course(User creator, String title, String description, String language, Integer durationMinutes, Integer priceCents, Status status) {
+    public Course() {
+    }
+
+    public Course(User creator, String title, String description, String language, Integer durationMinutes,
+            Integer priceCents, Status status) {
         this.creator = creator;
         this.title = title;
         this.description = description;
