@@ -1,6 +1,8 @@
 package es.codeurjc.scam_g18.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -12,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "reviews")
@@ -92,5 +95,16 @@ public class Review {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    @Transient
+    public List<Boolean> getStars() {
+        List<Boolean> stars = new ArrayList<>();
+
+        int ratingValue = (this.rating != null) ? this.rating : 0;
+        for (int i = 0; i < 5; i++) {
+            stars.add(i < ratingValue);
+        }
+        return stars;
     }
 }

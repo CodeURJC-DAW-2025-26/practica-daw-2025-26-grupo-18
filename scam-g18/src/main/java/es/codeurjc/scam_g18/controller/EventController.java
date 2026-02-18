@@ -51,7 +51,7 @@ public class EventController {
             if (event.getLocation() != null) {
                 String loc = event.getLocation().getCity();
                 if (event.getLocation().getName() != null && !event.getLocation().getName().isEmpty()) {
-                     loc += ", " + event.getLocation().getName();
+                    loc += ", " + event.getLocation().getName();
                 }
                 eventData.put("locationName", loc);
             } else {

@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 
 @Entity
@@ -30,18 +31,25 @@ public class Module {
     private String title;
     
     private String description;
-    
+
     private Integer orderIndex;
     
     @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("orderIndex ASC")
     private List<Lesson> lessons = new ArrayList<>();
     
     public Module() {}
 
-    public Module(Course course, String title, Integer orderIndex) {
+    public Module(Course course, String title, Integer orderIndex, List<Lesson> lessons) {
         this.course = course;
         this.title = title;
         this.orderIndex = orderIndex;
+
+        if (lessons != null) {
+        lessons.stream()
+            .sorted((l1, l2) -> l1.getOrderIndex().compareTo(l2.getOrderIndex()))
+            .forEach(this::addLesson);
+        }
     }
 
     public Long getId() {
@@ -91,4 +99,14 @@ public class Module {
     public void setLessons(List<Lesson> lessons) {
         this.lessons = lessons;
     }
+
+    public void addLesson(Lesson lesson) {
+        lesson.setModule(this);
+        this.lessons.add(lesson);
+    }
+
+    public void removeLessonById(Long lessonId) {
+        this.lessons.removeIf(l -> l.getId().equals(lessonId));
+    }
+
 }

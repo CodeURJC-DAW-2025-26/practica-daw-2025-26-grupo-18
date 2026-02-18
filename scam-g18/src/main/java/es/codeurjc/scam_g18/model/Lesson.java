@@ -29,16 +29,17 @@ public class Lesson {
     @Column(columnDefinition = "TEXT")
     private String description;
     
-    private Integer orderIndex;
     
+    private Integer orderIndex;
+
     public Lesson() {}
 
-    public Lesson(Module module, String title, String videoUrl, String description, Integer orderIndex) {
+    public Lesson(Module module, String title, String videoUrl, String description, Integer duration, Integer orderIndex) {
         this.module = module;
         this.title = title;
         this.videoUrl = videoUrl;
         this.description = description;
-        this.orderIndex = orderIndex;
+        this.orderIndex = orderIndex; 
     }
 
     public Long getId() {
@@ -88,4 +89,7 @@ public class Lesson {
     public void setOrderIndex(Integer orderIndex) {
         this.orderIndex = orderIndex;
     }
+
+    
+
 }
