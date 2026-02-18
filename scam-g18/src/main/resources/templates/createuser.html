@@ -24,24 +24,53 @@
 
                             <form
                                 id="authForm"
-                                onsubmit="
-                                    event.preventDefault();
-                                    window.location.href = 'index.html';
-                                ">
+                                method="post"
+                                enctype="multipart/form-data">
                                 <!-- Nombre (Oculto por defecto) -->
                                 <div class="mb-3 d-none" id="nameField">
                                     <label for="name" class="form-label small fw-bold">Nombre completo</label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                        <input type="text" class="form-control" id="name" placeholder="Tu nombre" />
+                                        <input type="text" class="form-control" name="username" id="name" placeholder="Tu nombre" />
                                     </div>
+                                </div>
+
+                                <!-- Género (Oculto por defecto) -->
+                                <div class="mb-3 d-none" id="genderField">
+                                    <label for="gender" class="form-label small fw-bold">Género</label>
+                                    <select class="form-select" name="gender" id="gender">
+                                        <option value="PREFER_NOT_TO_SAY" selected>Prefiero no decirlo</option>
+                                        <option value="MALE">Masculino</option>
+                                        <option value="FEMALE">Femenino</option>
+                                    </select>
+                                </div>
+
+                                <!-- Fecha de Nacimiento (Oculto por defecto) -->
+                                <div class="mb-3 d-none" id="birthDateField">
+                                    <label for="birthDate" class="form-label small fw-bold">Fecha de Nacimiento</label>
+                                    <input type="date" class="form-control" name="birthDate" id="birthDate" />
+                                </div>
+
+                                <!-- País (Oculto en login) -->
+                                <div class="mb-3 d-none" id="countryField">
+                                    <label for="country" class="form-label small fw-bold">País</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                                        <input type="text" class="form-control" name="country" id="country" placeholder="Tu país" />
+                                    </div>
+                                </div>
+
+                                <!-- Imagen (Oculto en login) -->
+                                <div class="mb-3 d-none" id="imageField">
+                                    <label for="image" class="form-label small fw-bold">Foto de perfil</label>
+                                    <input type="file" class="form-control" name="image" id="image" accept="image/*" />
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="email" class="form-label small fw-bold">Correo electrónico</label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                        <input type="email" class="form-control" id="email" placeholder="nombre@ejemplo.com" required />
+                                        <input type="email" class="form-control" name="username" id="email" placeholder="nombre@ejemplo.com" required />
                                     </div>
                                 </div>
 
@@ -49,7 +78,7 @@
                                     <label for="password" class="form-label small fw-bold">Contraseña</label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                                        <input type="password" class="form-control" id="password" placeholder="••••••••" required />
+                                        <input type="password" class="form-control" name="password" id="password" placeholder="••••••••" required />
                                         <button class="btn btn-outline-secondary" type="button" id="togglePassword">
                                             <i class="bi bi-eye"></i>
                                         </button>
@@ -96,6 +125,10 @@
             const formTitle = document.getElementById("formTitle");
             const formSubtitle = document.getElementById("formSubtitle");
             const nameField = document.getElementById("nameField");
+            const genderField = document.getElementById("genderField");
+            const birthDateField = document.getElementById("birthDateField");
+            const countryField = document.getElementById("countryField");
+            const imageField = document.getElementById("imageField");
             const submitBtn = document.getElementById("submitBtn");
             const toggleText = document.getElementById("toggleText");
             const forgotPasswordLink = document.getElementById("forgotPasswordLink");
@@ -104,18 +137,38 @@
                 formTitle.innerText = "Iniciar Sesión";
                 formSubtitle.innerText = "Bienvenido de nuevo a SCAM";
                 nameField.classList.add("d-none");
+                genderField.classList.add("d-none");
+                birthDateField.classList.add("d-none");
+                countryField.classList.add("d-none");
+                imageField.classList.add("d-none");
+                
                 document.getElementById("name").required = false;
+                
                 submitBtn.innerText = "Iniciar Sesión";
                 forgotPasswordLink.classList.remove("d-none");
                 toggleText.innerHTML = '¿No tienes cuenta? <button type="button" class="btn btn-link p-0 fw-bold text-decoration-none" onclick="toggleAuthMode()" style="color: var(--accent-color);">Registrarse</button>';
+                
+                // Reset form action/method for login if needed, or handle via JS
+                document.getElementById("authForm").action = "/login"; 
             } else {
                 formTitle.innerText = "Crear Cuenta";
                 formSubtitle.innerText = "Empieza tu aprendizaje hoy";
                 nameField.classList.remove("d-none");
+                genderField.classList.remove("d-none");
+                birthDateField.classList.remove("d-none");
+                countryField.classList.remove("d-none");
+                imageField.classList.remove("d-none");
+
                 document.getElementById("name").required = true;
+                
                 submitBtn.innerText = "Registrarse";
                 forgotPasswordLink.classList.add("d-none");
                 toggleText.innerHTML = '¿Ya tienes cuenta? <button type="button" class="btn btn-link p-0 fw-bold text-decoration-none" onclick="toggleAuthMode()" style="color: var(--accent-color);">Iniciar Sesión</button>';
+                
+                // Reset form action/method for register
+                document.getElementById("authForm").action = "/register";
+                document.getElementById("authForm").method = "post";
+                document.getElementById("authForm").enctype = "multipart/form-data";
             }
         }
 
