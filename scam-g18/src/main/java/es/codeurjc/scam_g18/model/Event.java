@@ -53,6 +53,8 @@ public class Event {
 
     private LocalDateTime endDate;
 
+    private Integer capacity;
+
     private String category;
     @ManyToMany
     @JoinTable(name = "event_tags", joinColumns = @JoinColumn(name = "event_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
@@ -69,7 +71,7 @@ public class Event {
     }
 
     public Event(User creator, Location location, Image image, String title, String description, Integer priceCents,
-            LocalDateTime startDate, LocalDateTime endDate, String category, EventStatus status) {
+            LocalDateTime startDate, LocalDateTime endDate, String category, EventStatus status, Integer capacity) {
         this.creator = creator;
         this.location = location;
         this.image = image;
@@ -80,6 +82,7 @@ public class Event {
         this.endDate = endDate;
         this.category = category;
         this.status = status;
+        this.capacity = capacity; // Valor por defecto, se puede modificar con un setter
     }
 
     public Long getId() {
@@ -186,4 +189,11 @@ public class Event {
         this.createdAt = createdAt;
     }
 
+    public Integer getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(Integer capacity) {
+        this.capacity = capacity;
+    }
 }

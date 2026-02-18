@@ -6,7 +6,7 @@
             <ol class="breadcrumb mt-2">
                 <li class="breadcrumb-item"><a href="../../index.html">Inicio</a></li>
                 <li class="breadcrumb-item"><a href="#">Cursos</a></li>
-                <li class="breadcrumb-item active" aria-current="page">{{title}}</li>
+                <li class="breadcrumb-item active" aria-current="page">{{course.title}}</li>
             </ol>
         </nav>
     </div>
@@ -17,7 +17,7 @@
                 <div class="col-lg-8">
                     <div class="mb-5">
                         <div class="d-flex justify-content-between align-items-start mb-2">
-                            <span class="badge" style="background-color: var(--accent-color)">Actualizado {{updateAt}}</span>
+                            <span class="badge" style="background-color: var(--accent-color)">Actualizado {{course.updatedAt}}</span>
                             
                             <!--Boton aun no funciona-->
                             <button class="btn btn-outline-danger btn-sm" onclick="if (confirm('¿Estás seguro de eliminar este curso?')) 
@@ -25,8 +25,8 @@
                                 <i class="bi bi-trash me-1"></i> Eliminar curso</button>
                         
                         </div>
-                        <h1 class="display-5 fw-bold text-dark mb-3">{{title}}</h1>
-                        <p class="lead text-muted">{{shortDescription}}</p>
+                        <h1 class="display-5 fw-bold text-dark mb-3">{{course.title}}</h1>
+                        <p class="lead text-muted">{{course.shortDescription}}</p>
 
                         <div class="d-flex flex-wrap align-items-center gap-3 text-secondary mt-3 small">
                             <div class="d-flex align-items-center">
@@ -34,7 +34,7 @@
                                 <span>
                                     Por
                                     <!--Falta por poner la href al perfil del creador-->
-                                    <a href="#" class="fw-bold text-decoration-none">{{creatorUsername}}</a>
+                                    <a href="#" class="fw-bold text-decoration-none">{{course.creator.username}}</a>
                                 </span>
                             </div>
                             <div class="vr"></div>
@@ -47,9 +47,9 @@
                                 <span class="text-muted ms-1">( {{reviewsNumber}} reseñas ) </span>
                             </div>
                             <div class="vr"></div>
-                            <div><i class="bi bi-people me-1"></i>{{subscribersNumber}} estudiantes</div>
+                            <div><i class="bi bi-people me-1"></i>{{course.subscribersNumber}} estudiantes</div>
                             <div class="vr"></div>
-                            <div><i class="bi bi-globe me-1"></i>{{language}}</div>
+                            <div><i class="bi bi-globe me-1"></i>{{course.language}}</div>
                         </div>
                     </div>
 
@@ -59,12 +59,12 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <ul class="feature-list list-unstyled">
-                                        {{#learningPoints}}
+                                        {{#course.learningPoints}}
                                         <li class="mb-2">
                                             <i class="bi bi-check-circle-fill me-2" style="color: var(--accent-color)"></i>
                                             {{.}}
                                         </li>
-                                        {{/learningPoints}}
+                                        {{/course.learningPoints}}
                                     </ul>
                                 </div>
                             </div>
@@ -147,14 +147,14 @@
 
                     <h3 class="h4 mb-3 fw-bold">Requisitos previos</h3>
                     <ul class="mb-5">
-                        {{prerequisites}}
+                        {{#course.prerequisites}}
                         <li class="mb-2">{{.}}</li>
-                        {{/prerequisites}}
+                        {{/course.prerequisites}}
                     </ul>
 
                     <h3 class="h4 mb-3 fw-bold">Descripción</h3>
                     <div class="mb-5 text-secondary">
-                        <p>{{longDescription}}</p>
+                        <p>{{course.longDescription}}</p>
                     </div>
 
                     <h3 class="h4 mb-4 fw-bold">Instructor</h3>
@@ -168,14 +168,14 @@
                             </div>
 
                             <div class="text-center text-md-start">
-                                <h4 class="h5 fw-bold mb-1">{{creatorUsername}}</h4>
+                                <h4 class="h5 fw-bold mb-1">{{course.creator.username}}</h4>
                                 <!--Falta completar esto con la informacion de los usuarios-->
                                 <p class="small mb-3" style="color: var(--accent-color)">Senior Frontend Developer</p>
                                 <p class="small text-muted mb-3">Con más de 10 años de experiencia liderando equipos de
                                     desarrollo en startups internacionales. Apasionado por el código limpio y la
                                     enseñanza accesible.</p>
 
-                                <h6 class="small fw-bold text-uppercase text-muted mt-3">Más cursos de {{creatorUsername}}:</h6>
+                                <h6 class="small fw-bold text-uppercase text-muted mt-3">Más cursos de {{course.creator.username}}:</h6>
                                 <div class="d-flex gap-2 justify-content-center justify-content-md-start">
                                     <a href="#" class="badge bg-light text-dark border text-decoration-none">Master
                                         JavaScript</a>
@@ -228,7 +228,7 @@
                     <div class="sticky-top" style="top: 100px; z-index: 10">
                         <article class="price-card border-0 shadow-lg h-auto mb-4 bg-white">
                             <div class="card-head pt-4 pb-2 text-center">
-                                <img src="{{image}}" alt="Image-course-{{id}}"
+                                <img src="{{course.image.url}}" alt="Image-course-{{course.id}}"
                                     class="img-fluid rounded-4 mb-3 px-3" />
                                 <h3 class="title fs-4 mb-0">Acceso Completo</h3>
                                 <div class="price-wrap mt-3 mb-3 justify-content-center">
@@ -257,11 +257,10 @@
                                 <div class="mb-3">
                                     <span class="small fw-bold text-muted">Temas relacionados:</span>
                                     <div class="d-flex flex-wrap gap-1 mt-2">
-                                        {{#tags}}
+                                        {{#course.tags}}
                                         <a href="#"
                                             class="badge bg-light text-secondary text-decoration-none border">{{name}}</a>
-                                        {{/tags}}
-                                        {{/tags}}
+                                        {{/course.tags}}
                                     </div>
                                 </div>
                             </div>
