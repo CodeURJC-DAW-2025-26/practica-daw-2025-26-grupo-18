@@ -1,9 +1,16 @@
 package es.codeurjc.scam_g18.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import es.codeurjc.scam_g18.repository.UserRepository;
+import es.codeurjc.scam_g18.model.User;
+import java.util.Optional;
 
 @Service
 public class UserService {
+
+    @Autowired
+    private UserRepository userRepository;
 
     // Más adelante aquí inyectarás UserRepository, HttpSession, etc.
 
@@ -20,5 +27,9 @@ public class UserService {
     public String getCurrentUserProfileImage() {
         // Obtener la imagen de perfil del usuario
         return ""; // Por ahora valor por defecto
+    }
+
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 }

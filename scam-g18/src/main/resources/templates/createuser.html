@@ -20,88 +20,88 @@
                 <!-- Formulario Derecha -->
                 <div class="col-lg-6 bg-white d-flex align-items-center">
                     <div class="p-5 w-100">
+                        {{^isRegister}}
                         <div class="text-center mb-4">
-                            <h2 class="fw-bold text-dark" id="formTitle">Iniciar Sesión</h2>
-                            <p class="text-muted" id="formSubtitle">Bienvenido de nuevo a SCAM</p>
+                            <h2 class="fw-bold text-dark">Iniciar Sesión</h2>
+                            <p class="text-muted">Bienvenido de nuevo a SCAM</p>
                         </div>
-
-                        <form id="authForm" method="post" enctype="multipart/form-data">
-                            <!-- Nombre (Oculto por defecto) -->
-                            <div class="mb-3 d-none" id="nameField">
-                                <label for="name" class="form-label small fw-bold">Nombre completo</label>
+                        <form id="loginForm" action="/login" method="post">
+                            <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+                            <div class="mb-3">
+                                <label for="loginEmail" class="form-label small fw-bold">Nombre de usuario</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                    <input type="text" class="form-control" name="username" id="name"
-                                        placeholder="Tu nombre" />
+                                    <input type="text" class="form-control" id="loginEmail" name="username"
+                                        placeholder="usuario" required />
                                 </div>
                             </div>
-                    </div>
 
-                    <!-- Género (Oculto por defecto) -->
-                    <div class="mb-3 d-none" id="genderField">
-                        <label for="gender" class="form-label small fw-bold">Género</label>
-                        <select class="form-select" name="gender" id="gender">
-                            <option value="PREFER_NOT_TO_SAY" selected>Prefiero no decirlo</option>
-                            <option value="MALE">Masculino</option>
-                            <option value="FEMALE">Femenino</option>
-                        </select>
-                    </div>
+                            <div class="mb-4">
+                                <label for="loginPassword" class="form-label small fw-bold">Contraseña</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                    <input type="password" class="form-control" id="loginPassword" name="password"
+                                        placeholder="••••••••" required />
+                                </div>
+                            </div>
+                            <div class="d-grid mb-4">
+                                <button type="submit" class="btn btn-primary py-2 fw-bold"
+                                    style="background-color: var(--accent-color); border-color: var(--accent-color)">Iniciar
+                                    Sesión</button>
+                            </div>
+                        </form>
+                        {{/isRegister}}
 
-                    <!-- Fecha de Nacimiento (Oculto por defecto) -->
-                    <div class="mb-3 d-none" id="birthDateField">
-                        <label for="birthDate" class="form-label small fw-bold">Fecha de Nacimiento</label>
-                        <input type="date" class="form-control" name="birthDate" id="birthDate" />
-                    </div>
-
-                    <!-- País (Oculto en login) -->
-                    <div class="mb-3 d-none" id="countryField">
-                        <label for="country" class="form-label small fw-bold">País</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
-                            <input type="text" class="form-control" name="country" id="country" placeholder="Tu país" />
+                        {{#isRegister}}
+                        <div class="text-center mb-4">
+                            <h2 class="fw-bold text-dark">Crear Cuenta</h2>
+                            <p class="text-muted">Empieza tu aprendizaje hoy</p>
                         </div>
-                    </div>
+                        <form id="registerForm" action="/register" method="post">
+                            <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+                            <div class="mb-3">
+                                <label for="regUsername" class="form-label small fw-bold">Nombre de usuario</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                    <input type="text" class="form-control" id="regUsername" name="username"
+                                        placeholder="Tu nombre de usuario" required />
+                                </div>
+                            </div>
 
-                    <!-- Imagen (Oculto en login) -->
-                    <div class="mb-3 d-none" id="imageField">
-                        <label for="image" class="form-label small fw-bold">Foto de perfil</label>
-                        <input type="file" class="form-control" name="image" id="image" accept="image/*" />
-                    </div>
+                            <div class="mb-3">
+                                <label for="regEmail" class="form-label small fw-bold">Correo electrónico</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                    <input type="email" class="form-control" id="regEmail" name="email"
+                                        placeholder="nombre@ejemplo.com" required />
+                                </div>
+                            </div>
 
-                    <div class="mb-3">
-                        <label for="email" class="form-label small fw-bold">Correo electrónico</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                            <input type="email" class="form-control" name="username" id="email"
-                                placeholder="nombre@ejemplo.com" required />
-                        </div>
+                            <div class="mb-4">
+                                <label for="regPassword" class="form-label small fw-bold">Contraseña</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                    <input type="password" class="form-control" id="regPassword" name="password"
+                                        placeholder="••••••••" required />
+                                </div>
+                            </div>
+
+                            <div class="d-grid mb-4">
+                                <button type="submit" class="btn btn-primary py-2 fw-bold"
+                                    style="background-color: var(--accent-color); border-color: var(--accent-color)">Registrarse</button>
+                            </div>
+                        </form>
+                        {{/isRegister}}
                     </div>
                 </div>
 
-                <div class="mb-4">
-                    <label for="password" class="form-label small fw-bold">Contraseña</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                        <input type="password" class="form-control" name="password" id="password" placeholder="••••••••"
-                            required />
-                        <button class="btn btn-outline-secondary" type="button" id="togglePassword">
-                            <i class="bi bi-eye"></i>
-                        </button>
-                    </div>
-                    <div class="d-flex justify-content-end mt-2" id="forgotPasswordLink">
-                        <a href="#" class="small text-muted text-decoration-none">¿Olvidaste tu contraseña?</a>
-                    </div>
+                <div class="mb-4 d-none"> <!-- Ocultar campos viejos -->
                 </div>
-                <div class="d-flex justify-content-end mt-2" id="forgotPasswordLink">
-                    <a href="#" class="small text-muted text-decoration-none">¿Olvidaste tu
-                        contraseña?</a>
+                <div class="d-flex justify-content-end mt-2 d-none" id="forgotPasswordLink">
                 </div>
             </div>
 
-            <div class="d-grid mb-4">
-                <button type="submit" class="btn btn-primary py-2 fw-bold" id="submitBtn"
-                    style="background-color: var(--accent-color); border-color: var(--accent-color)">Iniciar
-                    Sesión</button>
+            <div class="d-grid mb-4 d-none">
             </div>
 
             <div class="position-relative text-center mb-4">
@@ -117,12 +117,19 @@
             </div>
 
             <div class="text-center p-3 rounded bg-light">
-                <p class="mb-0 small" id="toggleText">
-                    ¿No tienes cuenta? <button type="button" class="btn btn-link p-0 fw-bold text-decoration-none"
-                        onclick="toggleAuthMode()" style="color: var(--accent-color)">Registrarse</button>
+                {{^isRegister}}
+                <p class="mb-0 small">
+                    ¿No tienes cuenta? <a href="/register" class="fw-bold text-decoration-none"
+                        style="color: var(--accent-color)">Registrarse</a>
                 </p>
+                {{/isRegister}}
+                {{#isRegister}}
+                <p class="mb-0 small">
+                    ¿Ya tienes cuenta? <a href="/login" class="fw-bold text-decoration-none"
+                        style="color: var(--accent-color)">Iniciar Sesión</a>
+                </p>
+                {{/isRegister}}
             </div>
-            </form>
         </div>
         </div>
         </div>
@@ -131,74 +138,6 @@
 </main>
 
 {{>footer}}
-
-
-<script>
-    let isLogin = true;
-
-    function toggleAuthMode() {
-        isLogin = !isLogin;
-        const formTitle = document.getElementById("formTitle");
-        const formSubtitle = document.getElementById("formSubtitle");
-        const nameField = document.getElementById("nameField");
-        const genderField = document.getElementById("genderField");
-        const birthDateField = document.getElementById("birthDateField");
-        const countryField = document.getElementById("countryField");
-        const imageField = document.getElementById("imageField");
-        const submitBtn = document.getElementById("submitBtn");
-        const toggleText = document.getElementById("toggleText");
-        const forgotPasswordLink = document.getElementById("forgotPasswordLink");
-
-        if (isLogin) {
-            formTitle.innerText = "Iniciar Sesión";
-            formSubtitle.innerText = "Bienvenido de nuevo a SCAM";
-            nameField.classList.add("d-none");
-            genderField.classList.add("d-none");
-            birthDateField.classList.add("d-none");
-            countryField.classList.add("d-none");
-            imageField.classList.add("d-none");
-
-            document.getElementById("name").required = false;
-
-            submitBtn.innerText = "Iniciar Sesión";
-            forgotPasswordLink.classList.remove("d-none");
-            toggleText.innerHTML = '¿No tienes cuenta? <button type="button" class="btn btn-link p-0 fw-bold text-decoration-none" onclick="toggleAuthMode()" style="color: var(--accent-color);">Registrarse</button>';
-
-            // Reset form action/method for login if needed, or handle via JS
-            document.getElementById("authForm").action = "/login";
-        } else {
-            formTitle.innerText = "Crear Cuenta";
-            formSubtitle.innerText = "Empieza tu aprendizaje hoy";
-            nameField.classList.remove("d-none");
-            genderField.classList.remove("d-none");
-            birthDateField.classList.remove("d-none");
-            countryField.classList.remove("d-none");
-            imageField.classList.remove("d-none");
-
-            document.getElementById("name").required = true;
-
-            submitBtn.innerText = "Registrarse";
-            forgotPasswordLink.classList.add("d-none");
-            toggleText.innerHTML = '¿Ya tienes cuenta? <button type="button" class="btn btn-link p-0 fw-bold text-decoration-none" onclick="toggleAuthMode()" style="color: var(--accent-color);">Iniciar Sesión</button>';
-
-            // Reset form action/method for register
-            document.getElementById("authForm").action = "/register";
-            document.getElementById("authForm").method = "post";
-            document.getElementById("authForm").enctype = "multipart/form-data";
-        }
-    }
-    }
-
-    const togglePassword = document.getElementById("togglePassword");
-    const password = document.getElementById("password");
-
-    togglePassword.addEventListener("click", function () {
-        const type = password.getAttribute("type") === "password" ? "text" : "password";
-        password.setAttribute("type", type);
-        this.querySelector("i").classList.toggle("bi-eye");
-        this.querySelector("i").classList.toggle("bi-eye-slash");
-    });
-</script>
 </body>
 
 </html>
