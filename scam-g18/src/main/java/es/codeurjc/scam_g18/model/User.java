@@ -19,6 +19,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "users")
@@ -161,4 +162,20 @@ public class User {
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
+
+    @Transient //Para que no se guarde en la base de datos
+    public String getInitials() {
+        if (username == null || username.isEmpty()) return "";
+        
+        String[] parts = username.trim().split(" ");
+        String initials = "";
+        
+        // Tomamos la primera letra de los primeros dos nombres
+        for (int i = 0; i < Math.min(2, parts.length); i++) {
+            initials += parts[i].substring(0, 1).toUpperCase();
+        }
+        
+        return initials;
+    }
+
 }

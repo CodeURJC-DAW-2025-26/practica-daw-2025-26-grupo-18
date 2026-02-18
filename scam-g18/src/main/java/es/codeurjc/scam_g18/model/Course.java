@@ -8,7 +8,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -19,6 +21,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.Table;
@@ -45,7 +48,10 @@ public class Course {
     private String title;
 
     @Column(columnDefinition = "TEXT")
-    private String description;
+    private String shortDescription;
+
+    @Column(columnDefinition = "TEXT")
+    private String longDescription;
 
     @ManyToMany
     @JoinTable(
@@ -55,11 +61,30 @@ public class Course {
     )
     private Set<Tag> tags = new HashSet<>();
     
+    @ElementCollection
+    @CollectionTable(
+        name = "course_learning_points",
+        joinColumns = @JoinColumn(name = "course_id") 
+    )
+    @Column(name = "learning_point") 
+    private List<String> learningPoints = new ArrayList<>();
+
+    @ElementCollection
+    @CollectionTable(
+        name = "course_prerequisites",  // tabla auxiliar
+        joinColumns = @JoinColumn(name = "course_id") // columna que une con Course
+    )
+    @Column(name = "prerequisite") // columna que guarda cada String
+    private List<String> prerequisites = new ArrayList<>();
+
+
     private String language;
 
     private Integer durationMinutes;
 
     private Integer priceCents;
+
+    private Integer subscribersNumber;
 
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -75,22 +100,37 @@ public class Course {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("orderIndex ASC")
     private List<Module> modules = new ArrayList<>();
 
-    @OneToMany(mappedBy = "course")
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
 
     public Course() {}
 
-    public Course(User creator, String title, String description, String language, Integer durationMinutes,
-            Integer priceCents, Status status) {
+    public Course(User creator, String title, String shortDescription, String longDescription, String language, Integer durationMinutes,
+            Integer priceCents, Status status, Set<Tag> tags, List<Module> modules, List<Review> reviews,
+            List<String> learningPoints, List<String> prerequisites) {
         this.creator = creator;
         this.title = title;
-        this.description = description;
+        this.shortDescription = shortDescription;
+        this.longDescription = longDescription;
         this.language = language;
         this.durationMinutes = durationMinutes;
         this.priceCents = priceCents;
         this.status = status;
+        this.tags = tags;
+        this.reviews = reviews;
+        this.prerequisites = prerequisites;
+        this.createdAt = LocalDateTime.now();
+        this.subscribersNumber = 0;
+        this.learningPoints = learningPoints;
+
+        if (modules != null) {
+        modules.stream()
+            .sorted((m1, m2) -> m1.getOrderIndex().compareTo(m2.getOrderIndex()))
+            .forEach(this::addModule);
+        }
     }
 
     public Image getImage() {
@@ -133,8 +173,20 @@ public class Course {
         this.title = title;
     }
 
-    public String getDescription() {
-        return description;
+    public void setShortDescription(String shortDescription) {
+        this.shortDescription = shortDescription;
+    }
+
+    public String getShortDescription() {
+        return shortDescription;
+    }
+
+    public void setLongDescription(String longDescription) {
+        this.longDescription = longDescription;
+    }
+
+    public String getLongDescription() {
+        return longDescription;
     }
 
     public Set<Tag> getTags() {
@@ -145,9 +197,13 @@ public class Course {
         this.tags = tags;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void addTag(Tag tag) {
+        if (tag == null) {
+            throw new IllegalArgumentException("Tag cannot be null");
+        }
+        this.tags.add(tag);
     }
+
 
     public String getLanguage() {
         return language;
@@ -167,13 +223,6 @@ public class Course {
 
     public Integer getPriceCents() {
         return priceCents;
-    }
-
-    public int getPriceEuros() {
-        if (priceCents == null || priceCents == 0) {
-            return 0;
-        }
-        return priceCents / 100;
     }
 
     public void setPriceCents(Integer priceCents) {
@@ -212,6 +261,11 @@ public class Course {
         this.modules = modules;
     }
 
+    public void addModule(Module module) {
+        module.setCourse(this);
+        this.modules.add(module);
+    }
+
     public List<Review> getReviews() {
         return reviews;
     }
@@ -219,4 +273,43 @@ public class Course {
     public void setReviews(List<Review> reviews) {
         this.reviews = reviews;
     }
+
+    public Integer getSubscribersNumber() {
+        return subscribersNumber;
+    }
+    
+    public void setSubscribersNumber(Integer subscribersNumber) {
+        this.subscribersNumber = subscribersNumber;
+    }
+
+    public List<String> getLearningPoints() {
+        return learningPoints;
+    }
+
+    public void setLearningPoints(List<String> learningPoints) {
+        this.learningPoints = learningPoints;
+    }
+
+    public List<String> getPrerequisites() {
+        return prerequisites;
+    }
+
+    public void setPrerequisites(List<String> prerequisites) {
+        this.prerequisites = prerequisites;
+    }
+
+    public void removeModuleById(Long moduleId) {
+        this.modules.removeIf(m -> m.getId().equals(moduleId));
+    }
+
+    public void removeReviewById(Long reviewId) {
+        reviews.removeIf(review -> review.getId().equals(reviewId));
+    }
+
+    public void removeTagById(Long tagId) {
+        tags.removeIf(tag -> tag.getId().equals(tagId));
+    }
+
+
+
 }
