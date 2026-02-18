@@ -48,26 +48,23 @@ public class Course {
     private String description;
 
     @ManyToMany
-    @JoinTable(
-        name = "course_tags",
-        joinColumns = @JoinColumn(name = "course_id"),
-        inverseJoinColumns = @JoinColumn(name = "tag_id")
-    )
+    @JoinTable(name = "course_tags", joinColumns = @JoinColumn(name = "course_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags = new HashSet<>();
-    
+
     private String language;
 
     private Integer durationMinutes;
 
+    @Column(nullable = false)
     private Integer priceCents;
 
     @Enumerated(EnumType.STRING)
     private Status status;
-    
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id")
     private Image image;
-    
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
@@ -80,7 +77,8 @@ public class Course {
     @OneToMany(mappedBy = "course")
     private List<Review> reviews = new ArrayList<>();
 
-    public Course() {}
+    public Course() {
+    }
 
     public Course(User creator, String title, String description, String language, Integer durationMinutes,
             Integer priceCents, Status status) {

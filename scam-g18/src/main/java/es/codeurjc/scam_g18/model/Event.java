@@ -24,20 +24,20 @@ import java.util.Set;
 @Entity
 @Table(name = "events")
 public class Event {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @ManyToOne
     @JoinColumn(name = "creator_id")
     private User creator;
-    
+
     @Column(nullable = false)
     private String title;
-    
+
     private String description;
-    
+
     @ManyToOne
     @JoinColumn(name = "location_id")
     private Location location;
@@ -45,32 +45,31 @@ public class Event {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id")
     private Image image;
-    
+
+    @Column(nullable = false)
     private Integer priceCents;
-    
+
     private LocalDateTime startDate;
-    
+
     private LocalDateTime endDate;
-    
+
     private String category;
     @ManyToMany
-    @JoinTable(
-        name = "event_tags",
-        joinColumns = @JoinColumn(name = "event_id"),
-        inverseJoinColumns = @JoinColumn(name = "tag_id")
-    )
+    @JoinTable(name = "event_tags", joinColumns = @JoinColumn(name = "event_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags = new HashSet<>();
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private EventStatus status;
-    
+
     @CreationTimestamp
     private LocalDateTime createdAt;
-    
-    public Event() {}
 
-    public Event(User creator, Location location, Image image, String title, String description, Integer priceCents, LocalDateTime startDate, LocalDateTime endDate, String category, EventStatus status) {
+    public Event() {
+    }
+
+    public Event(User creator, Location location, Image image, String title, String description, Integer priceCents,
+            LocalDateTime startDate, LocalDateTime endDate, String category, EventStatus status) {
         this.creator = creator;
         this.location = location;
         this.image = image;
@@ -186,6 +185,5 @@ public class Event {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-
 
 }
