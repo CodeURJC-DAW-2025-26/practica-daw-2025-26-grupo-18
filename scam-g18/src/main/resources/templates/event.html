@@ -7,10 +7,10 @@
                         <ol>
                             <li><a href="index.html">Home</a></li>
                             <li><a href="events.html">Eventos</a></li>
-                            <li class="current">Foro de Innovación &amp; Startups 2026</li>
+                            <li class="current">{{event.title}}</li>
                         </ol>
                     </nav>
-                    <h1>Foro de Innovación &amp; Startups 2026</h1>
+                    <h1>{{event.title}}</h1>
                 </div>
             </div>
             <!-- End Page Title -->
@@ -22,14 +22,14 @@
                         <div class="col-lg-8 order-lg-1 order-2">
                             <div class="service-main-content">
                                 <div class="service-header" data-aos="fade-up">
-                                    <h1>Foro de Innovación &amp; Startups 2026</h1>
+                                    <h1>{{event.title}}</h1>
                                     <div class="service-meta">
-                                        <span><i class="bi bi-calendar-event"></i> 18 Feb 2026</span>
-                                        <span><i class="bi bi-clock"></i> 09:30 - 18:00</span>
-                                        <span><i class="bi bi-geo-alt"></i> IFEMA, Madrid</span>
-                                        <span><i class="bi bi-people"></i> 650 plazas</span>
+                                        <span><i class="bi bi-calendar-event"></i> {{event.formattedDate}}</span>
+                                        <span><i class="bi bi-clock"></i> {{event.formattedTime}}</span>
+                                        <span><i class="bi bi-geo-alt"></i> {{event.locationName}}</span>
+                                        <span><i class="bi bi-people"></i> {{event.capacity}} plazas</span>
                                     </div>
-                                    <p class="lead">Jornada intensiva con keynotes, paneles y networking para acelerar proyectos de alto impacto. Conecta con inversores, founders y líderes del sector tecnológico.</p>
+                                    <p class="lead">{{event.description}}</p>
                                 </div>
 
                                 <div class="service-tabs" data-aos="fade-up" data-aos-delay="200">
@@ -162,8 +162,8 @@
                             <aside class="service-sidebar" data-aos="fade-up" data-aos-delay="200">
                                 <div class="action-card">
                                     <h3>Reserva tu plaza</h3>
-                                    <p>Acceso completo a todas las sesiones, paneles y networking guiado.</p>
-                                    <a href="cart.html" class="btn-primary">Comprar entrada · 25€</a>
+                                    <p>Acceso completo al evento.</p>
+                                    <a href="/cart" class="btn-primary">Comprar entrada · {{event.priceEuros}}€</a>
                                     <span class="guarantee"><i class="bi bi-shield-check"></i> Confirmación inmediata por email</span>
                                 </div>
 

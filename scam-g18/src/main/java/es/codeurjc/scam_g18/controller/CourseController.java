@@ -55,6 +55,9 @@ public class CourseController {
         // Pasamos el objeto curso completo
         model.addAttribute("course", course);
 
+        // Pasamos el objeto curso completo
+        model.addAttribute("course", course);
+
         // Pasamos los atributos calculados o extra que no están directamente en la
         // entidad
         model.addAttribute("modules", course.getModules());
