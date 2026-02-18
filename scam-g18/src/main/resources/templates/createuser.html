@@ -1,133 +1,146 @@
-    {{>header}}
+{{>header}}
 
-    <main class="main">
-        <section class="section">
-            <div class="container">
-                <div class="row g-0 shadow-lg rounded-4 overflow-hidden" style="min-height: 600px">
-                    <!-- Imagen Izquierda -->
-                    <div class="col-lg-6 d-none d-lg-block position-relative">
-                        <img src="../img/services/services-3.webp" alt="Join SCAM" class="img-fluid w-100 h-100" style="object-fit: cover; object-position: center" />
-                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: rgba(0, 0, 0, 0.3)"></div>
-                        <div class="position-absolute bottom-0 start-0 p-5 text-white">
-                            <h3 class="fw-bold">Únete a nuestra comunidad</h3>
-                            <p class="lead">Aprende de los mejores expertos y transforma tu carrera profesional hoy mismo.</p>
-                        </div>
+<main class="main">
+    <section class="section">
+        <div class="container">
+            <div class="row g-0 shadow-lg rounded-4 overflow-hidden" style="min-height: 600px">
+                <!-- Imagen Izquierda -->
+                <div class="col-lg-6 d-none d-lg-block position-relative">
+                    <img src="../img/services/services-3.webp" alt="Join SCAM" class="img-fluid w-100 h-100"
+                        style="object-fit: cover; object-position: center" />
+                    <div class="position-absolute top-0 start-0 w-100 h-100" style="background: rgba(0, 0, 0, 0.3)">
                     </div>
+                    <div class="position-absolute bottom-0 start-0 p-5 text-white">
+                        <h3 class="fw-bold">Únete a nuestra comunidad</h3>
+                        <p class="lead">Aprende de los mejores expertos y transforma tu carrera profesional hoy mismo.
+                        </p>
+                    </div>
+                </div>
 
-                    <!-- Formulario Derecha -->
-                    <div class="col-lg-6 bg-white d-flex align-items-center">
-                        <div class="p-5 w-100">
-                            <div class="text-center mb-4">
-                                <h2 class="fw-bold text-dark" id="formTitle">Iniciar Sesión</h2>
-                                <p class="text-muted" id="formSubtitle">Bienvenido de nuevo a SCAM</p>
-                            </div>
+                <!-- Formulario Derecha -->
+                <div class="col-lg-6 bg-white d-flex align-items-center">
+                    <div class="p-5 w-100">
+                        <div class="text-center mb-4">
+                            <h2 class="fw-bold text-dark" id="formTitle">Iniciar Sesión</h2>
+                            <p class="text-muted" id="formSubtitle">Bienvenido de nuevo a SCAM</p>
+                        </div>
 
-                            <form
-                                id="authForm"
-                                onsubmit="
+                        <form id="authForm" onsubmit="
                                     event.preventDefault();
                                     window.location.href = 'index.html';
                                 ">
-                                <!-- Nombre (Oculto por defecto) -->
-                                <div class="mb-3 d-none" id="nameField">
-                                    <label for="name" class="form-label small fw-bold">Nombre completo</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                        <input type="text" class="form-control" id="name" placeholder="Tu nombre" />
-                                    </div>
+                            <!-- Nombre (Oculto por defecto) -->
+                            <div class="mb-3 d-none" id="nameField">
+                                <label for="name" class="form-label small fw-bold">Nombre completo</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                    <input type="text" class="form-control" id="name" placeholder="Tu nombre" />
                                 </div>
+                            </div>
 
-                                <div class="mb-3">
-                                    <label for="email" class="form-label small fw-bold">Correo electrónico</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                        <input type="email" class="form-control" id="email" placeholder="nombre@ejemplo.com" required />
-                                    </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label small fw-bold">Correo electrónico</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                    <input type="email" class="form-control" id="email" placeholder="nombre@ejemplo.com"
+                                        required />
                                 </div>
+                            </div>
 
-                                <div class="mb-4">
-                                    <label for="password" class="form-label small fw-bold">Contraseña</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                                        <input type="password" class="form-control" id="password" placeholder="••••••••" required />
-                                        <button class="btn btn-outline-secondary" type="button" id="togglePassword">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                    </div>
-                                    <div class="d-flex justify-content-end mt-2" id="forgotPasswordLink">
-                                        <a href="#" class="small text-muted text-decoration-none">¿Olvidaste tu contraseña?</a>
-                                    </div>
+                            <div class="mb-4">
+                                <label for="password" class="form-label small fw-bold">Contraseña</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                    <input type="password" class="form-control" id="password" placeholder="••••••••"
+                                        required />
+                                    <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
                                 </div>
+                                <div class="d-flex justify-content-end mt-2" id="forgotPasswordLink">
+                                    <a href="#" class="small text-muted text-decoration-none">¿Olvidaste tu
+                                        contraseña?</a>
+                                </div>
+                            </div>
 
-                                <div class="d-grid mb-4">
-                                    <button type="submit" class="btn btn-primary py-2 fw-bold" id="submitBtn" style="background-color: var(--accent-color); border-color: var(--accent-color)">Iniciar Sesión</button>
-                                </div>
+                            <div class="d-grid mb-4">
+                                <button type="submit" class="btn btn-primary py-2 fw-bold" id="submitBtn"
+                                    style="background-color: var(--accent-color); border-color: var(--accent-color)">Iniciar
+                                    Sesión</button>
+                            </div>
 
-                                <div class="position-relative text-center mb-4">
-                                    <hr class="text-secondary opacity-25" />
-                                    <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 small text-muted">o continúa con</span>
-                                </div>
+                            <div class="position-relative text-center mb-4">
+                                <hr class="text-secondary opacity-25" />
+                                <span
+                                    class="position-absolute top-50 start-50 translate-middle bg-white px-3 small text-muted">o
+                                    continúa con</span>
+                            </div>
 
-                                <div class="d-grid mb-4">
-                                    <button type="button" class="btn btn-outline-secondary py-2 d-flex align-items-center justify-content-center gap-2"><i class="bi bi-google"></i> Google</button>
-                                </div>
+                            <div class="d-grid mb-4">
+                                <button type="button"
+                                    class="btn btn-outline-secondary py-2 d-flex align-items-center justify-content-center gap-2"><i
+                                        class="bi bi-google"></i> Google</button>
+                            </div>
 
-                                <div class="text-center p-3 rounded bg-light">
-                                    <p class="mb-0 small" id="toggleText">
-                                        ¿No tienes cuenta? <button type="button" class="btn btn-link p-0 fw-bold text-decoration-none" onclick="toggleAuthMode()" style="color: var(--accent-color)">Registrarse</button>
-                                    </p>
-                                </div>
-                            </form>
-                        </div>
+                            <div class="text-center p-3 rounded bg-light">
+                                <p class="mb-0 small" id="toggleText">
+                                    ¿No tienes cuenta? <button type="button"
+                                        class="btn btn-link p-0 fw-bold text-decoration-none" onclick="toggleAuthMode()"
+                                        style="color: var(--accent-color)">Registrarse</button>
+                                </p>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
-        </section>
-    </main>
+        </div>
+    </section>
+</main>
 
-    {{>footer}}
+{{>footer}}
 
 
-    <script>
-        let isLogin = true;
+<script>
+    let isLogin = true;
 
-        function toggleAuthMode() {
-            isLogin = !isLogin;
-            const formTitle = document.getElementById("formTitle");
-            const formSubtitle = document.getElementById("formSubtitle");
-            const nameField = document.getElementById("nameField");
-            const submitBtn = document.getElementById("submitBtn");
-            const toggleText = document.getElementById("toggleText");
-            const forgotPasswordLink = document.getElementById("forgotPasswordLink");
+    function toggleAuthMode() {
+        isLogin = !isLogin;
+        const formTitle = document.getElementById("formTitle");
+        const formSubtitle = document.getElementById("formSubtitle");
+        const nameField = document.getElementById("nameField");
+        const submitBtn = document.getElementById("submitBtn");
+        const toggleText = document.getElementById("toggleText");
+        const forgotPasswordLink = document.getElementById("forgotPasswordLink");
 
-            if (isLogin) {
-                formTitle.innerText = "Iniciar Sesión";
-                formSubtitle.innerText = "Bienvenido de nuevo a SCAM";
-                nameField.classList.add("d-none");
-                document.getElementById("name").required = false;
-                submitBtn.innerText = "Iniciar Sesión";
-                forgotPasswordLink.classList.remove("d-none");
-                toggleText.innerHTML = '¿No tienes cuenta? <button type="button" class="btn btn-link p-0 fw-bold text-decoration-none" onclick="toggleAuthMode()" style="color: var(--accent-color);">Registrarse</button>';
-            } else {
-                formTitle.innerText = "Crear Cuenta";
-                formSubtitle.innerText = "Empieza tu aprendizaje hoy";
-                nameField.classList.remove("d-none");
-                document.getElementById("name").required = true;
-                submitBtn.innerText = "Registrarse";
-                forgotPasswordLink.classList.add("d-none");
-                toggleText.innerHTML = '¿Ya tienes cuenta? <button type="button" class="btn btn-link p-0 fw-bold text-decoration-none" onclick="toggleAuthMode()" style="color: var(--accent-color);">Iniciar Sesión</button>';
-            }
+        if (isLogin) {
+            formTitle.innerText = "Iniciar Sesión";
+            formSubtitle.innerText = "Bienvenido de nuevo a SCAM";
+            nameField.classList.add("d-none");
+            document.getElementById("name").required = false;
+            submitBtn.innerText = "Iniciar Sesión";
+            forgotPasswordLink.classList.remove("d-none");
+            toggleText.innerHTML = '¿No tienes cuenta? <button type="button" class="btn btn-link p-0 fw-bold text-decoration-none" onclick="toggleAuthMode()" style="color: var(--accent-color);">Registrarse</button>';
+        } else {
+            formTitle.innerText = "Crear Cuenta";
+            formSubtitle.innerText = "Empieza tu aprendizaje hoy";
+            nameField.classList.remove("d-none");
+            document.getElementById("name").required = true;
+            submitBtn.innerText = "Registrarse";
+            forgotPasswordLink.classList.add("d-none");
+            toggleText.innerHTML = '¿Ya tienes cuenta? <button type="button" class="btn btn-link p-0 fw-bold text-decoration-none" onclick="toggleAuthMode()" style="color: var(--accent-color);">Iniciar Sesión</button>';
         }
+    }
 
-        const togglePassword = document.getElementById("togglePassword");
-        const password = document.getElementById("password");
+    const togglePassword = document.getElementById("togglePassword");
+    const password = document.getElementById("password");
 
-        togglePassword.addEventListener("click", function () {
-            const type = password.getAttribute("type") === "password" ? "text" : "password";
-            password.setAttribute("type", type);
-            this.querySelector("i").classList.toggle("bi-eye");
-            this.querySelector("i").classList.toggle("bi-eye-slash");
-        });
-    </script>
-    </body>
+    togglePassword.addEventListener("click", function () {
+        const type = password.getAttribute("type") === "password" ? "text" : "password";
+        password.setAttribute("type", type);
+        this.querySelector("i").classList.toggle("bi-eye");
+        this.querySelector("i").classList.toggle("bi-eye-slash");
+    });
+</script>
+</body>
+
 </html>

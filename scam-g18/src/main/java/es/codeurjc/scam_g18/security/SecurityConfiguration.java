@@ -40,18 +40,19 @@ public class SecurityConfiguration {
         http
                 .authorizeHttpRequests(authorize -> authorize
                         // NIVEL 0: ANONYMOUS (Público)
-                        .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/img/**", "/images/**", "/*.css", "/*.js", "/webjars/**")
+                        .permitAll()
                         .requestMatchers("/", "/courses", "/events").permitAll()
                         .requestMatchers("/login", "/register", "/error").permitAll()
                         // NIVEL 1: REGISTERED (Ver detalles y comprar)
-                        .requestMatchers("/courses/*", "/events/{id}").hasAnyRole("USER", "SUBSCRIBED", "ADMIN")
-                        .requestMatchers("/courses/*/enroll", "/events/{id}/register")
+                        .requestMatchers("/course/{id}", "/events/{id}").hasAnyRole("USER", "SUBSCRIBED", "ADMIN")
+                        .requestMatchers("/course/{id}/enroll", "/events/{id}/register")
                         .hasAnyRole("USER", "SUBSCRIBED", "ADMIN")
                         // NIVEL 2: SUBSCRIBED (Crear contenido)
                         .requestMatchers("/courses/new", "/events/new").hasAnyRole("SUBSCRIBED", "ADMIN")
                         // Editar y borrar (la comprobación de "dueño" va en el controlador, pero aquí
                         // filtramos el rol mínimo)
-                        .requestMatchers("/courses/*/edit", "/courses/*/delete").hasAnyRole("SUBSCRIBED", "ADMIN")
+                        .requestMatchers("/course/{id}/edit", "/course/{id}/delete").hasAnyRole("SUBSCRIBED", "ADMIN")
                         .requestMatchers("/events/*/edit", "/events/*/delete").hasAnyRole("SUBSCRIBED", "ADMIN")
                         // NIVEL 3: ADMIN (Todo)
                         .requestMatchers("/admin/**").hasRole("ADMIN")
