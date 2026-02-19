@@ -50,17 +50,17 @@ public class RegisterController {
         newUser.setGender(gender);
         newUser.setBirthDate(LocalDate.parse(birthDate));
         newUser.setCountry(country);
-        
+
         if (!imageFile.isEmpty()) {
             Path imageFolder = Paths.get("src/main/resources/static/img/person");
             if (!Files.exists(imageFolder)) {
                 Files.createDirectories(imageFolder);
             }
-            
+
             String fileName = "user_" + System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
             Path imagePath = imageFolder.resolve(fileName);
             imageFile.transferTo(imagePath);
-            
+
             Image image = new Image("/img/person/" + fileName);
             imageRepository.save(image);
             newUser.setImage(image);
@@ -75,6 +75,6 @@ public class RegisterController {
 
         userRepository.save(newUser);
 
-        return "redirect:/login";
+        return "redirect:/";
     }
 }

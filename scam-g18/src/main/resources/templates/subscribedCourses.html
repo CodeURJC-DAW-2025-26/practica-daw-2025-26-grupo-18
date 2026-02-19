@@ -78,6 +78,19 @@
         <!-- Features Cards Section -->
         <section id="features-cards" class="features-cards section">
             <div class="container" data-aos="fade-up" data-aos-delay="100">
+                
+                {{^isUserLoggedIn}}
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="bi bi-lock-fill text-muted" style="font-size: 4rem;"></i>
+                    </div>
+                    <h3>Inicia sesión para ver tus cursos</h3>
+                    <p class="text-muted mb-4">Necesitas estar registrado y suscrito para acceder a esta sección.</p>
+                    <a href="/login" class="btn btn-primary px-4 py-2">Iniciar Sesión</a>
+                </div>
+                {{/isUserLoggedIn}}
+
+                {{#isUserLoggedIn}}
                 <div class="row g-4">
                     <!-- First row with two larger cards -->
                     <div class="col-lg-6" data-aos="flip-left" data-aos-delay="100">
@@ -130,6 +143,7 @@
                         </div>
                     </div>
                 </div>
+                {{/isUserLoggedIn}}
             </div>
         </section>
         <!-- /Features Cards Section -->
