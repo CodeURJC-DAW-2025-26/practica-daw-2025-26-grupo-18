@@ -22,7 +22,6 @@ public class ProfileController {
             User user = userService.findByUsername(username).orElse(null);
 
             if (user != null) {
-                // TODO: Recuperar cursos reales. Por ahora lista vacía.
                 model.addAttribute("courses", Collections.emptyList());
                 model.addAttribute("userName", user.getUsername());
             }

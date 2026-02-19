@@ -17,24 +17,26 @@
         <!-- Events Catalog -->
         <section class="courses-catalog section">
             <div class="container" data-aos="fade-up">
+                <form action="/events" method="get">
                 <div class="course-controls">
-                    <form class="course-search" role="search">
+                    <div class="course-search">
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="search" class="form-control" placeholder="Buscar eventos" aria-label="Buscar eventos">
+                            <input type="search" name="search" class="form-control" placeholder="Buscar eventos" aria-label="Buscar eventos" value="{{#search}}{{search}}{{/search}}">
                             <button class="btn btn-primary btn-accent" type="submit">Buscar</button>
                         </div>
-                    </form>
+                    </div>
                     <div class="course-filters">
-                        <button type="button" class="filter-chip active">Todos</button>
-                        <button type="button" class="filter-chip">Charlas</button>
-                        <button type="button" class="filter-chip">Conferencias</button>
-                        <button type="button" class="filter-chip">Meet &amp; Greet</button>
-                        <button type="button" class="filter-chip">Workshops</button>
-                        <button type="button" class="filter-chip">Networking</button>
-                        <button type="button" class="filter-chip">Online</button>
+                        <a href="/events{{#search}}?search={{search}}{{/search}}" class="filter-chip {{^selectedTags}}active{{/selectedTags}}">Todos</a>
+                        {{#tagsView}}
+                        <label class="filter-chip {{#active}}active{{/active}}" style="cursor: pointer;">
+                            <input type="checkbox" name="tags" value="{{name}}" {{#active}}checked{{/active}} onchange="this.form.submit()" style="display:none;">
+                            {{name}}
+                        </label>
+                        {{/tagsView}}
                     </div>
                 </div>
+                </form>
 
                 <div class="course-list">
                     {{#events}}

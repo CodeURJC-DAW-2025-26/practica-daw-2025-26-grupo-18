@@ -16,11 +16,9 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    // Más adelante aquí inyectarás UserRepository, HttpSession, etc.
-
     public boolean isUserLoggedIn() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return auth != null && auth.isAuthenticated() && 
+        return auth != null && auth.isAuthenticated() &&
                 !"anonymousUser".equals(auth.getPrincipal());
     }
 
@@ -43,7 +41,7 @@ public class UserService {
                 }
             }
         }
-        return "/img/descarga.jpg"; // Default image
+        return "/img/descarga.jpg";
     }
 
     public Optional<User> findByUsername(String username) {
