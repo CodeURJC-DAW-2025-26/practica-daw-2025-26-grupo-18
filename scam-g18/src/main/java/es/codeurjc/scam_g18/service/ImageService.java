@@ -7,19 +7,14 @@ import java.util.Base64;
 
 import javax.sql.rowset.serial.SerialBlob;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import es.codeurjc.scam_g18.model.Image;
-import es.codeurjc.scam_g18.repository.ImageRepository;
 
 @Service
 public class ImageService {
-
-    @Autowired
-    private ImageRepository imageRepository;
 
     @Transactional
     public Image saveImage(MultipartFile file) throws IOException, SQLException {
@@ -29,7 +24,7 @@ public class ImageService {
         Blob blob = new SerialBlob(file.getBytes());
         Image image = new Image();
         image.setData(blob);
-        return imageRepository.save(image);
+        return image;
     }
 
     @Transactional
@@ -59,7 +54,7 @@ public class ImageService {
         Blob blob = new SerialBlob(bytes);
         Image image = new Image();
         image.setData(blob);
-        return imageRepository.save(image);
+        return image;
     }
 
 }

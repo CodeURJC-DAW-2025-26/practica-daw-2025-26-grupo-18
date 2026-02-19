@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.ui.Model;
 import org.springframework.beans.factory.annotation.Autowired;
 import es.codeurjc.scam_g18.service.UserService;
-import es.codeurjc.scam_g18.model.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.web.csrf.CsrfToken;
 
@@ -26,14 +25,11 @@ public class GlobalControllerAdvice {
         }
 
         if (isUserLoggedIn) {
-            String username = request.getUserPrincipal().getName();
-            model.addAttribute("userName", username);
-
-            User user = userService.findByUsername(username).orElse(null);
-            if (user != null) {
-                model.addAttribute("userProfileImage", userService.getProfileImage(user.getId()));
-            } else {
-                model.addAttribute("userProfileImage", "/img/descarga.jpg");
+            model.addAttribute("userProfileImage", "/img/descarga.jpg");
+            var currentUser = userService.getCurrentAuthenticatedUser().orElse(null);
+            if (currentUser != null) {
+                model.addAttribute("userName", currentUser.getUsername());
+                model.addAttribute("userProfileImage", userService.getProfileImage(currentUser.getId()));
             }
         }
     }

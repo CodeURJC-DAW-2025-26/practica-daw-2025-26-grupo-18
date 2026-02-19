@@ -52,6 +52,35 @@ public class DatabaseInitializer {
             initializeCourses();
             initializeEvents();
         }
+        ensureDefaultImagesForExistingData();
+    }
+
+    private void ensureDefaultImagesForExistingData() throws IOException, SQLException {
+        List<Course> courses = courseRepository.findAll();
+        String[] courseImagePaths = { "/img/features/features-1.webp", "/img/features/features-2.webp",
+                "/img/features/features-3.webp" };
+
+        for (int i = 0; i < courses.size(); i++) {
+            Course course = courses.get(i);
+            if (course.getImage() == null) {
+                String imagePath = courseImagePaths[i % courseImagePaths.length];
+                course.setImage(imageService.saveImage(imagePath));
+                courseRepository.save(course);
+            }
+        }
+
+        List<Event> events = eventRepository.findAll();
+        String[] eventImagePaths = { "/img/services/services-1.webp", "/img/services/Services-3.webp",
+                "/img/services/services-7.webp" };
+
+        for (int i = 0; i < events.size(); i++) {
+            Event event = events.get(i);
+            if (event.getImage() == null) {
+                String imagePath = eventImagePaths[i % eventImagePaths.length];
+                event.setImage(imageService.saveImage(imagePath));
+                eventRepository.save(event);
+            }
+        }
     }
 
     private void initializeRoles() {
@@ -146,7 +175,7 @@ public class DatabaseInitializer {
                 new ArrayList<>(), // Reviews placeholder
                 points1,
                 prereqs1);
-        course1.setImage(imageService.saveImage("/img/features/feature-1.jpg")); // Placeholder image
+        course1.setImage(imageService.saveImage("/img/features/features-1.webp"));
         courseRepository.save(course1);
 
         // Course 2
@@ -173,7 +202,7 @@ public class DatabaseInitializer {
                 new ArrayList<>(),
                 points2,
                 List.of("Ordenador", "Conexión a Internet"));
-        course2.setImage(imageService.saveImage("/img/features/feature-2.jpg"));
+        course2.setImage(imageService.saveImage("/img/features/features-2.webp"));
         courseRepository.save(course2);
 
         // Course 3
@@ -195,7 +224,7 @@ public class DatabaseInitializer {
                 new ArrayList<>(),
                 List.of("Comunicación asertiva", "Delegación efectiva"),
                 List.of("Experiencia previa gestionando personas recomendada"));
-        course3.setImage(imageService.saveImage("/img/features/feature-3.jpg"));
+        course3.setImage(imageService.saveImage("/img/features/features-3.webp"));
         courseRepository.save(course3);
     }
 
@@ -220,7 +249,7 @@ public class DatabaseInitializer {
         Event event1 = new Event(
                 creator,
                 loc1,
-                imageService.saveImage("/img/features/feature-1.jpg"),
+                imageService.saveImage("/img/services/services-1.webp"),
                 "Cumbre de Liderazgo 2026",
                 "El evento más importante para CEOs y directivos en Europa.",
                 15000, // 150.00
@@ -239,7 +268,7 @@ public class DatabaseInitializer {
         Event event2 = new Event(
                 creator,
                 null, // Online has no location
-                imageService.saveImage("/img/features/feature-2.jpg"),
+                imageService.saveImage("/img/services/Services-3.webp"),
                 "Webinar: Despierta tu Potencial",
                 "Taller online intensivo para romper tus barreras mentales.",
                 0, // Free
@@ -265,7 +294,7 @@ public class DatabaseInitializer {
         Event event3 = new Event(
                 creator,
                 loc3,
-                imageService.saveImage("/img/features/feature-3.jpg"),
+                imageService.saveImage("/img/services/services-7.webp"),
                 "Networking & Tapas",
                 "Conoce a otros emprendedores en un ambiente distendido.",
                 1500, // 15.00
