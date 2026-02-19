@@ -31,19 +31,12 @@ public class GlobalControllerAdvice {
             model.addAttribute("userName", username);
 
             User user = userService.findByUsername(username).orElse(null);
-            if (user != null && user.getImage() != null) {
-                // Asumiendo que Image tiene un campo o método para la URL o ID.
-                // Si image es un objeto, necesitamos convertirlo a path o usar un placeholder.
-                // Revisando User.java (Step 599), tiene 'private Image image'.
-                // Necesito ver la clase Image.java para saber qué campo usar.
-                // Por ahora pondré un placeholder si es null o la ruta por defecto.
-                model.addAttribute("userProfileImage", "/img/descarga.jpg"); // Placeholder temporal hasta ver
-                                                                             // Image.java
+            if (user != null) {
+                model.addAttribute("userProfileImage", userService.getProfileImage(user.getId()));
             } else {
                 model.addAttribute("userProfileImage", "/img/descarga.jpg");
             }
         }
     }
-
 
 }

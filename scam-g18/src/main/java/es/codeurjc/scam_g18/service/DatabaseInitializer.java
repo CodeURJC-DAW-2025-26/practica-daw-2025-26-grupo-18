@@ -38,8 +38,11 @@ public class DatabaseInitializer {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private ImageService imageService;
+
     @PostConstruct
-    public void init() {
+    public void init() throws java.io.IOException, java.sql.SQLException {
         if (roleRepository.count() == 0) {
             initializeRoles();
             initializeUsers();
@@ -141,7 +144,7 @@ public class DatabaseInitializer {
                 new ArrayList<>(), // Reviews placeholder
                 points1,
                 prereqs1);
-        course1.setImage(new Image("/img/features/feature-1.jpg")); // Placeholder image
+        course1.setImage(imageService.saveImage("/img/features/feature-1.jpg")); // Placeholder image
         courseRepository.save(course1);
 
         // Course 2
@@ -168,7 +171,7 @@ public class DatabaseInitializer {
                 new ArrayList<>(),
                 points2,
                 List.of("Ordenador", "Conexión a Internet"));
-        course2.setImage(new Image("/img/features/feature-2.jpg"));
+        course2.setImage(imageService.saveImage("/img/features/feature-2.jpg"));
         courseRepository.save(course2);
 
         // Course 3
@@ -190,7 +193,7 @@ public class DatabaseInitializer {
                 new ArrayList<>(),
                 List.of("Comunicación asertiva", "Delegación efectiva"),
                 List.of("Experiencia previa gestionando personas recomendada"));
-        course3.setImage(new Image("/img/features/feature-3.jpg"));
+        course3.setImage(imageService.saveImage("/img/features/feature-3.jpg"));
         courseRepository.save(course3);
     }
 
@@ -215,7 +218,7 @@ public class DatabaseInitializer {
         Event event1 = new Event(
                 creator,
                 loc1,
-                new Image("/img/features/feature-1.jpg"),
+                imageService.saveImage("/img/features/feature-1.jpg"),
                 "Cumbre de Liderazgo 2026",
                 "El evento más importante para CEOs y directivos en Europa.",
                 15000, // 150.00
@@ -234,7 +237,7 @@ public class DatabaseInitializer {
         Event event2 = new Event(
                 creator,
                 null, // Online has no location
-                new Image("/img/features/feature-2.jpg"),
+                imageService.saveImage("/img/features/feature-2.jpg"),
                 "Webinar: Despierta tu Potencial",
                 "Taller online intensivo para romper tus barreras mentales.",
                 0, // Free
@@ -260,7 +263,7 @@ public class DatabaseInitializer {
         Event event3 = new Event(
                 creator,
                 loc3,
-                new Image("/img/features/feature-3.jpg"),
+                imageService.saveImage("/img/features/feature-3.jpg"),
                 "Networking & Tapas",
                 "Conoce a otros emprendedores en un ambiente distendido.",
                 1500, // 15.00

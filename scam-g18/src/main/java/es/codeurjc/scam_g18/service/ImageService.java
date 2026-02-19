@@ -49,4 +49,18 @@ public class ImageService {
         }
         return "/img/descarga.jpg";
     }
+
+    @Transactional
+    public Image saveImage(String path) throws IOException, SQLException {
+        java.nio.file.Path file = java.nio.file.Paths.get("src/main/resources/static" + path);
+        if (!java.nio.file.Files.exists(file)) {
+            return null;
+        }
+        byte[] bytes = java.nio.file.Files.readAllBytes(file);
+        Blob blob = new SerialBlob(bytes);
+        Image image = new Image();
+        image.setData(blob);
+        return imageRepository.save(image);
+    }
+
 }

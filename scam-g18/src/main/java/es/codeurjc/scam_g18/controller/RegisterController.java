@@ -6,30 +6,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import es.codeurjc.scam_g18.repository.UserRepository;
-import es.codeurjc.scam_g18.repository.RoleRepository;
-import es.codeurjc.scam_g18.repository.ImageRepository;
+import es.codeurjc.scam_g18.service.UserService;
+import es.codeurjc.scam_g18.service.RolerService;
+import es.codeurjc.scam_g18.service.ImageService;
 import es.codeurjc.scam_g18.model.User;
 import es.codeurjc.scam_g18.model.Role;
-import es.codeurjc.scam_g18.model.Image;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.time.LocalDate;
 
 @Controller
 public class RegisterController {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
-    private RoleRepository roleRepository;
+    private RolerService rolerService;
 
     @Autowired
-    private ImageRepository imageRepository;
+    private ImageService imageService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -37,9 +34,10 @@ public class RegisterController {
     @PostMapping("/register")
     public String registerUser(@RequestParam String username, @RequestParam String email,
             @RequestParam String password, @RequestParam String gender, @RequestParam String birthDate,
-            @RequestParam String country, @RequestParam("image") MultipartFile imageFile) throws IOException {
+            @RequestParam String country, @RequestParam("image") MultipartFile imageFile)
+            throws IOException, java.sql.SQLException {
 
-        if (userRepository.findByUsername(username).isPresent()) {
+        if (userService.findByUsername(username).isPresent()) {
             return "redirect:/login?error=userExists";
         }
 
@@ -52,28 +50,18 @@ public class RegisterController {
         newUser.setCountry(country);
 
         if (!imageFile.isEmpty()) {
-            Path imageFolder = Paths.get("src/main/resources/static/img/person");
-            if (!Files.exists(imageFolder)) {
-                Files.createDirectories(imageFolder);
-            }
-
-            String fileName = "user_" + System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
-            Path imagePath = imageFolder.resolve(fileName);
-            imageFile.transferTo(imagePath);
-
-            Image image = new Image("/img/person/" + fileName);
-            imageRepository.save(image);
-            newUser.setImage(image);
+            newUser.setImage(imageService.saveImage(imageFile));
         }
 
-        Role userRole = roleRepository.findByName("USER").orElseGet(() -> {
+        Role userRole = rolerService.findByName("USER").orElseGet(() -> {
             Role newRole = new Role("USER");
-            return roleRepository.save(newRole);
+            rolerService.save(newRole);
+            return newRole;
         });
 
         newUser.getRoles().add(userRole);
 
-        userRepository.save(newUser);
+        userService.save(newUser);
 
         return "redirect:/";
     }

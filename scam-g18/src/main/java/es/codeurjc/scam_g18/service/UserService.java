@@ -23,7 +23,6 @@ public class UserService {
     public boolean isUserLoggedIn() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return auth != null && auth.isAuthenticated() &&
-        return auth != null && auth.isAuthenticated() &&
                 !"anonymousUser".equals(auth.getPrincipal());
     }
 
@@ -62,7 +61,6 @@ public class UserService {
         if (user.isPresent() && user.get().getImage() != null) {
             return imageService.getConnectionImage(user.get().getImage());
         }
-        return "/img/descarga.jpg";
         return "/img/descarga.jpg";
     }
 
