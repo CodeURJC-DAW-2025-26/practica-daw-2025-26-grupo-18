@@ -9,6 +9,7 @@ import es.codeurjc.scam_g18.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -85,7 +86,7 @@ public class CourseService {
         courseData.put("title", course.getTitle());
         courseData.put("shortDescription", course.getShortDescription());
         courseData.put("longDescription", course.getLongDescription());
-        courseData.put("updatedAt", course.getUpdatedAt());
+        courseData.put("updatedAt", course.getUpdatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
         courseData.put("subscribersNumber", course.getSubscribersNumber() != null ? course.getSubscribersNumber() : 0);
         courseData.put("language", course.getLanguage());
         courseData.put("learningPoints", course.getLearningPoints());
