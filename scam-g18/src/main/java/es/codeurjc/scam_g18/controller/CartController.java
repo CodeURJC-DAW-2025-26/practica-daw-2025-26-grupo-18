@@ -15,10 +15,10 @@ import es.codeurjc.scam_g18.model.Course;
 import es.codeurjc.scam_g18.model.Event;
 import es.codeurjc.scam_g18.model.Order;
 import es.codeurjc.scam_g18.model.User;
-import es.codeurjc.scam_g18.repository.UserRepository;
 import es.codeurjc.scam_g18.service.CartService;
 import es.codeurjc.scam_g18.service.CourseService;
 import es.codeurjc.scam_g18.service.EventService;
+import es.codeurjc.scam_g18.service.UserService;
 
 @Controller
 public class CartController {

@@ -13,7 +13,6 @@ import es.codeurjc.scam_g18.model.User;
 import es.codeurjc.scam_g18.model.Role;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.time.LocalDate;
 
 @Controller

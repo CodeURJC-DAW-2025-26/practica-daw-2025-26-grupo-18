@@ -3,7 +3,6 @@ package es.codeurjc.scam_g18.controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.ui.Model;
-import java.security.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
 import es.codeurjc.scam_g18.service.UserService;
 import es.codeurjc.scam_g18.model.User;
@@ -17,8 +16,8 @@ public class GlobalControllerAdvice {
     private UserService userService;
 
     @ModelAttribute
-    public void addAttributes(Model model, Principal principal, HttpServletRequest request) {
-        boolean isUserLoggedIn = (principal != null);
+    public void addAttributes(Model model, HttpServletRequest request) {
+        boolean isUserLoggedIn = (request.getUserPrincipal() != null);
         model.addAttribute("isUserLoggedIn", isUserLoggedIn);
 
         CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
@@ -27,7 +26,7 @@ public class GlobalControllerAdvice {
         }
 
         if (isUserLoggedIn) {
-            String username = principal.getName();
+            String username = request.getUserPrincipal().getName();
             model.addAttribute("userName", username);
 
             User user = userService.findByUsername(username).orElse(null);

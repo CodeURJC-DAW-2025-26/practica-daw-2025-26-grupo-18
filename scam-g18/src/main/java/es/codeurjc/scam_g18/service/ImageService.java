@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.Base64;
-import java.util.Optional;
 
 import javax.sql.rowset.serial.SerialBlob;
 

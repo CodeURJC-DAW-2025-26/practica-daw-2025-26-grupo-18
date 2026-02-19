@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -42,7 +44,7 @@ public class DatabaseInitializer {
     private ImageService imageService;
 
     @PostConstruct
-    public void init() throws java.io.IOException, java.sql.SQLException {
+    public void init() throws IOException, SQLException {
         if (roleRepository.count() == 0) {
             initializeRoles();
             initializeUsers();
@@ -107,7 +109,7 @@ public class DatabaseInitializer {
         tagRepository.save(new Tag("Libertad Financiera"));
     }
 
-    private void initializeCourses() {
+    private void initializeCourses() throws IOException, SQLException {
         User creator = userRepository.findByUsername("admin").orElseThrow();
         User juan = userRepository.findByUsername("juan_inversor").orElseThrow();
 
@@ -197,7 +199,7 @@ public class DatabaseInitializer {
         courseRepository.save(course3);
     }
 
-    private void initializeEvents() {
+    private void initializeEvents() throws IOException, SQLException {
         User creator = userRepository.findByUsername("admin").orElseThrow();
         Tag liderazgo = tagRepository.findByName("Liderazgo").orElseThrow();
         Tag personal = tagRepository.findByName("Desarrollo Personal").orElseThrow();
