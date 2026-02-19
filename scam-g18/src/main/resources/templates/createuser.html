@@ -33,11 +33,11 @@
                         <form id="loginForm" action="/login" method="post">
                             <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
                             <div class="mb-3">
-                                <label for="loginEmail" class="form-label small fw-bold">Nombre de usuario</label>
+                                <label for="loginEmail" class="form-label small fw-bold">Usuario o Correo electrónico</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-person"></i></span>
                                     <input type="text" class="form-control" id="loginEmail" name="username"
-                                        placeholder="usuario" required />
+                                        placeholder="Usuario o correo electrónico" required />
                                 </div>
                             </div>
 
@@ -49,6 +49,11 @@
                                         placeholder="••••••••" required />
                                 </div>
                             </div>
+
+                            <div class="d-grid mb-3">
+                                <button type="submit" class="btn btn-primary py-2 fw-bold">Iniciar Sesión</button>
+                            </div>
+
                             <div class="position-relative text-center mb-4">
                                 <hr class="text-secondary opacity-25" />
                                 <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 small text-muted">o

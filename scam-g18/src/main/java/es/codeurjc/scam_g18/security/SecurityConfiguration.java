@@ -18,6 +18,8 @@ public class SecurityConfiguration {
 
     @Autowired
     public UserDetailsService userDetailsService;
+    @Autowired
+    private CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -71,8 +73,12 @@ public class SecurityConfiguration {
             
             // 2. NUEVO: SISTEMA DE LOGIN SOCIAL (OAuth2 con Google)
             .oauth2Login(oauth2 -> oauth2
-                .loginPage("/login") // Usa la misma vista de tu formulario actual
-                .defaultSuccessUrl("/") // Redirige al inicio si Google autentica correctamente
+                .loginPage("/login")
+                .defaultSuccessUrl("/")
+                .failureUrl("/login?error=userNotFound") // Redirige aquí si el usuario no existe en tu BD
+                .userInfoEndpoint(userInfo -> userInfo
+                    .userService(customOAuth2UserService) // Usa tu servicio personalizado
+                )
             )
             
             // 3. SISTEMA DE LOGOUT
