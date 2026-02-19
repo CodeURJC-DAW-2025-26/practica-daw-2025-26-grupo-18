@@ -34,40 +34,54 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http.authenticationProvider(authenticationProvider()); // Esto lo haremos luego, no te preocupes si da rojo
-                                                               // ahora
+        http.authenticationProvider(authenticationProvider()); 
 
         http
-                .authorizeHttpRequests(authorize -> authorize
-                        // NIVEL 0: ANONYMOUS (Público)
-                        .requestMatchers("/css/**", "/js/**", "/img/**", "/images/**", "/*.css", "/*.js", "/webjars/**")
-                        .permitAll()
-                        .requestMatchers("/", "/courses", "/events").permitAll()
-                        .requestMatchers("/login", "/register", "/error").permitAll()
-                        // NIVEL 1: REGISTERED (Ver detalles y comprar)
-                        .requestMatchers("/course/{id}", "/events/{id}").hasAnyRole("USER", "SUBSCRIBED", "ADMIN")
-                        .requestMatchers("/course/{id}/enroll", "/events/{id}/register")
-                        .hasAnyRole("USER", "SUBSCRIBED", "ADMIN")
-                        // NIVEL 2: SUBSCRIBED (Crear contenido)
-                        .requestMatchers("/courses/new", "/events/new").hasAnyRole("SUBSCRIBED", "ADMIN")
-                        // Editar y borrar (la comprobación de "dueño" va en el controlador, pero aquí
-                        // filtramos el rol mínimo)
-                        .requestMatchers("/course/{id}/edit", "/course/{id}/delete").hasAnyRole("SUBSCRIBED", "ADMIN")
-                        .requestMatchers("/events/*/edit", "/events/*/delete").hasAnyRole("SUBSCRIBED", "ADMIN")
-                        // NIVEL 3: ADMIN (Todo)
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+            .authorizeHttpRequests(authorize -> authorize
+                // NIVEL 0: ANONYMOUS (Público)
+                .requestMatchers("/css/**", "/js/**", "/img/**", "/images/**", "/*.css", "/*.js", "/webjars/**").permitAll()
+                .requestMatchers("/", "/courses", "/events").permitAll()
+                .requestMatchers("/login", "/register", "/error").permitAll()
+                
+                // NIVEL 1: REGISTERED (Ver detalles y comprar)
+                .requestMatchers("/course/{id}", "/events/{id}").hasAnyRole("USER", "SUBSCRIBED", "ADMIN")
+                .requestMatchers("/course/{id}/enroll", "/events/{id}/register").hasAnyRole("USER", "SUBSCRIBED", "ADMIN")
+                
+                // NIVEL 2: SUBSCRIBED (Crear contenido)
+                .requestMatchers("/courses/new", "/events/new").hasAnyRole("SUBSCRIBED", "ADMIN")
+                
+                // Editar y borrar (la comprobación de "dueño" va en el controlador, pero aquí filtramos el rol mínimo)
+                .requestMatchers("/course/{id}/edit", "/course/{id}/delete").hasAnyRole("SUBSCRIBED", "ADMIN")
+                .requestMatchers("/events/*/edit", "/events/*/delete").hasAnyRole("SUBSCRIBED", "ADMIN")
+                
+                // NIVEL 3: ADMIN (Todo)
+                .requestMatchers("/admin/**").hasRole("ADMIN")
 
-                        // Cualquier otra cosa requiere login
-                        .anyRequest().authenticated())
-                .formLogin(formLogin -> formLogin
-                        .loginPage("/login")
-                        .failureUrl("/loginerror")
-                        .defaultSuccessUrl("/")
-                        .permitAll())
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/")
-                        .permitAll());
+                // Cualquier otra cosa requiere login
+                .anyRequest().authenticated()
+            )
+            
+            // 1. SISTEMA DE LOGIN TRADICIONAL (Usuario y Contraseña)
+            .formLogin(formLogin -> formLogin
+                .loginPage("/login")
+                .failureUrl("/loginerror")
+                .defaultSuccessUrl("/")
+                .permitAll()
+            )
+            
+            // 2. NUEVO: SISTEMA DE LOGIN SOCIAL (OAuth2 con Google)
+            .oauth2Login(oauth2 -> oauth2
+                .loginPage("/login") // Usa la misma vista de tu formulario actual
+                .defaultSuccessUrl("/") // Redirige al inicio si Google autentica correctamente
+            )
+            
+            // 3. SISTEMA DE LOGOUT
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/")
+                .permitAll()
+            );
+
         return http.build();
     }
 }

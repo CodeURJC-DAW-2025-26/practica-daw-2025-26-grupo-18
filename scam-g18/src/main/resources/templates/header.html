@@ -47,15 +47,15 @@
                 <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
             </nav>
             {{#isUserLoggedIn}}
-            <div class="header-profile d-flex align-items-center gap-3"
-                style="font-family: var(--nav-font); color: var(--nav-color); font-size: 16px">
-                <span class="profile-name">{{userName}}
-                </span>
-                <img src="{{userProfileImage}}" alt="Profile" class="rounded-circle"
-                    style="width: 40px; height: 40px; object-fit: cover" />
+            <div class="header-profile d-flex align-items-center gap-3" style="font-family: var(--nav-font); color: var(--nav-color); font-size: 16px">
+                <span class="profile-name">{{userName}} </span>
+                <img src="{{userProfileImage}}" alt="Profile" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover" />
+                <form action="/logout" method="post" class="m-0">
+                    <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Logout</button>
+                </form>
             </div>
-            {{/isUserLoggedIn}}
-            {{^isUserLoggedIn}}
+            {{/isUserLoggedIn}} {{^isUserLoggedIn}}
             <a class="btn-getstarted" href="/login">Iniciar sesión/Registrarse</a>
             {{/isUserLoggedIn}}
         </div>

@@ -23,4 +23,10 @@ public class IndexController {
 
         return "index";
     }
+
+    @GetMapping("/error")
+    public String handleError(Model model) {
+        model.addAttribute("errorMessage", "Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo más tarde.");
+        return "error";
+    }
 }

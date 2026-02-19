@@ -74,3 +74,5 @@ hs_err_pid*
 
 # Allow vendor/ and assets/ to be tracked (they are part of the site)
 # If you want to ignore a specific vendor package, add it explicitly.
+
+aplication.properties

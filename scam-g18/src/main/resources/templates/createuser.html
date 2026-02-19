@@ -25,6 +25,11 @@
                             <h2 class="fw-bold text-dark">Iniciar Sesión</h2>
                             <p class="text-muted">Bienvenido de nuevo a SCAM</p>
                         </div>
+                        {{#error}}
+                        <div class="alert alert-danger" role="alert">
+                            {{error}}
+                        </div>
+                        {{/error}}
                         <form id="loginForm" action="/login" method="post">
                             <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
                             <div class="mb-3">
@@ -44,10 +49,16 @@
                                         placeholder="••••••••" required />
                                 </div>
                             </div>
+                            <div class="position-relative text-center mb-4">
+                                <hr class="text-secondary opacity-25" />
+                                <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 small text-muted">o
+                                    continúa con</span>
+                            </div>
+
                             <div class="d-grid mb-4">
-                                <button type="submit" class="btn btn-primary py-2 fw-bold"
-                                    style="background-color: var(--accent-color); border-color: var(--accent-color)">Iniciar
-                                    Sesión</button>
+                                <a href="/oauth2/authorization/google" class="btn btn-outline-dark py-2 fw-bold d-flex align-items-center justify-content-center gap-2">
+                                    <i class="bi bi-google text-danger"></i> Iniciar sesión con Google
+                                </a>
                             </div>
                         </form>
                         {{/isRegister}}
@@ -57,7 +68,7 @@
                             <h2 class="fw-bold text-dark">Crear Cuenta</h2>
                             <p class="text-muted">Empieza tu aprendizaje hoy</p>
                         </div>
-                        <form id="registerForm" action="/register" method="post">
+                        <form id="registerForm" action="/register" method="post" enctype="multipart/form-data">
                             <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
                             <div class="mb-3">
                                 <label for="regUsername" class="form-label small fw-bold">Nombre de usuario</label>
@@ -86,50 +97,72 @@
                                 </div>
                             </div>
 
+                            <div class="mb-3">
+                                <label for="regGender" class="form-label small fw-bold">Género</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-gender-ambiguous"></i></span>
+                                    <select class="form-select" id="regGender" name="gender" required>
+                                        <option value="" selected disabled>Selecciona una opción</option>
+                                        <option value="MALE">Masculino</option>
+                                        <option value="FEMALE">Femenino</option>
+                                        <option value="PREFER_NOT_TO_SAY">Prefiero no decirlo</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="regBirthDate" class="form-label small fw-bold">Fecha de nacimiento</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                                    <input type="date" class="form-control" id="regBirthDate" name="birthDate" required />
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="regCountry" class="form-label small fw-bold">País</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-globe"></i></span>
+                                    <input type="text" class="form-control" id="regCountry" name="country"
+                                        placeholder="Ej: España" required />
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="regImage" class="form-label small fw-bold">Foto de perfil</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-image"></i></span>
+                                    <input type="file" class="form-control" id="regImage" name="image" accept="image/*" required />
+                                </div>
+                            </div>
+
                             <div class="d-grid mb-4">
                                 <button type="submit" class="btn btn-primary py-2 fw-bold"
                                     style="background-color: var(--accent-color); border-color: var(--accent-color)">Registrarse</button>
                             </div>
                         </form>
+
                         {{/isRegister}}
+                        <div class="d-grid mb-4 d-none">
+                            </div>
+                            <div class="text-center p-3 rounded bg-light">
+                                {{^isRegister}}
+                                <p class="mb-0 small">
+                                    ¿No tienes cuenta? <a href="/register" class="fw-bold text-decoration-none"
+                                        style="color: var(--accent-color)">Registrarse</a>
+                                </p>
+                                {{/isRegister}}
+                                {{#isRegister}}
+                                <p class="mb-0 small">
+                                    ¿Ya tienes cuenta? <a href="/login" class="fw-bold text-decoration-none"
+                                        style="color: var(--accent-color)">Iniciar Sesión</a>
+                                </p>
+                                {{/isRegister}}
+                            </div>
                     </div>
                 </div>
-
-                <div class="mb-4 d-none"> <!-- Ocultar campos viejos -->
-                </div>
-                <div class="d-flex justify-content-end mt-2 d-none" id="forgotPasswordLink">
-                </div>
             </div>
 
-            <div class="d-grid mb-4 d-none">
-            </div>
-
-            <div class="position-relative text-center mb-4">
-                <hr class="text-secondary opacity-25" />
-                <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 small text-muted">o
-                    continúa con</span>
-            </div>
-
-            <div class="d-grid mb-4">
-                <button type="button"
-                    class="btn btn-outline-secondary py-2 d-flex align-items-center justify-content-center gap-2"><i
-                        class="bi bi-google"></i> Google</button>
-            </div>
-
-            <div class="text-center p-3 rounded bg-light">
-                {{^isRegister}}
-                <p class="mb-0 small">
-                    ¿No tienes cuenta? <a href="/register" class="fw-bold text-decoration-none"
-                        style="color: var(--accent-color)">Registrarse</a>
-                </p>
-                {{/isRegister}}
-                {{#isRegister}}
-                <p class="mb-0 small">
-                    ¿Ya tienes cuenta? <a href="/login" class="fw-bold text-decoration-none"
-                        style="color: var(--accent-color)">Iniciar Sesión</a>
-                </p>
-                {{/isRegister}}
-            </div>
+            
         </div>
         </div>
         </div>

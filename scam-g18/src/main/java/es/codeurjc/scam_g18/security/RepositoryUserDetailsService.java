@@ -10,8 +10,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import es.codeurjc.scam_g18.model.Role;
 
+import es.codeurjc.scam_g18.model.Role;
 import es.codeurjc.scam_g18.model.User;
 import es.codeurjc.scam_g18.repository.UserRepository;
 
