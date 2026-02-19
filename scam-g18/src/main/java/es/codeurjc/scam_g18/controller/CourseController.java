@@ -12,21 +12,28 @@ import java.util.Map;
 import java.util.ArrayList;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import org.springframework.web.bind.annotation.RequestParam;
+import es.codeurjc.scam_g18.service.TagService;
+import es.codeurjc.scam_g18.model.Tag;
+
 @Controller
 public class CourseController {
 
     private final CourseService courseService;
+    private final TagService tagService;
 
-    public CourseController(CourseService courseService) {
+    public CourseController(CourseService courseService, TagService tagService) {
         this.courseService = courseService;
+        this.tagService = tagService;
     }
 
     @GetMapping("/courses")
-    public String courses(Model model) {
-        // Obtener todos los cursos de la base de datos
-        List<Course> allCourses = courseService.getAllCourses();
+    public String courses(Model model, @RequestParam(required = false) String search,
+            @RequestParam(required = false) List<String> tags) {
+        // Obtener cursos filtrados o todos
+        List<Course> allCourses = courseService.searchCourses(search, tags);
 
-        // Enriquecer cada curso con datos calculados del servicio
+        // Enriquecer cada curso con datos calculados del service
         List<Map<String, Object>> enrichedCourses = new ArrayList<>();
         for (Course course : allCourses) {
             Map<String, Object> courseData = new HashMap<>();
@@ -44,6 +51,19 @@ public class CourseController {
         }
 
         model.addAttribute("courses", enrichedCourses);
+        model.addAttribute("search", search);
+
+        // Prepara los tags para la vista (para poder marcar los activos)
+        List<Map<String, Object>> tagsView = new ArrayList<>();
+        List<Tag> allTags = tagService.getAllTags();
+        for (Tag tag : allTags) {
+            Map<String, Object> tagMap = new HashMap<>();
+            tagMap.put("name", tag.getName());
+            boolean isActive = tags != null && tags.contains(tag.getName());
+            tagMap.put("active", isActive);
+            tagsView.add(tagMap);
+        }
+        model.addAttribute("tagsView", tagsView);
 
         return "courses";
     }

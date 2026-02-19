@@ -17,6 +17,19 @@ public class EventService {
         return eventRepository.findAll();
     }
 
+    public List<Event> searchEvents(String keyword, List<String> tags) {
+        if ((keyword == null || keyword.trim().isEmpty()) && (tags == null || tags.isEmpty())) {
+            return getAllEvents();
+        }
+        if (keyword != null && keyword.trim().isEmpty()) {
+            keyword = null;
+        }
+        if (tags != null && tags.isEmpty()) {
+            tags = null;
+        }
+        return eventRepository.findByKeywordAndTags(keyword, tags);
+    }
+
     public String getPriceInEuros(Event event) {
         if (event.getPriceCents() == null)
             return "0.00";

@@ -13,18 +13,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import es.codeurjc.scam_g18.service.TagService;
+import es.codeurjc.scam_g18.model.Tag;
+import org.springframework.web.bind.annotation.RequestParam;
+
 @Controller
 public class EventController {
 
     private final EventService eventService;
+    private final TagService tagService;
 
-    public EventController(EventService eventService) {
+    public EventController(EventService eventService, TagService tagService) {
         this.eventService = eventService;
+        this.tagService = tagService;
     }
 
     @GetMapping("/events")
-    public String events(Model model) {
-        List<Event> allEvents = eventService.getAllEvents();
+    public String events(Model model, @RequestParam(required = false) String search,
+            @RequestParam(required = false) List<String> tags) {
+        List<Event> allEvents = eventService.searchEvents(search, tags);
         List<Map<String, Object>> eventsData = new ArrayList<>();
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
@@ -35,10 +42,10 @@ public class EventController {
             eventData.put("title", event.getTitle());
             eventData.put("description", event.getDescription());
             eventData.put("priceEuros", eventService.getPriceInEuros(event));
-            
+
             if (event.getStartDate() != null) {
                 eventData.put("formattedDate", event.getStartDate().format(dateFormatter));
-                
+
                 String timeStr = event.getStartDate().format(timeFormatter);
                 if (event.getEndDate() != null) {
                     timeStr += " - " + event.getEndDate().format(timeFormatter);
@@ -65,6 +72,20 @@ public class EventController {
         }
 
         model.addAttribute("events", eventsData);
+        model.addAttribute("search", search);
+
+        // Prepara los tags para la vista
+        List<Map<String, Object>> tagsView = new ArrayList<>();
+        List<Tag> allTags = tagService.getAllTags();
+        for (Tag tag : allTags) {
+            Map<String, Object> tagMap = new HashMap<>();
+            tagMap.put("name", tag.getName());
+            boolean isActive = tags != null && tags.contains(tag.getName());
+            tagMap.put("active", isActive);
+            tagsView.add(tagMap);
+        }
+        model.addAttribute("tagsView", tagsView);
+
         return "events";
     }
 
@@ -109,7 +130,7 @@ public class EventController {
         eventData.put("tags", event.getTags());
         // Agrego category por si acaso es útil, y el status
         eventData.put("category", event.getCategory());
-        
+
         model.addAttribute("event", eventData);
         return "event";
     }
