@@ -17,6 +17,7 @@ public class GlobalModelAttributes {
     @ModelAttribute
     public void addGlobalAttributes(Model model) {
         model.addAttribute("isUserLoggedIn", userService.isUserLoggedIn());
+        model.addAttribute("userId", userService.getCurrentUserId());
         model.addAttribute("userName", userService.getCurrentUserName());
         model.addAttribute("userProfileImage", userService.getCurrentUserProfileImage());
     }
