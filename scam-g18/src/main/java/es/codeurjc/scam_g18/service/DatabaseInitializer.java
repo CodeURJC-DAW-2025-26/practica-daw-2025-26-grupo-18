@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -38,14 +40,46 @@ public class DatabaseInitializer {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private ImageService imageService;
+
     @PostConstruct
-    public void init() {
+    public void init() throws IOException, SQLException {
         if (roleRepository.count() == 0) {
             initializeRoles();
             initializeUsers();
             initializeTags();
             initializeCourses();
             initializeEvents();
+        }
+        ensureDefaultImagesForExistingData();
+    }
+
+    private void ensureDefaultImagesForExistingData() throws IOException, SQLException {
+        List<Course> courses = courseRepository.findAll();
+        String[] courseImagePaths = { "/img/features/features-1.webp", "/img/features/features-2.webp",
+                "/img/features/features-3.webp" };
+
+        for (int i = 0; i < courses.size(); i++) {
+            Course course = courses.get(i);
+            if (course.getImage() == null) {
+                String imagePath = courseImagePaths[i % courseImagePaths.length];
+                course.setImage(imageService.saveImage(imagePath));
+                courseRepository.save(course);
+            }
+        }
+
+        List<Event> events = eventRepository.findAll();
+        String[] eventImagePaths = { "/img/services/services-1.webp", "/img/services/Services-3.webp",
+                "/img/services/services-7.webp" };
+
+        for (int i = 0; i < events.size(); i++) {
+            Event event = events.get(i);
+            if (event.getImage() == null) {
+                String imagePath = eventImagePaths[i % eventImagePaths.length];
+                event.setImage(imageService.saveImage(imagePath));
+                eventRepository.save(event);
+            }
         }
     }
 
@@ -104,7 +138,7 @@ public class DatabaseInitializer {
         tagRepository.save(new Tag("Libertad Financiera"));
     }
 
-    private void initializeCourses() {
+    private void initializeCourses() throws IOException, SQLException {
         User creator = userRepository.findByUsername("admin").orElseThrow();
         User juan = userRepository.findByUsername("juan_inversor").orElseThrow();
 
@@ -141,7 +175,7 @@ public class DatabaseInitializer {
                 new ArrayList<>(), // Reviews placeholder
                 points1,
                 prereqs1);
-        course1.setImage(new Image("/img/features/feature-1.jpg")); // Placeholder image
+        course1.setImage(imageService.saveImage("/img/features/features-1.webp"));
         courseRepository.save(course1);
 
         // Course 2
@@ -168,7 +202,7 @@ public class DatabaseInitializer {
                 new ArrayList<>(),
                 points2,
                 List.of("Ordenador", "Conexión a Internet"));
-        course2.setImage(new Image("/img/features/feature-2.jpg"));
+        course2.setImage(imageService.saveImage("/img/features/features-2.webp"));
         courseRepository.save(course2);
 
         // Course 3
@@ -190,11 +224,11 @@ public class DatabaseInitializer {
                 new ArrayList<>(),
                 List.of("Comunicación asertiva", "Delegación efectiva"),
                 List.of("Experiencia previa gestionando personas recomendada"));
-        course3.setImage(new Image("/img/features/feature-3.jpg"));
+        course3.setImage(imageService.saveImage("/img/features/features-3.webp"));
         courseRepository.save(course3);
     }
 
-    private void initializeEvents() {
+    private void initializeEvents() throws IOException, SQLException {
         User creator = userRepository.findByUsername("admin").orElseThrow();
         Tag liderazgo = tagRepository.findByName("Liderazgo").orElseThrow();
         Tag personal = tagRepository.findByName("Desarrollo Personal").orElseThrow();
@@ -215,7 +249,7 @@ public class DatabaseInitializer {
         Event event1 = new Event(
                 creator,
                 loc1,
-                new Image("/img/features/feature-1.jpg"),
+                imageService.saveImage("/img/services/services-1.webp"),
                 "Cumbre de Liderazgo 2026",
                 "El evento más importante para CEOs y directivos en Europa.",
                 15000, // 150.00
@@ -234,7 +268,7 @@ public class DatabaseInitializer {
         Event event2 = new Event(
                 creator,
                 null, // Online has no location
-                new Image("/img/features/feature-2.jpg"),
+                imageService.saveImage("/img/services/Services-3.webp"),
                 "Webinar: Despierta tu Potencial",
                 "Taller online intensivo para romper tus barreras mentales.",
                 0, // Free
@@ -260,7 +294,7 @@ public class DatabaseInitializer {
         Event event3 = new Event(
                 creator,
                 loc3,
-                new Image("/img/features/feature-3.jpg"),
+                imageService.saveImage("/img/services/services-7.webp"),
                 "Networking & Tapas",
                 "Conoce a otros emprendedores en un ambiente distendido.",
                 1500, // 15.00

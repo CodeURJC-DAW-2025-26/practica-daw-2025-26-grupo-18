@@ -1,18 +1,19 @@
-    {{>header}}
-        <main class="main">
-        <!-- Page Title -->
-            <div class="page-title light-background">
-                <div class="container">
-                    <nav class="breadcrumbs">
-                        <ol>
-                            <li><a href="index.html">Home</a></li>
-                            <li><a href="events.html">Eventos</a></li>
-                            <li class="current">{{event.title}}</li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-            <!-- End Page Title -->
+{{>header}}
+<main class="main">
+    <!-- Page Title -->
+    <div class="page-title light-background">
+        <div class="container">
+            <nav class="breadcrumbs">
+                <ol>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/events">Eventos</a></li>
+                    <li class="current">{{event.title}}</li>
+                </ol>
+            </nav>
+            <h1>{{event.title}}</h1>
+        </div>
+    </div>
+    <!-- End Page Title -->
 
             <!-- Event Details Section -->
             <section id="service-details" class="service-details section">
@@ -31,89 +32,70 @@
                                     <p class="lead">{{event.description}}</p>
                                 </div>
 
-                                <div class="service-tabs" data-aos="fade-up" data-aos-delay="200">
-                                    <ul class="nav nav-tabs" id="eventTab" role="tablist">
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#event-details-tab-1" type="button" role="tab" aria-controls="overview" aria-selected="true">
-                                                <i class="bi bi-info-circle"></i> Resumen
-                                            </button>
-                                        </li>
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#event-details-tab-2" type="button" role="tab" aria-controls="agenda" aria-selected="false"><i class="bi bi-diagram-3"></i> Agenda</button>
-                                        </li>
-                                        <li class="nav-item" role="presentation">
-                                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#event-details-tab-3" type="button" role="tab" aria-controls="speakers" aria-selected="false"><i class="bi bi-mic"></i> Ponentes</button>
-                                        </li>
-                                    </ul>
+                        <div class="service-tabs" data-aos="fade-up" data-aos-delay="200">
+                            <ul class="nav nav-tabs" id="eventTab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" data-bs-toggle="tab"
+                                        data-bs-target="#event-details-tab-1" type="button" role="tab"
+                                        aria-controls="overview" aria-selected="true">
+                                        <i class="bi bi-info-circle"></i> Resumen
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#event-details-tab-2"
+                                        type="button" role="tab" aria-controls="agenda" aria-selected="false"><i
+                                            class="bi bi-diagram-3"></i> Agenda</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#event-details-tab-3"
+                                        type="button" role="tab" aria-controls="speakers" aria-selected="false"><i
+                                            class="bi bi-mic"></i> Ponentes</button>
+                                </li>
+                            </ul>
 
-                                    <div class="tab-content">
-                                        <div class="tab-pane fade show active" id="event-details-tab-1" role="tabpanel" aria-labelledby="overview-tab">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="content-block">
-                                                        <h3>Una experiencia de alto impacto</h3>
-                                                        <p>Explora las tendencias que están transformando el emprendimiento en 2026: IA aplicada, modelos de negocio resilientes y nuevas estrategias de crecimiento.</p>
-                                                        <p>Incluye espacios para networking guiado, reuniones 1:1 y un cierre con pitch sessions para startups seleccionadas.</p>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <img src="../img/services/services-7.webp" alt="Evento de innovación" class="img-fluid rounded" />
-                                                </div>
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="event-details-tab-1" role="tabpanel"
+                                    aria-labelledby="overview-tab">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="content-block">
+                                                <h3>Sobre este evento</h3>
+                                                <p>{{event.description}}</p>
                                             </div>
                                         </div>
+                                        <div class="col-md-6">
+                                            <img src="{{event.image}}" alt="{{event.title}}"
+                                                class="img-fluid rounded" />
+                                        </div>
+                                    </div>
+                                </div>
 
-                                        <div class="tab-pane fade" id="event-details-tab-2" role="tabpanel" aria-labelledby="agenda-tab">
-                                            <div class="process-timeline">
-                                                <div class="timeline-item">
-                                                    <div class="timeline-marker">09:30</div>
-                                                    <div class="timeline-content">
-                                                        <h4>Registro &amp; bienvenida</h4>
-                                                        <p>Acreditaciones, café y networking inicial con asistentes y partners.</p>
-                                                    </div>
-                                                </div>
-                                                <div class="timeline-item">
-                                                    <div class="timeline-marker">10:30</div>
-                                                    <div class="timeline-content">
-                                                        <h4>Keynote: Escalabilidad real</h4>
-                                                        <p>Estrategias para pasar de validación a crecimiento sostenible en mercados globales.</p>
-                                                    </div>
-                                                </div>
-                                                <div class="timeline-item">
-                                                    <div class="timeline-marker">13:00</div>
-                                                    <div class="timeline-content">
-                                                        <h4>Panel de inversión</h4>
-                                                        <p>Fondos, business angels y corporates comparten criterios de inversión y tendencias 2026.</p>
-                                                    </div>
-                                                </div>
-                                                <div class="timeline-item">
-                                                    <div class="timeline-marker">16:30</div>
-                                                    <div class="timeline-content">
-                                                        <h4>Networking guiado</h4>
-                                                        <p>Mesas temáticas y sesiones 1:1 para conexiones estratégicas.</p>
-                                                    </div>
-                                                </div>
+                                <div class="tab-pane fade" id="event-details-tab-2" role="tabpanel"
+                                    aria-labelledby="agenda-tab">
+                                    <div class="process-timeline">
+                                        {{#event.sessions}}
+                                        <div class="timeline-item">
+                                            <div class="timeline-marker">{{time}}</div>
+                                            <div class="timeline-content">
+                                                <h4>{{title}}</h4>
+                                                <p>{{description}}</p>
                                             </div>
                                         </div>
+                                        {{/event.sessions}}
+                                        {{^event.sessions}}
+                                        <p>Agenda no disponible.</p>
+                                        {{/event.sessions}}
+                                    </div>
+                                </div>
 
-                                        <div class="tab-pane fade" id="event-details-tab-3" role="tabpanel" aria-labelledby="speakers-tab">
-                                            <div class="row g-4">
-                                                <div class="col-md-6">
-                                                    <div class="benefit-card">
-                                                        <div class="benefit-icon">
-                                                            <i class="bi bi-person-circle"></i>
-                                                        </div>
-                                                        <h4>Ana Martínez</h4>
-                                                        <p>Head of Growth en ScaleUp Labs. Experta en expansión internacional y métricas de tracción.</p>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="benefit-card">
-                                                        <div class="benefit-icon">
-                                                            <i class="bi bi-person-circle"></i>
-                                                        </div>
-                                                        <h4>Carlos Ruiz</h4>
-                                                        <p>Partner en Venture Capital Madrid. Especialista en inversión early stage y due diligence.</p>
-                                                    </div>
+                                <div class="tab-pane fade" id="event-details-tab-3" role="tabpanel"
+                                    aria-labelledby="speakers-tab">
+                                    <div class="row g-4">
+                                        {{#event.speakers}}
+                                        <div class="col-md-6">
+                                            <div class="benefit-card">
+                                                <div class="benefit-icon">
+                                                    <i class="bi bi-person-circle"></i>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="benefit-card">
@@ -157,67 +139,66 @@
                             </div>
                         </div>
 
-                        <div class="col-lg-4 order-lg-2 order-1">
-                            <aside class="service-sidebar" data-aos="fade-up" data-aos-delay="200">
-                                <div class="action-card">
-                                    <h3>Reserva tu plaza</h3>
-                                    <p>Acceso completo al evento.</p>
-                                    <a href="/cart" class="btn-primary">Comprar entrada · {{event.priceEuros}}€</a>
-                                    <span class="guarantee"><i class="bi bi-shield-check"></i> Confirmación inmediata por email</span>
-                                </div>
-
-                                <div class="service-features-list">
-                                    <h4>Detalles clave</h4>
-                                    <ul>
-                                        <li>
-                                            <i class="bi bi-broadcast"></i>
-                                            <div>
-                                                <h5>Formato presencial</h5>
-                                                <p>Auditorio principal + salas de networking</p>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <i class="bi bi-translate"></i>
-                                            <div>
-                                                <h5>Idioma</h5>
-                                                <p>Español (traducción simultánea EN)</p>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <i class="bi bi-cup-hot"></i>
-                                            <div>
-                                                <h5>Incluye</h5>
-                                                <p>Coffee breaks, acceso a materiales y grabación</p>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-
-                                <div class="contact-info">
-                                    <h4>Organización</h4>
-                                    <div class="contact-method">
-                                        <i class="bi bi-envelope"></i>
-                                        <div>
-                                            <span>Email</span>
-                                            <p>eventos@scam.com</p>
-                                        </div>
-                                    </div>
-                                    <div class="contact-method">
-                                        <i class="bi bi-telephone"></i>
-                                        <div>
-                                            <span>Teléfono</span>
-                                            <p>+34 91 123 45 67</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </aside>
+                <div class="col-lg-4 order-lg-2 order-1">
+                    <aside class="service-sidebar" data-aos="fade-up" data-aos-delay="200">
+                        <div class="action-card">
+                            <h3>Reserva tu plaza</h3>
+                            <p>Acceso completo al evento.</p>
+                            <a href="/cart" class="btn-primary">Comprar entrada · {{event.priceEuros}} €</a>
+                            <span class="guarantee"><i class="bi bi-shield-check"></i> Confirmación inmediata por
+                                email</span>
                         </div>
-                    </div>
-                </div>
-            </section>
-            <!-- End Event Details Section -->
-        </main>
 
-        {{>footer}}
-    </body>
+                        <div class="service-features-list">
+                            <h4>Detalles clave</h4>
+                            <ul>
+                                <li>
+                                    <i class="bi bi-broadcast"></i>
+                                    <div>
+                                        <h5>Formato</h5>
+                                        <p>{{event.locationName}}</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <i class="bi bi-tags"></i>
+                                    <div>
+                                        <h5>Categoría</h5>
+                                        <div class="d-flex flex-wrap gap-1">
+                                            {{#event.tags}}
+                                            <span class="badge bg-light text-dark">{{name}}</span>
+                                            {{/event.tags}}
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="contact-info">
+                            <h4>Organización</h4>
+                            <div class="contact-method">
+                                <i class="bi bi-envelope"></i>
+                                <div>
+                                    <span>Email</span>
+                                    <p>eventos@scam.com</p>
+                                </div>
+                            </div>
+                            <div class="contact-method">
+                                <i class="bi bi-telephone"></i>
+                                <div>
+                                    <span>Teléfono</span>
+                                    <p>+34 91 123 45 67</p>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End Event Details Section -->
+</main>
+
+{{>footer}}
+</body>
+
 </html>

@@ -3,7 +3,6 @@ package es.codeurjc.scam_g18.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +21,8 @@ import es.codeurjc.scam_g18.model.Subscription;
 import es.codeurjc.scam_g18.model.SubscriptionStatus;
 import es.codeurjc.scam_g18.repository.SubscriptionRepository;
 import es.codeurjc.scam_g18.repository.OrderRepository;
+import es.codeurjc.scam_g18.repository.RoleRepository;
+import es.codeurjc.scam_g18.model.Role;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -35,9 +36,27 @@ public class CartService {
     private EventRegistrationRepository eventRegistrationRepository;
     @Autowired
     private SubscriptionRepository subscriptionRepository;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private RoleRepository roleRepository;
 
     private static final int SUBSCRIPTION_PRICE_CENTS = 999;
     private static final int SUBSCRIPTION_DURATION_DAYS = 30;
+
+    // ... (lines 42-128 remain unchanged, will use separate tool call if needed or
+    // just replace the method) ...
+    // Wait, I can't skip lines in replacement content unless I include them.
+    // I will replace the imports/fields and the activateSubscription method
+    // separately or together if close.
+    // They are far apart. I'll do fields first, then the method.
+
+    // Using a new strategy: I will replace the whole file content related to fields
+    // and the specific method to avoid errors,
+    // but the instruction says "ReplacementChunk".
+    // I will use two replace_file_content calls? No, "Do NOT make multiple parallel
+    // calls to this tool".
+    // I should use multi_replace_file_content.
 
     public Order createOrder(User user) {
         Order order = new Order(user, 0, OrderStatus.PENDING);
@@ -94,7 +113,6 @@ public class CartService {
         return total;
     }
 
-    // el iva de sanchez
     public int calculateTax(Order order) {
         return (int) (calculateSubtotal(order) * 0.21);
     }
@@ -141,6 +159,16 @@ public class CartService {
         } else {
             subscription = new Subscription(user, java.time.LocalDateTime.now(),
                     java.time.LocalDateTime.now().plusDays(SUBSCRIPTION_DURATION_DAYS), SubscriptionStatus.ACTIVE);
+
+            // Actualizar rol de usuario a SUBSCRIBED si no lo tiene
+            Role subscribedRole = roleRepository.findByName("SUBSCRIBED").orElse(null);
+            if (subscribedRole != null) {
+                boolean hasRole = user.getRoles().stream().anyMatch(r -> r.getName().equals("SUBSCRIBED"));
+                if (!hasRole) {
+                    user.getRoles().add(subscribedRole);
+                    userService.save(user);
+                }
+            }
         }
         subscriptionRepository.save(subscription);
     }

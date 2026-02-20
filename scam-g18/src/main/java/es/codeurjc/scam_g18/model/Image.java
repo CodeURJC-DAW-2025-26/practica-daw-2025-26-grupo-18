@@ -1,9 +1,12 @@
 package es.codeurjc.scam_g18.model;
 
+import java.sql.Blob;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 
 @Entity
@@ -14,13 +17,10 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String url;
+    @Lob
+    private Blob imgData;
 
     public Image() {
-    }
-
-    public Image(String url) {
-        this.url = url;
     }
 
     public Long getId() {
@@ -31,11 +31,11 @@ public class Image {
         this.id = id;
     }
 
-    public String getUrl() {
-        return url;
+    public Blob getData() {
+        return imgData;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setData(Blob data) {
+        this.imgData = data;
     }
 }

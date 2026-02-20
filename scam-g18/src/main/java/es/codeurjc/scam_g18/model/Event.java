@@ -18,7 +18,11 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.Table;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -63,6 +67,13 @@ public class Event {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private EventStatus status;
+
+    @ElementCollection
+    private List<String> speakers = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "event_id")
+    private List<EventSession> sessions = new ArrayList<>();
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -195,5 +206,21 @@ public class Event {
 
     public void setCapacity(Integer capacity) {
         this.capacity = capacity;
+    }
+
+    public List<String> getSpeakers() {
+        return speakers;
+    }
+
+    public void setSpeakers(List<String> speakers) {
+        this.speakers = speakers;
+    }
+
+    public List<EventSession> getSessions() {
+        return sessions;
+    }
+
+    public void setSessions(List<EventSession> sessions) {
+        this.sessions = sessions;
     }
 }

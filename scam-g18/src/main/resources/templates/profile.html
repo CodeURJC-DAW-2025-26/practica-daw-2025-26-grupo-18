@@ -7,7 +7,7 @@
 		<div class="container">
 			<nav class="breadcrumbs">
 				<ol>
-					<li><a href="../../index.html">Home</a></li>
+					<li><a href="/">Home</a></li>
 					<li class="current">Perfil</li>
 				</ol>
 			</nav>
@@ -22,10 +22,10 @@
 				<div class="col-lg-4">
 					<div class="card border-0 shadow-sm bg-light h-100">
 						<div class="card-body p-4 text-center">
-							<img src="../img/person/person-f-8.webp" alt="Foto de perfil" class="rounded-circle mb-3"
+							<img src="{{profileImage}}" alt="Foto de perfil" class="rounded-circle mb-3"
 								width="120" height="120">
-							<h3 class="h5 fw-bold mb-1">Marina Santos</h3>
-							<p class="text-muted mb-1">@marina_tech</p>
+							<h3 class="h5 fw-bold mb-1">{{user.username}}</h3>
+							<p class="text-muted mb-1">@{{user.username}}</p>
 							<p class="text-muted mb-3">Estudiante · Plan Pro</p>
 							<div class="course-tags justify-content-center">
 								<span class="course-tag">Emprendimiento</span>
@@ -34,8 +34,8 @@
 							</div>
 							<hr class="my-4">
 							<div class="text-start">
-								<p class="mb-2"><i class="bi bi-envelope me-2"></i> marina@scam.com</p>
-								<p class="mb-2"><i class="bi bi-geo-alt me-2"></i> Madrid, ES</p>
+								<p class="mb-2"><i class="bi bi-envelope me-2"></i> {{user.email}}</p>
+								<p class="mb-2"><i class="bi bi-geo-alt me-2"></i> {{user.country}}</p>
 								<p class="mb-0"><i class="bi bi-calendar-event me-2"></i> Miembro desde 2024</p>
 								<p class="mb-0"><i class="bi bi-briefcase me-2"></i> Disponibilidad: tardes</p>
 							</div>
