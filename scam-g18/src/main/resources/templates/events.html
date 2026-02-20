@@ -56,7 +56,12 @@
                         <div class="course-card-meta">
                             <div><i class="bi bi-calendar-event"></i> {{formattedDate}}</div>
                             <div><i class="bi bi-clock"></i> {{formattedTime}}</div>
+                            {{#isLocation}}
                             <div><i class="bi bi-geo-alt"></i> {{locationName}}</div>
+                            {{/isLocation}}
+                            {{^isLocation}}
+                            <div><i class="bi bi-geo-alt"></i> Online</div>
+                            {{/isLocation}}
                         </div>
                         <div class="course-card-actions">
                             <a href="/event/{{id}}" class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver detalles</a>
