@@ -100,6 +100,7 @@ public class EventController {
         eventData.put("id", event.getId());
         eventData.put("title", event.getTitle());
         eventData.put("description", event.getDescription());
+        eventData.put("capacity", event.getCapacity());
         eventData.put("priceEuros", eventService.getPriceInEuros(event));
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
@@ -118,19 +119,20 @@ public class EventController {
         }
 
         if (event.getLocation() != null) {
-            String loc = event.getLocation().getCity();
-            if (event.getLocation().getName() != null && !event.getLocation().getName().isEmpty()) {
-                loc += ", " + event.getLocation().getName();
-            }
-            eventData.put("locationName", loc);
+            eventData.put("isLocation", true);
+            eventData.put("locationName", event.getLocation().getName());
+            eventData.put("locationCity", event.getLocation().getCity());
+            eventData.put("locationAddress", event.getLocation().getAddress());
+            eventData.put("locationCountry", event.getLocation().getCountry());
+            eventData.put("locationLat", event.getLocation().getLatitude());
+            eventData.put("locationLon", event.getLocation().getLongitude());
         } else {
-            eventData.put("locationName", "Online");
+            eventData.put("isLocation", false);
         }
 
         eventData.put("tags", event.getTags());
         // Agrego category por si acaso es útil, y el status
         eventData.put("category", event.getCategory());
-
         model.addAttribute("event", eventData);
         return "event";
     }

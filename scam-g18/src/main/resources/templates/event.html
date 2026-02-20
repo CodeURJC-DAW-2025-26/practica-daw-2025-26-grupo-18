@@ -10,7 +10,6 @@
                             <li class="current">{{event.title}}</li>
                         </ol>
                     </nav>
-                    <h1>{{event.title}}</h1>
                 </div>
             </div>
             <!-- End Page Title -->
@@ -26,7 +25,7 @@
                                     <div class="service-meta">
                                         <span><i class="bi bi-calendar-event"></i> {{event.formattedDate}}</span>
                                         <span><i class="bi bi-clock"></i> {{event.formattedTime}}</span>
-                                        <span><i class="bi bi-geo-alt"></i> {{event.locationName}}</span>
+                                        <span><i class="bi bi-geo-alt"></i>{{#event.isLocation}} {{event.locationAddress}}, {{event.locationCity}}, {{event.locationCountry}} {{/event.isLocation}} {{^event.isLocation}} Online {{/event.isLocation}}</span>
                                         <span><i class="bi bi-people"></i> {{event.capacity}} plazas</span>
                                     </div>
                                     <p class="lead">{{event.description}}</p>
@@ -138,16 +137,15 @@
                                         </div>
                                     </div>
                                 </div>
-
+                                {{#event.isLocation}}
                                 <div class="service-gallery" data-aos="fade-up" data-aos-delay="300">
                                     <h3>Ubicación del evento</h3>
                                     <div class="row g-4 align-items-center">
                                         <div class="col-lg-5">
                                             <div class="content-block">
-                                                <h3>IFEMA - Recinto ferial</h3>
-                                                <p class="mb-2">Av. del Partenón, 5</p>
-                                                <p class="mb-2">28042 Madrid, España</p>
-                                                <p class="mb-0">Acceso por Entrada Norte · Parking disponible</p>
+                                                <h3>{{event.locationName}}</h3>
+                                                <p class="mb-2">{{event.locationAddress}}</p>
+                                                <p class="mb-2">{{event.locationCity}}, {{event.locationCountry}}</p>
                                             </div>
                                         </div>
                                         <div class="col-lg-7">
@@ -155,6 +153,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                {{/event.isLocation}}
                             </div>
                         </div>
 
