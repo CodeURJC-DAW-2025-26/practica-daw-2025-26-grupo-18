@@ -2,6 +2,8 @@ package es.codeurjc.scam_g18.controller;
 
 import es.codeurjc.scam_g18.model.User;
 import es.codeurjc.scam_g18.service.AdminService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,11 +14,8 @@ import java.util.Optional;
 @RequestMapping("/admin")
 public class AdminController {
 
-    private final AdminService adminService;
-
-    public AdminController(AdminService adminService) {
-        this.adminService = adminService;
-    }
+    @Autowired
+    private AdminService adminService;
 
     @ModelAttribute
     public void addCommonAttributes(Model model) {

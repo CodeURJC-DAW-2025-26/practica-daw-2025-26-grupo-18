@@ -1,5 +1,6 @@
 package es.codeurjc.scam_g18.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.ui.Model;
@@ -14,8 +15,11 @@ import es.codeurjc.scam_g18.service.TagService;
 @Controller
 public class CourseController {
 
-    private final CourseService courseService;
-    private final TagService tagService;
+    @Autowired
+    private CourseService courseService;
+
+    @Autowired
+    private TagService tagService;
 
     public CourseController(CourseService courseService, TagService tagService) {
         this.courseService = courseService;
