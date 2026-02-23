@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -33,6 +34,23 @@ public class SecurityConfiguration {
                 return authProvider;
         }
 
+        /**
+         * Si el usuario logueado con Google aún no tiene cuenta (ROLE_PENDING),
+         * le lleva al formulario de completar datos. Si ya tiene cuenta, va al inicio.
+         */
+        @Bean
+        public AuthenticationSuccessHandler oauth2SuccessHandler() {
+                return (request, response, authentication) -> {
+                        boolean isPending = authentication.getAuthorities().stream()
+                                        .anyMatch(a -> a.getAuthority().equals("ROLE_PENDING"));
+                        if (isPending) {
+                                response.sendRedirect("/register/google");
+                        } else {
+                                response.sendRedirect("/");
+                        }
+                };
+        }
+
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -48,7 +66,11 @@ public class SecurityConfiguration {
                                                 .requestMatchers("/login", "/register", "/error").permitAll()
                                                 .requestMatchers("/course/{id}", "/event/{id}").permitAll()
 
-                                                // NIVEL 1: REGISTERED (Ccomprar)
+                                                // Registro completar datos via Google (solo usuarios PENDING)
+                                                .requestMatchers("/register/google", "/register/google/cancel")
+                                                .hasAnyRole("PENDING")
+
+                                                // NIVEL 1: REGISTERED (Comprar)
                                                 .requestMatchers("/course/{id}/enroll", "/events/{id}/register")
                                                 .hasAnyRole("USER", "SUBSCRIBED", "ADMIN")
 
@@ -57,11 +79,10 @@ public class SecurityConfiguration {
                                                 .hasAnyRole("SUBSCRIBED", "ADMIN")
 
                                                 // Editar y borrar (la comprobación de "dueño" va en el controlador,
-                                                // pero aquí
-                                                // filtramos el rol mínimo)
+                                                // pero aquí filtramos el rol mínimo)
                                                 .requestMatchers("/course/{id}/edit", "/course/{id}/delete")
                                                 .hasAnyRole("SUBSCRIBED", "ADMIN")
-                                                .requestMatchers("/events/*/edit", "/events/*/delete")
+                                                .requestMatchers("/event/{id}/edit", "/event/{id}/delete")
                                                 .hasAnyRole("SUBSCRIBED", "ADMIN")
 
                                                 // NIVEL 3: ADMIN (Todo)
@@ -77,16 +98,13 @@ public class SecurityConfiguration {
                                                 .defaultSuccessUrl("/")
                                                 .permitAll())
 
-                                // 2. NUEVO: SISTEMA DE LOGIN SOCIAL (OAuth2 con Google)
+                                // 2. SISTEMA DE LOGIN SOCIAL (OAuth2 con Google)
                                 .oauth2Login(oauth2 -> oauth2
                                                 .loginPage("/login")
-                                                .defaultSuccessUrl("/")
-                                                .failureUrl("/login?error=userNotFound") // Redirige aquí si el usuario
-                                                                                         // no existe en tu BD
+                                                .successHandler(oauth2SuccessHandler())
+                                                .failureUrl("/login?error=oauth2error")
                                                 .userInfoEndpoint(userInfo -> userInfo
-                                                                .userService(customOAuth2UserService) // Usa tu servicio
-                                                                                                      // personalizado
-                                                ))
+                                                                .userService(customOAuth2UserService)))
 
                                 // 3. SISTEMA DE LOGOUT
                                 .logout(logout -> logout
