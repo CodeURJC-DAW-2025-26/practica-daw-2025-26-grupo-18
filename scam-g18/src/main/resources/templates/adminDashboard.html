@@ -16,32 +16,33 @@
     </div><!-- End Page Title -->
 
     <!-- Admin Dashboard Section -->
-    <section id="admin-dashboard-section" class="section">
+    <section id="admin-dashboard-section" class="section service-details">
         <div class="container" data-aos="fade-up">
 
-            <!-- Nav Tabs -->
-            <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="tab-users" data-bs-toggle="tab" data-bs-target="#usersTab"
-                        type="button" role="tab" data-tab-key="users">
-                        <i class="bi bi-people me-2"></i>Usuarios
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="tab-courses" data-bs-toggle="tab" data-bs-target="#coursesTab"
-                        type="button" role="tab" data-tab-key="courses">
-                        <i class="bi bi-journal-text me-2"></i>Cursos
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="tab-events" data-bs-toggle="tab" data-bs-target="#eventsTab"
-                        type="button" role="tab" data-tab-key="events">
-                        <i class="bi bi-calendar-event me-2"></i>Eventos
-                    </button>
-                </li>
-            </ul>
+            <div class="service-tabs">
+                <!-- Nav Tabs -->
+                <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-users" data-bs-toggle="tab" data-bs-target="#usersTab"
+                            type="button" role="tab" data-tab-key="users">
+                            <i class="bi bi-people me-2"></i>Usuarios
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-courses" data-bs-toggle="tab" data-bs-target="#coursesTab"
+                            type="button" role="tab" data-tab-key="courses">
+                            <i class="bi bi-journal-text me-2"></i>Cursos
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-events" data-bs-toggle="tab" data-bs-target="#eventsTab"
+                            type="button" role="tab" data-tab-key="events">
+                            <i class="bi bi-calendar-event me-2"></i>Eventos
+                        </button>
+                    </li>
+                </ul>
 
-            <div class="tab-content">
+                <div class="tab-content">
 
                 <!-- ==================== USUARIOS ==================== -->
                 <div class="tab-pane fade" id="usersTab" role="tabpanel">
@@ -53,8 +54,8 @@
                                     <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
                                     <input type="text" name="userQuery" class="form-control border-start-0"
                                         placeholder="Buscar usuario por nombre..." value="{{userQuery}}">
-                                    <button class="btn btn-add" type="submit">Buscar</button>
-                                    <a href="/admin?activeTab=users" class="btn btn-outline-secondary">Limpiar</a>
+                                    <button class="btn btn-accent" type="submit">Buscar</button>
+                                    <a href="/admin?activeTab=users" class="btn btn-accent-outline">Limpiar</a>
                                 </div>
                             </form>
                         </div>
@@ -87,23 +88,23 @@
                                                 {{^isActive}}<span class="badge bg-danger">Baneado</span>{{/isActive}}
                                             </td>
                                             <td class="text-end">
-                                                <div class="d-flex justify-content-end gap-2">
-                                                    <a href="/profile/{{id}}" class="btn btn-sm btn-outline-primary">
-                                                        <i class="bi bi-person"></i> Ver perfil
+                                                <div class="d-flex justify-content-end align-items-start gap-2 flex-nowrap">
+                                                    <a href="/profile/{{id}}" class="btn btn-sm btn-accent-outline">
+                                                        Ver perfil
                                                     </a>
                                                     {{#isActive}}
-                                                    <form action="/admin/users/{{id}}/ban" method="post" class="d-inline">
+                                                    <form action="/admin/users/{{id}}/ban" method="post" class="d-flex align-items-start">
                                                         <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}">
-                                                        <button type="submit" class="btn btn-sm btn-delete"
-                                                            onclick="return confirm('Â¿Banear a {{username}}?')">
+                                                        <button type="submit" class="btn btn-sm btn-accent-outline"
+                                                            onclick="return confirm('¿Banear a {{username}}?')">
                                                             <i class="bi bi-slash-circle"></i> Banear
                                                         </button>
                                                     </form>
                                                     {{/isActive}}
                                                     {{^isActive}}
-                                                    <form action="/admin/users/{{id}}/unban" method="post" class="d-inline">
+                                                    <form action="/admin/users/{{id}}/unban" method="post" class="d-flex align-items-start">
                                                         <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}">
-                                                        <button type="submit" class="btn btn-sm btn-add">
+                                                        <button type="submit" class="btn btn-sm btn-accent">
                                                             <i class="bi bi-check-circle"></i> Desbanear
                                                         </button>
                                                     </form>
@@ -133,9 +134,9 @@
                                 <div class="input-group">
                                     <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
                                     <input type="text" name="courseQuery" class="form-control border-start-0"
-                                        placeholder="Buscar curso por tÃ­tulo..." value="{{courseQuery}}">
-                                    <button class="btn btn-add" type="submit">Buscar</button>
-                                    <a href="/admin?activeTab=courses" class="btn btn-outline-secondary">Limpiar</a>
+                                        placeholder="Buscar curso por tí­tulo..." value="{{courseQuery}}">
+                                    <button class="btn btn-accent" type="submit">Buscar</button>
+                                    <a href="/admin?activeTab=courses" class="btn btn-accent-outline">Limpiar</a>
                                 </div>
                             </form>
                         </div>
@@ -159,33 +160,33 @@
                                             <td>
                                                 <div>
                                                     <span class="fw-semibold">{{title}}</span>
-                                                    {{#isPendingReview}}<span class="badge bg-warning text-dark ms-2">En revisiÃ³n</span>{{/isPendingReview}}
+                                                    {{#isPendingReview}}<span class="badge bg-light text-accent ms-2">En revisiÃ³n</span>{{/isPendingReview}}
                                                     <p class="text-muted small mb-0">{{shortDescription}}</p>
                                                 </div>
                                             </td>
                                             <td class="text-muted">{{creator.username}}</td>
                                             <td>
-                                                {{#isPendingReview}}<span class="badge bg-warning text-dark">Pendiente</span>{{/isPendingReview}}
+                                                {{#isPendingReview}}<span class="badge bg-light text-accent">Pendiente</span>{{/isPendingReview}}
                                                 {{^isPendingReview}}<span class="badge bg-secondary">{{status}}</span>{{/isPendingReview}}
                                             </td>
                                             <td class="text-end">
                                                 <div class="d-flex justify-content-end gap-2 flex-wrap">
-                                                    <a href="/course/{{id}}" class="btn btn-sm btn-outline-primary">
+                                                    <a href="/course/{{id}}" class="btn btn-sm btn-accent-outline">
                                                         <i class="bi bi-eye"></i> Ver
                                                     </a>
-                                                    <a href="/course/{{id}}/edit" class="btn btn-sm btn-outline-secondary">
+                                                    <a href="/course/{{id}}/edit" class="btn btn-sm btn-accent-outline">
                                                         <i class="bi bi-pencil"></i> Editar
                                                     </a>
                                                     {{#isPendingReview}}
                                                     <form action="/admin/courses/{{id}}/approve" method="post" class="d-inline">
                                                         <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}">
-                                                        <button type="submit" class="btn btn-sm btn-add">
+                                                        <button type="submit" class="btn btn-sm btn-accent">
                                                             <i class="bi bi-check-lg"></i> Aprobar
                                                         </button>
                                                     </form>
                                                     <form action="/admin/courses/{{id}}/reject" method="post" class="d-inline">
                                                         <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}">
-                                                        <button type="submit" class="btn btn-sm btn-delete"
+                                                        <button type="submit" class="btn btn-sm btn-accent-outline"
                                                             onclick="return confirm('Â¿Rechazar este curso?')">
                                                             <i class="bi bi-x-lg"></i> Rechazar
                                                         </button>
@@ -216,9 +217,9 @@
                                 <div class="input-group">
                                     <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
                                     <input type="text" name="eventQuery" class="form-control border-start-0"
-                                        placeholder="Buscar evento por tÃ­tulo..." value="{{eventQuery}}">
-                                    <button class="btn btn-add" type="submit">Buscar</button>
-                                    <a href="/admin?activeTab=events" class="btn btn-outline-secondary">Limpiar</a>
+                                        placeholder="Buscar evento por tí­tulo..." value="{{eventQuery}}">
+                                    <button class="btn btn-accent" type="submit">Buscar</button>
+                                    <a href="/admin?activeTab=events" class="btn btn-accent-outline">Limpiar</a>
                                 </div>
                             </form>
                         </div>
@@ -242,33 +243,33 @@
                                             <td>
                                                 <div>
                                                     <span class="fw-semibold">{{title}}</span>
-                                                    {{#isPendingReview}}<span class="badge bg-warning text-dark ms-2">En revisiÃ³n</span>{{/isPendingReview}}
+                                                    {{#isPendingReview}}<span class="badge bg-light text-accent ms-2">En revisiÃ³n</span>{{/isPendingReview}}
                                                     <p class="text-muted small mb-0">{{category}}</p>
                                                 </div>
                                             </td>
                                             <td class="text-muted">{{creator.username}}</td>
                                             <td>
-                                                {{#isPendingReview}}<span class="badge bg-warning text-dark">Pendiente</span>{{/isPendingReview}}
+                                                {{#isPendingReview}}<span class="badge bg-light text-accent">Pendiente</span>{{/isPendingReview}}
                                                 {{^isPendingReview}}<span class="badge bg-secondary">{{status}}</span>{{/isPendingReview}}
                                             </td>
                                             <td class="text-end">
                                                 <div class="d-flex justify-content-end gap-2 flex-wrap">
-                                                    <a href="/event/{{id}}" class="btn btn-sm btn-outline-primary">
+                                                    <a href="/event/{{id}}" class="btn btn-sm btn-accent-outline">
                                                         <i class="bi bi-eye"></i> Ver
                                                     </a>
-                                                    <a href="/events/{{id}}/edit" class="btn btn-sm btn-outline-secondary">
+                                                    <a href="/events/{{id}}/edit" class="btn btn-sm btn-accent-outline">
                                                         <i class="bi bi-pencil"></i> Editar
                                                     </a>
                                                     {{#isPendingReview}}
                                                     <form action="/admin/events/{{id}}/approve" method="post" class="d-inline">
                                                         <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}">
-                                                        <button type="submit" class="btn btn-sm btn-add">
+                                                        <button type="submit" class="btn btn-sm btn-accent">
                                                             <i class="bi bi-check-lg"></i> Aprobar
                                                         </button>
                                                     </form>
                                                     <form action="/admin/events/{{id}}/reject" method="post" class="d-inline">
                                                         <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}">
-                                                        <button type="submit" class="btn btn-sm btn-delete"
+                                                        <button type="submit" class="btn btn-sm btn-accent-outline"
                                                             onclick="return confirm('Â¿Rechazar este evento?')">
                                                             <i class="bi bi-x-lg"></i> Rechazar
                                                         </button>
@@ -291,6 +292,7 @@
                 </div><!-- end eventsTab -->
 
             </div><!-- end tab-content -->
+            </div><!-- end service-tabs -->
         </div>
     </section>
 
