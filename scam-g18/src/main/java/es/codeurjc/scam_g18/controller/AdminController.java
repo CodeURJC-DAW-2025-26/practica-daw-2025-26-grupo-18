@@ -54,7 +54,19 @@ public class AdminController {
         return "adminDashboard";
     }
 
-    // ---- User actions ----
+    @GetMapping("/users/search")
+    public String searchUser(@RequestParam String name, Model model) {
+        var user = adminService.findUserByUsername(name);
+
+        model.addAttribute("searchQuery", name);
+
+        if (user.isPresent()) {
+            model.addAttribute("searchedUser", user.get());
+        } else {
+            model.addAttribute("searchError", "Usuario " + name + " no encontrado:");
+        }
+        return "adminDashboard";
+    }
 
     @PostMapping("/users/{id}/ban")
     public String banUser(@PathVariable Long id) {
