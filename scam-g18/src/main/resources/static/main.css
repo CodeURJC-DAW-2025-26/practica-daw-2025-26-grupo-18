@@ -174,7 +174,9 @@ h6 {
     padding: 10px 20px;
     font-size: 15px;
     color: var(--nav-dropdown-color);
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
 }
 
 .header .profile-dropdown .dropdown-item:hover {
