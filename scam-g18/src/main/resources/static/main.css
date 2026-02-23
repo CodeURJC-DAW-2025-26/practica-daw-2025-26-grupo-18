@@ -159,6 +159,44 @@ h6 {
     color: var(--heading-color);
 }
 
+/* Estilos para el menú desplegable del perfil */
+.header .profile-dropdown {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: none;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.header .profile-dropdown .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    font-size: 15px;
+    color: var(--nav-dropdown-color);
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.header .profile-dropdown .dropdown-item:hover {
+    background-color: var(--accent-color);
+    color: var(--contrast-color);
+}
+
+.header .profile-dropdown .dropdown-item i {
+    font-size: 18px;
+    color: var(--accent-color);
+    transition: color 0.2s ease;
+}
+
+.header .profile-dropdown .dropdown-item:hover i {
+    color: var(--contrast-color);
+}
+
+.header .profile-dropdown .dropdown-divider {
+    margin: 5px 0;
+    border-top: 1px solid #eee;
+}
+
 .header .btn-getstarted,
 .header .btn-getstarted:focus {
     color: var(--contrast-color);
