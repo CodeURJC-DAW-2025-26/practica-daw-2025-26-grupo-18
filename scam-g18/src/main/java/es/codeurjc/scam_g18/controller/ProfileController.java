@@ -43,14 +43,23 @@ public class ProfileController {
         return "subscribedCourses";
     }
 
+    @GetMapping("/profile/me")
+    public String myProfile(Principal principal) {
+        if (principal == null)
+            return "redirect:/login";
+        return userService.findByUsername(principal.getName())
+                .map(user -> "redirect:/profile/" + user.getId())
+                .orElse("redirect:/login");
+    }
+
     @GetMapping("/profile/{id}")
     public String profile(Model model, @PathVariable long id) {
         Optional<User> user = userService.findById(id);
-        if (user.isPresent()) {
-            model.addAttribute("user", user.get());
-            model.addAttribute("profileImage", userService.getProfileImage(id));
-            model.addAttribute("completedCourses", userService.getCompletedCoursesCount(id));
-        }
+        if (user.isEmpty())
+            return "redirect:/";
+        model.addAttribute("user", user.get());
+        model.addAttribute("profileImage", userService.getProfileImage(id));
+        model.addAttribute("completedCourses", userService.getCompletedCoursesCount(id));
         return "profile";
     }
 

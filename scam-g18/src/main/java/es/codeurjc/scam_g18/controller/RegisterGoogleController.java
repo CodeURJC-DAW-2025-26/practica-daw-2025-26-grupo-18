@@ -37,8 +37,10 @@ public class RegisterGoogleController {
     private UserService userService;
 
     /**
-     * Muestra el formulario para completar los datos del usuario registrado con Google.
-     * Solo accesible para usuarios con ROLE_PENDING (autenticados con Google pero sin cuenta).
+     * Muestra el formulario para completar los datos del usuario registrado con
+     * Google.
+     * Solo accesible para usuarios con ROLE_PENDING (autenticados con Google pero
+     * sin cuenta).
      */
     @GetMapping
     public String showGoogleRegisterForm(Model model,
@@ -49,7 +51,8 @@ public class RegisterGoogleController {
         model.addAttribute("googleEmail", email);
 
         if ("userExists".equals(error)) {
-            model.addAttribute("errorMsg", "El nombre de usuario ya está en uso o este correo ya tiene una cuenta. Por favor, prueba con otro nombre de usuario o inicia sesión normalmente.");
+            model.addAttribute("errorMsg",
+                    "El nombre de usuario ya está en uso o este correo ya tiene una cuenta. Por favor, prueba con otro nombre de usuario o inicia sesión normalmente.");
         }
 
         return "registerGoogle";
@@ -57,7 +60,8 @@ public class RegisterGoogleController {
 
     /**
      * Procesa el formulario de registro completado.
-     * Crea el usuario en la BD, autentica la sesión con sus roles reales y redirige a "/".
+     * Crea el usuario en la BD, autentica la sesión con sus roles reales y redirige
+     * a "/".
      */
     @PostMapping
     public String completeGoogleRegistration(
@@ -66,7 +70,7 @@ public class RegisterGoogleController {
             @RequestParam String gender,
             @RequestParam String birthDate,
             @RequestParam String country,
-            @RequestParam("image") MultipartFile imageFile,
+            @RequestParam(value = "image", required = false) MultipartFile imageFile,
             @AuthenticationPrincipal OAuth2User oAuth2User,
             HttpServletRequest request,
             HttpServletResponse response) throws IOException, SQLException {
@@ -79,7 +83,8 @@ public class RegisterGoogleController {
             return "redirect:/register/google?error=userExists";
         }
 
-        // Registro exitoso: cargamos el usuario recién creado para obtener sus roles reales
+        // Registro exitoso: cargamos el usuario recién creado para obtener sus roles
+        // reales
         User newUser = userService.findByEmail(email).orElseThrow();
 
         List<GrantedAuthority> authorities = newUser.getRoles().stream()
@@ -104,7 +109,8 @@ public class RegisterGoogleController {
     }
 
     /**
-     * Cancela el registro: limpia la sesión PENDING y redirige al inicio sin iniciar sesión.
+     * Cancela el registro: limpia la sesión PENDING y redirige al inicio sin
+     * iniciar sesión.
      */
     @GetMapping("/cancel")
     public String cancelGoogleRegistration(HttpServletRequest request) {

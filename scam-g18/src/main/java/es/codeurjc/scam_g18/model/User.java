@@ -45,11 +45,11 @@ public class User {
 
     private String country;
 
-    private String shortDescription;
+    private String shortDescription = null;
 
-    private String currentGoal;
+    private String currentGoal = null;
 
-    private String weeklyRoutine;
+    private String weeklyRoutine = null;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id")

@@ -22,7 +22,7 @@ public class RegisterController {
     @PostMapping("/register")
     public String registerUser(@RequestParam String username, @RequestParam String email,
             @RequestParam String password, @RequestParam String gender, @RequestParam String birthDate,
-            @RequestParam String country, @RequestParam("image") MultipartFile imageFile)
+            @RequestParam String country, @RequestParam(value = "image", required = false) MultipartFile imageFile)
             throws IOException, java.sql.SQLException {
 
         boolean registered = userService.registerUser(username, email, password, gender, birthDate, country, imageFile);
