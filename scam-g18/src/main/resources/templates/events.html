@@ -1,83 +1,98 @@
-    {{>header}}
+{{>header}}
 
-    <main class="main">
-        <!-- Page Title -->
-        <div class="page-title light-background">
-            <div class="container">
-                <nav class="breadcrumbs">
-                    <ol>
-                        <li><a href="/">Inicio</a></li>
-                        <li class="current">Eventos</li>
-                    </ol>
-                </nav>
-                <h1>Eventos disponibles</h1>
+<main class="main">
+    <!-- Page Title -->
+    <div class="page-title light-background">
+        <div class="container">
+            <nav class="breadcrumbs">
+                <ol>
+                    <li><a href="/">Inicio</a></li>
+                    <li class="current">Eventos</li>
+                </ol>
+            </nav>
+            <h1>Eventos disponibles</h1>
+        </div>
+    </div><!-- End Page Title -->
+
+    <!-- Events Catalog -->
+    <section class="courses-catalog section">
+        <div class="container" data-aos="fade-up">
+
+            {{#canCreateEvent}}
+            <div class="d-flex justify-content-end mb-4">
+                <a href="/events/new" class="btn btn-primary btn-lg"
+                    style="background-color: #D96D3C; border-color: #D96D3C;">
+                    <i class="bi bi-plus-circle me-2"></i>Crear Nuevo Evento
+                </a>
             </div>
-        </div><!-- End Page Title -->
+            {{/canCreateEvent}}
 
-        <!-- Events Catalog -->
-        <section class="courses-catalog section">
-            <div class="container" data-aos="fade-up">
-                <form action="/events" method="get">
+            <form action="/events" method="get">
                 <div class="course-controls">
                     <div class="course-search">
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="search" name="search" class="form-control" placeholder="Buscar eventos" aria-label="Buscar eventos" value="{{#search}}{{search}}{{/search}}">
+                            <input type="search" name="search" class="form-control" placeholder="Buscar eventos"
+                                aria-label="Buscar eventos" value="{{#search}}{{search}}{{/search}}">
                             <button class="btn btn-primary btn-accent" type="submit">Buscar</button>
                         </div>
                     </div>
                     <div class="course-filters">
-                        <a href="/events{{#search}}?search={{search}}{{/search}}" class="filter-chip {{^selectedTags}}active{{/selectedTags}}">Todos</a>
+                        <a href="/events{{#search}}?search={{search}}{{/search}}"
+                            class="filter-chip {{^selectedTags}}active{{/selectedTags}}">Todos</a>
                         {{#tagsView}}
                         <label class="filter-chip {{#active}}active{{/active}}" style="cursor: pointer;">
-                            <input type="checkbox" name="tags" value="{{name}}" {{#active}}checked{{/active}} onchange="this.form.submit()" style="display:none;">
+                            <input type="checkbox" name="tags" value="{{name}}" {{#active}}checked{{/active}}
+                                onchange="this.form.submit()" style="display:none;">
                             {{name}}
                         </label>
                         {{/tagsView}}
                     </div>
                 </div>
-                </form>
+            </form>
 
-                <div class="course-list">
-                    {{#events}}
-                    <article class="course-card-full" data-aos="fade-up" data-aos-delay="50">
-                        <div class="course-card-header">
-                            <div>
-                                <h3 class="course-card-title">{{title}}</h3>
-                                <div class="course-tags">
-                                    {{#tags}}
-                                    <span class="course-tag">{{name}}</span>
-                                    {{/tags}}
-                                </div>
+            <div class="course-list">
+                {{#events}}
+                <article class="course-card-full" data-aos="fade-up" data-aos-delay="50">
+                    <div class="course-card-header">
+                        <div>
+                            <h3 class="course-card-title">{{title}}</h3>
+                            <div class="course-tags">
+                                {{#tags}}
+                                <span class="course-tag">{{name}}</span>
+                                {{/tags}}
                             </div>
-                            <div class="course-card-price">{{priceEuros}}€</div>
                         </div>
-                        <p class="course-card-desc">{{description}}</p>
-                        <div class="course-card-meta">
-                            <div><i class="bi bi-calendar-event"></i> {{formattedDate}}</div>
-                            <div><i class="bi bi-clock"></i> {{formattedTime}}</div>
-                            {{#isLocation}}
-                            <div><i class="bi bi-geo-alt"></i> {{locationName}}</div>
-                            {{/isLocation}}
-                            {{^isLocation}}
-                            <div><i class="bi bi-geo-alt"></i> Online</div>
-                            {{/isLocation}}
-                        </div>
-                        <div class="course-card-actions">
-                            <a href="/event/{{id}}" class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver detalles</a>
-                            <a href="/event/{{id}}" class="btn btn-primary btn-sm btn-accent course-card-btn">Reservar plaza</a>
-                        </div>
-                    </article>
-                    {{/events}}
-                    {{^events}}
-                    <p>No hay eventos disponibles en este momento.</p>
-                    {{/events}}
-                </div>
+                        <div class="course-card-price">{{priceEuros}}€</div>
+                    </div>
+                    <p class="course-card-desc">{{description}}</p>
+                    <div class="course-card-meta">
+                        <div><i class="bi bi-calendar-event"></i> {{formattedDate}}</div>
+                        <div><i class="bi bi-clock"></i> {{formattedTime}}</div>
+                        {{#isLocation}}
+                        <div><i class="bi bi-geo-alt"></i> {{locationName}}</div>
+                        {{/isLocation}}
+                        {{^isLocation}}
+                        <div><i class="bi bi-geo-alt"></i> Online</div>
+                        {{/isLocation}}
+                    </div>
+                    <div class="course-card-actions">
+                        <a href="/event/{{id}}"
+                            class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver detalles</a>
+                        <a href="/event/{{id}}" class="btn btn-primary btn-sm btn-accent course-card-btn">Reservar
+                            plaza</a>
+                    </div>
+                </article>
+                {{/events}}
+                {{^events}}
+                <p>No hay eventos disponibles en este momento.</p>
+                {{/events}}
             </div>
-        </section><!-- End Events Catalog -->
-    </main>
+        </div>
+    </section><!-- End Events Catalog -->
+</main>
 
-    {{>footer}}
+{{>footer}}
 
 
 </body>
