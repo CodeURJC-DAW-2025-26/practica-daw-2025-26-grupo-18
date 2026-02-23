@@ -16,24 +16,27 @@ public class GlobalControllerAdvice {
 
     @ModelAttribute
     public void addAttributes(Model model, HttpServletRequest request) {
-        boolean isUserLoggedIn = (request.getUserPrincipal() != null);
-        model.addAttribute("isUserLoggedIn", isUserLoggedIn);
+        boolean hasPrincipal = (request.getUserPrincipal() != null);
 
         CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
         if (csrfToken != null) {
             model.addAttribute("_csrf", csrfToken);
         }
 
-        // Valores por defecto siempre presentes para el header (Mustache falla si no
-        // existen)
+        // Valores por defecto siempre presentes para el header (Mustache falla si no existen)
+        model.addAttribute("isUserLoggedIn", false);
         model.addAttribute("userId", "");
         model.addAttribute("userName", "");
         model.addAttribute("userProfileImage", "/img/descarga.jpg");
         model.addAttribute("canCreateEvent", false);
+        model.addAttribute("isAdmin", false);
 
-        if (isUserLoggedIn) {
+        if (hasPrincipal) {
             var currentUser = userService.getCurrentAuthenticatedUser().orElse(null);
+            // Solo se considera "logueado" si el usuario existe en nuestra BD
+            // (los usuarios PENDING con Google aún no están registrados)
             if (currentUser != null) {
+                model.addAttribute("isUserLoggedIn", true);
                 model.addAttribute("userId", currentUser.getId());
                 model.addAttribute("userName", currentUser.getUsername());
                 model.addAttribute("userProfileImage", userService.getProfileImage(currentUser.getId()));

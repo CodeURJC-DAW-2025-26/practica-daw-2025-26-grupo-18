@@ -6,7 +6,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         // 1. Le pedimos a Google los datos básicos del usuario
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        
+
         // 2. Extraemos el email
         String email = oAuth2User.getAttribute("email");
 
@@ -37,8 +36,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Optional<User> userOptional = userRepository.findByEmail(email);
 
         if (userOptional.isEmpty()) {
-            // SI NO TIENE CUENTA: Bloqueamos el acceso y lanzamos un error
-            throw new OAuth2AuthenticationException(new OAuth2Error("user_not_found"), "Debes registrarte primero");
+            // SI NO TIENE CUENTA: devolvemos un usuario pendiente de registro
+            // con ROLE_PENDING para poder redirigirle al formulario de completar datos
+            List<GrantedAuthority> pendingAuthorities = new ArrayList<>();
+            pendingAuthorities.add(new SimpleGrantedAuthority("ROLE_PENDING"));
+            return new DefaultOAuth2User(pendingAuthorities, oAuth2User.getAttributes(), "email");
         }
 
         User dbUser = userOptional.get();

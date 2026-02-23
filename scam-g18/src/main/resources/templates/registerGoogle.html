@@ -4,77 +4,57 @@
     <section class="section">
         <div class="container">
             <div class="row g-0 shadow-lg rounded-4 overflow-hidden" style="min-height: 600px">
+
                 <!-- Imagen Izquierda -->
                 <div class="col-lg-6 d-none d-lg-block position-relative">
-                    <img src="../img/services/services-3.webp" alt="Join SCAM" class="img-fluid w-100 h-100"
+                    <img src="/img/services/services-3.webp" alt="Completa tu perfil" class="img-fluid w-100 h-100"
                         style="object-fit: cover; object-position: center" />
                     <div class="position-absolute top-0 start-0 w-100 h-100" style="background: rgba(0, 0, 0, 0.3)">
                     </div>
                     <div class="position-absolute bottom-0 start-0 p-5 text-white">
-                        <h3 class="fw-bold">Únete a nuestra comunidad</h3>
-                        <p class="lead">Aprende de los mejores expertos y transforma tu carrera profesional hoy mismo.
-                        </p>
+                        <h3 class="fw-bold">¡Casi listo!</h3>
+                        <p class="lead">Completa tu perfil para empezar a disfrutar de todo lo que SCAM tiene para ti.</p>
                     </div>
                 </div>
 
                 <!-- Formulario Derecha -->
                 <div class="col-lg-6 bg-white d-flex align-items-center">
                     <div class="p-5 w-100">
-                        {{^isRegister}}
+
+                        <!-- Cabecera con logo de Google -->
                         <div class="text-center mb-4">
-                            <h2 class="fw-bold text-dark">Iniciar Sesión</h2>
-                            <p class="text-muted">Bienvenido de nuevo a SCAM</p>
+                            <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+                                <i class="bi bi-google text-danger fs-4"></i>
+                                <h2 class="fw-bold text-dark mb-0">Completa tu registro</h2>
+                            </div>
+                            <p class="text-muted">Rellena los datos adicionales para crear tu cuenta</p>
                         </div>
-                        {{#error}}
+
+                        <!-- Mensaje de error si el username ya existe -->
+                        {{#errorMsg}}
                         <div class="alert alert-danger" role="alert">
-                            {{error}}
+                            {{errorMsg}}
                         </div>
-                        {{/error}}
-                        <form id="loginForm" action="/login" method="post">
+                        {{/errorMsg}}
+
+                        <form id="googleRegisterForm" action="/register/google" method="post" enctype="multipart/form-data">
                             <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+
+                            <!-- Correo de Google (solo lectura) -->
                             <div class="mb-3">
-                                <label for="loginEmail" class="form-label small fw-bold">Usuario o Correo electrónico</label>
+                                <label for="googleEmailField" class="form-label small fw-bold">Correo electrónico</label>
                                 <div class="input-group">
-                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                    <input type="text" class="form-control" id="loginEmail" name="username"
-                                        placeholder="Usuario o correo electrónico" required />
+                                    <span class="input-group-text"><i class="bi bi-google text-danger"></i></span>
+                                    <input type="email" class="form-control bg-light text-muted" id="googleEmailField"
+                                        value="{{googleEmail}}" readonly
+                                        title="Este correo proviene de tu cuenta de Google y no puede modificarse" />
+                                </div>
+                                <div class="form-text text-muted">
+                                    <i class="bi bi-lock-fill me-1"></i>Vinculado a tu cuenta de Google
                                 </div>
                             </div>
 
-                            <div class="mb-4">
-                                <label for="loginPassword" class="form-label small fw-bold">Contraseña</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                                    <input type="password" class="form-control" id="loginPassword" name="password"
-                                        placeholder="••••••••" required />
-                                </div>
-                            </div>
-
-                            <div class="d-grid mb-3">
-                                <button type="submit" class="btn btn-primary py-2 fw-bold">Iniciar Sesión</button>
-                            </div>
-
-                            <div class="position-relative text-center mb-4">
-                                <hr class="text-secondary opacity-25" />
-                                <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 small text-muted">o
-                                    continúa con</span>
-                            </div>
-
-                            <div class="d-grid mb-4">
-                                <a href="/oauth2/authorization/google" class="btn btn-outline-dark py-2 fw-bold d-flex align-items-center justify-content-center gap-2">
-                                    <i class="bi bi-google text-danger"></i> Iniciar sesión con Google
-                                </a>
-                            </div>
-                        </form>
-                        {{/isRegister}}
-
-                        {{#isRegister}}
-                        <div class="text-center mb-4">
-                            <h2 class="fw-bold text-dark">Crear Cuenta</h2>
-                            <p class="text-muted">Empieza tu aprendizaje hoy</p>
-                        </div>
-                        <form id="registerForm" action="/register" method="post" enctype="multipart/form-data">
-                            <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+                            <!-- Nombre de usuario -->
                             <div class="mb-3">
                                 <label for="regUsername" class="form-label small fw-bold">Nombre de usuario</label>
                                 <div class="input-group">
@@ -84,24 +64,18 @@
                                 </div>
                             </div>
 
+                            <!-- Contraseña (para poder iniciar sesión también con usuario/contraseña) -->
                             <div class="mb-3">
-                                <label for="regEmail" class="form-label small fw-bold">Correo electrónico</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                    <input type="email" class="form-control" id="regEmail" name="email"
-                                        placeholder="nombre@ejemplo.com" required />
-                                </div>
-                            </div>
-
-                            <div class="mb-4">
                                 <label for="regPassword" class="form-label small fw-bold">Contraseña</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-lock"></i></span>
                                     <input type="password" class="form-control" id="regPassword" name="password"
                                         placeholder="••••••••" required />
                                 </div>
+                                <div class="form-text text-muted">Necesaria también para acceso tradicional</div>
                             </div>
 
+                            <!-- Género -->
                             <div class="mb-3">
                                 <label for="regGender" class="form-label small fw-bold">Género</label>
                                 <div class="input-group">
@@ -115,6 +89,7 @@
                                 </div>
                             </div>
 
+                            <!-- Fecha de nacimiento -->
                             <div class="mb-3">
                                 <label for="regBirthDate" class="form-label small fw-bold">Fecha de nacimiento</label>
                                 <div class="input-group">
@@ -123,6 +98,7 @@
                                 </div>
                             </div>
 
+                            <!-- País -->
                             <div class="mb-3">
                                 <label for="regCountry" class="form-label small fw-bold">País</label>
                                 <div class="input-group">
@@ -132,46 +108,34 @@
                                 </div>
                             </div>
 
+                            <!-- Foto de perfil -->
                             <div class="mb-4">
                                 <label for="regImage" class="form-label small fw-bold">Foto de perfil <span class="text-muted fw-normal">(opcional)</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-image"></i></span>
-                                    <input type="file" class="form-control" id="regImage" name="image" accept="image/*" />
+                                    <input type="file" class="form-control" id="regImage" name="image"
+                                        accept="image/*" />
                                 </div>
                                 <div class="form-text text-muted">Si no subes ninguna, se usará una imagen por defecto.</div>
                             </div>
 
-                            <div class="d-grid mb-4">
+                            <!-- Botones: Completar registro y Cancelar -->
+                            <div class="d-grid gap-2">
                                 <button type="submit" class="btn btn-primary py-2 fw-bold"
-                                    style="background-color: var(--accent-color); border-color: var(--accent-color)">Registrarse</button>
+                                    style="background-color: var(--accent-color); border-color: var(--accent-color)">
+                                    <i class="bi bi-check-circle me-1"></i>Completar registro
+                                </button>
+                                <a href="/register/google/cancel" class="btn btn-outline-secondary py-2 fw-bold">
+                                    <i class="bi bi-x-circle me-1"></i>Cancelar
+                                </a>
                             </div>
+
                         </form>
 
-                        {{/isRegister}}
-                        <div class="d-grid mb-4 d-none">
-                            </div>
-                            <div class="text-center p-3 rounded bg-light">
-                                {{^isRegister}}
-                                <p class="mb-0 small">
-                                    ¿No tienes cuenta? <a href="/register" class="fw-bold text-decoration-none"
-                                        style="color: var(--accent-color)">Registrarse</a>
-                                </p>
-                                {{/isRegister}}
-                                {{#isRegister}}
-                                <p class="mb-0 small">
-                                    ¿Ya tienes cuenta? <a href="/login" class="fw-bold text-decoration-none"
-                                        style="color: var(--accent-color)">Iniciar Sesión</a>
-                                </p>
-                                {{/isRegister}}
-                            </div>
                     </div>
                 </div>
-            </div>
 
-            
-        </div>
-        </div>
-        </div>
+            </div>
         </div>
     </section>
 </main>

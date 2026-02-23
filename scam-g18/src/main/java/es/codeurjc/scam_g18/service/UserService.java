@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,8 +51,12 @@ public class UserService {
     public Long getCurrentUserId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
-            String username = auth.getName();
-            Optional<User> user = userRepository.findByUsername(username);
+            Optional<User> user;
+            if (auth instanceof OAuth2AuthenticationToken) {
+                user = userRepository.findByEmail(auth.getName());
+            } else {
+                user = userRepository.findByUsername(auth.getName());
+            }
             if (user.isPresent()) {
                 return user.get().getId();
             }
@@ -62,6 +67,11 @@ public class UserService {
     public Optional<User> getCurrentAuthenticatedUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+            // Para login OAuth2 (Google), auth.getName() devuelve el email
+            if (auth instanceof OAuth2AuthenticationToken) {
+                return findByEmail(auth.getName());
+            }
+            // Para login tradicional, auth.getName() devuelve el username
             return findByUsername(auth.getName());
         }
         return Optional.empty();
@@ -87,6 +97,10 @@ public class UserService {
 
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     public Optional<User> findById(Long id) {
@@ -139,6 +153,9 @@ public class UserService {
     public boolean registerUser(String username, String email, String rawPassword, String gender, String birthDate,
             String country, MultipartFile imageFile) throws IOException, SQLException {
         if (findByUsername(username).isPresent()) {
+            return false;
+        }
+        if (userRepository.findByEmail(email).isPresent()) {
             return false;
         }
 
