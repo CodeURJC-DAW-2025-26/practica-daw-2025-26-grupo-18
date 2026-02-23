@@ -1,6 +1,7 @@
 package es.codeurjc.scam_g18.service;
 
 import es.codeurjc.scam_g18.model.*;
+import es.codeurjc.scam_g18.model.Module;
 import es.codeurjc.scam_g18.repository.*;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -138,7 +139,7 @@ public class DatabaseInitializer {
         tagRepository.save(new Tag("Libertad Financiera"));
     }
 
-    private void initializeCourses() throws IOException, SQLException {
+private void initializeCourses() throws IOException, SQLException {
         User creator = userRepository.findByUsername("admin").orElseThrow();
         User juan = userRepository.findByUsername("juan_inversor").orElseThrow();
 
@@ -148,7 +149,7 @@ public class DatabaseInitializer {
         Tag productividad = tagRepository.findByName("Productividad").orElseThrow();
         Tag liderazgo = tagRepository.findByName("Liderazgo").orElseThrow();
 
-        // Course 1
+        // --- COURSE 1: Libertad Financiera ---
         Set<Tag> tags1 = new HashSet<>();
         tags1.add(finanzas);
         tags1.add(libertad);
@@ -161,24 +162,62 @@ public class DatabaseInitializer {
         List<String> prereqs1 = new ArrayList<>();
         prereqs1.add("Ninguno, empezamos desde cero.");
 
+        // Módulo 1 y sus Lecciones
+        Module m1c1 = new Module();
+        m1c1.setTitle("Módulo 1: Fundamentos del Dinero");
+        m1c1.setDescription("Aprende la diferencia real entre activos y pasivos.");
+        m1c1.setOrderIndex(1);
+
+        Lesson l1m1c1 = new Lesson();
+        l1m1c1.setTitle("Introducción a la Inteligencia Financiera");
+        l1m1c1.setDescription("Conceptos básicos que no te enseñan en la escuela.");
+        l1m1c1.setVideoUrl("https://www.youtube.com/embed/ejemplo1");
+        l1m1c1.setOrderIndex(1);
+        m1c1.addLesson(l1m1c1); // addLesson ya hace l1m1c1.setModule(m1c1)
+
+        Lesson l2m1c1 = new Lesson();
+        l2m1c1.setTitle("Activos vs Pasivos");
+        l2m1c1.setDescription("Por qué tu casa no es una inversión.");
+        l2m1c1.setVideoUrl("https://www.youtube.com/embed/ejemplo2");
+        l2m1c1.setOrderIndex(2);
+        m1c1.addLesson(l2m1c1);
+
+        // Módulo 2 y sus Lecciones
+        Module m2c1 = new Module();
+        m2c1.setTitle("Módulo 2: Eliminación de Deudas");
+        m2c1.setDescription("Estrategia bola de nieve y avalancha.");
+        m2c1.setOrderIndex(2);
+
+        Lesson l1m2c1 = new Lesson();
+        l1m2c1.setTitle("El método de la bola de nieve");
+        l1m2c1.setDescription("Empieza por las deudas más pequeñas para ganar momento.");
+        l1m2c1.setVideoUrl("https://www.youtube.com/embed/ejemplo3");
+        l1m2c1.setOrderIndex(1);
+        m2c1.addLesson(l1m2c1);
+
+        List<Module> modules1 = new ArrayList<>(List.of(m1c1, m2c1));
+
         Course course1 = new Course(
                 creator,
                 "Libertad Financiera en 30 días",
                 "Consigue tu libertad financiera con nuestro método probado.",
-                "Descubre los secretos que los bancos no quieren que sepas. En este curso de 30 días transformarás tu mentalidad y tu cartera.",
+                "Descubre los secretos que los bancos no quieren que sepas...",
                 "Español",
-                120, // minutes
                 4999, // cents
                 Status.PUBLISHED,
                 tags1,
-                new ArrayList<>(), // Modules placeholder
-                new ArrayList<>(), // Reviews placeholder
+                modules1,
+                new ArrayList<>(),
                 points1,
-                prereqs1);
+                prereqs1,
+                2.5, // videoHours
+                5    // downloadableResources
+        );
         course1.setImage(imageService.saveImage("/img/features/features-1.webp"));
         courseRepository.save(course1);
 
-        // Course 2
+
+        // --- COURSE 2: Emprende tu Negocio Online ---
         Set<Tag> tags2 = new HashSet<>();
         tags2.add(emprendimiento);
         tags2.add(productividad);
@@ -188,27 +227,72 @@ public class DatabaseInitializer {
         points2.add("Creación de MVP sin código.");
         points2.add("Marketing de guerrilla.");
 
+        // Módulo 1 y sus Lecciones
+        Module m1c2 = new Module();
+        m1c2.setTitle("Módulo 1: Encontrar tu Nicho");
+        m1c2.setDescription("Técnicas de validación de mercado.");
+        m1c2.setOrderIndex(1);
+
+        Lesson l1m1c2 = new Lesson();
+        l1m1c2.setTitle("Análisis de Competencia");
+        l1m1c2.setDescription("Cómo espiar a tu competencia legalmente.");
+        l1m1c2.setVideoUrl("https://www.youtube.com/embed/ejemplo4");
+        l1m1c2.setOrderIndex(1);
+        m1c2.addLesson(l1m1c2);
+
+        // Módulo 2 y sus Lecciones
+        Module m2c2 = new Module();
+        m2c2.setTitle("Módulo 2: Tu primer MVP");
+        m2c2.setDescription("Herramientas No-Code para lanzar en tiempo récord.");
+        m2c2.setOrderIndex(2);
+
+        Lesson l1m2c2 = new Lesson();
+        l1m2c2.setTitle("Creando una Landing Page en 1 hora");
+        l1m2c2.setDescription("Uso de herramientas gratuitas para captar leads.");
+        l1m2c2.setVideoUrl("https://www.youtube.com/embed/ejemplo5");
+        l1m2c2.setOrderIndex(1);
+        m2c2.addLesson(l1m2c2);
+
+        List<Module> modules2 = new ArrayList<>(List.of(m1c2, m2c2));
+
         Course course2 = new Course(
                 juan,
                 "Emprende tu Negocio Online",
                 "Lanza tu startup en menos de una semana.",
                 "Guía paso a paso para crear un negocio digital rentable desde cero. Sin necesidad de experiencia previa.",
                 "Español",
-                300,
                 9999,
                 Status.PUBLISHED,
                 tags2,
-                new ArrayList<>(),
+                modules2,
                 new ArrayList<>(),
                 points2,
-                List.of("Ordenador", "Conexión a Internet"));
+                List.of("Ordenador", "Conexión a Internet"),
+                5.0, // videoHours (5 horas completas)
+                12   // downloadableResources (12 plantillas/archivos)
+        );
         course2.setImage(imageService.saveImage("/img/features/features-2.webp"));
         courseRepository.save(course2);
 
-        // Course 3
+
+        // --- COURSE 3: Liderazgo Exponencial ---
         Set<Tag> tags3 = new HashSet<>();
         tags3.add(liderazgo);
         tags3.add(productividad);
+
+        Module m1c3 = new Module();
+        m1c3.setTitle("Módulo 1: El Mindset del Líder");
+        m1c3.setDescription("Cómo transicionar de jefe a líder inspirador.");
+        m1c3.setOrderIndex(1);
+
+        Lesson l1m1c3 = new Lesson();
+        l1m1c3.setTitle("Escucha Activa");
+        l1m1c3.setDescription("El 80% del liderazgo es saber escuchar a tu equipo.");
+        l1m1c3.setVideoUrl("https://www.youtube.com/embed/ejemplo6");
+        l1m1c3.setOrderIndex(1);
+        m1c3.addLesson(l1m1c3);
+
+        List<Module> modules3 = new ArrayList<>(List.of(m1c3));
 
         Course course3 = new Course(
                 creator,
@@ -216,18 +300,20 @@ public class DatabaseInitializer {
                 "Aprende a liderar equipos de alto rendimiento.",
                 "El liderazgo no es dar órdenes, es inspirar. Conviértete en el líder que todos quieren seguir. Técnicas de coaching y gestión de equipos multiculturales.",
                 "Inglés",
-                450,
                 5999,
                 Status.PUBLISHED,
                 tags3,
-                new ArrayList<>(),
+                modules3,
                 new ArrayList<>(),
                 List.of("Comunicación asertiva", "Delegación efectiva"),
-                List.of("Experiencia previa gestionando personas recomendada"));
+                List.of("Experiencia previa gestionando personas recomendada"),
+                7.5, // videoHours (7 horas y media)
+                3    // downloadableResources (3 PDFs de resumen)
+        );
         course3.setImage(imageService.saveImage("/img/features/features-3.webp"));
         courseRepository.save(course3);
     }
-
+    
     private void initializeEvents() throws IOException, SQLException {
         User creator = userRepository.findByUsername("admin").orElseThrow();
         Tag liderazgo = tagRepository.findByName("Liderazgo").orElseThrow();

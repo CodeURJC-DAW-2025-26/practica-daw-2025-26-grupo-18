@@ -76,8 +76,6 @@ public class Course {
 
     private String language;
 
-    private Integer durationMinutes;
-
     @Column(nullable = false)
     private Integer priceCents;
 
@@ -96,6 +94,12 @@ public class Course {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @Column(name = "video_hours")
+    private Double videoHours;
+
+    @Column(name = "downloadable_resources")
+    private Integer downloadableResources;
+
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("orderIndex ASC")
     private List<Module> modules = new ArrayList<>();
@@ -106,28 +110,30 @@ public class Course {
     public Course() {
     }
 
-    public Course(User creator, String title, String shortDescription, String longDescription, String language, Integer durationMinutes,
+    public Course(User creator, String title, String shortDescription, String longDescription, String language,
             Integer priceCents, Status status, Set<Tag> tags, List<Module> modules, List<Review> reviews,
-            List<String> learningPoints, List<String> prerequisites) {
+            List<String> learningPoints, List<String> prerequisites, Double videoHours, Integer downloadableResources) {
+        
         this.creator = creator;
         this.title = title;
         this.shortDescription = shortDescription;
         this.longDescription = longDescription;
         this.language = language;
-        this.durationMinutes = durationMinutes;
         this.priceCents = priceCents;
         this.status = status;
         this.tags = tags;
         this.reviews = reviews;
         this.prerequisites = prerequisites;
+        this.videoHours = videoHours;                               
+        this.downloadableResources = downloadableResources;         
         this.createdAt = LocalDateTime.now();
         this.subscribersNumber = 0;
         this.learningPoints = learningPoints;
 
         if (modules != null) {
-        modules.stream()
-            .sorted((m1, m2) -> m1.getOrderIndex().compareTo(m2.getOrderIndex()))
-            .forEach(this::addModule);
+            modules.stream()
+                .sorted((m1, m2) -> m1.getOrderIndex().compareTo(m2.getOrderIndex()))
+                .forEach(this::addModule);
         }
     }
 
@@ -209,14 +215,6 @@ public class Course {
 
     public void setLanguage(String language) {
         this.language = language;
-    }
-
-    public Integer getDurationMinutes() {
-        return durationMinutes;
-    }
-
-    public void setDurationMinutes(Integer durationMinutes) {
-        this.durationMinutes = durationMinutes;
     }
 
     public Integer getPriceCents() {
@@ -310,6 +308,22 @@ public class Course {
 
     public void removeTagById(Long tagId) {
         tags.removeIf(tag -> tag.getId().equals(tagId));
+    }
+
+    public Double getVideoHours() {
+        return videoHours;
+    }
+
+    public void setVideoHours(Double videoHours) {
+        this.videoHours = videoHours;
+    }
+
+    public Integer getDownloadableResources() {
+        return downloadableResources;
+    }
+
+    public void setDownloadableResources(Integer downloadableResources) {
+        this.downloadableResources = downloadableResources;
     }
 
 

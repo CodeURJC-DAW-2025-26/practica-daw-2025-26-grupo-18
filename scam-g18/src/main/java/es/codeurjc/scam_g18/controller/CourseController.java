@@ -52,7 +52,7 @@ public class CourseController {
     }
 
     @GetMapping("/courses/new")
-    public String newCourseForm(@RequestParam Model model) {
+    public String newCourseForm(Model model) {
         return "createCourse";
     }
 

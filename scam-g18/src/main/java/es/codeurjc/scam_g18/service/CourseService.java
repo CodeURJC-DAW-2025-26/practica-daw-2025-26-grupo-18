@@ -65,6 +65,9 @@ public class CourseService {
             courseData.put("averageRating", String.format("%.1f", getAverageRating(course)));
             courseData.put("ratingCount", getRatingCount(course));
             courseData.put("tags", course.getTags());
+            courseData.put("subscribersNumber", course.getSubscribersNumber());
+            courseData.put("videoHours", course.getVideoHours());
+            courseData.put("downloadableResources", course.getDownloadableResources());
             enrichedCourses.add(courseData);
         }
 
@@ -92,6 +95,8 @@ public class CourseService {
         courseData.put("learningPoints", course.getLearningPoints());
         courseData.put("prerequisites", course.getPrerequisites());
         courseData.put("tags", course.getTags());
+        courseData.put("videoHours", course.getVideoHours() );
+        courseData.put("downloadableResources", course.getDownloadableResources());
 
         Map<String, Object> creatorData = new HashMap<>();
         String creatorUsername = "Desconocido";
