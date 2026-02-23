@@ -1,4 +1,9 @@
 {{>header}}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
 <main class="main">
     <!-- Page Title -->
     <div class="page-title light-background">
@@ -141,8 +146,13 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-7">
-                                    <img src="../img/map_expample.png" alt="Mapa de ubicación del evento"
-                                        class="img-fluid rounded" />
+                                    {{#event.hasCoordinates}}
+                                    <div id="map" data-lat="{{event.locationLat}}" data-lon="{{event.locationLon}}"
+                                        data-name="{{event.locationName}}" style="height: 300px;"></div>
+                                    {{/event.hasCoordinates}}
+                                    {{^event.hasCoordinates}}
+                                    <p class="mb-0">Mapa no disponible para esta ubicación.</p>
+                                    {{/event.hasCoordinates}}
                                 </div>
                             </div>
                         </div>
@@ -209,7 +219,32 @@
     </section>
     <!-- End Event Details Section -->
 </main>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var mapElement = document.getElementById('map');
+        if (!mapElement || typeof L === 'undefined') {
+            return;
+        }
 
+        var lat = parseFloat(mapElement.dataset.lat);
+        var lon = parseFloat(mapElement.dataset.lon);
+        var locationName = mapElement.dataset.name || '';
+
+        if (Number.isNaN(lat) || Number.isNaN(lon)) {
+            return;
+        }
+
+        var map = L.map('map').setView([lat, lon], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        L.marker([lat, lon]).addTo(map)
+            .bindPopup(locationName)
+            .openPopup();
+    });
+</script>
 {{>footer}}
 </body>
 
