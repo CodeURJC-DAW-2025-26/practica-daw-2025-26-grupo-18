@@ -30,6 +30,10 @@ public class GlobalControllerAdvice {
             if (currentUser != null) {
                 model.addAttribute("userName", currentUser.getUsername());
                 model.addAttribute("userProfileImage", userService.getProfileImage(currentUser.getId()));
+
+                boolean canCreateEvent = currentUser.getRoles().stream()
+                        .anyMatch(role -> role.getName().equals("ADMIN") || role.getName().equals("SUBSCRIBED"));
+                model.addAttribute("canCreateEvent", canCreateEvent);
             }
         }
     }

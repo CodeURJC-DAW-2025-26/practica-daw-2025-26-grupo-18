@@ -21,6 +21,9 @@ public class EventService {
     @Autowired
     private ImageService imageService;
 
+    @Autowired
+    private es.codeurjc.scam_g18.repository.LocationRepository locationRepository;
+
     public List<Event> getAllEvents() {
         return eventRepository.findAll();
     }
@@ -86,6 +89,19 @@ public class EventService {
         eventRepository.deleteById(id);
     }
 
+    public void createEvent(Event event, org.springframework.web.multipart.MultipartFile imageFile)
+            throws java.io.IOException, java.sql.SQLException {
+        if (imageFile != null && !imageFile.isEmpty()) {
+            event.setImage(imageService.saveImage(imageFile));
+        }
+
+        if (event.getLocation() != null && event.getLocation().getId() == null) {
+            locationRepository.save(event.getLocation());
+        }
+
+        eventRepository.save(event);
+    }
+
     private Map<String, Object> buildEventCardData(Event event) {
         Map<String, Object> eventData = new HashMap<>();
         eventData.put("id", event.getId());
@@ -120,6 +136,8 @@ public class EventService {
         }
 
         eventData.put("tags", event.getTags());
+        eventData.put("speakers", event.getSpeakers());
+        eventData.put("sessions", event.getSessions());
 
         return eventData;
     }
