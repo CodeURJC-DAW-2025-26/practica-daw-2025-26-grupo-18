@@ -77,6 +77,24 @@
 										<input type="text" class="form-control" id="country" name="country" value="{{user.country}}">
 									</div>
 
+									<!-- Descripción -->
+									<div class="mb-3 text-start">
+										<label for="shortDescription" class="form-label fw-semibold"><i class="bi bi-card-text me-2"></i>Sobre mí</label>
+										<textarea class="form-control" id="shortDescription" name="shortDescription" rows="3" placeholder="Cuéntanos algo sobre ti...">{{user.shortDescription}}</textarea>
+									</div>
+
+									<!-- Objetivo actual -->
+									<div class="mb-3 text-start">
+										<label for="currentGoal" class="form-label fw-semibold"><i class="bi bi-briefcase me-2"></i>Objetivo actual</label>
+										<input type="text" class="form-control" id="currentGoal" name="currentGoal" value="{{user.currentGoal}}" placeholder="Ej: Lanzar mi startup en 2026">
+									</div>
+
+									<!-- Rutina semanal -->
+									<div class="mb-3 text-start">
+										<label for="weeklyRoutine" class="form-label fw-semibold"><i class="bi bi-lightning me-2"></i>Rutina semanal</label>
+										<input type="text" class="form-control" id="weeklyRoutine" name="weeklyRoutine" value="{{user.weeklyRoutine}}" placeholder="Ej: 6h de formación y 2h networking">
+									</div>
+
 									<div class="d-flex gap-2 justify-content-center mt-3">
 										<button type="submit" class="btn btn-accent">Guardar cambios</button>
 										<button type="button" class="btn btn-accent-outline" onclick="toggleEdit()">Cancelar</button>
@@ -91,15 +109,14 @@
 					<div class="card border-0 shadow-sm bg-light h-100">
 						<div class="card-body p-4">
 							<h3 class="h5 fw-bold mb-3">Sobre mi</h3>
-							<p class="text-muted">Apasionada por la innovación y el crecimiento personal. Me enfoco en
-								construir habilidades de liderazgo y metodologias para escalar proyectos de impacto.</p>
+							<p class="text-muted">{{#user.shortDescription}}{{user.shortDescription}}{{/user.shortDescription}}{{^user.shortDescription}}Todavía no se ha añadido ninguna información.{{/user.shortDescription}}</p>
 							<div class="row g-3">
 								<div class="col-md-6">
 									<div class="d-flex align-items-center gap-3">
 										<i class="bi bi-briefcase fs-4 text-accent"></i>
 										<div>
 											<p class="mb-1 fw-semibold">Objetivo actual</p>
-											<p class="mb-0 text-muted">Lanzar mi startup en 2026</p>
+											<p class="mb-0 text-muted">{{#user.currentGoal}}{{user.currentGoal}}{{/user.currentGoal}}{{^user.currentGoal}}Todavía no se ha añadido ninguna información.{{/user.currentGoal}}</p>
 										</div>
 									</div>
 								</div>
@@ -108,7 +125,7 @@
 										<i class="bi bi-lightning fs-4 text-accent"></i>
 										<div>
 											<p class="mb-1 fw-semibold">Rutina semanal</p>
-											<p class="mb-0 text-muted">6h de formacion y 2h networking</p>
+											<p class="mb-0 text-muted">{{#user.weeklyRoutine}}{{user.weeklyRoutine}}{{/user.weeklyRoutine}}{{^user.weeklyRoutine}}Todavía no se ha añadido ninguna información.{{/user.weeklyRoutine}}</p>
 										</div>
 									</div>
 								</div>
@@ -126,7 +143,7 @@
 										<i class="bi bi-award fs-4 text-accent"></i>
 										<div>
 											<p class="mb-1 fw-semibold">Certificaciones</p>
-											<p class="mb-0 text-muted">2 completadas · 1 en progreso</p>
+											<p class="mb-0 text-muted">{{completedCourses}} completadas</p>
 										</div>
 									</div>
 								</div>

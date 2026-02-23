@@ -162,6 +162,11 @@ public class AdminService {
             Event event = opt.get();
             event.setStatus(Status.PUBLISHED);
             eventRepository.save(event);
+            // Notificar al creador del evento
+            User creator = event.getCreator();
+            if (creator != null) {
+                emailService.eventPublished(creator.getEmail(), event.getTitle(), creator.getUsername());
+            }
         }
     }
 

@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import es.codeurjc.scam_g18.model.Image;
 import es.codeurjc.scam_g18.model.Role;
 import es.codeurjc.scam_g18.model.User;
+import es.codeurjc.scam_g18.repository.EnrollmentRepository;
 import es.codeurjc.scam_g18.repository.UserRepository;
 
 @Service
@@ -33,6 +34,9 @@ public class UserService {
 
     @Autowired
     private RolerService rolerService;
+
+    @Autowired
+    private EnrollmentRepository enrollmentRepository;
 
     public boolean isUserLoggedIn() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -113,6 +117,7 @@ public class UserService {
 
     @Transactional
     public boolean updateProfile(Long id, String username, String email, String country,
+            String shortDescription, String currentGoal, String weeklyRoutine,
             MultipartFile imageFile) throws IOException, SQLException {
         Optional<User> optUser = userRepository.findById(id);
         if (optUser.isEmpty())
@@ -128,12 +133,18 @@ public class UserService {
         if (country != null && !country.isBlank()) {
             user.setCountry(country);
         }
+        // Campos de texto libre — se permiten vacíos para borrar el valor
+        user.setShortDescription(shortDescription);
+        user.setCurrentGoal(currentGoal);
+        user.setWeeklyRoutine(weeklyRoutine);
         if (imageFile != null && !imageFile.isEmpty()) {
             user.setImage(imageService.saveImage(imageFile));
         }
-        // No hace falta llamar a save() porque la entidad está gestionada dentro de la
-        // transacción
         return true;
+    }
+
+    public int getCompletedCoursesCount(Long userId) {
+        return enrollmentRepository.countByUserIdAndProgressPercentage(userId, 100);
     }
 
     public void updateName(String newName, User user) {

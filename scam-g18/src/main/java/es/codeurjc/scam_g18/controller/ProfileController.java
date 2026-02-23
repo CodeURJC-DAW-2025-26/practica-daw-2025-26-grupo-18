@@ -49,6 +49,7 @@ public class ProfileController {
         if (user.isPresent()) {
             model.addAttribute("user", user.get());
             model.addAttribute("profileImage", userService.getProfileImage(id));
+            model.addAttribute("completedCourses", userService.getCompletedCoursesCount(id));
         }
         return "profile";
     }
@@ -58,20 +59,22 @@ public class ProfileController {
             @RequestParam String username,
             @RequestParam String email,
             @RequestParam(required = false) String country,
+            @RequestParam(required = false) String shortDescription,
+            @RequestParam(required = false) String currentGoal,
+            @RequestParam(required = false) String weeklyRoutine,
             @RequestParam(required = false) MultipartFile imageFile,
             HttpServletRequest request) throws IOException, SQLException {
 
-        userService.updateProfile(id, username, email, country, imageFile);
+        userService.updateProfile(id, username, email, country, shortDescription, currentGoal, weeklyRoutine,
+                imageFile);
 
-        // Actualizar la sesión de Spring Security si el username cambió,
-        // para que las siguientes peticiones encuentren al usuario correctamente
+        // Actualizar la sesión de Spring Security si el username cambió
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && username != null && !username.isBlank() && !auth.getName().equals(username)) {
             Authentication newAuth = new UsernamePasswordAuthenticationToken(
                     username, auth.getCredentials(), auth.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(newAuth);
 
-            // Persistir en la sesión HTTP
             HttpSession session = request.getSession(false);
             if (session != null) {
                 session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());

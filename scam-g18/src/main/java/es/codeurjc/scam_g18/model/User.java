@@ -24,48 +24,52 @@ import jakarta.persistence.Transient;
 @Entity
 @Table(name = "users")
 public class User {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @Column(nullable = false, unique = true)
     private String username;
-    
+
     @Column(nullable = false)
     private String password;
-    
+
     @Column(nullable = false, unique = true)
     private String email;
-    
+
     @Column(columnDefinition = "ENUM('MALE', 'FEMALE', 'PREFER_NOT_TO_SAY') default 'PREFER_NOT_TO_SAY'")
     private String gender;
-    
+
     private LocalDate birthDate;
-    
+
     private String country;
-    
+
+    private String shortDescription;
+
+    private String currentGoal;
+
+    private String weeklyRoutine;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id")
     private Image image;
-    
+
     @Column(columnDefinition = "boolean default true")
     private Boolean isActive = true;
-    
+
     @CreationTimestamp
     private LocalDateTime createdAt;
-    
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "user_roles", 
-        joinColumns = @JoinColumn(name = "user_id"), 
-        inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<Role> roles = new HashSet<>();
-    
-    public User() {}
 
-    public User(String username, String password, String email, String gender, LocalDate birthDate, String country, Image image) {
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
+
+    public User() {
+    }
+
+    public User(String username, String password, String email, String gender, LocalDate birthDate, String country,
+            Image image) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -131,6 +135,30 @@ public class User {
         this.country = country;
     }
 
+    public String getShortDescription() {
+        return shortDescription;
+    }
+
+    public void setShortDescription(String shortDescription) {
+        this.shortDescription = shortDescription;
+    }
+
+    public String getCurrentGoal() {
+        return currentGoal;
+    }
+
+    public void setCurrentGoal(String currentGoal) {
+        this.currentGoal = currentGoal;
+    }
+
+    public String getWeeklyRoutine() {
+        return weeklyRoutine;
+    }
+
+    public void setWeeklyRoutine(String weeklyRoutine) {
+        this.weeklyRoutine = weeklyRoutine;
+    }
+
     public Image getImage() {
         return image;
     }
@@ -163,18 +191,19 @@ public class User {
         this.roles = roles;
     }
 
-    @Transient //Para que no se guarde en la base de datos
+    @Transient // Para que no se guarde en la base de datos
     public String getInitials() {
-        if (username == null || username.isEmpty()) return "";
-        
+        if (username == null || username.isEmpty())
+            return "";
+
         String[] parts = username.trim().split(" ");
         String initials = "";
-        
+
         // Tomamos la primera letra de los primeros dos nombres
         for (int i = 0; i < Math.min(2, parts.length); i++) {
             initials += parts[i].substring(0, 1).toUpperCase();
         }
-        
+
         return initials;
     }
 
