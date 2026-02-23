@@ -16,12 +16,18 @@ import es.codeurjc.scam_g18.repository.UserRepository;
 
 @Service
 public class AdminService {
+
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private CourseRepository courseRepository;
+
     @Autowired
     private ReviewRepository reviewRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -41,6 +47,8 @@ public class AdminService {
             User user = userOptional.get();
             user.setIsActive(false);
             userRepository.save(user);
+            // Enviar email de notificación al usuario baneado
+            emailService.accountBannedMessage(user.getEmail(), user.getUsername());
         }
     }
 
@@ -63,6 +71,11 @@ public class AdminService {
             Course course = courseOptional.get();
             course.setStatus(Status.PUBLISHED);
             courseRepository.save(course);
+            // Notificar al creador del curso
+            User creator = course.getCreator();
+            if (creator != null) {
+                emailService.cursePublished(creator.getEmail(), course.getTitle(), creator.getUsername());
+            }
         }
     }
 

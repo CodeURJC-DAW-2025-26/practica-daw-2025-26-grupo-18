@@ -1,6 +1,5 @@
 package es.codeurjc.scam_g18.controller;
 
-import es.codeurjc.scam_g18.model.User;
 import es.codeurjc.scam_g18.service.AdminService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,7 @@ public class AdminController {
 
     @GetMapping("/users/search")
     public String searchUser(@RequestParam String name, Model model) {
-        Optional<User> user = adminService.findUserByUsername(name);
+        var user = adminService.findUserByUsername(name);
 
         model.addAttribute("searchQuery", name);
 
