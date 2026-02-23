@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import es.codeurjc.scam_g18.model.Image;
 import es.codeurjc.scam_g18.model.Role;
 import es.codeurjc.scam_g18.model.User;
 import es.codeurjc.scam_g18.repository.UserRepository;
@@ -96,16 +97,16 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public updateName(String newName, User user){
-        user.setName(newName);
+    public void updateName(String newName, User user) {
+        user.setUsername(newName);
     }
 
-    public updateCountry(String country, User user){
-        user.setCountry(newName);
+    public void updateCountry(String country, User user) {
+        user.setCountry(country);
     }
 
-    public updateImage(String imgPath, User user){
-        Optional<Image> img = imageService.saveImage(imgPath);
+    public void updateImage(String imgPath, User user) throws IOException, SQLException {
+        Image img = imageService.saveImage(imgPath);
         user.setImage(img);
     }
 
