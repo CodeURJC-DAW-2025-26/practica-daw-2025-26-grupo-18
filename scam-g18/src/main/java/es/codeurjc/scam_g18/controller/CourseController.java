@@ -32,6 +32,9 @@ public class CourseController {
         model.addAttribute("courses", courseService.getCoursesViewData(search, tags));
         model.addAttribute("search", search);
         model.addAttribute("tagsView", tagService.getTagsView(tags));
+        
+
+        
 
         return "courses";
     }
@@ -47,5 +50,13 @@ public class CourseController {
 
         return "course";
     }
+
+    @GetMapping("/courses/new")
+    public String newCourseForm(@RequestParam Model model) {
+        return "createCourse";
+    }
+
+
+    
 
 }
