@@ -96,6 +96,19 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public updateName(String newName, User user){
+        user.setName(newName);
+    }
+
+    public updateCountry(String country, User user){
+        user.setCountry(newName);
+    }
+
+    public updateImage(String imgPath, User user){
+        Optional<Image> img = imageService.saveImage(imgPath);
+        user.setImage(img);
+    }
+
     @Transactional
     public boolean registerUser(String username, String email, String rawPassword, String gender, String birthDate,
             String country, MultipartFile imageFile) throws IOException, SQLException {
