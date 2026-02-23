@@ -210,7 +210,7 @@ public class EventController {
         return "createEvent";
     }
 
-    @PostMapping("/events/new")
+    @PostMapping("/event/new")
     public String createEvent(
             @RequestParam String title,
             @RequestParam String description,
