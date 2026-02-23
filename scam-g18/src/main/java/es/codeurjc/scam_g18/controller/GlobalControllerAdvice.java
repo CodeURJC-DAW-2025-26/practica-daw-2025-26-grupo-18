@@ -29,6 +29,7 @@ public class GlobalControllerAdvice {
         model.addAttribute("userName", "");
         model.addAttribute("userProfileImage", "/img/descarga.jpg");
         model.addAttribute("canCreateEvent", false);
+        model.addAttribute("canCreateCourse", false);
         model.addAttribute("isAdmin", false);
 
         if (hasPrincipal) {
@@ -44,6 +45,10 @@ public class GlobalControllerAdvice {
                 boolean canCreateEvent = currentUser.getRoles().stream()
                         .anyMatch(role -> role.getName().equals("ADMIN") || role.getName().equals("SUBSCRIBED"));
                 model.addAttribute("canCreateEvent", canCreateEvent);
+
+                boolean canCreateCourse = currentUser.getRoles().stream()
+                        .anyMatch(role -> role.getName().equals("ADMIN") || role.getName().equals("SUBSCRIBED"));
+                model.addAttribute("canCreateCourse", canCreateCourse);
 
                 boolean isAdmin = currentUser.getRoles().stream()
                         .anyMatch(role -> role.getName().equals("ADMIN"));

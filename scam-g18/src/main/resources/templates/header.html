@@ -52,15 +52,23 @@
                 <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
             </nav>
             {{#isUserLoggedIn}}
-            <div class="header-profile d-flex align-items-center gap-3" style="font-family: var(--nav-font); color: var(--nav-color); font-size: 16px">
-                <a href="/profile/{{userId}}" class="d-flex align-items-center gap-3 text-decoration-none" style="color: inherit">
-                    <span class="profile-name">{{userName}} </span>
+            <div class="header-profile dropdown">
+                <a href="#" class="d-flex align-items-center gap-3 text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="font-family: var(--nav-font); color: var(--nav-color); font-size: 16px">
+                    <span class="profile-name">{{userName}}</span>
                     <img src="{{userProfileImage}}" alt="Profile" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover" />
                 </a>
-                <form action="/logout" method="post" class="m-0">
-                    <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
-                    <button type="submit" class="btn btn-sm btn-outline-danger">Logout</button>
-                </form>
+                <ul class="dropdown-menu dropdown-menu-end profile-dropdown" aria-labelledby="profileDropdown">
+                    <li>
+                        <a class="dropdown-item" href="/profile/{{userId}}"><i class="bi bi-person-circle"></i> Mi Perfil</a>
+                    </li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li>
+                        <form action="/logout" method="post" class="m-0">
+                            <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+                            <button type="submit" class="dropdown-item"><i class="bi bi-box-arrow-right"></i> Logout</button>
+                        </form>
+                    </li>
+                </ul>
             </div>
             {{/isUserLoggedIn}} {{^isUserLoggedIn}}
             <a class="btn-getstarted" href="/login">Iniciar sesión/Registrarse</a>

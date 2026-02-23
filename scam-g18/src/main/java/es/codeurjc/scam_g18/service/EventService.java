@@ -126,15 +126,19 @@ public class EventService {
         }
 
         if (event.getLocation() != null) {
+            Double latitude = event.getLocation().getLatitude();
+            Double longitude = event.getLocation().getLongitude();
             eventData.put("isLocation", true);
             eventData.put("locationName", event.getLocation().getName());
             eventData.put("locationCity", event.getLocation().getCity());
             eventData.put("locationAddress", event.getLocation().getAddress());
             eventData.put("locationCountry", event.getLocation().getCountry());
-            eventData.put("locationLat", event.getLocation().getLatitude());
-            eventData.put("locationLon", event.getLocation().getLongitude());
+            eventData.put("locationLat", latitude);
+            eventData.put("locationLon", longitude);
+            eventData.put("hasCoordinates", latitude != null && longitude != null);
         } else {
             eventData.put("isLocation", false);
+            eventData.put("hasCoordinates", false);
         }
 
         eventData.put("tags", event.getTags());

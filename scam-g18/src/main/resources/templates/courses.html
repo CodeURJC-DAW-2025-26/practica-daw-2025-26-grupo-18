@@ -20,12 +20,21 @@
             <div class="container" data-aos="fade-up">
                 <form action="/courses" method="get">
                 <div class="course-controls">
-                    <div class="course-search">
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="search" name="search" class="form-control" placeholder="Buscar cursos" aria-label="Buscar cursos" value="{{#search}}{{search}}{{/search}}">
-                            <button class="btn btn-primary btn-accent" type="submit">Buscar</button>
+                    <div class="course-controls-top">
+                        <div class="course-search">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <input type="search" name="search" class="form-control" placeholder="Buscar cursos" aria-label="Buscar cursos" value="{{#search}}{{search}}{{/search}}">
+                                <button class="btn btn-primary btn-accent" type="submit">Buscar</button>
+                            </div>
                         </div>
+                        {{#canCreateCourse}}
+                        <div class="course-create-event-wrapper">
+                            <a href="/courses/new" class="btn btn-primary btn-lg btn-create-event">
+                                <i class="bi bi-plus-circle me-2"></i>Crear Nuevo Curso
+                            </a>
+                        </div>
+                        {{/canCreateCourse}}
                     </div>
                     <div class="course-filters">
                         <a href="/courses{{#search}}?search={{search}}{{/search}}" class="filter-chip {{^selectedTags}}active{{/selectedTags}}">Todos</a>
@@ -60,7 +69,8 @@
                                 <span class="course-rating-value">{{averageRating}}</span>
                                 <span class="course-rating-count">({{ratingCount}})</span>
                             </div>
-                            <div class="course-card-students"><i class="bi bi-people"></i> Por {{creatorUsername}}</div>
+                            <div class="course-card-students"><i class="bi bi-people"></i>{{subscribersNumber}} suscritos</div>
+                            <div class="course-card-students"><i class="bi bi-person-circle"></i> Por {{creatorUsername}}</div>
                         </div>
                         <div class="course-card-actions">
                             <a href="/course/{{id}}" class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver curso</a>
