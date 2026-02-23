@@ -18,24 +18,24 @@
     <section class="courses-catalog section">
         <div class="container" data-aos="fade-up">
 
-            {{#canCreateEvent}}
-            <div class="d-flex justify-content-end mb-4">
-                <a href="/events/new" class="btn btn-primary btn-lg"
-                    style="background-color: #D96D3C; border-color: #D96D3C;">
-                    <i class="bi bi-plus-circle me-2"></i>Crear Nuevo Evento
-                </a>
-            </div>
-            {{/canCreateEvent}}
-
             <form action="/events" method="get">
                 <div class="course-controls">
-                    <div class="course-search">
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="search" name="search" class="form-control" placeholder="Buscar eventos"
-                                aria-label="Buscar eventos" value="{{#search}}{{search}}{{/search}}">
-                            <button class="btn btn-primary btn-accent" type="submit">Buscar</button>
+                    <div class="course-controls-top">
+                        <div class="course-search">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <input type="search" name="search" class="form-control" placeholder="Buscar eventos"
+                                    aria-label="Buscar eventos" value="{{#search}}{{search}}{{/search}}">
+                                <button class="btn btn-primary btn-accent" type="submit">Buscar</button>
+                            </div>
                         </div>
+                        {{#canCreateEvent}}
+                        <div class="course-create-event-wrapper">
+                            <a href="/events/new" class="btn btn-primary btn-lg btn-create-event">
+                                <i class="bi bi-plus-circle me-2"></i>Crear Nuevo Evento
+                            </a>
+                        </div>
+                        {{/canCreateEvent}}
                     </div>
                     <div class="course-filters">
                         <a href="/events{{#search}}?search={{search}}{{/search}}"
