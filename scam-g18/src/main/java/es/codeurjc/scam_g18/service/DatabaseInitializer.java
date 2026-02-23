@@ -240,6 +240,8 @@ public class DatabaseInitializer {
         loc1.setCity("Madrid");
         loc1.setAddress("Paseo de la Castellana 123");
         loc1.setCountry("España");
+        loc1.setLatitude(40.45798923792695);
+        loc1.setLongitude(-3.6905805690206726);
         locationRepository.save(loc1);
 
         Set<Tag> tags1 = new HashSet<>();
