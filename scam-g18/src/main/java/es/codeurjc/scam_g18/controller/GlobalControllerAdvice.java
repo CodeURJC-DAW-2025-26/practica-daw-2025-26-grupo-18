@@ -28,6 +28,7 @@ public class GlobalControllerAdvice {
             model.addAttribute("userProfileImage", "/img/descarga.jpg");
             var currentUser = userService.getCurrentAuthenticatedUser().orElse(null);
             if (currentUser != null) {
+                model.addAttribute("userId", currentUser.getId());
                 model.addAttribute("userName", currentUser.getUsername());
                 model.addAttribute("userProfileImage", userService.getProfileImage(currentUser.getId()));
 

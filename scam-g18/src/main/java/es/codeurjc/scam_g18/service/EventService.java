@@ -126,13 +126,15 @@ public class EventService {
         }
 
         if (event.getLocation() != null) {
-            String loc = event.getLocation().getCity();
-            if (event.getLocation().getName() != null && !event.getLocation().getName().isEmpty()) {
-                loc += ", " + event.getLocation().getName();
-            }
-            eventData.put("locationName", loc);
+            eventData.put("isLocation", true);
+            eventData.put("locationName", event.getLocation().getName());
+            eventData.put("locationCity", event.getLocation().getCity());
+            eventData.put("locationAddress", event.getLocation().getAddress());
+            eventData.put("locationCountry", event.getLocation().getCountry());
+            eventData.put("locationLat", event.getLocation().getLatitude());
+            eventData.put("locationLon", event.getLocation().getLongitude());
         } else {
-            eventData.put("locationName", "Online");
+            eventData.put("isLocation", false);
         }
 
         eventData.put("tags", event.getTags());
