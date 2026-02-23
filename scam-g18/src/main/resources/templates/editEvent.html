@@ -8,18 +8,20 @@
             <nav class="breadcrumbs">
                 <ol>
                     <li><a href="/">Inicio</a></li>
-                    <li class="current">Crear Evento</li>
+                    <li><a href="/events">Eventos</a></li>
+                    <li class="current">Editar Evento</li>
                 </ol>
             </nav>
-            <h1>Crear Nuevo Evento</h1>
+            <h1>Editar Evento: {{event.title}}</h1>
         </div>
     </div><!-- End Page Title -->
 
-    <!-- Create Event Section -->
-    <section id="create-event-section" class="section">
+    <!-- Edit Event Section -->
+    <section id="edit-event-section" class="section">
         <div class="container" data-aos="fade-up">
 
-            <form class="needs-validation" action="/events/new" method="post" enctype="multipart/form-data">
+            <form class="needs-validation" action="/event/{{event.id}}/edit" method="post"
+                enctype="multipart/form-data">
                 <input type="hidden" name="_csrf" value="{{_csrf.token}}">
 
                 <div class="row g-4">
@@ -34,7 +36,8 @@
                             </div>
                             <div class="card-body">
                                 <div class="mb-3">
-                                    <label for="eventImage" class="form-label">Imagen del Evento</label>
+                                    <label for="eventImage" class="form-label">Imagen del Evento (Dejar vacío para
+                                        mantener la actual)</label>
                                     <input type="file" class="form-control" id="eventImage" name="image"
                                         accept="image/*">
                                     <div class="form-text">Se recomienda una imagen de 1280x720 px.</div>
@@ -43,43 +46,45 @@
                                 <div class="mb-3">
                                     <label for="eventTitle" class="form-label">Título del Evento</label>
                                     <input type="text" class="form-control" id="eventTitle" name="title"
-                                        placeholder="Ej: Foro de Innovación & Startups 2026" required>
+                                        value="{{event.title}}" required>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="eventDescription" class="form-label">Descripción Detallada</label>
                                     <textarea class="form-control" id="eventDescription" name="description" rows="6"
-                                        placeholder="Detalles completos del evento..." required></textarea>
+                                        required>{{event.description}}</textarea>
                                 </div>
 
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="startDate" class="form-label">Fecha de Inicio</label>
                                         <input type="date" class="form-control" id="startDate" name="startDateStr"
-                                            required>
+                                            value="{{startDateStr}}" required>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="startTime" class="form-label">Hora de Inicio</label>
                                         <input type="time" class="form-control" id="startTime" name="startTimeStr"
-                                            required>
+                                            value="{{startTimeStr}}" required>
                                     </div>
                                 </div>
 
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="endDate" class="form-label">Fecha de Fin</label>
-                                        <input type="date" class="form-control" id="endDate" name="endDateStr" required>
+                                        <input type="date" class="form-control" id="endDate" name="endDateStr"
+                                            value="{{endDateStr}}" required>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="endTime" class="form-label">Hora de Fin</label>
-                                        <input type="time" class="form-control" id="endTime" name="endTimeStr" required>
+                                        <input type="time" class="form-control" id="endTime" name="endTimeStr"
+                                            value="{{endTimeStr}}" required>
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="eventLocation" class="form-label">Ubicación</label>
                                     <input type="text" class="form-control" id="eventLocation" name="locationName"
-                                        placeholder="Ej: IFEMA, Madrid" required>
+                                        value="{{event.location.name}}" required>
                                 </div>
                             </div>
                         </div>
@@ -93,27 +98,29 @@
                             </div>
                             <div class="card-body">
                                 <div id="agenda-container">
-                                    <!-- Agenda Item Initial State -->
+                                    {{#event.sessions}}
                                     <div class="border rounded p-3 mb-3 agenda-item bg-light">
                                         <div class="d-flex justify-content-between mb-2">
-                                            <div class="fw-bold">Sesión 1</div>
+                                            <div class="fw-bold">Sesión</div>
                                             <button type="button" class="btn btn-sm btn-delete"
                                                 onclick="this.closest('.agenda-item').remove()">Eliminar</button>
                                         </div>
                                         <div class="row g-2">
                                             <div class="col-md-3">
-                                                <input type="time" class="form-control" name="sessionTimes" required>
+                                                <input type="time" class="form-control" name="sessionTimes"
+                                                    value="{{time}}" required>
                                             </div>
                                             <div class="col-md-9">
                                                 <input type="text" class="form-control" name="sessionTitles"
-                                                    placeholder="Título de la sesión" required>
+                                                    value="{{title}}" required>
                                             </div>
                                             <div class="col-12">
                                                 <textarea class="form-control" rows="2" name="sessionDescriptions"
-                                                    placeholder="Descripción de la sesión"></textarea>
+                                                    placeholder="Descripción de la sesión">{{description}}</textarea>
                                             </div>
                                         </div>
                                     </div>
+                                    {{/event.sessions}}
                                 </div>
                             </div>
                         </div>
@@ -127,20 +134,21 @@
                             </div>
                             <div class="card-body">
                                 <div id="speakers-container">
-                                    <!-- Speaker Item Initial State -->
+                                    {{#event.speakers}}
                                     <div class="border rounded p-3 mb-3 speaker-item bg-light">
                                         <div class="d-flex justify-content-between mb-2">
-                                            <div class="fw-bold">Ponente 1</div>
+                                            <div class="fw-bold">Ponente</div>
                                             <button type="button" class="btn btn-sm btn-delete"
                                                 onclick="this.closest('.speaker-item').remove()">Eliminar</button>
                                         </div>
                                         <div class="row g-2">
                                             <div class="col-md-12">
                                                 <input type="text" class="form-control" name="speakerNames"
-                                                    placeholder="Nombre completo y Cargo" required>
+                                                    value="{{.}}" required>
                                             </div>
                                         </div>
                                     </div>
+                                    {{/event.speakers}}
                                 </div>
                             </div>
                         </div>
@@ -159,45 +167,33 @@
                                     <div class="input-group">
                                         <span class="input-group-text">€</span>
                                         <input type="number" class="form-control" id="eventPrice" name="price"
-                                            placeholder="0.00" step="0.01" required>
+                                            value="{{#event.priceCents}}{{event.priceCents}}{{/event.priceCents}}"
+                                            step="0.01" required>
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="eventCapacity" class="form-label">Capacidad (Personas)</label>
                                     <input type="number" class="form-control" id="eventCapacity" name="capacity"
-                                        placeholder="Ej: 650" required>
+                                        value="{{event.capacity}}" required>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="eventType" class="form-label">Tipo de Evento</label>
                                     <select class="form-select" id="eventType" name="category">
-                                        <option value="Conferencia">Conferencia</option>
-                                        <option value="Webinar">Webinar</option>
-                                        <option value="Taller">Taller</option>
-                                        <option value="Networking">Networking</option>
+                                        <option value="Conferencia"
+                                            {{#event.isConferencia}}selected{{/event.isConferencia}}>Conferencia
+                                        </option>
+                                        <option value="Webinar" {{#event.isWebinar}}selected{{/event.isWebinar}}>Webinar
+                                        </option>
+                                        <option value="Taller" {{#event.isTaller}}selected{{/event.isTaller}}>Taller
+                                        </option>
+                                        <option value="Networking"
+                                            {{#event.isNetworking}}selected{{/event.isNetworking}}>Networking</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Contact Info Override -->
-                        <div class="card shadow-sm mb-4">
-                            <div class="card-header bg-white py-3">
-                                <h5 class="mb-0">Contacto del Organizador</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="mb-2">
-                                    <input type="email" class="form-control" placeholder="Email de contacto"
-                                        value="eventos@scam.com">
-                                </div>
-                                <div>
-                                    <input type="tel" class="form-control" placeholder="Teléfono"
-                                        value="+34 91 123 45 67">
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
 
                 </div>
@@ -207,13 +203,12 @@
                     <div class="col-12">
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary btn-lg"
-                                style="background-color: #D96D3C; border-color: #D96D3C;">Publicar Evento</button>
-                            <a href="/events" class="btn btn-outline-secondary">Cancelar</a>
+                                style="background-color: #D96D3C; border-color: #D96D3C;">Guardar Cambios</button>
+                            <a href="/event/{{event.id}}" class="btn btn-outline-secondary">Cancelar</a>
                         </div>
                     </div>
                 </div>
             </form>
-
 
         </div>
     </section>
@@ -222,6 +217,49 @@
 
 {{>footer}}
 
+<script>
+    function addAgendaItem() {
+        const container = document.getElementById('agenda-container');
+        const count = container.querySelectorAll('.agenda-item').length + 1;
+        const html = `
+            <div class="border rounded p-3 mb-3 agenda-item bg-light">
+                <div class="d-flex justify-content-between mb-2">
+                    <div class="fw-bold">Sesión ${count}</div>
+                    <button type="button" class="btn btn-sm btn-delete" onclick="this.closest('.agenda-item').remove()">Eliminar</button>
+                </div>
+                <div class="row g-2">
+                    <div class="col-md-3">
+                        <input type="time" class="form-control" name="sessionTimes" required>
+                    </div>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" name="sessionTitles" placeholder="Título de la sesión" required>
+                    </div>
+                    <div class="col-12">
+                        <textarea class="form-control" rows="2" name="sessionDescriptions" placeholder="Descripción de la sesión"></textarea>
+                    </div>
+                </div>
+            </div>`;
+        container.insertAdjacentHTML('beforeend', html);
+    }
+
+    function addSpeaker() {
+        const container = document.getElementById('speakers-container');
+        const count = container.querySelectorAll('.speaker-item').length + 1;
+        const html = `
+            <div class="border rounded p-3 mb-3 speaker-item bg-light">
+                <div class="d-flex justify-content-between mb-2">
+                    <div class="fw-bold">Ponente ${count}</div>
+                    <button type="button" class="btn btn-sm btn-delete" onclick="this.closest('.speaker-item').remove()">Eliminar</button>
+                </div>
+                <div class="row g-2">
+                    <div class="col-md-12">
+                        <input type="text" class="form-control" name="speakerNames" placeholder="Nombre completo y Cargo" required>
+                    </div>
+                </div>
+            </div>`;
+        container.insertAdjacentHTML('beforeend', html);
+    }
+</script>
 
 </body>
 

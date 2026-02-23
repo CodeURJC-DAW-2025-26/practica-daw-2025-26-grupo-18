@@ -1,17 +1,27 @@
 package es.codeurjc.scam_g18.controller;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import es.codeurjc.scam_g18.model.User;
 import es.codeurjc.scam_g18.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class ProfileController {
@@ -42,4 +52,33 @@ public class ProfileController {
         }
         return "profile";
     }
+
+    @PostMapping("/profile/{id}/edit")
+    public String editProfile(@PathVariable long id,
+            @RequestParam String username,
+            @RequestParam String email,
+            @RequestParam(required = false) String country,
+            @RequestParam(required = false) MultipartFile imageFile,
+            HttpServletRequest request) throws IOException, SQLException {
+
+        userService.updateProfile(id, username, email, country, imageFile);
+
+        // Actualizar la sesión de Spring Security si el username cambió,
+        // para que las siguientes peticiones encuentren al usuario correctamente
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && username != null && !username.isBlank() && !auth.getName().equals(username)) {
+            Authentication newAuth = new UsernamePasswordAuthenticationToken(
+                    username, auth.getCredentials(), auth.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(newAuth);
+
+            // Persistir en la sesión HTTP
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+            }
+        }
+
+        return "redirect:/profile/" + id;
+    }
+
 }
