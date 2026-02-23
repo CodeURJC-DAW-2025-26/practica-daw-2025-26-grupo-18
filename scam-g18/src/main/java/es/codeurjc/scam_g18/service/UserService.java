@@ -97,6 +97,31 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
+    public boolean updateProfile(Long id, String username, String email, String country,
+            MultipartFile imageFile) throws IOException, SQLException {
+        Optional<User> optUser = userRepository.findById(id);
+        if (optUser.isEmpty())
+            return false;
+
+        User user = optUser.get();
+        if (username != null && !username.isBlank()) {
+            user.setUsername(username);
+        }
+        if (email != null && !email.isBlank()) {
+            user.setEmail(email);
+        }
+        if (country != null && !country.isBlank()) {
+            user.setCountry(country);
+        }
+        if (imageFile != null && !imageFile.isEmpty()) {
+            user.setImage(imageService.saveImage(imageFile));
+        }
+        // No hace falta llamar a save() porque la entidad está gestionada dentro de la
+        // transacción
+        return true;
+    }
+
     public void updateName(String newName, User user) {
         user.setUsername(newName);
     }

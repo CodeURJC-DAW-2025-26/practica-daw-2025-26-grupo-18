@@ -7,6 +7,9 @@ import java.util.Collections;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,17 +19,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import es.codeurjc.scam_g18.model.User;
-import es.codeurjc.scam_g18.service.ImageService;
 import es.codeurjc.scam_g18.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class ProfileController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private ImageService imageService;
 
     @GetMapping("/courses/subscribed")
     public String subscribedCourses(Model model, Principal principal) {
@@ -57,22 +58,24 @@ public class ProfileController {
             @RequestParam String username,
             @RequestParam String email,
             @RequestParam(required = false) String country,
-            @RequestParam(required = false) MultipartFile imageFile) throws IOException, SQLException {
+            @RequestParam(required = false) MultipartFile imageFile,
+            HttpServletRequest request) throws IOException, SQLException {
 
-        Optional<User> optUser = userService.findById(id);
-        if (optUser.isPresent()) {
-            User user = optUser.get();
-            if (username != null)
-                user.setUsername(username);
-            if (email != null)
-                user.setEmail(email);
-            if (country != null && !country.isBlank()) {
-                user.setCountry(country);
+        userService.updateProfile(id, username, email, country, imageFile);
+
+        // Actualizar la sesión de Spring Security si el username cambió,
+        // para que las siguientes peticiones encuentren al usuario correctamente
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && username != null && !username.isBlank() && !auth.getName().equals(username)) {
+            Authentication newAuth = new UsernamePasswordAuthenticationToken(
+                    username, auth.getCredentials(), auth.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(newAuth);
+
+            // Persistir en la sesión HTTP
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
             }
-            if (imageFile != null && !imageFile.isEmpty()) {
-                user.setImage(imageService.saveImage(imageFile));
-            }
-            userService.save(user);
         }
 
         return "redirect:/profile/" + id;

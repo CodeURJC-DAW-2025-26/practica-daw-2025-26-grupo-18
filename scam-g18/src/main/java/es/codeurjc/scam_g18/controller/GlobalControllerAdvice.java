@@ -24,8 +24,14 @@ public class GlobalControllerAdvice {
             model.addAttribute("_csrf", csrfToken);
         }
 
+        // Valores por defecto siempre presentes para el header (Mustache falla si no
+        // existen)
+        model.addAttribute("userId", "");
+        model.addAttribute("userName", "");
+        model.addAttribute("userProfileImage", "/img/descarga.jpg");
+        model.addAttribute("canCreateEvent", false);
+
         if (isUserLoggedIn) {
-            model.addAttribute("userProfileImage", "/img/descarga.jpg");
             var currentUser = userService.getCurrentAuthenticatedUser().orElse(null);
             if (currentUser != null) {
                 model.addAttribute("userId", currentUser.getId());
