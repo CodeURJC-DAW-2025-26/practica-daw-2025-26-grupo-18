@@ -231,6 +231,10 @@ public class Course {
         return status;
     }
 
+    public boolean isPendingReview() {
+        return Status.PENDING_REVIEW.equals(this.status);
+    }
+
     public void setStatus(Status status) {
         this.status = status;
     }

@@ -66,7 +66,7 @@ public class Event {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private EventStatus status;
+    private Status status;
 
     @ElementCollection
     private List<String> speakers = new ArrayList<>();
@@ -82,7 +82,7 @@ public class Event {
     }
 
     public Event(User creator, Location location, Image image, String title, String description, Integer priceCents,
-            LocalDateTime startDate, LocalDateTime endDate, String category, EventStatus status, Integer capacity) {
+            LocalDateTime startDate, LocalDateTime endDate, String category, Status status, Integer capacity) {
         this.creator = creator;
         this.location = location;
         this.image = image;
@@ -184,11 +184,15 @@ public class Event {
         this.category = category;
     }
 
-    public EventStatus getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(EventStatus status) {
+    public boolean isPendingReview() {
+        return Status.PENDING_REVIEW.equals(this.status);
+    }
+
+    public void setStatus(Status status) {
         this.status = status;
     }
 

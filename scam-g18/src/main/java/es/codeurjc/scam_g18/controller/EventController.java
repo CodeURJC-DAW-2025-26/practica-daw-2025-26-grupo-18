@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
 
 import es.codeurjc.scam_g18.service.TagService;
+import es.codeurjc.scam_g18.model.Event;
+import es.codeurjc.scam_g18.model.User;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class EventController {
@@ -43,13 +46,163 @@ public class EventController {
 
     @GetMapping("/event/{id}")
     public String showEvent(Model model, @PathVariable long id) {
-        var eventData = eventService.getEventDetailViewData(id);
-        if (eventData == null) {
+        var eventOpt = eventService.getEventById(id);
+        if (eventOpt.isEmpty()) {
             return "redirect:/events";
         }
 
+        Event event = eventOpt.get();
+        var eventData = eventService.getEventDetailViewData(id);
+
         model.addAttribute("event", eventData);
+
+        // Permissions for Edit/Delete
+        boolean isAdmin = false;
+        boolean isCreator = false;
+
+        var currentUserOpt = userService.getCurrentAuthenticatedUser();
+        if (currentUserOpt.isPresent()) {
+            User currentUser = currentUserOpt.get();
+            isAdmin = currentUser.getRoles().stream()
+                    .anyMatch(role -> role.getName().equals("ADMIN"));
+            isCreator = event.getCreator() != null && event.getCreator().getId().equals(currentUser.getId());
+        }
+
+        model.addAttribute("canEdit", isAdmin || isCreator);
+        model.addAttribute("canDelete", isAdmin || isCreator);
+
         return "event";
+    }
+
+    @PostMapping("/event/{id}/delete")
+    public String deleteEvent(@PathVariable long id) {
+        var eventOpt = eventService.getEventById(id);
+        if (eventOpt.isPresent()) {
+            Event event = eventOpt.get();
+            var currentUserOpt = userService.getCurrentAuthenticatedUser();
+
+            if (currentUserOpt.isPresent()) {
+                User currentUser = currentUserOpt.get();
+                boolean isAdmin = currentUser.getRoles().stream()
+                        .anyMatch(role -> role.getName().equals("ADMIN"));
+                boolean isCreator = event.getCreator() != null
+                        && event.getCreator().getId().equals(currentUser.getId());
+
+                if (isAdmin || isCreator) {
+                    eventService.deleteEvent(id);
+                }
+            }
+        }
+        return "redirect:/events";
+    }
+
+    @GetMapping("/event/{id}/edit")
+    public String editEventForm(Model model, @PathVariable long id) {
+        var eventOpt = eventService.getEventById(id);
+        if (eventOpt.isPresent()) {
+            Event event = eventOpt.get();
+            var currentUserOpt = userService.getCurrentAuthenticatedUser();
+
+            if (currentUserOpt.isPresent()) {
+                User currentUser = currentUserOpt.get();
+                boolean isAdmin = currentUser.getRoles().stream()
+                        .anyMatch(role -> role.getName().equals("ADMIN"));
+                boolean isCreator = event.getCreator() != null
+                        && event.getCreator().getId().equals(currentUser.getId());
+
+                if (isAdmin || isCreator) {
+                    model.addAttribute("event", event);
+                    // We need to format dates for the form
+                    model.addAttribute("startDateStr", event.getStartDate().toLocalDate().toString());
+                    model.addAttribute("startTimeStr", event.getStartDate().toLocalTime().toString());
+                    model.addAttribute("endDateStr", event.getEndDate().toLocalDate().toString());
+                    model.addAttribute("endTimeStr", event.getEndDate().toLocalTime().toString());
+                    return "editEvent";
+                }
+            }
+        }
+        return "redirect:/events";
+    }
+
+    @PostMapping("/event/{id}/edit")
+    public String updateEvent(
+            @PathVariable long id,
+            @RequestParam String title,
+            @RequestParam String description,
+            @RequestParam String startDateStr,
+            @RequestParam String startTimeStr,
+            @RequestParam String endDateStr,
+            @RequestParam String endTimeStr,
+            @RequestParam String locationName,
+            @RequestParam Double price,
+            @RequestParam Integer capacity,
+            @RequestParam String category,
+            @RequestParam(required = false) org.springframework.web.multipart.MultipartFile image,
+            @RequestParam(required = false) List<String> sessionTimes,
+            @RequestParam(required = false) List<String> sessionTitles,
+            @RequestParam(required = false) List<String> sessionDescriptions,
+            @RequestParam(required = false) List<String> speakerNames)
+            throws java.io.IOException, java.sql.SQLException {
+
+        var eventOpt = eventService.getEventById(id);
+        if (eventOpt.isPresent()) {
+            Event event = eventOpt.get();
+            var currentUserOpt = userService.getCurrentAuthenticatedUser();
+
+            if (currentUserOpt.isPresent()) {
+                User currentUser = currentUserOpt.get();
+                boolean isAdmin = currentUser.getRoles().stream()
+                        .anyMatch(role -> role.getName().equals("ADMIN"));
+                boolean isCreator = event.getCreator() != null
+                        && event.getCreator().getId().equals(currentUser.getId());
+
+                if (isAdmin || isCreator) {
+                    event.setTitle(title);
+                    event.setDescription(description);
+                    event.setPriceCents((int) (price * 100));
+                    event.setCapacity(capacity);
+                    event.setCategory(category);
+
+                    java.time.LocalDateTime start = java.time.LocalDateTime.of(java.time.LocalDate.parse(startDateStr),
+                            java.time.LocalTime.parse(startTimeStr));
+                    java.time.LocalDateTime end = java.time.LocalDateTime.of(java.time.LocalDate.parse(endDateStr),
+                            java.time.LocalTime.parse(endTimeStr));
+                    event.setStartDate(start);
+                    event.setEndDate(end);
+
+                    if (event.getLocation() != null) {
+                        event.getLocation().setName(locationName);
+                    } else {
+                        es.codeurjc.scam_g18.model.Location location = new es.codeurjc.scam_g18.model.Location();
+                        location.setName(locationName);
+                        location.setCity("Madrid");
+                        location.setCountry("Spain");
+                        event.setLocation(location);
+                    }
+
+                    // Sessions (clear and re-add for simplicity in this prototype)
+                    event.getSessions().clear();
+                    if (sessionTimes != null) {
+                        for (int i = 0; i < sessionTimes.size(); i++) {
+                            String desc = (sessionDescriptions != null && i < sessionDescriptions.size())
+                                    ? sessionDescriptions.get(i)
+                                    : "";
+                            event.getSessions().add(
+                                    new es.codeurjc.scam_g18.model.EventSession(sessionTimes.get(i),
+                                            sessionTitles.get(i), desc));
+                        }
+                    }
+
+                    if (speakerNames != null) {
+                        event.setSpeakers(speakerNames);
+                    }
+
+                    eventService.createEvent(event, image); // Using createEvent as it handles saving + image
+                    return "redirect:/event/" + id;
+                }
+            }
+        }
+        return "redirect:/events";
     }
 
     @GetMapping("/events/new")
@@ -57,7 +210,7 @@ public class EventController {
         return "createEvent";
     }
 
-    @org.springframework.web.bind.annotation.PostMapping("/events/new")
+    @PostMapping("/events/new")
     public String createEvent(
             @RequestParam String title,
             @RequestParam String description,
@@ -82,7 +235,7 @@ public class EventController {
         event.setPriceCents((int) (price * 100));
         event.setCapacity(capacity);
         event.setCategory(category);
-        event.setStatus(es.codeurjc.scam_g18.model.EventStatus.PUBLISHED);
+        event.setStatus(es.codeurjc.scam_g18.model.Status.PUBLISHED);
 
         // Dates
         java.time.LocalDateTime start = java.time.LocalDateTime.of(java.time.LocalDate.parse(startDateStr),

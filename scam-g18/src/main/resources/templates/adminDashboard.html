@@ -1,4 +1,4 @@
-    {{>header}}
+﻿    {{>header}}
 
     <main class="main">
 
@@ -19,171 +19,298 @@
     <section id="admin-dashboard-section" class="section">
         <div class="container" data-aos="fade-up">
 
-        <!-- User Search -->
-        <div class="row justify-content-center mb-5">
-            <div class="col-lg-8">
-                <div class="card shadow-sm border-0">
-                <div class="card-body p-4">
-                        <h4 class="mb-4 text-center">Gestión de Usuarios</h4>
-                        <form action="/admin/users/search" method="get">
-                            <div class="input-group input-group-lg">
-                                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
-                                <input type="text" name="query" id="searchInput" class="form-control border-start-0 ps-0" placeholder="Buscar usuario por nombre de usuario..." th:value="${searchQuery}">
-                                <button id="searchButton" class="btn btn-add" type="submit">Buscar</button>
+            <!-- Nav Tabs -->
+            <ul class="nav nav-tabs mb-4" id="adminTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-users" data-bs-toggle="tab" data-bs-target="#usersTab"
+                        type="button" role="tab" data-tab-key="users">
+                        <i class="bi bi-people me-2"></i>Usuarios
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-courses" data-bs-toggle="tab" data-bs-target="#coursesTab"
+                        type="button" role="tab" data-tab-key="courses">
+                        <i class="bi bi-journal-text me-2"></i>Cursos
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-events" data-bs-toggle="tab" data-bs-target="#eventsTab"
+                        type="button" role="tab" data-tab-key="events">
+                        <i class="bi bi-calendar-event me-2"></i>Eventos
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+
+                <!-- ==================== USUARIOS ==================== -->
+                <div class="tab-pane fade" id="usersTab" role="tabpanel">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body p-4">
+                            <form action="/admin" method="get">
+                                <input type="hidden" name="activeTab" value="users">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+                                    <input type="text" name="userQuery" class="form-control border-start-0"
+                                        placeholder="Buscar usuario por nombre..." value="{{userQuery}}">
+                                    <button class="btn btn-add" type="submit">Buscar</button>
+                                    <a href="/admin?activeTab=users" class="btn btn-outline-secondary">Limpiar</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Usuario</th>
+                                            <th>Email</th>
+                                            <th>Estado</th>
+                                            <th class="text-end">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {{#users}}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <i class="bi bi-person-circle fs-4 text-muted"></i>
+                                                    <span class="fw-semibold">{{username}}</span>
+                                                </div>
+                                            </td>
+                                            <td class="text-muted">{{email}}</td>
+                                            <td>
+                                                {{#isActive}}<span class="badge bg-success">Activo</span>{{/isActive}}
+                                                {{^isActive}}<span class="badge bg-danger">Baneado</span>{{/isActive}}
+                                            </td>
+                                            <td class="text-end">
+                                                <div class="d-flex justify-content-end gap-2">
+                                                    <a href="/profile/{{id}}" class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-person"></i> Ver perfil
+                                                    </a>
+                                                    {{#isActive}}
+                                                    <form action="/admin/users/{{id}}/ban" method="post" class="d-inline">
+                                                        <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}">
+                                                        <button type="submit" class="btn btn-sm btn-delete"
+                                                            onclick="return confirm('Â¿Banear a {{username}}?')">
+                                                            <i class="bi bi-slash-circle"></i> Banear
+                                                        </button>
+                                                    </form>
+                                                    {{/isActive}}
+                                                    {{^isActive}}
+                                                    <form action="/admin/users/{{id}}/unban" method="post" class="d-inline">
+                                                        <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}">
+                                                        <button type="submit" class="btn btn-sm btn-add">
+                                                            <i class="bi bi-check-circle"></i> Desbanear
+                                                        </button>
+                                                    </form>
+                                                    {{/isActive}}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {{/users}}
+                                        {{^users}}
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted py-4">No se encontraron usuarios.</td>
+                                        </tr>
+                                        {{/users}}
+                                    </tbody>
+                                </table>
                             </div>
-                        </form>
-                        <div th:if="${searchError}" class="alert alert-danger mt-3" th:text="${searchError}"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Admin Actions -->
-        <div class="row justify-content-center g-4">
-            
-            <div class="col-md-5 col-lg-4">
-                <div class="card admin-dashboard-card text-center h-100 border-0">
-                    <div class="card-body p-5 d-flex flex-column align-items-center justify-content-center">
-                    <div class="icon-box admin-action-icon mb-4">
-                            <i class="bi bi-journal-text"></i>
                         </div>
-                        <h3 class="card-title h4 mb-3 text-white">Revisar Cursos</h3>
-                        <p class="card-text text-muted mb-4">Gestionar, aprobar o editar los cursos publicados en la plataforma.</p>
-                        <button type="button" class="btn btn-lg btn-action px-4 w-100" data-bs-toggle="modal" data-bs-target="#coursesReviewModal">Acceder</button>
                     </div>
-                </div>
-            </div>
+                </div><!-- end usersTab -->
 
-            <div class="col-md-5 col-lg-4">
-                <div class="card admin-dashboard-card text-center h-100 border-0">
-                    <div class="card-body p-5 d-flex flex-column align-items-center justify-content-center">
-                    <div class="icon-box admin-action-icon mb-4">
-                            <i class="bi bi-chat-dots"></i>
+                <!-- ==================== CURSOS ==================== -->
+                <div class="tab-pane fade" id="coursesTab" role="tabpanel">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body p-4">
+                            <form action="/admin" method="get">
+                                <input type="hidden" name="activeTab" value="courses">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+                                    <input type="text" name="courseQuery" class="form-control border-start-0"
+                                        placeholder="Buscar curso por tÃ­tulo..." value="{{courseQuery}}">
+                                    <button class="btn btn-add" type="submit">Buscar</button>
+                                    <a href="/admin?activeTab=courses" class="btn btn-outline-secondary">Limpiar</a>
+                                </div>
+                            </form>
                         </div>
-                        <h3 class="card-title h4 mb-3 text-white">Revisar Comentarios</h3>
-                        <p class="card-text text-muted mb-4">Moderar las opiniones y discusiones de los estudiantes.</p>
-                        <button type="button" class="btn btn-lg btn-action px-4 w-100" data-bs-toggle="modal" data-bs-target="#commentsReviewModal">Acceder</button>
                     </div>
-                </div>
-            </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Curso</th>
+                                            <th>Instructor</th>
+                                            <th>Estado</th>
+                                            <th class="text-end">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {{#courses}}
+                                        <tr {{#isPendingReview}}class="table-warning"{{/isPendingReview}}>
+                                            <td>
+                                                <div>
+                                                    <span class="fw-semibold">{{title}}</span>
+                                                    {{#isPendingReview}}<span class="badge bg-warning text-dark ms-2">En revisiÃ³n</span>{{/isPendingReview}}
+                                                    <p class="text-muted small mb-0">{{shortDescription}}</p>
+                                                </div>
+                                            </td>
+                                            <td class="text-muted">{{creator.username}}</td>
+                                            <td>
+                                                {{#isPendingReview}}<span class="badge bg-warning text-dark">Pendiente</span>{{/isPendingReview}}
+                                                {{^isPendingReview}}<span class="badge bg-secondary">{{status}}</span>{{/isPendingReview}}
+                                            </td>
+                                            <td class="text-end">
+                                                <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                                    <a href="/course/{{id}}" class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-eye"></i> Ver
+                                                    </a>
+                                                    <a href="/course/{{id}}/edit" class="btn btn-sm btn-outline-secondary">
+                                                        <i class="bi bi-pencil"></i> Editar
+                                                    </a>
+                                                    {{#isPendingReview}}
+                                                    <form action="/admin/courses/{{id}}/approve" method="post" class="d-inline">
+                                                        <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}">
+                                                        <button type="submit" class="btn btn-sm btn-add">
+                                                            <i class="bi bi-check-lg"></i> Aprobar
+                                                        </button>
+                                                    </form>
+                                                    <form action="/admin/courses/{{id}}/reject" method="post" class="d-inline">
+                                                        <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}">
+                                                        <button type="submit" class="btn btn-sm btn-delete"
+                                                            onclick="return confirm('Â¿Rechazar este curso?')">
+                                                            <i class="bi bi-x-lg"></i> Rechazar
+                                                        </button>
+                                                    </form>
+                                                    {{/isPendingReview}}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {{/courses}}
+                                        {{^courses}}
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted py-4">No se encontraron cursos.</td>
+                                        </tr>
+                                        {{/courses}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- end coursesTab -->
+
+                <!-- ==================== EVENTOS ==================== -->
+                <div class="tab-pane fade" id="eventsTab" role="tabpanel">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body p-4">
+                            <form action="/admin" method="get">
+                                <input type="hidden" name="activeTab" value="events">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+                                    <input type="text" name="eventQuery" class="form-control border-start-0"
+                                        placeholder="Buscar evento por tÃ­tulo..." value="{{eventQuery}}">
+                                    <button class="btn btn-add" type="submit">Buscar</button>
+                                    <a href="/admin?activeTab=events" class="btn btn-outline-secondary">Limpiar</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Evento</th>
+                                            <th>Organizador</th>
+                                            <th>Estado</th>
+                                            <th class="text-end">Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {{#events}}
+                                        <tr {{#isPendingReview}}class="table-warning"{{/isPendingReview}}>
+                                            <td>
+                                                <div>
+                                                    <span class="fw-semibold">{{title}}</span>
+                                                    {{#isPendingReview}}<span class="badge bg-warning text-dark ms-2">En revisiÃ³n</span>{{/isPendingReview}}
+                                                    <p class="text-muted small mb-0">{{category}}</p>
+                                                </div>
+                                            </td>
+                                            <td class="text-muted">{{creator.username}}</td>
+                                            <td>
+                                                {{#isPendingReview}}<span class="badge bg-warning text-dark">Pendiente</span>{{/isPendingReview}}
+                                                {{^isPendingReview}}<span class="badge bg-secondary">{{status}}</span>{{/isPendingReview}}
+                                            </td>
+                                            <td class="text-end">
+                                                <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                                    <a href="/event/{{id}}" class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-eye"></i> Ver
+                                                    </a>
+                                                    <a href="/events/{{id}}/edit" class="btn btn-sm btn-outline-secondary">
+                                                        <i class="bi bi-pencil"></i> Editar
+                                                    </a>
+                                                    {{#isPendingReview}}
+                                                    <form action="/admin/events/{{id}}/approve" method="post" class="d-inline">
+                                                        <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}">
+                                                        <button type="submit" class="btn btn-sm btn-add">
+                                                            <i class="bi bi-check-lg"></i> Aprobar
+                                                        </button>
+                                                    </form>
+                                                    <form action="/admin/events/{{id}}/reject" method="post" class="d-inline">
+                                                        <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}">
+                                                        <button type="submit" class="btn btn-sm btn-delete"
+                                                            onclick="return confirm('Â¿Rechazar este evento?')">
+                                                            <i class="bi bi-x-lg"></i> Rechazar
+                                                        </button>
+                                                    </form>
+                                                    {{/isPendingReview}}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {{/events}}
+                                        {{^events}}
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted py-4">No se encontraron eventos.</td>
+                                        </tr>
+                                        {{/events}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- end eventsTab -->
+
+            </div><!-- end tab-content -->
         </div>
-    </div>
     </section>
 
     </main>
 
     {{>footer}}
 
-    <!-- Comments Review Modal (Existing) -->
-    <!-- ... -->
-
-    <!-- Pending Courses Modal (NEW) -->
-    <div class="modal fade" id="coursesReviewModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header border-bottom-0 pb-0">
-                    <h5 class="modal-title fw-bold ms-2">Revisión de Cursos Pendientes</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div th:each="course : ${pendingCourses}" class="p-3 mb-3 border-bottom">
-                         <div class="d-flex justify-content-between align-items-center mb-1">
-                            <h6 class="mb-0 fw-bold" th:text="${course.title}">Título del Curso</h6>
-                            <span class="badge bg-warning text-dark">Pendiente</span>
-                        </div>
-                        <p class="text-muted mb-2 small">Instructor: <span th:text="${course.creator.username}">Instructor</span></p>
-                        <p class="mb-2" th:text="${course.shortDescription}">Descripción corta...</p>
-                        <div class="d-flex gap-2">
-                             <form th:action="@{/admin/courses/{id}/approve(id=${course.id})}" method="post">
-                                <button type="submit" class="btn btn-add btn-sm px-3"><i class="bi bi-check-lg"></i> Aprobar</button>
-                            </form>
-                            <form th:action="@{/admin/courses/{id}/reject(id=${course.id})}" method="post">
-                                <button type="submit" class="btn btn-delete btn-sm px-3"><i class="bi bi-x-lg"></i> Rechazar</button>
-                            </form>
-                        </div>
-                    </div>
-                    <div th:if="${pendingCourses.empty}" class="text-center p-4">
-                        <p class="text-muted">No hay cursos pendientes de revisión.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- User Found Modal -->
-    <div class="modal fade" id="userFoundModal" tabindex="-1" aria-labelledby="userFoundModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" th:if="${searchedUser != null}">
-                <div class="modal-header border-0 pb-0">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center pb-5">
-                    <div class="mb-3">
-                        <img th:src="@{/img/descarga.jpg}" alt="Profile" class="rounded-circle shadow-sm admin-avatar-lg">
-                    </div>
-                    <h3 class="mb-1" th:text="${searchedUser.username}">nombre_usuario</h3>
-                    <p class="text-muted small" th:text="${searchedUser.email}">email</p>
-                    
-                    <div class="d-flex justify-content-center gap-2 mt-4">
-                        <form th:if="${searchedUser.isActive}" th:action="@{/admin/users/{id}/ban(id=${searchedUser.id})}" method="post">
-                             <button type="submit" class="btn btn-outline-danger px-4">Banear</button>
-                        </form>
-                        <form th:unless="${searchedUser.isActive}" th:action="@{/admin/users/{id}/unban(id=${searchedUser.id})}" method="post">
-                             <button type="submit" class="btn btn-success px-4">Desbanear</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script th:if="${searchedUser != null}">
-        // Automatically open modal if user is found
-        window.addEventListener('DOMContentLoaded', (event) => {
-            var myModal = new bootstrap.Modal(document.getElementById('userFoundModal'));
-            myModal.show();
+    <script>
+        // Activate the tab based on server-provided activeTab value
+        document.addEventListener('DOMContentLoaded', function () {
+            var activeTabKey = '{{activeTab}}';
+            var tabBtn = document.querySelector('#adminTabs [data-tab-key="' + activeTabKey + '"]');
+            if (tabBtn) {
+                new bootstrap.Tab(tabBtn).show();
+            } else {
+                // default to users tab
+                new bootstrap.Tab(document.getElementById('tab-users')).show();
+            }
         });
     </script>
-
-                <div class="modal-body">
-                    <div th:each="review : ${reviews}" class="p-3 mb-3 border-bottom">
-                        <div class="d-flex gap-3">
-                            <img th:src="@{/img/descarga.jpg}" alt="User" class="rounded-circle admin-avatar-sm">
-                            <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <h6 class="mb-0 fw-bold" th:text="${review.user.username}">Usuario</h6>
-                                    <span class="text-warning small">
-                                         <i th:each="star : ${review.stars}"
-                                            th:class="${star} ? 'bi bi-star-fill' : 'bi bi-star'"></i>
-                                    </span>
-                                </div>
-                                <p class="text-muted mb-2 small">
-                                    <span th:text="${#temporals.format(review.createdAt, 'dd/MM/yyyy HH:mm')}">Fecha</span> • 
-                                    <span th:text="${review.course.title}">Curso</span>
-                                </p>
-                                <p class="mb-2" th:text="${review.content}">Contenido del comentario...</p>
-                                <div class="d-flex gap-2">
-                                    <!-- Aceptar simplemente cierra/mantiene el comentario (no hay acción de aprobar comentarios en el servicio aún, asumimos que ya están visibles) -->
-                                    <button class="btn btn-add btn-sm px-3" data-bs-dismiss="modal"><i class="bi bi-check-lg"></i> Aceptar</button>
-                                    
-                                    <form th:action="@{/admin/reviews/{id}/delete(id=${review.id})}" method="post" style="display:inline;">
-                                        <button type="submit" class="btn btn-delete btn-sm px-3"><i class="bi bi-trash"></i> Eliminar</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div th:if="${reviews.empty}" class="text-center p-4">
-                        <p class="text-muted">No hay comentarios para revisar.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-
-
 
 </body>
 </html>

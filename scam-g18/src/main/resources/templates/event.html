@@ -20,13 +20,32 @@
             <div class="row gy-5">
                 <div class="col-lg-8 order-lg-1 order-2">
                     <div class="service-main-content">
+                        <div class="d-flex justify-content-end mb-2 gap-2">
+                            {{#canEdit}}
+                            <a href="/event/{{event.id}}/edit" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-pencil me-1"></i> Editar evento
+                            </a>
+                            {{/canEdit}}
+                            {{#canDelete}}
+                            <button class="btn btn-outline-danger btn-sm"
+                                onclick="if (confirm('¿Estás seguro de eliminar este evento?')) { document.getElementById('delete-event-form').submit(); }">
+                                <i class="bi bi-trash me-1"></i> Eliminar evento
+                            </button>
+                            <form id="delete-event-form" action="/event/{{event.id}}/delete" method="POST"
+                                style="display:none;">
+                                <input type="hidden" name="_csrf" value="{{_csrf.token}}">
+                            </form>
+                            {{/canDelete}}
+                        </div>
                         <div class="service-header" data-aos="fade-up">
                             <h1>{{event.title}}</h1>
                             <div class="service-meta">
                                 <span><i class="bi bi-calendar-event"></i> {{event.formattedDate}}</span>
                                 <span><i class="bi bi-clock"></i> {{event.formattedTime}}</span>
-                                <span><i class="bi bi-geo-alt"></i>{{#event.isLocation}} {{event.locationAddress}}, {{event.locationCity}},
-                                    {{event.locationCountry}} {{/event.isLocation}} {{^event.isLocation}} Online {{/event.isLocation}}</span>
+                                <span><i class="bi bi-geo-alt"></i>{{#event.isLocation}} {{event.locationAddress}},
+                                    {{event.locationCity}},
+                                    {{event.locationCountry}} {{/event.isLocation}} {{^event.isLocation}} Online
+                                    {{/event.isLocation}}</span>
                                 <span><i class="bi bi-people"></i> {{event.capacity}} plazas</span>
                             </div>
                             <p class="lead">{{event.description}}</p>
@@ -122,7 +141,8 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-7">
-                                    <img src="../img/map_expample.png" alt="Mapa de ubicación del evento" class="img-fluid rounded" />
+                                    <img src="../img/map_expample.png" alt="Mapa de ubicación del evento"
+                                        class="img-fluid rounded" />
                                 </div>
                             </div>
                         </div>
@@ -135,6 +155,8 @@
                             <h3>Reserva tu plaza</h3>
                             <p>Acceso completo al evento.</p>
                             <a href="/cart" class="btn-primary">Comprar entrada · {{event.priceEuros}} €</a>
+
+
                             <span class="guarantee"><i class="bi bi-shield-check"></i> Confirmación inmediata por
                                 email</span>
                         </div>
