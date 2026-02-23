@@ -82,7 +82,7 @@ public class EventController {
         event.setPriceCents((int) (price * 100));
         event.setCapacity(capacity);
         event.setCategory(category);
-        event.setStatus(es.codeurjc.scam_g18.model.EventStatus.PUBLISHED);
+        event.setStatus(es.codeurjc.scam_g18.model.Status.PUBLISHED);
 
         // Dates
         java.time.LocalDateTime start = java.time.LocalDateTime.of(java.time.LocalDate.parse(startDateStr),

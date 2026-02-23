@@ -35,6 +35,10 @@ public class GlobalControllerAdvice {
                 boolean canCreateEvent = currentUser.getRoles().stream()
                         .anyMatch(role -> role.getName().equals("ADMIN") || role.getName().equals("SUBSCRIBED"));
                 model.addAttribute("canCreateEvent", canCreateEvent);
+
+                boolean isAdmin = currentUser.getRoles().stream()
+                        .anyMatch(role -> role.getName().equals("ADMIN"));
+                model.addAttribute("isAdmin", isAdmin);
             }
         }
     }

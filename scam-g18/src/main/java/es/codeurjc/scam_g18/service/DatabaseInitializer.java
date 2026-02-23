@@ -256,7 +256,7 @@ public class DatabaseInitializer {
                 LocalDateTime.of(2026, 5, 20, 9, 0),
                 LocalDateTime.of(2026, 5, 22, 18, 0),
                 "Conferencia",
-                EventStatus.PUBLISHED,
+                Status.PUBLISHED,
                 500);
         event1.getTags().addAll(tags1);
         eventRepository.save(event1);
@@ -275,7 +275,7 @@ public class DatabaseInitializer {
                 LocalDateTime.of(2026, 3, 15, 19, 0),
                 LocalDateTime.of(2026, 3, 15, 21, 0),
                 "Webinar",
-                EventStatus.PUBLISHED,
+                Status.PUBLISHED,
                 1000);
         event2.getTags().addAll(tags2);
         eventRepository.save(event2);
@@ -301,7 +301,7 @@ public class DatabaseInitializer {
                 LocalDateTime.of(2026, 4, 10, 18, 30),
                 LocalDateTime.of(2026, 4, 10, 21, 30),
                 "Networking",
-                EventStatus.PUBLISHED,
+                Status.PUBLISHED,
                 50);
         event3.getTags().addAll(tags3);
         eventRepository.save(event3);

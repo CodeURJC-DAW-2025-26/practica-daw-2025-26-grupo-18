@@ -45,6 +45,9 @@
                     <li><a href="/events">Eventos</a></li>
                     <li><a href="/#pricing">Pricing</a></li>
                     <li><a href="/#contact">Contactanos</a></li>
+                    {{#isAdmin}}
+                    <li><a href="/admin" class="active">Admin Dashboard</a></li>
+                    {{/isAdmin}}
                 </ul>
                 <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
             </nav>
