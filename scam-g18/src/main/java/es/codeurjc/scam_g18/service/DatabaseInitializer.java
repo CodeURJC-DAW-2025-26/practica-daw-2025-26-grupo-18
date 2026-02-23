@@ -112,6 +112,7 @@ public class DatabaseInitializer {
         user.setEmail("user@scam.com");
         user.setPassword(passwordEncoder.encode("userpass"));
         user.setIsActive(true);
+        user.setCountry("Spain");
         Set<Role> userRoles = new HashSet<>();
         userRoles.add(roleRepository.findByName("USER").orElseThrow());
         user.setRoles(userRoles);
@@ -123,6 +124,7 @@ public class DatabaseInitializer {
         creator.setEmail("juan@scam.com");
         creator.setPassword(passwordEncoder.encode("juanpass"));
         creator.setIsActive(true);
+        creator.setCountry("Estados Unidos");
         Set<Role> creatorRoles = new HashSet<>();
         creatorRoles.add(roleRepository.findByName("USER").orElseThrow());
         creator.setRoles(creatorRoles);
