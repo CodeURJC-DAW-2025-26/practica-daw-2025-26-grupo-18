@@ -5,14 +5,18 @@ import es.codeurjc.scam_g18.model.Enrollment;
 import es.codeurjc.scam_g18.model.Lesson;
 import es.codeurjc.scam_g18.model.Module;
 import es.codeurjc.scam_g18.model.Review;
+import es.codeurjc.scam_g18.model.Status;
+import es.codeurjc.scam_g18.model.Tag;
 import es.codeurjc.scam_g18.model.User;
 import es.codeurjc.scam_g18.repository.CourseRepository;
 import es.codeurjc.scam_g18.repository.EnrollmentRepository;
+import es.codeurjc.scam_g18.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +32,9 @@ public class CourseService {
 
     @Autowired
     private EnrollmentRepository enrollmentRepository;
+
+    @Autowired
+    private TagRepository tagRepository;
 
     public List<Course> getFeaturedCourses() {
         return courseRepository.findAll();
@@ -238,6 +245,84 @@ public class CourseService {
 
     public void incrementSubscribers(Course course) {
         course.setSubscribersNumber(course.getSubscribersNumber() + 1);
+        courseRepository.save(course);
+    }
+
+    public void createCourse(Course course, List<String> tagNames, User creator,
+            org.springframework.web.multipart.MultipartFile imageFile)
+            throws java.io.IOException, java.sql.SQLException {
+        if (course.getPrice() != null) {
+            course.setPriceCents((int) (course.getPrice() * 100));
+        }
+        if (course.getDownloadableResources() == null) {
+            course.setDownloadableResources(0);
+        }
+        if (course.getSubscribersNumber() == null) {
+            course.setSubscribersNumber(0);
+        }
+        course.setStatus(Status.PENDING_REVIEW);
+
+        if (course.getLearningPoints() != null) {
+            course.setLearningPoints(course.getLearningPoints().stream().filter(s -> s != null && !s.isBlank()).toList());
+        }
+        if (course.getPrerequisites() != null) {
+            course.setPrerequisites(course.getPrerequisites().stream().filter(s -> s != null && !s.isBlank()).toList());
+        }
+
+        if (tagNames != null) {
+            var tagSet = new HashSet<Tag>();
+            for (String tagName : tagNames) {
+                if (tagName != null && !tagName.isBlank()) {
+                    Tag tag = tagRepository.findByName(tagName.trim())
+                            .orElseGet(() -> tagRepository.save(new Tag(tagName.trim())));
+                    tagSet.add(tag);
+                }
+            }
+            course.setTags(tagSet);
+        }
+
+        List<Module> normalizedModules = new ArrayList<>();
+        if (course.getModules() != null) {
+            int moduleIndex = 0;
+            for (Module sourceModule : course.getModules()) {
+                if (sourceModule == null || sourceModule.getTitle() == null || sourceModule.getTitle().isBlank()) {
+                    continue;
+                }
+
+                Module normalizedModule = new Module();
+                normalizedModule.setTitle(sourceModule.getTitle().trim());
+                normalizedModule.setDescription(sourceModule.getDescription());
+                normalizedModule.setOrderIndex(moduleIndex++);
+
+                if (sourceModule.getLessons() != null) {
+                    int lessonIndex = 0;
+                    for (Lesson sourceLesson : sourceModule.getLessons()) {
+                        if (sourceLesson == null || sourceLesson.getTitle() == null || sourceLesson.getTitle().isBlank()) {
+                            continue;
+                        }
+
+                        Lesson normalizedLesson = new Lesson();
+                        normalizedLesson.setTitle(sourceLesson.getTitle().trim());
+                        normalizedLesson.setVideoUrl(sourceLesson.getVideoUrl());
+                        normalizedLesson.setOrderIndex(lessonIndex++);
+                        normalizedModule.addLesson(normalizedLesson);
+                    }
+                }
+
+                normalizedModules.add(normalizedModule);
+            }
+        }
+
+        course.setModules(new ArrayList<>());
+        for (Module module : normalizedModules) {
+            course.addModule(module);
+        }
+
+        course.setCreator(creator);
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            course.setImage(imageService.saveImage(imageFile));
+        }
         courseRepository.save(course);
     }
 
