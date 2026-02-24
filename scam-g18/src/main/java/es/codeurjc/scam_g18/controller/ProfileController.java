@@ -71,11 +71,12 @@ public class ProfileController {
             @RequestParam(required = false) String shortDescription,
             @RequestParam(required = false) String currentGoal,
             @RequestParam(required = false) String weeklyRoutine,
+            @RequestParam(required = false) String comunity,
             @RequestParam(required = false) MultipartFile imageFile,
             HttpServletRequest request) throws IOException, SQLException {
 
         userService.updateProfile(id, username, email, country, shortDescription, currentGoal, weeklyRoutine,
-                imageFile);
+                comunity, imageFile);
 
         // Actualizar la sesión de Spring Security si el username cambió
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

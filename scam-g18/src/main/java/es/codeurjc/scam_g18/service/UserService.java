@@ -118,7 +118,7 @@ public class UserService {
     @Transactional
     public boolean updateProfile(Long id, String username, String email, String country,
             String shortDescription, String currentGoal, String weeklyRoutine,
-            MultipartFile imageFile) throws IOException, SQLException {
+            String comunity, MultipartFile imageFile) throws IOException, SQLException {
         Optional<User> optUser = userRepository.findById(id);
         if (optUser.isEmpty())
             return false;
@@ -137,6 +137,7 @@ public class UserService {
         user.setShortDescription(shortDescription);
         user.setCurrentGoal(currentGoal);
         user.setWeeklyRoutine(weeklyRoutine);
+        user.setComunity(comunity);
         if (imageFile != null && !imageFile.isEmpty()) {
             user.setImage(imageService.saveImage(imageFile));
         }

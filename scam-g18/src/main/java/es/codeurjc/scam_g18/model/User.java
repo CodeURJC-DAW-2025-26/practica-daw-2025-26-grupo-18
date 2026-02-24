@@ -45,11 +45,13 @@ public class User {
 
     private String country;
 
-    private String shortDescription = null;
+    private String shortDescription = "Edita tu perfil para añadir contenido a este campo";
 
-    private String currentGoal = null;
+    private String currentGoal = "Edita tu perfil para añadir contenido a este campo";
 
-    private String weeklyRoutine = null;
+    private String weeklyRoutine = "Edita tu perfil para añadir contenido a este campo";
+
+    private String comunity = "Edita tu perfil para añadir contenido a este campo";
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id")
@@ -157,6 +159,14 @@ public class User {
 
     public void setWeeklyRoutine(String weeklyRoutine) {
         this.weeklyRoutine = weeklyRoutine;
+    }
+
+    public String getComunity() {
+        return comunity;
+    }
+
+    public void setComunity(String comunity) {
+        this.comunity = comunity;
     }
 
     public Image getImage() {
