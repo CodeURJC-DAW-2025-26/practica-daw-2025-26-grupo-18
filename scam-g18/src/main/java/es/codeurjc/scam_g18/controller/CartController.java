@@ -99,7 +99,7 @@ public class CartController {
         Order order = cartService.getOrCreatePendingOrder(currentUser);
         cartService.processPayment(order, cardName, billingEmail, cardNumber, cardExpiry);
 
-        return "redirect:/profile/" + currentUser.getId();
+        return "redirect:/courses/subscribed";
     }
 
     private User getCurrentUser() {

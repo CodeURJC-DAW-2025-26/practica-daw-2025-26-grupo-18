@@ -7,7 +7,9 @@ import org.springframework.ui.Model;
 import es.codeurjc.scam_g18.service.CourseService;
 import es.codeurjc.scam_g18.service.UserService;
 import es.codeurjc.scam_g18.model.Course;
+import es.codeurjc.scam_g18.model.User;
 
+import java.security.Principal;
 import java.util.List;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -56,6 +58,26 @@ public class CourseController {
 
         return "course";
     }
+
+    @GetMapping("/courses/subscribed")
+    public String subscribedCourses(Model model, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        User user = userService.getCurrentAuthenticatedUser().orElse(null);
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        var subscribedCourses = courseService.getSubscribedCoursesViewData(user.getId());
+        model.addAttribute("courses", subscribedCourses);
+        model.addAttribute("hasSubscribedCourses", !subscribedCourses.isEmpty());
+        model.addAttribute("userName", user.getUsername());
+
+        return "subscribedCourses";
+    }
+
 
     @GetMapping("/courses/new")
     public String newCourseForm(Model model) {

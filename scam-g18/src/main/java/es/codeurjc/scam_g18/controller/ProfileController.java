@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import es.codeurjc.scam_g18.model.User;
-import es.codeurjc.scam_g18.service.CourseService;
 import es.codeurjc.scam_g18.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -28,28 +27,6 @@ public class ProfileController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private CourseService courseService;
-
-    @GetMapping("/courses/subscribed")
-    public String subscribedCourses(Model model, Principal principal) {
-        if (principal == null) {
-            return "redirect:/login";
-        }
-
-        User user = userService.getCurrentAuthenticatedUser().orElse(null);
-        if (user == null) {
-            return "redirect:/login";
-        }
-
-        var subscribedCourses = courseService.getSubscribedCoursesViewData(user.getId());
-        model.addAttribute("courses", subscribedCourses);
-        model.addAttribute("hasSubscribedCourses", !subscribedCourses.isEmpty());
-        model.addAttribute("userName", user.getUsername());
-
-        return "subscribedCourses";
-    }
 
     @GetMapping("/profile/me")
     public String myProfile(Principal principal) {
