@@ -66,6 +66,10 @@ public class CourseService {
         List<Map<String, Object>> enrichedCourses = new ArrayList<>();
 
         for (Course course : allCourses) {
+            if (course.getStatus() != Status.PUBLISHED) {
+                continue;
+            }
+
             Map<String, Object> courseData = new HashMap<>();
             courseData.put("id", course.getId());
             courseData.put("title", course.getTitle());
