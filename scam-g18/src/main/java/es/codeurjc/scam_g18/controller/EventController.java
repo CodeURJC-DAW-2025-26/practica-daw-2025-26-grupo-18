@@ -127,21 +127,8 @@ public class EventController {
     @PostMapping("/event/{id}/edit")
     public String updateEvent(
             @PathVariable long id,
-            @RequestParam String title,
-            @RequestParam String description,
-            @RequestParam String startDateStr,
-            @RequestParam String startTimeStr,
-            @RequestParam String endDateStr,
-            @RequestParam String endTimeStr,
-            @RequestParam String locationName,
-            @RequestParam Double price,
-            @RequestParam Integer capacity,
-            @RequestParam String category,
-            @RequestParam(required = false) org.springframework.web.multipart.MultipartFile image,
-            @RequestParam(required = false) List<String> sessionTimes,
-            @RequestParam(required = false) List<String> sessionTitles,
-            @RequestParam(required = false) List<String> sessionDescriptions,
-            @RequestParam(required = false) List<String> speakerNames)
+            Event eventUpdate,
+            @RequestParam(required = false) org.springframework.web.multipart.MultipartFile imageFile)
             throws java.io.IOException, java.sql.SQLException {
 
         var eventOpt = eventService.getEventById(id);
@@ -157,47 +144,59 @@ public class EventController {
                         && event.getCreator().getId().equals(currentUser.getId());
 
                 if (isAdmin || isCreator) {
-                    event.setTitle(title);
-                    event.setDescription(description);
-                    event.setPriceCents((int) (price * 100));
-                    event.setCapacity(capacity);
-                    event.setCategory(category);
+                    event.setTitle(eventUpdate.getTitle());
+                    event.setDescription(eventUpdate.getDescription());
+                    if (eventUpdate.getPrice() != null) {
+                        event.setPriceCents((int) (eventUpdate.getPrice() * 100));
+                    }
+                    event.setCapacity(eventUpdate.getCapacity());
+                    event.setCategory(eventUpdate.getCategory());
 
-                    java.time.LocalDateTime start = java.time.LocalDateTime.of(java.time.LocalDate.parse(startDateStr),
-                            java.time.LocalTime.parse(startTimeStr));
-                    java.time.LocalDateTime end = java.time.LocalDateTime.of(java.time.LocalDate.parse(endDateStr),
-                            java.time.LocalTime.parse(endTimeStr));
-                    event.setStartDate(start);
-                    event.setEndDate(end);
-
-                    if (event.getLocation() != null) {
-                        event.getLocation().setName(locationName);
-                    } else {
-                        es.codeurjc.scam_g18.model.Location location = new es.codeurjc.scam_g18.model.Location();
-                        location.setName(locationName);
-                        location.setCity("Madrid");
-                        location.setCountry("Spain");
-                        event.setLocation(location);
+                    if (eventUpdate.getStartDateStr() != null && eventUpdate.getStartTimeStr() != null) {
+                        java.time.LocalDateTime start = java.time.LocalDateTime.of(
+                                java.time.LocalDate.parse(eventUpdate.getStartDateStr()),
+                                java.time.LocalTime.parse(eventUpdate.getStartTimeStr()));
+                        event.setStartDate(start);
                     }
 
-                    // Sessions (clear and re-add for simplicity in this prototype)
-                    event.getSessions().clear();
-                    if (sessionTimes != null) {
-                        for (int i = 0; i < sessionTimes.size(); i++) {
-                            String desc = (sessionDescriptions != null && i < sessionDescriptions.size())
-                                    ? sessionDescriptions.get(i)
-                                    : "";
-                            event.getSessions().add(
-                                    new es.codeurjc.scam_g18.model.EventSession(sessionTimes.get(i),
-                                            sessionTitles.get(i), desc));
+                    if (eventUpdate.getEndDateStr() != null && eventUpdate.getEndTimeStr() != null) {
+                        java.time.LocalDateTime end = java.time.LocalDateTime.of(
+                                java.time.LocalDate.parse(eventUpdate.getEndDateStr()),
+                                java.time.LocalTime.parse(eventUpdate.getEndTimeStr()));
+                        event.setEndDate(end);
+                    }
+
+                    if (eventUpdate.getLocationName() != null) {
+                        if (event.getLocation() != null) {
+                            event.getLocation().setName(eventUpdate.getLocationName());
+                        } else {
+                            es.codeurjc.scam_g18.model.Location location = new es.codeurjc.scam_g18.model.Location();
+                            location.setName(eventUpdate.getLocationName());
+                            location.setCity("Madrid");
+                            location.setCountry("Spain");
+                            event.setLocation(location);
                         }
                     }
 
-                    if (speakerNames != null) {
-                        event.setSpeakers(speakerNames);
+                    // Sessions
+                    event.getSessions().clear();
+                    if (eventUpdate.getSessionTimes() != null) {
+                        for (int i = 0; i < eventUpdate.getSessionTimes().size(); i++) {
+                            String desc = (eventUpdate.getSessionDescriptions() != null
+                                    && i < eventUpdate.getSessionDescriptions().size())
+                                            ? eventUpdate.getSessionDescriptions().get(i)
+                                            : "";
+                            event.getSessions().add(
+                                    new es.codeurjc.scam_g18.model.EventSession(eventUpdate.getSessionTimes().get(i),
+                                            eventUpdate.getSessionTitles().get(i), desc));
+                        }
                     }
 
-                    eventService.createEvent(event, image); // Using createEvent as it handles saving + image
+                    if (eventUpdate.getSpeakerNames() != null) {
+                        event.setSpeakers(eventUpdate.getSpeakerNames());
+                    }
+
+                    eventService.createEvent(event, imageFile);
                     return "redirect:/event/" + id;
                 }
             }
@@ -212,66 +211,60 @@ public class EventController {
 
     @PostMapping("/event/new")
     public String createEvent(
-            @RequestParam String title,
-            @RequestParam String description,
-            @RequestParam String startDateStr,
-            @RequestParam String startTimeStr,
-            @RequestParam String endDateStr,
-            @RequestParam String endTimeStr,
-            @RequestParam String locationName,
-            @RequestParam Double price,
-            @RequestParam Integer capacity,
-            @RequestParam String category,
-            @RequestParam(required = false) org.springframework.web.multipart.MultipartFile image,
-            @RequestParam(required = false) List<String> sessionTimes,
-            @RequestParam(required = false) List<String> sessionTitles,
-            @RequestParam(required = false) List<String> sessionDescriptions,
-            @RequestParam(required = false) List<String> speakerNames)
+            Event event,
+            @RequestParam(required = false) org.springframework.web.multipart.MultipartFile imageFile)
             throws java.io.IOException, java.sql.SQLException {
 
-        es.codeurjc.scam_g18.model.Event event = new es.codeurjc.scam_g18.model.Event();
-        event.setTitle(title);
-        event.setDescription(description);
-        event.setPriceCents((int) (price * 100));
-        event.setCapacity(capacity);
-        event.setCategory(category);
+        if (event.getPrice() != null) {
+            event.setPriceCents((int) (event.getPrice() * 100));
+        }
         event.setStatus(es.codeurjc.scam_g18.model.Status.PUBLISHED);
 
         // Dates
-        java.time.LocalDateTime start = java.time.LocalDateTime.of(java.time.LocalDate.parse(startDateStr),
-                java.time.LocalTime.parse(startTimeStr));
-        java.time.LocalDateTime end = java.time.LocalDateTime.of(java.time.LocalDate.parse(endDateStr),
-                java.time.LocalTime.parse(endTimeStr));
-        event.setStartDate(start);
-        event.setEndDate(end);
+        if (event.getStartDateStr() != null && event.getStartTimeStr() != null) {
+            java.time.LocalDateTime start = java.time.LocalDateTime.of(
+                    java.time.LocalDate.parse(event.getStartDateStr()),
+                    java.time.LocalTime.parse(event.getStartTimeStr()));
+            event.setStartDate(start);
+        }
+
+        if (event.getEndDateStr() != null && event.getEndTimeStr() != null) {
+            java.time.LocalDateTime end = java.time.LocalDateTime.of(
+                    java.time.LocalDate.parse(event.getEndDateStr()),
+                    java.time.LocalTime.parse(event.getEndTimeStr()));
+            event.setEndDate(end);
+        }
 
         // Location
-        es.codeurjc.scam_g18.model.Location location = new es.codeurjc.scam_g18.model.Location();
-        location.setName(locationName);
-        location.setCity("Madrid"); // Default for now, as form only asks for name
-        location.setCountry("Spain");
-        event.setLocation(location);
+        if (event.getLocationName() != null) {
+            es.codeurjc.scam_g18.model.Location location = new es.codeurjc.scam_g18.model.Location();
+            location.setName(event.getLocationName());
+            location.setCity("Madrid");
+            location.setCountry("Spain");
+            event.setLocation(location);
+        }
 
         // Creator
         userService.getCurrentAuthenticatedUser().ifPresent(event::setCreator);
 
         // Sessions
-        if (sessionTimes != null) {
-            for (int i = 0; i < sessionTimes.size(); i++) {
-                String desc = (sessionDescriptions != null && i < sessionDescriptions.size())
-                        ? sessionDescriptions.get(i)
+        if (event.getSessionTimes() != null) {
+            for (int i = 0; i < event.getSessionTimes().size(); i++) {
+                String desc = (event.getSessionDescriptions() != null && i < event.getSessionDescriptions().size())
+                        ? event.getSessionDescriptions().get(i)
                         : "";
                 event.getSessions().add(
-                        new es.codeurjc.scam_g18.model.EventSession(sessionTimes.get(i), sessionTitles.get(i), desc));
+                        new es.codeurjc.scam_g18.model.EventSession(event.getSessionTimes().get(i),
+                                event.getSessionTitles().get(i), desc));
             }
         }
 
         // Speakers
-        if (speakerNames != null) {
-            event.setSpeakers(speakerNames);
+        if (event.getSpeakerNames() != null) {
+            event.setSpeakers(event.getSpeakerNames());
         }
 
-        eventService.createEvent(event, image);
+        eventService.createEvent(event, imageFile);
 
         return "redirect:/events";
     }
