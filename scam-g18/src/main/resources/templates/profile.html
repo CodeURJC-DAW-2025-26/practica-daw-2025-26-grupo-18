@@ -28,11 +28,14 @@
 									width="120" height="120">
 								<h3 class="h5 fw-bold mb-1">{{user.username}}</h3>
 								<p class="text-muted mb-1">@{{user.username}}</p>
-								<p class="text-muted mb-3">Estudiante · Plan Pro</p>
+								<p class="text-muted mb-3">{{userType}}</p>
 								<div class="course-tags justify-content-center">
-									<span class="course-tag">Emprendimiento</span>
-									<span class="course-tag">Productividad</span>
-									<span class="course-tag">Liderazgo</span>
+									{{#userTags}}
+									<span class="course-tag">{{.}}</span>
+									{{/userTags}}
+									{{^userTags}}
+									<span class="text-muted small">Sin cursos suscritos</span>
+									{{/userTags}}
 								</div>
 								<hr class="my-4">
 								<div class="text-start">

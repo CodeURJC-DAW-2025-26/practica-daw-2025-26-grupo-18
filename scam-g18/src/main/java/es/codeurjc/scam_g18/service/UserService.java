@@ -148,6 +148,23 @@ public class UserService {
         return enrollmentRepository.countByUserIdAndProgressPercentage(userId, 100);
     }
 
+    public String getUserType(Long userId) {
+        Optional<User> optUser = findById(userId);
+        if (optUser.isEmpty())
+            return "Sin suscripción";
+
+        User user = optUser.get();
+        boolean isAdmin = user.getRoles().stream()
+                .map(Role::getName)
+                .anyMatch(name -> name.equalsIgnoreCase("ADMIN"));
+        if (isAdmin) {
+            return "Admin";
+        } else if (subscriptionRepository.findByUserIdAndStatus(userId, SubscriptionStatus.ACTIVE).isPresent()) {
+            return "Suscrito";
+        }
+        return "Sin suscripción";
+    }
+
     public void updateName(String newName, User user) {
         user.setUsername(newName);
     }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import es.codeurjc.scam_g18.model.User;
+import es.codeurjc.scam_g18.service.EnrollmentService;
 import es.codeurjc.scam_g18.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -27,6 +28,9 @@ public class ProfileController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private EnrollmentService enrollmentService;
 
     @GetMapping("/profile/me")
     public String myProfile(Principal principal) {
@@ -45,6 +49,9 @@ public class ProfileController {
         model.addAttribute("user", user.get());
         model.addAttribute("profileImage", userService.getProfileImage(id));
         model.addAttribute("completedCourses", userService.getCompletedCoursesCount(id));
+        model.addAttribute("userType", userService.getUserType(id));
+        model.addAttribute("userTags", enrollmentService.getTagNamesByUserId(id));
+
         return "profile";
     }
 
