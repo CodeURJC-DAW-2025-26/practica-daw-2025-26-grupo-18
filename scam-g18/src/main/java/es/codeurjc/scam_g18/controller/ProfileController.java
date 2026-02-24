@@ -49,6 +49,7 @@ public class ProfileController {
         model.addAttribute("user", user.get());
         model.addAttribute("profileImage", userService.getProfileImage(id));
         model.addAttribute("completedCourses", userService.getCompletedCoursesCount(id));
+        model.addAttribute("userType", userService.getUserType(id));
         model.addAttribute("userTags", enrollmentService.getTagNamesByUserId(id));
 
         return "profile";
