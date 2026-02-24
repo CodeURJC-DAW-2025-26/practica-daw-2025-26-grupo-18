@@ -56,43 +56,20 @@ public class EventController {
 
         model.addAttribute("event", eventData);
 
-        // Permissions for Edit/Delete
-        boolean isAdmin = false;
-        boolean isCreator = false;
+        boolean canManage = userService.getCurrentAuthenticatedUser()
+                .map(currentUser -> eventService.canManageEvent(event, currentUser))
+                .orElse(false);
 
-        var currentUserOpt = userService.getCurrentAuthenticatedUser();
-        if (currentUserOpt.isPresent()) {
-            User currentUser = currentUserOpt.get();
-            isAdmin = currentUser.getRoles().stream()
-                    .anyMatch(role -> role.getName().equals("ADMIN"));
-            isCreator = event.getCreator() != null && event.getCreator().getId().equals(currentUser.getId());
-        }
-
-        model.addAttribute("canEdit", isAdmin || isCreator);
-        model.addAttribute("canDelete", isAdmin || isCreator);
+        model.addAttribute("canEdit", canManage);
+        model.addAttribute("canDelete", canManage);
 
         return "event";
     }
 
     @PostMapping("/event/{id}/delete")
     public String deleteEvent(@PathVariable long id) {
-        var eventOpt = eventService.getEventById(id);
-        if (eventOpt.isPresent()) {
-            Event event = eventOpt.get();
-            var currentUserOpt = userService.getCurrentAuthenticatedUser();
-
-            if (currentUserOpt.isPresent()) {
-                User currentUser = currentUserOpt.get();
-                boolean isAdmin = currentUser.getRoles().stream()
-                        .anyMatch(role -> role.getName().equals("ADMIN"));
-                boolean isCreator = event.getCreator() != null
-                        && event.getCreator().getId().equals(currentUser.getId());
-
-                if (isAdmin || isCreator) {
-                    eventService.deleteEvent(id);
-                }
-            }
-        }
+        userService.getCurrentAuthenticatedUser()
+                .ifPresent(currentUser -> eventService.deleteEventIfAuthorized(id, currentUser));
         return "redirect:/events";
     }
 
@@ -101,24 +78,15 @@ public class EventController {
         var eventOpt = eventService.getEventById(id);
         if (eventOpt.isPresent()) {
             Event event = eventOpt.get();
+
             var currentUserOpt = userService.getCurrentAuthenticatedUser();
-
-            if (currentUserOpt.isPresent()) {
-                User currentUser = currentUserOpt.get();
-                boolean isAdmin = currentUser.getRoles().stream()
-                        .anyMatch(role -> role.getName().equals("ADMIN"));
-                boolean isCreator = event.getCreator() != null
-                        && event.getCreator().getId().equals(currentUser.getId());
-
-                if (isAdmin || isCreator) {
-                    model.addAttribute("event", event);
-                    // We need to format dates for the form
-                    model.addAttribute("startDateStr", event.getStartDate().toLocalDate().toString());
-                    model.addAttribute("startTimeStr", event.getStartDate().toLocalTime().toString());
-                    model.addAttribute("endDateStr", event.getEndDate().toLocalDate().toString());
-                    model.addAttribute("endTimeStr", event.getEndDate().toLocalTime().toString());
-                    return "editEvent";
-                }
+            if (currentUserOpt.isPresent() && eventService.canManageEvent(event, currentUserOpt.get())) {
+                model.addAttribute("event", event);
+                model.addAttribute("startDateStr", event.getStartDate().toLocalDate().toString());
+                model.addAttribute("startTimeStr", event.getStartDate().toLocalTime().toString());
+                model.addAttribute("endDateStr", event.getEndDate().toLocalDate().toString());
+                model.addAttribute("endTimeStr", event.getEndDate().toLocalTime().toString());
+                return "editEvent";
             }
         }
         return "redirect:/events";
@@ -131,74 +99,15 @@ public class EventController {
             @RequestParam(required = false) org.springframework.web.multipart.MultipartFile imageFile)
             throws java.io.IOException, java.sql.SQLException {
 
-        var eventOpt = eventService.getEventById(id);
-        if (eventOpt.isPresent()) {
-            Event event = eventOpt.get();
-            var currentUserOpt = userService.getCurrentAuthenticatedUser();
+        if (hasInvalidEventData(eventUpdate)) {
+            return "redirect:/event/" + id + "/edit";
+        }
 
-            if (currentUserOpt.isPresent()) {
-                User currentUser = currentUserOpt.get();
-                boolean isAdmin = currentUser.getRoles().stream()
-                        .anyMatch(role -> role.getName().equals("ADMIN"));
-                boolean isCreator = event.getCreator() != null
-                        && event.getCreator().getId().equals(currentUser.getId());
-
-                if (isAdmin || isCreator) {
-                    event.setTitle(eventUpdate.getTitle());
-                    event.setDescription(eventUpdate.getDescription());
-                    if (eventUpdate.getPrice() != null) {
-                        event.setPriceCents((int) (eventUpdate.getPrice() * 100));
-                    }
-                    event.setCapacity(eventUpdate.getCapacity());
-                    event.setCategory(eventUpdate.getCategory());
-
-                    if (eventUpdate.getStartDateStr() != null && eventUpdate.getStartTimeStr() != null) {
-                        java.time.LocalDateTime start = java.time.LocalDateTime.of(
-                                java.time.LocalDate.parse(eventUpdate.getStartDateStr()),
-                                java.time.LocalTime.parse(eventUpdate.getStartTimeStr()));
-                        event.setStartDate(start);
-                    }
-
-                    if (eventUpdate.getEndDateStr() != null && eventUpdate.getEndTimeStr() != null) {
-                        java.time.LocalDateTime end = java.time.LocalDateTime.of(
-                                java.time.LocalDate.parse(eventUpdate.getEndDateStr()),
-                                java.time.LocalTime.parse(eventUpdate.getEndTimeStr()));
-                        event.setEndDate(end);
-                    }
-
-                    if (eventUpdate.getLocationName() != null) {
-                        if (event.getLocation() != null) {
-                            event.getLocation().setName(eventUpdate.getLocationName());
-                        } else {
-                            es.codeurjc.scam_g18.model.Location location = new es.codeurjc.scam_g18.model.Location();
-                            location.setName(eventUpdate.getLocationName());
-                            location.setCity("Madrid");
-                            location.setCountry("Spain");
-                            event.setLocation(location);
-                        }
-                    }
-
-                    // Sessions
-                    event.getSessions().clear();
-                    if (eventUpdate.getSessionTimes() != null) {
-                        for (int i = 0; i < eventUpdate.getSessionTimes().size(); i++) {
-                            String desc = (eventUpdate.getSessionDescriptions() != null
-                                    && i < eventUpdate.getSessionDescriptions().size())
-                                            ? eventUpdate.getSessionDescriptions().get(i)
-                                            : "";
-                            event.getSessions().add(
-                                    new es.codeurjc.scam_g18.model.EventSession(eventUpdate.getSessionTimes().get(i),
-                                            eventUpdate.getSessionTitles().get(i), desc));
-                        }
-                    }
-
-                    if (eventUpdate.getSpeakerNames() != null) {
-                        event.setSpeakers(eventUpdate.getSpeakerNames());
-                    }
-
-                    eventService.createEvent(event, imageFile);
-                    return "redirect:/event/" + id;
-                }
+        var currentUserOpt = userService.getCurrentAuthenticatedUser();
+        if (currentUserOpt.isPresent()) {
+            boolean updated = eventService.updateEventIfAuthorized(id, eventUpdate, currentUserOpt.get(), imageFile);
+            if (updated) {
+                return "redirect:/event/" + id;
             }
         }
         return "redirect:/events";
@@ -215,57 +124,54 @@ public class EventController {
             @RequestParam(required = false) org.springframework.web.multipart.MultipartFile imageFile)
             throws java.io.IOException, java.sql.SQLException {
 
-        if (event.getPrice() != null) {
-            event.setPriceCents((int) (event.getPrice() * 100));
-        }
-        event.setStatus(es.codeurjc.scam_g18.model.Status.PUBLISHED);
-
-        // Dates
-        if (event.getStartDateStr() != null && event.getStartTimeStr() != null) {
-            java.time.LocalDateTime start = java.time.LocalDateTime.of(
-                    java.time.LocalDate.parse(event.getStartDateStr()),
-                    java.time.LocalTime.parse(event.getStartTimeStr()));
-            event.setStartDate(start);
+        if (hasInvalidEventData(event)) {
+            return "redirect:/events/new";
         }
 
-        if (event.getEndDateStr() != null && event.getEndTimeStr() != null) {
-            java.time.LocalDateTime end = java.time.LocalDateTime.of(
-                    java.time.LocalDate.parse(event.getEndDateStr()),
-                    java.time.LocalTime.parse(event.getEndTimeStr()));
-            event.setEndDate(end);
+        var currentUserOpt = userService.getCurrentAuthenticatedUser();
+        if (currentUserOpt.isEmpty()) {
+            return "redirect:/login";
         }
 
-        // Location
-        if (event.getLocationName() != null) {
-            es.codeurjc.scam_g18.model.Location location = new es.codeurjc.scam_g18.model.Location();
-            location.setName(event.getLocationName());
-            location.setCity("Madrid");
-            location.setCountry("Spain");
-            event.setLocation(location);
-        }
-
-        // Creator
-        userService.getCurrentAuthenticatedUser().ifPresent(event::setCreator);
-
-        // Sessions
-        if (event.getSessionTimes() != null) {
-            for (int i = 0; i < event.getSessionTimes().size(); i++) {
-                String desc = (event.getSessionDescriptions() != null && i < event.getSessionDescriptions().size())
-                        ? event.getSessionDescriptions().get(i)
-                        : "";
-                event.getSessions().add(
-                        new es.codeurjc.scam_g18.model.EventSession(event.getSessionTimes().get(i),
-                                event.getSessionTitles().get(i), desc));
-            }
-        }
-
-        // Speakers
-        if (event.getSpeakerNames() != null) {
-            event.setSpeakers(event.getSpeakerNames());
-        }
-
-        eventService.createEvent(event, imageFile);
+        eventService.createEventFromForm(event, currentUserOpt.get(), imageFile);
 
         return "redirect:/events";
+    }
+
+    private boolean hasInvalidEventData(Event event) {
+        if (event == null) {
+            return true;
+        }
+        if (event.getTitle() == null || event.getTitle().isBlank()) {
+            return true;
+        }
+        if (event.getDescription() == null || event.getDescription().isBlank()) {
+            return true;
+        }
+        if (event.getCategory() == null || event.getCategory().isBlank()) {
+            return true;
+        }
+        if (event.getLocationName() == null || event.getLocationName().isBlank()) {
+            return true;
+        }
+        if (event.getPrice() == null || event.getPrice() < 0) {
+            return true;
+        }
+        if (event.getCapacity() == null || event.getCapacity() <= 0) {
+            return true;
+        }
+        if (event.getStartDateStr() == null || event.getStartDateStr().isBlank()) {
+            return true;
+        }
+        if (event.getStartTimeStr() == null || event.getStartTimeStr().isBlank()) {
+            return true;
+        }
+        if (event.getEndDateStr() == null || event.getEndDateStr().isBlank()) {
+            return true;
+        }
+        if (event.getEndTimeStr() == null || event.getEndTimeStr().isBlank()) {
+            return true;
+        }
+        return false;
     }
 }
