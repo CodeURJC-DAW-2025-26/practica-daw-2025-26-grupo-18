@@ -1,9 +1,14 @@
 package es.codeurjc.scam_g18.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 
 @Service
 public class EmailService {
@@ -19,6 +24,25 @@ public class EmailService {
 
         mailSender.send(mensaje);
         System.out.println("¡Correo enviado con éxito!");
+    }
+
+    private void sendMailWithAttachment(String destinatario, String asunto, String cuerpo, byte[] attachment,
+            String attachmentName) {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            helper.setFrom("scam.noreply67@gmail.com");
+            helper.setTo(destinatario);
+            helper.setSubject(asunto);
+            helper.setText(cuerpo, false);
+            helper.addAttachment(attachmentName, new ByteArrayResource(attachment));
+
+            mailSender.send(mimeMessage);
+            System.out.println("¡Correo con adjunto enviado con éxito!");
+        } catch (MessagingException e) {
+            throw new RuntimeException("No se pudo enviar el correo con adjunto", e);
+        }
     }
 
     public void newAccountMessage(String newUserMail, String newUsername) {
@@ -84,5 +108,22 @@ public class EmailService {
 
         sendMail(userMail, "SE HA PUBLICADO TU EVENTO", message);
 
+    }
+
+    public void orderInvoiceMessage(String userMail, String userName, Long orderId, byte[] invoicePdf) {
+        String message = """
+                Hola %s,
+
+                ¡Gracias por tu compra en SCAM!
+
+                Adjuntamos la factura en PDF de tu pedido #%s.
+
+                Saludos,
+                El equipo de SCAM
+                """
+                .formatted(userName, orderId);
+
+        sendMailWithAttachment(userMail, "Factura de tu pedido #" + orderId, message, invoicePdf,
+                "factura-pedido-" + orderId + ".pdf");
     }
 }

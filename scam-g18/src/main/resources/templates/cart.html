@@ -38,6 +38,7 @@
                                                     <th scope="col">Producto</th>
                                                     <th scope="col">Cantidad</th>
                                                     <th scope="col" class="text-end">Precio</th>
+                                                    <th scope="col" class="text-end">Acciones</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -67,6 +68,12 @@
                                                     </td>
                                                     <td class="text-end">
                                                         {{priceInEuros}}€
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <form action="/cart/remove/{{id}}" method="post" class="d-inline">
+                                                            <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                                                        </form>
                                                     </td>
                                                 </tr>
                                                 {{/order.items}}

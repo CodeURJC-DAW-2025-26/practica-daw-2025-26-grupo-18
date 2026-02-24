@@ -86,6 +86,19 @@ public class CartController {
         return "redirect:/cart";
     }
 
+    @PostMapping("/cart/remove/{itemId}")
+    public String removeItemFromCart(@PathVariable Long itemId) {
+        User currentUser = getCurrentUser();
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        Order order = cartService.getOrCreatePendingOrder(currentUser);
+        cartService.removeItemFromOrder(order, itemId);
+
+        return "redirect:/cart";
+    }
+
     @PostMapping("/cart/checkout")
     public String checkout(@RequestParam String cardName,
             @RequestParam String billingEmail,
