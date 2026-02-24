@@ -27,7 +27,7 @@ public class GlobalControllerAdvice {
         model.addAttribute("isUserLoggedIn", false);
         model.addAttribute("userId", "");
         model.addAttribute("userName", "");
-        model.addAttribute("userProfileImage", "/img/descarga.jpg");
+        model.addAttribute("userProfileImage", "/img/default_avatar.png");
         model.addAttribute("canCreateEvent", false);
         model.addAttribute("canCreateCourse", false);
         model.addAttribute("isAdmin", false);

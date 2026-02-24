@@ -98,7 +98,9 @@ public class DatabaseInitializer {
         admin.setPassword(passwordEncoder.encode("adminpass"));
         admin.setGender("MALE");
         admin.setBirthDate(LocalDate.of(1990, 1, 1));
+        admin.setShortDescription("Administrador del sistema con acceso total.");
         admin.setCountry("Spain");
+        admin.setCurrentGoal("Evolucionar economicamente.");
         admin.setIsActive(true);
         // Roles: USER, ADMIN
         Set<Role> adminRoles = new HashSet<>();
@@ -112,7 +114,9 @@ public class DatabaseInitializer {
         user.setUsername("user");
         user.setEmail("user@scam.com");
         user.setPassword(passwordEncoder.encode("userpass"));
+        user.setShortDescription("Usuario estándar del sistema.");
         user.setIsActive(true);
+        user.setCurrentGoal("Evolucionar economicamente.");
         user.setCountry("Spain");
         Set<Role> userRoles = new HashSet<>();
         userRoles.add(roleRepository.findByName("USER").orElseThrow());
@@ -124,7 +128,9 @@ public class DatabaseInitializer {
         creator.setUsername("juan_inversor");
         creator.setEmail("juan@scam.com");
         creator.setPassword(passwordEncoder.encode("juanpass"));
+        creator.setShortDescription("Creador de contenido del sistema.");
         creator.setIsActive(true);
+        creator.setCurrentGoal("Evolucionar economicamente.");
         creator.setCountry("Estados Unidos");
         Set<Role> creatorRoles = new HashSet<>();
         creatorRoles.add(roleRepository.findByName("USER").orElseThrow());
@@ -141,7 +147,7 @@ public class DatabaseInitializer {
         tagRepository.save(new Tag("Libertad Financiera"));
     }
 
-private void initializeCourses() throws IOException, SQLException {
+    private void initializeCourses() throws IOException, SQLException {
         User creator = userRepository.findByUsername("admin").orElseThrow();
         User juan = userRepository.findByUsername("juan_inversor").orElseThrow();
 
@@ -213,11 +219,10 @@ private void initializeCourses() throws IOException, SQLException {
                 points1,
                 prereqs1,
                 2.5, // videoHours
-                5    // downloadableResources
+                5 // downloadableResources
         );
         course1.setImage(imageService.saveImage("/img/features/features-1.webp"));
         courseRepository.save(course1);
-
 
         // --- COURSE 2: Emprende tu Negocio Online ---
         Set<Tag> tags2 = new HashSet<>();
@@ -271,11 +276,10 @@ private void initializeCourses() throws IOException, SQLException {
                 points2,
                 List.of("Ordenador", "Conexión a Internet"),
                 5.0, // videoHours (5 horas completas)
-                12   // downloadableResources (12 plantillas/archivos)
+                12 // downloadableResources (12 plantillas/archivos)
         );
         course2.setImage(imageService.saveImage("/img/features/features-2.webp"));
         courseRepository.save(course2);
-
 
         // --- COURSE 3: Liderazgo Exponencial ---
         Set<Tag> tags3 = new HashSet<>();
@@ -310,12 +314,12 @@ private void initializeCourses() throws IOException, SQLException {
                 List.of("Comunicación asertiva", "Delegación efectiva"),
                 List.of("Experiencia previa gestionando personas recomendada"),
                 7.5, // videoHours (7 horas y media)
-                3    // downloadableResources (3 PDFs de resumen)
+                3 // downloadableResources (3 PDFs de resumen)
         );
         course3.setImage(imageService.saveImage("/img/features/features-3.webp"));
         courseRepository.save(course3);
     }
-    
+
     private void initializeEvents() throws IOException, SQLException {
         User creator = userRepository.findByUsername("admin").orElseThrow();
         Tag liderazgo = tagRepository.findByName("Liderazgo").orElseThrow();

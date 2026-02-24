@@ -36,9 +36,8 @@
                                             <thead class="table-light">
                                                 <tr>
                                                     <th scope="col">Producto</th>
-                                                    <th scope="col">Precio</th>
                                                     <th scope="col">Cantidad</th>
-                                                    <th scope="col" class="text-end">Total</th>
+                                                    <th scope="col" class="text-end">Precio</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -64,17 +63,10 @@
                                                         </div>
                                                     </td>
                                                     <td>
-                                                        {{#course}}{{priceInEuros}}€{{/course}}
-                                                        {{#event}}{{priceInEuros}}€{{/event}}
-                                                        {{#isSubscription}}9.99€{{/isSubscription}}
-                                                    </td>
-                                                    <td>
                                                         1 <!-- Cantidad fija por ahora para cursos/eventos -->
                                                     </td>
                                                     <td class="text-end">
-                                                        {{#course}}{{priceInEuros}}€{{/course}}
-                                                        {{#event}}{{priceInEuros}}€{{/event}}
-                                                        {{#isSubscription}}9.99€{{/isSubscription}}
+                                                        {{priceInEuros}}€
                                                     </td>
                                                 </tr>
                                                 {{/order.items}}
@@ -140,20 +132,24 @@
                                             <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
                                             <div class="mb-3">
                                                 <label for="cardName" class="form-label">Nombre en la tarjeta</label>
-                                                <input type="text" class="form-control" id="cardName" required />
+                                                <input type="text" class="form-control" id="cardName" name="cardName" required />
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="billingEmail" class="form-label">Email para factura</label>
+                                                <input type="email" class="form-control" id="billingEmail" name="billingEmail" required />
                                             </div>
                                             <div class="mb-3">
                                                 <label for="cardNumber" class="form-label">Número de tarjeta</label>
-                                                <input type="text" class="form-control" id="cardNumber" placeholder="0000 0000 0000 0000" required />
+                                                <input type="text" class="form-control" id="cardNumber" name="cardNumber" placeholder="0000 0000 0000 0000" required />
                                             </div>
                                             <div class="row">
                                                 <div class="col-6 mb-3">
                                                     <label for="cardExpiry" class="form-label">Caducidad (MM/YY)</label>
-                                                    <input type="text" class="form-control" id="cardExpiry" required />
+                                                    <input type="text" class="form-control" id="cardExpiry" name="cardExpiry" required />
                                                 </div>
                                                 <div class="col-6 mb-3">
                                                     <label for="cardCvv" class="form-label">CVV</label>
-                                                    <input type="password" class="form-control" id="cardCvv" required />
+                                                    <input type="password" class="form-control" id="cardCvv" autocomplete="off" required />
                                                 </div>
                                             </div>
                                             <div class="d-grid gap-2">

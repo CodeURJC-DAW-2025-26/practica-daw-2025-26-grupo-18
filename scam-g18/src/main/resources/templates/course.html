@@ -235,9 +235,12 @@
 
                             <div class="px-4 pb-4">
                                 <div class="cta mb-4">
-                                    <a href="cart.html" class="btn btn-choose w-100 py-3 fw-bold fs-5"
-                                        style="background-color: #d96d3c; border-color: #d96d3c; color: white">
-                                        Añadir alcarrito</a>
+                                    <form action="/cart/add/course/{{course.id}}" method="post">
+                                        <input type="hidden" name="_csrf" value="{{_csrf.token}}">
+                                        <button type="submit" class="btn btn-choose w-100 py-3 fw-bold fs-5"
+                                            style="background-color: #d96d3c; border-color: #d96d3c; color: white">
+                                            Añadir al carrito</button>
+                                    </form>
                                 </div>
 
                                 <p class="fw-bold text-dark mb-2 small text-uppercase">Este curso incluye:</p>

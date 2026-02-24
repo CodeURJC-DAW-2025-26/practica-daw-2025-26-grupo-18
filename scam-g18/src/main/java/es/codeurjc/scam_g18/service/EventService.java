@@ -72,7 +72,7 @@ public class EventService {
         Map<String, Object> eventData = buildEventCardData(event);
         eventData.put("capacity", event.getCapacity());
 
-        String imageUrl = "/img/descarga.jpg";
+        String imageUrl = "/img/default_img.png";
         if (event.getImage() != null) {
             imageUrl = imageService.getConnectionImage(event.getImage());
         }

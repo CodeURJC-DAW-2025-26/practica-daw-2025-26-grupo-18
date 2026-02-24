@@ -87,7 +87,7 @@ public class UserService {
         if (userId != null) {
             return getProfileImage(userId);
         }
-        return "/img/descarga.jpg";
+        return "/img/default_avatar.png";
     }
 
     @Transactional
@@ -96,7 +96,7 @@ public class UserService {
         if (user.isPresent() && user.get().getImage() != null) {
             return imageService.getConnectionImage(user.get().getImage());
         }
-        return "/img/descarga.jpg";
+        return "/img/default_avatar.png";
     }
 
     public Optional<User> findByUsername(String username) {

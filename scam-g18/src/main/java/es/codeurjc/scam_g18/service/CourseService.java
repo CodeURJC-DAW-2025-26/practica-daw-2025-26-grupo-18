@@ -1,11 +1,13 @@
 package es.codeurjc.scam_g18.service;
 
 import es.codeurjc.scam_g18.model.Course;
+import es.codeurjc.scam_g18.model.Enrollment;
 import es.codeurjc.scam_g18.model.Lesson;
 import es.codeurjc.scam_g18.model.Module;
 import es.codeurjc.scam_g18.model.Review;
 import es.codeurjc.scam_g18.model.User;
 import es.codeurjc.scam_g18.repository.CourseRepository;
+import es.codeurjc.scam_g18.repository.EnrollmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,9 @@ public class CourseService {
 
     @Autowired
     private ImageService imageService;
+
+    @Autowired
+    private EnrollmentRepository enrollmentRepository;
 
     public List<Course> getFeaturedCourses() {
         return courseRepository.findAll();
@@ -95,7 +100,7 @@ public class CourseService {
         courseData.put("learningPoints", course.getLearningPoints());
         courseData.put("prerequisites", course.getPrerequisites());
         courseData.put("tags", course.getTags());
-        courseData.put("videoHours", course.getVideoHours() );
+        courseData.put("videoHours", course.getVideoHours());
         courseData.put("downloadableResources", course.getDownloadableResources());
 
         Map<String, Object> creatorData = new HashMap<>();
@@ -107,7 +112,7 @@ public class CourseService {
         courseData.put("creator", creatorData);
 
         Map<String, Object> imageData = new HashMap<>();
-        String courseImageUrl = "/img/descarga.jpg";
+        String courseImageUrl = "/img/default_img.png";
         if (course.getImage() != null) {
             courseImageUrl = imageService.getConnectionImage(course.getImage());
         }
@@ -170,6 +175,35 @@ public class CourseService {
         detailData.put("averageRatingStars", getStarsFromAverage(course));
 
         return detailData;
+    }
+
+    public List<Map<String, Object>> getSubscribedCoursesViewData(Long userId) {
+        List<Enrollment> enrollments = enrollmentRepository.findByUserId(userId);
+        List<Map<String, Object>> subscribedCourses = new ArrayList<>();
+
+        for (Enrollment enrollment : enrollments) {
+            Course course = enrollment.getCourse();
+            if (course == null) {
+                continue;
+            }
+
+            Map<String, Object> courseData = new HashMap<>();
+            courseData.put("id", course.getId());
+            courseData.put("title", course.getTitle());
+            courseData.put("shortDescription", course.getShortDescription());
+            courseData.put("progressPercentage",
+                    enrollment.getProgressPercentage() != null ? enrollment.getProgressPercentage() : 0);
+
+            String courseImageUrl = "/img/default_img.png";
+            if (course.getImage() != null) {
+                courseImageUrl = imageService.getConnectionImage(course.getImage());
+            }
+            courseData.put("imageUrl", courseImageUrl);
+
+            subscribedCourses.add(courseData);
+        }
+
+        return subscribedCourses;
     }
 
     public Double getAverageRating(Course course) {

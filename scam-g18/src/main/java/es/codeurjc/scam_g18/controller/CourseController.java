@@ -56,7 +56,4 @@ public class CourseController {
         return "createCourse";
     }
 
-
-    
-
 }

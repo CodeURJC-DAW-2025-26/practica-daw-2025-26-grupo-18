@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import es.codeurjc.scam_g18.model.Course;
 import es.codeurjc.scam_g18.model.Event;
@@ -86,14 +87,17 @@ public class CartController {
     }
 
     @PostMapping("/cart/checkout")
-    public String checkout() {
+    public String checkout(@RequestParam String cardName,
+            @RequestParam String billingEmail,
+            @RequestParam String cardNumber,
+            @RequestParam String cardExpiry) {
         User currentUser = getCurrentUser();
         if (currentUser == null) {
             return "redirect:/login";
         }
 
         Order order = cartService.getOrCreatePendingOrder(currentUser);
-        cartService.processPayment(order);
+        cartService.processPayment(order, cardName, billingEmail, cardNumber, cardExpiry);
 
         return "redirect:/profile/" + currentUser.getId();
     }
