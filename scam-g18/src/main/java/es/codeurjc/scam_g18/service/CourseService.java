@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class CourseService {
@@ -255,26 +256,95 @@ public class CourseService {
     public void createCourse(Course course, List<String> tagNames, User creator,
             org.springframework.web.multipart.MultipartFile imageFile)
             throws java.io.IOException, java.sql.SQLException {
-        if (course.getPrice() != null) {
-            course.setPriceCents((int) (course.getPrice() * 100));
-        }
-        if (course.getDownloadableResources() == null) {
-            course.setDownloadableResources(0);
-        }
+        applyCommonCourseFormData(course, course, tagNames);
         if (course.getSubscribersNumber() == null) {
             course.setSubscribersNumber(0);
         }
         course.setStatus(Status.PENDING_REVIEW);
+        course.setCreator(creator);
 
-        if (course.getLearningPoints() != null) {
-            course.setLearningPoints(course.getLearningPoints().stream().filter(s -> s != null && !s.isBlank()).toList());
+        if (imageFile != null && !imageFile.isEmpty()) {
+            course.setImage(imageService.saveImage(imageFile));
         }
-        if (course.getPrerequisites() != null) {
-            course.setPrerequisites(course.getPrerequisites().stream().filter(s -> s != null && !s.isBlank()).toList());
+        courseRepository.save(course);
+    }
+
+    public boolean canManageCourse(Course course, User user) {
+        if (course == null || user == null) {
+            return false;
         }
 
+        boolean isAdmin = user.getRoles().stream().anyMatch(role -> role.getName().equals("ADMIN"));
+        boolean isCreator = course.getCreator() != null && course.getCreator().getId().equals(user.getId());
+        return isAdmin || isCreator;
+    }
+
+    public boolean updateCourseIfAuthorized(long id, Course courseUpdate, User user,
+            org.springframework.web.multipart.MultipartFile imageFile, List<String> tagNames)
+            throws java.io.IOException, java.sql.SQLException {
+        var courseOpt = courseRepository.findById(id);
+        if (courseOpt.isEmpty()) {
+            return false;
+        }
+
+        Course course = courseOpt.get();
+        if (!canManageCourse(course, user)) {
+            return false;
+        }
+
+        applyCommonCourseFormData(course, courseUpdate, tagNames);
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            course.setImage(imageService.saveImage(imageFile));
+        }
+
+        courseRepository.save(course);
+        return true;
+    }
+
+    private void applyCommonCourseFormData(Course target, Course source, List<String> tagNames) {
+        target.setTitle(source.getTitle());
+        target.setShortDescription(source.getShortDescription());
+        target.setLongDescription(source.getLongDescription());
+        target.setLanguage(source.getLanguage());
+        target.setVideoHours(source.getVideoHours());
+
+        if (source.getPrice() != null) {
+            target.setPriceCents((int) (source.getPrice() * 100));
+        }
+        if (source.getDownloadableResources() == null) {
+            target.setDownloadableResources(0);
+        } else {
+            target.setDownloadableResources(source.getDownloadableResources());
+        }
+
+        target.getLearningPoints().clear();
+        if (source.getLearningPoints() != null) {
+            source.getLearningPoints().stream()
+                    .filter(s -> s != null && !s.isBlank())
+                    .forEach(target.getLearningPoints()::add);
+        }
+
+        target.getPrerequisites().clear();
+        if (source.getPrerequisites() != null) {
+            source.getPrerequisites().stream()
+                    .filter(s -> s != null && !s.isBlank())
+                    .forEach(target.getPrerequisites()::add);
+        }
+
+        target.getTags().clear();
+        target.getTags().addAll(normalizeTags(tagNames));
+
+        List<Module> normalizedModules = normalizeModules(source.getModules());
+        target.getModules().clear();
+        for (Module module : normalizedModules) {
+            target.addModule(module);
+        }
+    }
+
+    private Set<Tag> normalizeTags(List<String> tagNames) {
+        var tagSet = new HashSet<Tag>();
         if (tagNames != null) {
-            var tagSet = new HashSet<Tag>();
             for (String tagName : tagNames) {
                 if (tagName != null && !tagName.isBlank()) {
                     Tag tag = tagRepository.findByName(tagName.trim())
@@ -282,13 +352,15 @@ public class CourseService {
                     tagSet.add(tag);
                 }
             }
-            course.setTags(tagSet);
         }
+        return tagSet;
+    }
 
+    private List<Module> normalizeModules(List<Module> sourceModules) {
         List<Module> normalizedModules = new ArrayList<>();
-        if (course.getModules() != null) {
+        if (sourceModules != null) {
             int moduleIndex = 0;
-            for (Module sourceModule : course.getModules()) {
+            for (Module sourceModule : sourceModules) {
                 if (sourceModule == null || sourceModule.getTitle() == null || sourceModule.getTitle().isBlank()) {
                     continue;
                 }
@@ -316,18 +388,7 @@ public class CourseService {
                 normalizedModules.add(normalizedModule);
             }
         }
-
-        course.setModules(new ArrayList<>());
-        for (Module module : normalizedModules) {
-            course.addModule(module);
-        }
-
-        course.setCreator(creator);
-
-        if (imageFile != null && !imageFile.isEmpty()) {
-            course.setImage(imageService.saveImage(imageFile));
-        }
-        courseRepository.save(course);
+        return normalizedModules;
     }
 
     public List<Boolean> getStarsFromAverage(Course course) {
