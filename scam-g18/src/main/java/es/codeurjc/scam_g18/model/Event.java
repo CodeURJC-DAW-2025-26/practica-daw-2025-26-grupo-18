@@ -20,6 +20,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.Table;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Transient;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -78,7 +79,140 @@ public class Event {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    // Form binding transient fields
+    @Transient
+    private String startDateStr;
+    @Transient
+    private String startTimeStr;
+    @Transient
+    private String endDateStr;
+    @Transient
+    private String endTimeStr;
+    @Transient
+    private String locationName;
+    @Transient
+    private String locationAddress;
+    @Transient
+    private String locationCity;
+    @Transient
+    private String locationCountry;
+    @Transient
+    private Double price;
+    @Transient
+    private List<String> sessionTimes;
+    @Transient
+    private List<String> sessionTitles;
+    @Transient
+    private List<String> sessionDescriptions;
+    @Transient
+    private List<String> speakerNames;
+
     public Event() {
+    }
+
+    // Getters and Setters for transient fields
+    public String getStartDateStr() {
+        return startDateStr;
+    }
+
+    public void setStartDateStr(String startDateStr) {
+        this.startDateStr = startDateStr;
+    }
+
+    public String getStartTimeStr() {
+        return startTimeStr;
+    }
+
+    public void setStartTimeStr(String startTimeStr) {
+        this.startTimeStr = startTimeStr;
+    }
+
+    public String getEndDateStr() {
+        return endDateStr;
+    }
+
+    public void setEndDateStr(String endDateStr) {
+        this.endDateStr = endDateStr;
+    }
+
+    public String getEndTimeStr() {
+        return endTimeStr;
+    }
+
+    public void setEndTimeStr(String endTimeStr) {
+        this.endTimeStr = endTimeStr;
+    }
+
+    public String getLocationName() {
+        return locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
+    }
+
+    public String getLocationAddress() {
+        return locationAddress;
+    }
+
+    public void setLocationAddress(String locationAddress) {
+        this.locationAddress = locationAddress;
+    }
+
+    public String getLocationCity() {
+        return locationCity;
+    }
+
+    public void setLocationCity(String locationCity) {
+        this.locationCity = locationCity;
+    }
+
+    public String getLocationCountry() {
+        return locationCountry;
+    }
+
+    public void setLocationCountry(String locationCountry) {
+        this.locationCountry = locationCountry;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public List<String> getSessionTimes() {
+        return sessionTimes;
+    }
+
+    public void setSessionTimes(List<String> sessionTimes) {
+        this.sessionTimes = sessionTimes;
+    }
+
+    public List<String> getSessionTitles() {
+        return sessionTitles;
+    }
+
+    public void setSessionTitles(List<String> sessionTitles) {
+        this.sessionTitles = sessionTitles;
+    }
+
+    public List<String> getSessionDescriptions() {
+        return sessionDescriptions;
+    }
+
+    public void setSessionDescriptions(List<String> sessionDescriptions) {
+        this.sessionDescriptions = sessionDescriptions;
+    }
+
+    public List<String> getSpeakerNames() {
+        return speakerNames;
+    }
+
+    public void setSpeakerNames(List<String> speakerNames) {
+        this.speakerNames = speakerNames;
     }
 
     public Event(User creator, Location location, Image image, String title, String description, Integer priceCents,
