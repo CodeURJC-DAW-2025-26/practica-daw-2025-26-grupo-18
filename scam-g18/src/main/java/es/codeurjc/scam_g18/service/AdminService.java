@@ -10,11 +10,13 @@ import org.springframework.stereotype.Service;
 
 import es.codeurjc.scam_g18.model.Course;
 import es.codeurjc.scam_g18.model.Event;
+import es.codeurjc.scam_g18.model.Order;
 import es.codeurjc.scam_g18.model.Review;
 import es.codeurjc.scam_g18.model.Status;
 import es.codeurjc.scam_g18.model.User;
 import es.codeurjc.scam_g18.repository.CourseRepository;
 import es.codeurjc.scam_g18.repository.EventRepository;
+import es.codeurjc.scam_g18.repository.OrderRepository;
 import es.codeurjc.scam_g18.repository.ReviewRepository;
 import es.codeurjc.scam_g18.repository.UserRepository;
 
@@ -31,6 +33,9 @@ public class AdminService {
     private ReviewRepository reviewRepository;
     @Autowired
     private EventRepository eventRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     // ---- Users ----
 
@@ -183,6 +188,25 @@ public class AdminService {
 
     public List<Review> getAllReviews() {
         return reviewRepository.findAll();
+    }
+
+    // ---- Orders ----
+
+    public List<Order> getAllOrdersSortedByDate() {
+        return orderRepository.findAll().stream()
+                .sorted((o1, o2) -> {
+                    if (o1.getCreatedAt() == null && o2.getCreatedAt() == null) {
+                        return 0;
+                    }
+                    if (o1.getCreatedAt() == null) {
+                        return 1;
+                    }
+                    if (o2.getCreatedAt() == null) {
+                        return -1;
+                    }
+                    return o2.getCreatedAt().compareTo(o1.getCreatedAt());
+                })
+                .collect(Collectors.toList());
     }
 
     public void deleteReview(Long reviewId) {

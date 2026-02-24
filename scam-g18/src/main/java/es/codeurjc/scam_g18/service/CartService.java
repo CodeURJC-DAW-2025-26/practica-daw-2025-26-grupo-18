@@ -23,6 +23,7 @@ import es.codeurjc.scam_g18.model.Subscription;
 import es.codeurjc.scam_g18.model.SubscriptionStatus;
 import es.codeurjc.scam_g18.repository.SubscriptionRepository;
 import es.codeurjc.scam_g18.repository.OrderRepository;
+import es.codeurjc.scam_g18.repository.OrderItemRepository;
 import es.codeurjc.scam_g18.repository.RoleRepository;
 import es.codeurjc.scam_g18.model.Role;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,8 @@ public class CartService {
     @Autowired
     private OrderRepository orderRepository;
     @Autowired
+    private OrderItemRepository orderItemRepository;
+    @Autowired
     private EnrollmentRepository enrollmentRepository;
     @Autowired
     private EventRegistrationRepository eventRegistrationRepository;
@@ -42,6 +45,10 @@ public class CartService {
     private UserService userService;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private InvoicePdfService invoicePdfService;
+    @Autowired
+    private EmailService emailService;
 
     private static final int SUBSCRIPTION_PRICE_CENTS = 999;
     private static final int SUBSCRIPTION_DURATION_DAYS = 30;
@@ -86,6 +93,28 @@ public class CartService {
             order.setTotalAmountCents(calculateSubtotal(order));
             orderRepository.save(order);
         }
+    }
+
+    @Transactional
+    public void removeItemFromOrder(Order order, Long itemId) {
+        if (order.getItems() == null || itemId == null) {
+            return;
+        }
+
+        Optional<OrderItem> itemOptional = orderItemRepository.findById(itemId);
+        if (itemOptional.isEmpty()) {
+            return;
+        }
+
+        OrderItem item = itemOptional.get();
+        if (item.getOrder() == null || order.getId() == null || !order.getId().equals(item.getOrder().getId())) {
+            return;
+        }
+
+        order.getItems().removeIf(orderItem -> orderItem.getId() != null && orderItem.getId().equals(itemId));
+        orderItemRepository.delete(item);
+        order.setTotalAmountCents(calculateSubtotal(order));
+        orderRepository.save(order);
     }
 
     public int calculateSubtotal(Order order) {
@@ -143,6 +172,24 @@ public class CartService {
                 }
             }
         }
+
+        try {
+            byte[] invoicePdf = invoicePdfService.generateInvoicePdf(order);
+            String recipient = order.getUser() != null ? order.getBillingEmail() : order.getUser().getEmail();
+            String username = order.getUser() != null ? order.getUser().getUsername() : order.getBillingFullName();
+
+            if (recipient != null && !recipient.isBlank()) {
+                emailService.orderInvoiceMessage(recipient, username != null ? username : "cliente", order.getId(),
+                        invoicePdf);
+                order.setInvoicePending(false);
+            } else {
+                order.setInvoicePending(true);
+            }
+        } catch (Exception e) {
+            order.setInvoicePending(true);
+        }
+
+        orderRepository.save(order);
     }
 
     private String generatePaymentReference() {

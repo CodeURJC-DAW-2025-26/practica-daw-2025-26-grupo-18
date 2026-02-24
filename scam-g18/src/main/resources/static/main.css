@@ -199,6 +199,21 @@ h6 {
     border-top: 1px solid #eee;
 }
 
+.header .header-cart-link {
+    color: var(--nav-color);
+    font-size: 18px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s;
+}
+
+.header .header-cart-link:hover,
+.header .header-cart-link:focus {
+    color: var(--nav-hover-color);
+}
+
 .header .btn-getstarted,
 .header .btn-getstarted:focus {
     color: var(--contrast-color);

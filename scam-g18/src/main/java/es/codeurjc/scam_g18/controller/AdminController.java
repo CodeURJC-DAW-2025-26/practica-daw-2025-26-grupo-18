@@ -41,6 +41,7 @@ public class AdminController {
         model.addAttribute("eventQuery", eventQuery != null ? eventQuery : "");
         model.addAttribute("activeTab", activeTab != null ? activeTab : "users");
         model.addAttribute("reviews", adminService.getAllReviews());
+        model.addAttribute("orders", adminService.getAllOrdersSortedByDate());
     }
 
     @GetMapping
