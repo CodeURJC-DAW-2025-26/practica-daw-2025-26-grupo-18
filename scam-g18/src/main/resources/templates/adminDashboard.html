@@ -40,6 +40,12 @@
                             <i class="bi bi-calendar-event me-2"></i>Eventos
                         </button>
                     </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-orders" data-bs-toggle="tab" data-bs-target="#ordersTab"
+                            type="button" role="tab" data-tab-key="orders">
+                            <i class="bi bi-receipt me-2"></i>Pedidos
+                        </button>
+                    </li>
                 </ul>
 
                 <div class="tab-content">
@@ -290,6 +296,59 @@
                         </div>
                     </div>
                 </div><!-- end eventsTab -->
+
+                <!-- ==================== PEDIDOS ==================== -->
+                <div class="tab-pane fade" id="ordersTab" role="tabpanel">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Pedido</th>
+                                            <th>Usuario</th>
+                                            <th>Cliente</th>
+                                            <th>Estado</th>
+                                            <th>Fecha</th>
+                                            <th>Pago</th>
+                                            <th class="text-end">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {{#orders}}
+                                        <tr>
+                                            <td class="fw-semibold">#{{id}}</td>
+                                            <td>
+                                                {{#user}}{{username}}{{/user}}
+                                                {{^user}}-{{/user}}
+                                            </td>
+                                            <td>
+                                                <div>{{billingFullName}}</div>
+                                                <small class="text-muted">{{billingEmail}}</small>
+                                            </td>
+                                            <td><span class="badge bg-secondary">{{status}}</span></td>
+                                            <td>
+                                                {{#paidAt}}{{paidAt}}{{/paidAt}}
+                                                {{^paidAt}}{{createdAt}}{{/paidAt}}
+                                            </td>
+                                            <td>
+                                                <div>{{paymentMethod}}</div>
+                                                <small class="text-muted">{{paymentReference}}</small>
+                                            </td>
+                                            <td class="text-end fw-semibold">{{totalAmountCents}} cts</td>
+                                        </tr>
+                                        {{/orders}}
+                                        {{^orders}}
+                                        <tr>
+                                            <td colspan="7" class="text-center text-muted py-4">No hay pedidos registrados.</td>
+                                        </tr>
+                                        {{/orders}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- end ordersTab -->
 
             </div><!-- end tab-content -->
             </div><!-- end service-tabs -->

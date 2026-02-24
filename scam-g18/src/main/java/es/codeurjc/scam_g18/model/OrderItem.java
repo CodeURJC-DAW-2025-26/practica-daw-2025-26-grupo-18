@@ -86,6 +86,13 @@ public class OrderItem {
         return priceAtPurchaseCents;
     }
 
+    public String getPriceInEuros() {
+        if (priceAtPurchaseCents == null) {
+            return "0.00";
+        }
+        return String.format("%.2f", priceAtPurchaseCents / 100.0);
+    }
+
     public void setPriceAtPurchaseCents(Integer priceAtPurchaseCents) {
         this.priceAtPurchaseCents = priceAtPurchaseCents;
     }

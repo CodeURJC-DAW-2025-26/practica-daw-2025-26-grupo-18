@@ -27,10 +27,11 @@ public class GlobalControllerAdvice {
         model.addAttribute("isUserLoggedIn", false);
         model.addAttribute("userId", "");
         model.addAttribute("userName", "");
-        model.addAttribute("userProfileImage", "/img/descarga.jpg");
+        model.addAttribute("userProfileImage", "/img/default_avatar.png");
         model.addAttribute("canCreateEvent", false);
         model.addAttribute("canCreateCourse", false);
         model.addAttribute("isAdmin", false);
+        model.addAttribute("isPublisher", false);
 
         if (hasPrincipal) {
             var currentUser = userService.getCurrentAuthenticatedUser().orElse(null);
@@ -53,6 +54,10 @@ public class GlobalControllerAdvice {
                 boolean isAdmin = currentUser.getRoles().stream()
                         .anyMatch(role -> role.getName().equals("ADMIN"));
                 model.addAttribute("isAdmin", isAdmin);
+
+                boolean isPublisher = currentUser.getRoles().stream()
+                    .anyMatch(role -> role.getName().equals("ADMIN") || role.getName().equals("SUBSCRIBED"));
+                model.addAttribute("isPublisher", isPublisher);
             }
         }
     }

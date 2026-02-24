@@ -3,7 +3,6 @@ package es.codeurjc.scam_g18.controller;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.security.Principal;
-import java.util.Collections;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,20 +27,6 @@ public class ProfileController {
 
     @Autowired
     private UserService userService;
-
-    @GetMapping("/courses/subscribed")
-    public String subscribedCourses(Model model, Principal principal) {
-        if (principal != null) {
-            String username = principal.getName();
-            User user = userService.findByUsername(username).orElse(null);
-
-            if (user != null) {
-                model.addAttribute("courses", Collections.emptyList());
-                model.addAttribute("userName", user.getUsername());
-            }
-        }
-        return "subscribedCourses";
-    }
 
     @GetMapping("/profile/me")
     public String myProfile(Principal principal) {

@@ -12,7 +12,6 @@ import java.util.List;
 
 import es.codeurjc.scam_g18.service.TagService;
 import es.codeurjc.scam_g18.model.Event;
-import es.codeurjc.scam_g18.model.User;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -56,43 +55,20 @@ public class EventController {
 
         model.addAttribute("event", eventData);
 
-        // Permissions for Edit/Delete
-        boolean isAdmin = false;
-        boolean isCreator = false;
+        boolean canManage = userService.getCurrentAuthenticatedUser()
+                .map(currentUser -> eventService.canManageEvent(event, currentUser))
+                .orElse(false);
 
-        var currentUserOpt = userService.getCurrentAuthenticatedUser();
-        if (currentUserOpt.isPresent()) {
-            User currentUser = currentUserOpt.get();
-            isAdmin = currentUser.getRoles().stream()
-                    .anyMatch(role -> role.getName().equals("ADMIN"));
-            isCreator = event.getCreator() != null && event.getCreator().getId().equals(currentUser.getId());
-        }
-
-        model.addAttribute("canEdit", isAdmin || isCreator);
-        model.addAttribute("canDelete", isAdmin || isCreator);
+        model.addAttribute("canEdit", canManage);
+        model.addAttribute("canDelete", canManage);
 
         return "event";
     }
 
     @PostMapping("/event/{id}/delete")
     public String deleteEvent(@PathVariable long id) {
-        var eventOpt = eventService.getEventById(id);
-        if (eventOpt.isPresent()) {
-            Event event = eventOpt.get();
-            var currentUserOpt = userService.getCurrentAuthenticatedUser();
-
-            if (currentUserOpt.isPresent()) {
-                User currentUser = currentUserOpt.get();
-                boolean isAdmin = currentUser.getRoles().stream()
-                        .anyMatch(role -> role.getName().equals("ADMIN"));
-                boolean isCreator = event.getCreator() != null
-                        && event.getCreator().getId().equals(currentUser.getId());
-
-                if (isAdmin || isCreator) {
-                    eventService.deleteEvent(id);
-                }
-            }
-        }
+        userService.getCurrentAuthenticatedUser()
+                .ifPresent(currentUser -> eventService.deleteEventIfAuthorized(id, currentUser));
         return "redirect:/events";
     }
 
@@ -101,24 +77,15 @@ public class EventController {
         var eventOpt = eventService.getEventById(id);
         if (eventOpt.isPresent()) {
             Event event = eventOpt.get();
+
             var currentUserOpt = userService.getCurrentAuthenticatedUser();
-
-            if (currentUserOpt.isPresent()) {
-                User currentUser = currentUserOpt.get();
-                boolean isAdmin = currentUser.getRoles().stream()
-                        .anyMatch(role -> role.getName().equals("ADMIN"));
-                boolean isCreator = event.getCreator() != null
-                        && event.getCreator().getId().equals(currentUser.getId());
-
-                if (isAdmin || isCreator) {
-                    model.addAttribute("event", event);
-                    // We need to format dates for the form
-                    model.addAttribute("startDateStr", event.getStartDate().toLocalDate().toString());
-                    model.addAttribute("startTimeStr", event.getStartDate().toLocalTime().toString());
-                    model.addAttribute("endDateStr", event.getEndDate().toLocalDate().toString());
-                    model.addAttribute("endTimeStr", event.getEndDate().toLocalTime().toString());
-                    return "editEvent";
-                }
+            if (currentUserOpt.isPresent() && eventService.canManageEvent(event, currentUserOpt.get())) {
+                model.addAttribute("event", event);
+                model.addAttribute("startDateStr", event.getStartDate().toLocalDate().toString());
+                model.addAttribute("startTimeStr", event.getStartDate().toLocalTime().toString());
+                model.addAttribute("endDateStr", event.getEndDate().toLocalDate().toString());
+                model.addAttribute("endTimeStr", event.getEndDate().toLocalTime().toString());
+                return "editEvent";
             }
         }
         return "redirect:/events";
@@ -127,79 +94,19 @@ public class EventController {
     @PostMapping("/event/{id}/edit")
     public String updateEvent(
             @PathVariable long id,
-            @RequestParam String title,
-            @RequestParam String description,
-            @RequestParam String startDateStr,
-            @RequestParam String startTimeStr,
-            @RequestParam String endDateStr,
-            @RequestParam String endTimeStr,
-            @RequestParam String locationName,
-            @RequestParam Double price,
-            @RequestParam Integer capacity,
-            @RequestParam String category,
-            @RequestParam(required = false) org.springframework.web.multipart.MultipartFile image,
-            @RequestParam(required = false) List<String> sessionTimes,
-            @RequestParam(required = false) List<String> sessionTitles,
-            @RequestParam(required = false) List<String> sessionDescriptions,
-            @RequestParam(required = false) List<String> speakerNames)
+            Event eventUpdate,
+            @RequestParam(required = false) org.springframework.web.multipart.MultipartFile imageFile)
             throws java.io.IOException, java.sql.SQLException {
 
-        var eventOpt = eventService.getEventById(id);
-        if (eventOpt.isPresent()) {
-            Event event = eventOpt.get();
-            var currentUserOpt = userService.getCurrentAuthenticatedUser();
+        if (hasInvalidEventData(eventUpdate)) {
+            return "redirect:/event/" + id + "/edit";
+        }
 
-            if (currentUserOpt.isPresent()) {
-                User currentUser = currentUserOpt.get();
-                boolean isAdmin = currentUser.getRoles().stream()
-                        .anyMatch(role -> role.getName().equals("ADMIN"));
-                boolean isCreator = event.getCreator() != null
-                        && event.getCreator().getId().equals(currentUser.getId());
-
-                if (isAdmin || isCreator) {
-                    event.setTitle(title);
-                    event.setDescription(description);
-                    event.setPriceCents((int) (price * 100));
-                    event.setCapacity(capacity);
-                    event.setCategory(category);
-
-                    java.time.LocalDateTime start = java.time.LocalDateTime.of(java.time.LocalDate.parse(startDateStr),
-                            java.time.LocalTime.parse(startTimeStr));
-                    java.time.LocalDateTime end = java.time.LocalDateTime.of(java.time.LocalDate.parse(endDateStr),
-                            java.time.LocalTime.parse(endTimeStr));
-                    event.setStartDate(start);
-                    event.setEndDate(end);
-
-                    if (event.getLocation() != null) {
-                        event.getLocation().setName(locationName);
-                    } else {
-                        es.codeurjc.scam_g18.model.Location location = new es.codeurjc.scam_g18.model.Location();
-                        location.setName(locationName);
-                        location.setCity("Madrid");
-                        location.setCountry("Spain");
-                        event.setLocation(location);
-                    }
-
-                    // Sessions (clear and re-add for simplicity in this prototype)
-                    event.getSessions().clear();
-                    if (sessionTimes != null) {
-                        for (int i = 0; i < sessionTimes.size(); i++) {
-                            String desc = (sessionDescriptions != null && i < sessionDescriptions.size())
-                                    ? sessionDescriptions.get(i)
-                                    : "";
-                            event.getSessions().add(
-                                    new es.codeurjc.scam_g18.model.EventSession(sessionTimes.get(i),
-                                            sessionTitles.get(i), desc));
-                        }
-                    }
-
-                    if (speakerNames != null) {
-                        event.setSpeakers(speakerNames);
-                    }
-
-                    eventService.createEvent(event, image); // Using createEvent as it handles saving + image
-                    return "redirect:/event/" + id;
-                }
+        var currentUserOpt = userService.getCurrentAuthenticatedUser();
+        if (currentUserOpt.isPresent()) {
+            boolean updated = eventService.updateEventIfAuthorized(id, eventUpdate, currentUserOpt.get(), imageFile);
+            if (updated) {
+                return "redirect:/event/" + id;
             }
         }
         return "redirect:/events";
@@ -212,67 +119,58 @@ public class EventController {
 
     @PostMapping("/event/new")
     public String createEvent(
-            @RequestParam String title,
-            @RequestParam String description,
-            @RequestParam String startDateStr,
-            @RequestParam String startTimeStr,
-            @RequestParam String endDateStr,
-            @RequestParam String endTimeStr,
-            @RequestParam String locationName,
-            @RequestParam Double price,
-            @RequestParam Integer capacity,
-            @RequestParam String category,
-            @RequestParam(required = false) org.springframework.web.multipart.MultipartFile image,
-            @RequestParam(required = false) List<String> sessionTimes,
-            @RequestParam(required = false) List<String> sessionTitles,
-            @RequestParam(required = false) List<String> sessionDescriptions,
-            @RequestParam(required = false) List<String> speakerNames)
+            Event event,
+            @RequestParam(required = false) org.springframework.web.multipart.MultipartFile imageFile)
             throws java.io.IOException, java.sql.SQLException {
 
-        es.codeurjc.scam_g18.model.Event event = new es.codeurjc.scam_g18.model.Event();
-        event.setTitle(title);
-        event.setDescription(description);
-        event.setPriceCents((int) (price * 100));
-        event.setCapacity(capacity);
-        event.setCategory(category);
-        event.setStatus(es.codeurjc.scam_g18.model.Status.PUBLISHED);
-
-        // Dates
-        java.time.LocalDateTime start = java.time.LocalDateTime.of(java.time.LocalDate.parse(startDateStr),
-                java.time.LocalTime.parse(startTimeStr));
-        java.time.LocalDateTime end = java.time.LocalDateTime.of(java.time.LocalDate.parse(endDateStr),
-                java.time.LocalTime.parse(endTimeStr));
-        event.setStartDate(start);
-        event.setEndDate(end);
-
-        // Location
-        es.codeurjc.scam_g18.model.Location location = new es.codeurjc.scam_g18.model.Location();
-        location.setName(locationName);
-        location.setCity("Madrid"); // Default for now, as form only asks for name
-        location.setCountry("Spain");
-        event.setLocation(location);
-
-        // Creator
-        userService.getCurrentAuthenticatedUser().ifPresent(event::setCreator);
-
-        // Sessions
-        if (sessionTimes != null) {
-            for (int i = 0; i < sessionTimes.size(); i++) {
-                String desc = (sessionDescriptions != null && i < sessionDescriptions.size())
-                        ? sessionDescriptions.get(i)
-                        : "";
-                event.getSessions().add(
-                        new es.codeurjc.scam_g18.model.EventSession(sessionTimes.get(i), sessionTitles.get(i), desc));
-            }
+        if (hasInvalidEventData(event)) {
+            return "redirect:/events/new";
         }
 
-        // Speakers
-        if (speakerNames != null) {
-            event.setSpeakers(speakerNames);
+        var currentUserOpt = userService.getCurrentAuthenticatedUser();
+        if (currentUserOpt.isEmpty()) {
+            return "redirect:/login";
         }
 
-        eventService.createEvent(event, image);
+        eventService.createEventFromForm(event, currentUserOpt.get(), imageFile);
 
         return "redirect:/events";
+    }
+
+    private boolean hasInvalidEventData(Event event) {
+        if (event == null) {
+            return true;
+        }
+        if (event.getTitle() == null || event.getTitle().isBlank()) {
+            return true;
+        }
+        if (event.getDescription() == null || event.getDescription().isBlank()) {
+            return true;
+        }
+        if (event.getCategory() == null || event.getCategory().isBlank()) {
+            return true;
+        }
+        if (event.getLocationName() == null || event.getLocationName().isBlank()) {
+            return true;
+        }
+        if (event.getPrice() == null || event.getPrice() < 0) {
+            return true;
+        }
+        if (event.getCapacity() == null || event.getCapacity() <= 0) {
+            return true;
+        }
+        if (event.getStartDateStr() == null || event.getStartDateStr().isBlank()) {
+            return true;
+        }
+        if (event.getStartTimeStr() == null || event.getStartTimeStr().isBlank()) {
+            return true;
+        }
+        if (event.getEndDateStr() == null || event.getEndDateStr().isBlank()) {
+            return true;
+        }
+        if (event.getEndTimeStr() == null || event.getEndTimeStr().isBlank()) {
+            return true;
+        }
+        return false;
     }
 }

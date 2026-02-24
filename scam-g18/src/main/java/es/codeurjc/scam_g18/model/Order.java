@@ -36,6 +36,20 @@ public class Order {
     
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    private LocalDateTime paidAt;
+
+    private String paymentMethod;
+
+    private String paymentReference;
+
+    private String billingFullName;
+
+    private String billingEmail;
+
+    private String cardLast4;
+
+    private boolean invoicePending;
     
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> items;
@@ -86,6 +100,62 @@ public class Order {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getPaidAt() {
+        return paidAt;
+    }
+
+    public void setPaidAt(LocalDateTime paidAt) {
+        this.paidAt = paidAt;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public String getPaymentReference() {
+        return paymentReference;
+    }
+
+    public void setPaymentReference(String paymentReference) {
+        this.paymentReference = paymentReference;
+    }
+
+    public String getBillingFullName() {
+        return billingFullName;
+    }
+
+    public void setBillingFullName(String billingFullName) {
+        this.billingFullName = billingFullName;
+    }
+
+    public String getBillingEmail() {
+        return billingEmail;
+    }
+
+    public void setBillingEmail(String billingEmail) {
+        this.billingEmail = billingEmail;
+    }
+
+    public String getCardLast4() {
+        return cardLast4;
+    }
+
+    public void setCardLast4(String cardLast4) {
+        this.cardLast4 = cardLast4;
+    }
+
+    public boolean isInvoicePending() {
+        return invoicePending;
+    }
+
+    public void setInvoicePending(boolean invoicePending) {
+        this.invoicePending = invoicePending;
     }
 
     public List<OrderItem> getItems() {

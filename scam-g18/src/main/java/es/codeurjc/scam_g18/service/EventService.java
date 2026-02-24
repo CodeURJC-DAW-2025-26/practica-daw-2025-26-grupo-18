@@ -1,10 +1,16 @@
 package es.codeurjc.scam_g18.service;
 
 import es.codeurjc.scam_g18.model.Event;
+import es.codeurjc.scam_g18.model.EventSession;
+import es.codeurjc.scam_g18.model.Status;
+import es.codeurjc.scam_g18.model.User;
 import es.codeurjc.scam_g18.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,6 +62,9 @@ public class EventService {
         List<Map<String, Object>> eventsData = new ArrayList<>();
 
         for (Event event : allEvents) {
+            if (event.getStatus() != Status.PUBLISHED) {
+                continue;
+            }
             eventsData.add(buildEventCardData(event));
         }
 
@@ -72,7 +81,7 @@ public class EventService {
         Map<String, Object> eventData = buildEventCardData(event);
         eventData.put("capacity", event.getCapacity());
 
-        String imageUrl = "/img/descarga.jpg";
+        String imageUrl = "/img/default_img.png";
         if (event.getImage() != null) {
             imageUrl = imageService.getConnectionImage(event.getImage());
         }
@@ -89,6 +98,92 @@ public class EventService {
         eventRepository.deleteById(id);
     }
 
+    public boolean canManageEvent(Event event, User user) {
+        if (event == null || user == null) {
+            return false;
+        }
+
+        boolean isAdmin = user.getRoles().stream().anyMatch(role -> role.getName().equals("ADMIN"));
+        boolean isCreator = event.getCreator() != null && event.getCreator().getId().equals(user.getId());
+        return isAdmin || isCreator;
+    }
+
+    public boolean deleteEventIfAuthorized(long id, User user) {
+        var eventOpt = getEventById(id);
+        if (eventOpt.isPresent() && canManageEvent(eventOpt.get(), user)) {
+            deleteEvent(id);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean updateEventIfAuthorized(long id, Event eventUpdate, User user,
+            org.springframework.web.multipart.MultipartFile imageFile)
+            throws java.io.IOException, java.sql.SQLException {
+        var eventOpt = getEventById(id);
+        if (eventOpt.isEmpty()) {
+            return false;
+        }
+
+        Event event = eventOpt.get();
+        if (!canManageEvent(event, user)) {
+            return false;
+        }
+
+        applyEventFormData(event, eventUpdate);
+        createEvent(event, imageFile);
+        return true;
+    }
+
+    public void createEventFromForm(Event event, User creator,
+            org.springframework.web.multipart.MultipartFile imageFile)
+            throws java.io.IOException, java.sql.SQLException {
+        if (event.getPrice() != null) {
+            event.setPriceCents((int) (event.getPrice() * 100));
+        }
+        event.setStatus(Status.PENDING_REVIEW);
+        event.setCreator(creator);
+
+        if (event.getStartDateStr() != null && event.getStartTimeStr() != null) {
+            LocalDateTime start = LocalDateTime.of(
+                    LocalDate.parse(event.getStartDateStr()),
+                    LocalTime.parse(event.getStartTimeStr()));
+            event.setStartDate(start);
+        }
+
+        if (event.getEndDateStr() != null && event.getEndTimeStr() != null) {
+            LocalDateTime end = LocalDateTime.of(
+                    LocalDate.parse(event.getEndDateStr()),
+                    LocalTime.parse(event.getEndTimeStr()));
+            event.setEndDate(end);
+        }
+
+        if (event.getLocationName() != null) {
+            es.codeurjc.scam_g18.model.Location location = new es.codeurjc.scam_g18.model.Location();
+            location.setName(event.getLocationName());
+            location.setCity("Madrid");
+            location.setCountry("Spain");
+            event.setLocation(location);
+        }
+
+        event.getSessions().clear();
+        if (event.getSessionTimes() != null && event.getSessionTitles() != null) {
+            int sessionCount = Math.min(event.getSessionTimes().size(), event.getSessionTitles().size());
+            for (int i = 0; i < sessionCount; i++) {
+                String desc = (event.getSessionDescriptions() != null && i < event.getSessionDescriptions().size())
+                        ? event.getSessionDescriptions().get(i)
+                        : "";
+                event.getSessions().add(new EventSession(event.getSessionTimes().get(i), event.getSessionTitles().get(i), desc));
+            }
+        }
+
+        if (event.getSpeakerNames() != null) {
+            event.setSpeakers(event.getSpeakerNames());
+        }
+
+        createEvent(event, imageFile);
+    }
+
     public void createEvent(Event event, org.springframework.web.multipart.MultipartFile imageFile)
             throws java.io.IOException, java.sql.SQLException {
         if (imageFile != null && !imageFile.isEmpty()) {
@@ -100,6 +195,59 @@ public class EventService {
         }
 
         eventRepository.save(event);
+    }
+
+    private void applyEventFormData(Event target, Event source) {
+        target.setTitle(source.getTitle());
+        target.setDescription(source.getDescription());
+
+        if (source.getPrice() != null) {
+            target.setPriceCents((int) (source.getPrice() * 100));
+        }
+
+        target.setCapacity(source.getCapacity());
+        target.setCategory(source.getCategory());
+
+        if (source.getStartDateStr() != null && source.getStartTimeStr() != null) {
+            LocalDateTime start = LocalDateTime.of(
+                    LocalDate.parse(source.getStartDateStr()),
+                    LocalTime.parse(source.getStartTimeStr()));
+            target.setStartDate(start);
+        }
+
+        if (source.getEndDateStr() != null && source.getEndTimeStr() != null) {
+            LocalDateTime end = LocalDateTime.of(
+                    LocalDate.parse(source.getEndDateStr()),
+                    LocalTime.parse(source.getEndTimeStr()));
+            target.setEndDate(end);
+        }
+
+        if (source.getLocationName() != null) {
+            if (target.getLocation() != null) {
+                target.getLocation().setName(source.getLocationName());
+            } else {
+                es.codeurjc.scam_g18.model.Location location = new es.codeurjc.scam_g18.model.Location();
+                location.setName(source.getLocationName());
+                location.setCity("Madrid");
+                location.setCountry("Spain");
+                target.setLocation(location);
+            }
+        }
+
+        target.getSessions().clear();
+        if (source.getSessionTimes() != null && source.getSessionTitles() != null) {
+            int sessionCount = Math.min(source.getSessionTimes().size(), source.getSessionTitles().size());
+            for (int i = 0; i < sessionCount; i++) {
+                String desc = (source.getSessionDescriptions() != null && i < source.getSessionDescriptions().size())
+                        ? source.getSessionDescriptions().get(i)
+                        : "";
+                target.getSessions().add(new EventSession(source.getSessionTimes().get(i), source.getSessionTitles().get(i), desc));
+            }
+        }
+
+        if (source.getSpeakerNames() != null) {
+            target.setSpeakers(source.getSpeakerNames());
+        }
     }
 
     private Map<String, Object> buildEventCardData(Event event) {
@@ -129,16 +277,22 @@ public class EventService {
             Double latitude = event.getLocation().getLatitude();
             Double longitude = event.getLocation().getLongitude();
             eventData.put("isLocation", true);
-            eventData.put("locationName", event.getLocation().getName());
-            eventData.put("locationCity", event.getLocation().getCity());
-            eventData.put("locationAddress", event.getLocation().getAddress());
-            eventData.put("locationCountry", event.getLocation().getCountry());
+            eventData.put("locationName", event.getLocation().getName() != null ? event.getLocation().getName() : "");
+            eventData.put("locationCity", event.getLocation().getCity() != null ? event.getLocation().getCity() : "");
+            eventData.put("locationAddress",
+                    event.getLocation().getAddress() != null ? event.getLocation().getAddress() : "");
+            eventData.put("locationCountry",
+                    event.getLocation().getCountry() != null ? event.getLocation().getCountry() : "");
             eventData.put("locationLat", latitude);
             eventData.put("locationLon", longitude);
             eventData.put("hasCoordinates", latitude != null && longitude != null);
         } else {
             eventData.put("isLocation", false);
             eventData.put("hasCoordinates", false);
+            eventData.put("locationName", "Online");
+            eventData.put("locationCity", "");
+            eventData.put("locationAddress", "");
+            eventData.put("locationCountry", "");
         }
 
         eventData.put("tags", event.getTags());

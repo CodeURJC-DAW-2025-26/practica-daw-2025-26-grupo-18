@@ -1,8 +1,10 @@
 package es.codeurjc.scam_g18.service;
 
 import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ import es.codeurjc.scam_g18.model.Subscription;
 import es.codeurjc.scam_g18.model.SubscriptionStatus;
 import es.codeurjc.scam_g18.repository.SubscriptionRepository;
 import es.codeurjc.scam_g18.repository.OrderRepository;
+import es.codeurjc.scam_g18.repository.OrderItemRepository;
 import es.codeurjc.scam_g18.repository.RoleRepository;
 import es.codeurjc.scam_g18.model.Role;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +34,8 @@ public class CartService {
     @Autowired
     private OrderRepository orderRepository;
     @Autowired
+    private OrderItemRepository orderItemRepository;
+    @Autowired
     private EnrollmentRepository enrollmentRepository;
     @Autowired
     private EventRegistrationRepository eventRegistrationRepository;
@@ -40,23 +45,13 @@ public class CartService {
     private UserService userService;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private InvoicePdfService invoicePdfService;
+    @Autowired
+    private EmailService emailService;
 
     private static final int SUBSCRIPTION_PRICE_CENTS = 999;
     private static final int SUBSCRIPTION_DURATION_DAYS = 30;
-
-    // ... (lines 42-128 remain unchanged, will use separate tool call if needed or
-    // just replace the method) ...
-    // Wait, I can't skip lines in replacement content unless I include them.
-    // I will replace the imports/fields and the activateSubscription method
-    // separately or together if close.
-    // They are far apart. I'll do fields first, then the method.
-
-    // Using a new strategy: I will replace the whole file content related to fields
-    // and the specific method to avoid errors,
-    // but the instruction says "ReplacementChunk".
-    // I will use two replace_file_content calls? No, "Do NOT make multiple parallel
-    // calls to this tool".
-    // I should use multi_replace_file_content.
 
     public Order createOrder(User user) {
         Order order = new Order(user, 0, OrderStatus.PENDING);
@@ -100,6 +95,28 @@ public class CartService {
         }
     }
 
+    @Transactional
+    public void removeItemFromOrder(Order order, Long itemId) {
+        if (order.getItems() == null || itemId == null) {
+            return;
+        }
+
+        Optional<OrderItem> itemOptional = orderItemRepository.findById(itemId);
+        if (itemOptional.isEmpty()) {
+            return;
+        }
+
+        OrderItem item = itemOptional.get();
+        if (item.getOrder() == null || order.getId() == null || !order.getId().equals(item.getOrder().getId())) {
+            return;
+        }
+
+        order.getItems().removeIf(orderItem -> orderItem.getId() != null && orderItem.getId().equals(itemId));
+        orderItemRepository.delete(item);
+        order.setTotalAmountCents(calculateSubtotal(order));
+        orderRepository.save(order);
+    }
+
     public int calculateSubtotal(Order order) {
         if (order.getItems() == null) {
             return 0;
@@ -126,10 +143,23 @@ public class CartService {
     }
 
     @Transactional
-    public void processPayment(Order order) {
+    public void processPayment(Order order, String cardName, String billingEmail, String cardNumber,
+            String cardExpiry) {
+        if (order.getItems() == null || order.getItems().isEmpty()) {
+            return;
+        }
+
         order.setStatus(OrderStatus.PAID);
         order.setTotalAmountCents(calculateTotal(order));
+        order.setPaidAt(LocalDateTime.now());
+        order.setPaymentMethod("SIMULATED_CARD");
+        order.setPaymentReference(generatePaymentReference());
+        order.setBillingFullName(cardName != null ? cardName.trim() : "");
+        order.setBillingEmail(billingEmail != null ? billingEmail.trim() : "");
+        order.setCardLast4(extractLast4Digits(cardNumber));
+        order.setInvoicePending(true);
         orderRepository.save(order);
+
         for (OrderItem item : order.getItems()) {
             if (item.isSubscription()) {
                 activateSubscription(order.getUser());
@@ -142,6 +172,41 @@ public class CartService {
                 }
             }
         }
+
+        try {
+            byte[] invoicePdf = invoicePdfService.generateInvoicePdf(order);
+            String recipient = order.getUser() != null ? order.getBillingEmail() : order.getUser().getEmail();
+            String username = order.getUser() != null ? order.getUser().getUsername() : order.getBillingFullName();
+
+            if (recipient != null && !recipient.isBlank()) {
+                emailService.orderInvoiceMessage(recipient, username != null ? username : "cliente", order.getId(),
+                        invoicePdf);
+                order.setInvoicePending(false);
+            } else {
+                order.setInvoicePending(true);
+            }
+        } catch (Exception e) {
+            order.setInvoicePending(true);
+        }
+
+        orderRepository.save(order);
+    }
+
+    private String generatePaymentReference() {
+        return "SIM-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+    }
+
+    private String extractLast4Digits(String cardNumber) {
+        if (cardNumber == null) {
+            return "0000";
+        }
+
+        String onlyDigits = cardNumber.replaceAll("\\D", "");
+        if (onlyDigits.length() < 4) {
+            return "0000";
+        }
+
+        return onlyDigits.substring(onlyDigits.length() - 4);
     }
 
     private void activateSubscription(User user) {

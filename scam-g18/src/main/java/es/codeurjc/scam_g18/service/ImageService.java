@@ -38,10 +38,10 @@ public class ImageService {
                 return "data:image/jpeg;base64," + base64;
             } catch (SQLException e) {
                 e.printStackTrace();
-                return "/img/descarga.jpg";
+                return "/img/default_img.png";
             }
         }
-        return "/img/descarga.jpg";
+        return "/img/default_img.png";
     }
 
     @Transactional

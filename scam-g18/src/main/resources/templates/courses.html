@@ -28,13 +28,13 @@
                                 <button class="btn btn-primary btn-accent" type="submit">Buscar</button>
                             </div>
                         </div>
-                        {{#canCreateCourse}}
+                        {{#isPublisher}}
                         <div class="course-create-event-wrapper">
                             <a href="/courses/new" class="btn btn-primary btn-lg btn-create-event">
                                 <i class="bi bi-plus-circle me-2"></i>Crear Nuevo Curso
                             </a>
                         </div>
-                        {{/canCreateCourse}}
+                        {{/isPublisher}}
                     </div>
                     <div class="course-filters">
                         <a href="/courses{{#search}}?search={{search}}{{/search}}" class="filter-chip {{^selectedTags}}active{{/selectedTags}}">Todos</a>

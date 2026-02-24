@@ -164,9 +164,10 @@
                         <div class="action-card">
                             <h3>Reserva tu plaza</h3>
                             <p>Acceso completo al evento.</p>
-                            <a href="/cart" class="btn-primary">Comprar entrada · {{event.priceEuros}} €</a>
-
-
+                            <form action="/cart/add/event/{{event.id}}" method="post">
+                                <input type="hidden" name="_csrf" value="{{_csrf.token}}">
+                                <button type="submit" class="btn-primary">Comprar entrada · {{event.priceEuros}} €</button>
+                            </form>
                             <span class="guarantee"><i class="bi bi-shield-check"></i> Confirmación inmediata por
                                 email</span>
                         </div>
