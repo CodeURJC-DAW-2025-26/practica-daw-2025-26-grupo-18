@@ -199,7 +199,7 @@ function addDynamicItem(containerId, placeholder, icon) {
     const container = document.getElementById(containerId);
     const nameMap = {
         "learning-container": "learningPoints",
-        "topics-container": "tags",
+        "topics-container": "tagNames",
         "prerequisites-container": "prerequisites",
     };
     const inputName = nameMap[containerId] || "item";
@@ -220,28 +220,58 @@ function updateModuleCount() {
     if (el) el.textContent = count;
 }
 
+function refreshModuleBindings() {
+    const moduleItems = document.querySelectorAll("#modules-container .module-item");
+
+    moduleItems.forEach((moduleItem, moduleIndex) => {
+        const moduleTitleInput = moduleItem.querySelector('input[data-field="module-title"]');
+        const moduleDescriptionInput = moduleItem.querySelector('input[data-field="module-description"]');
+
+        if (moduleTitleInput) {
+            moduleTitleInput.name = `modules[${moduleIndex}].title`;
+        }
+        if (moduleDescriptionInput) {
+            moduleDescriptionInput.name = `modules[${moduleIndex}].description`;
+        }
+
+        const lessonRows = moduleItem.querySelectorAll(".lessons-list .input-group");
+        lessonRows.forEach((lessonRow, lessonIndex) => {
+            const lessonTitleInput = lessonRow.querySelector('input[data-field="lesson-title"]');
+            const lessonUrlInput = lessonRow.querySelector('input[data-field="lesson-url"]');
+
+            if (lessonTitleInput) {
+                lessonTitleInput.name = `modules[${moduleIndex}].lessons[${lessonIndex}].title`;
+            }
+            if (lessonUrlInput) {
+                lessonUrlInput.name = `modules[${moduleIndex}].lessons[${lessonIndex}].videoUrl`;
+            }
+        });
+    });
+}
+
 function addLesson(btn) {
-    const lessonsList = btn.previousElementSibling;
+    const moduleItem = btn.closest(".module-item");
+    const lessonsList = moduleItem.querySelector(".lessons-list");
     const div = document.createElement("div");
     div.className = "input-group input-group-sm mb-2";
     div.innerHTML = `
         <span class="input-group-text bg-white"><i class="bi bi-play-circle"></i></span>
-        <input type="text" class="form-control" name="lessonTitles" placeholder="Título de la lección" required>
-        <input type="text" class="form-control" name="lessonUrls" placeholder="Enlace del vídeo (URL)" required>
-        <button class="btn btn-delete" type="button" onclick="this.parentElement.remove()">×</button>`;
+        <input type="text" class="form-control" data-field="lesson-title" placeholder="Título de la lección" required>
+        <input type="text" class="form-control" data-field="lesson-url" placeholder="Enlace del vídeo (URL)" required>
+        <button class="btn btn-delete" type="button" onclick="removeLesson(this)">×</button>`;
     lessonsList.appendChild(div);
+    refreshModuleBindings();
+}
+
+function removeLesson(btn) {
+    btn.parentElement.remove();
+    refreshModuleBindings();
 }
 
 function removeModule(btn) {
     btn.closest(".module-item").remove();
     updateModuleCount();
-    // Renumerar títulos de módulos
-    document.querySelectorAll("#modules-container .module-item").forEach((item, idx) => {
-        const titleInput = item.querySelector('input[name="moduleTitles"]');
-        if (titleInput && titleInput.value.startsWith("Módulo ")) {
-            titleInput.value = `Módulo ${idx + 1}: Introducción`;
-        }
-    });
+    refreshModuleBindings();
 }
 
 function addModule() {
@@ -253,9 +283,9 @@ function addModule() {
     div.innerHTML = `
         <div class="d-flex justify-content-between mb-3 align-items-center">
             <div class="flex-grow-1 me-3">
-                <input type="text" class="form-control fw-bold mb-2" name="moduleTitles"
+                <input type="text" class="form-control fw-bold mb-2" data-field="module-title"
                     placeholder="Título del Módulo" value="Módulo ${count}: " required>
-                <input type="text" class="form-control text-muted" name="moduleDescriptions"
+                <input type="text" class="form-control text-muted" data-field="module-description"
                     placeholder="Breve descripción del módulo" required>
             </div>
             <button type="button" class="btn btn-sm btn-delete" onclick="removeModule(this)">Eliminar Módulo</button>
@@ -265,16 +295,19 @@ function addModule() {
             <div class="lessons-list">
                 <div class="input-group input-group-sm mb-2">
                     <span class="input-group-text bg-white"><i class="bi bi-play-circle"></i></span>
-                    <input type="text" class="form-control" name="lessonTitles" placeholder="Título de la lección" required>
-                    <input type="text" class="form-control" name="lessonUrls" placeholder="Enlace del vídeo (URL)" required>
-                    <button class="btn btn-delete" type="button" onclick="this.parentElement.remove()">×</button>
+                    <input type="text" class="form-control" data-field="lesson-title" placeholder="Título de la lección" required>
+                    <input type="text" class="form-control" data-field="lesson-url" placeholder="Enlace del vídeo (URL)" required>
+                    <button class="btn btn-delete" type="button" onclick="removeLesson(this)">×</button>
                 </div>
             </div>
             <button type="button" class="btn btn-sm btn-add mt-2" onclick="addLesson(this)">+ Añadir Lección</button>
         </div>`;
     container.appendChild(div);
     updateModuleCount();
+    refreshModuleBindings();
 }
+
+document.addEventListener("DOMContentLoaded", refreshModuleBindings);
 
 // ── Sesiones de agenda ────────────────────────────────────────────────────
 function addAgendaItem() {

@@ -25,6 +25,7 @@ import jakarta.persistence.OrderBy;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -106,6 +107,9 @@ public class Course {
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
+
+    @Transient
+    private Double price;
 
     public Course() {
     }
@@ -326,6 +330,12 @@ public class Course {
         this.downloadableResources = downloadableResources;
     }
 
+    public Double getPrice() {
+        return price;
+    }
 
+    public void setPrice(Double price) {
+        this.price = price;
+    }
 
 }

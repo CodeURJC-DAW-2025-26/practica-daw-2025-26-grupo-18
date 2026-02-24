@@ -17,6 +17,7 @@
         <div class="container" data-aos="fade-up">
 
             <form action="/courses/new" method="POST" enctype="multipart/form-data" class="needs-validation">
+                <input type="hidden" name="_csrf" value="{{_csrf.token}}">
 
                 <div class="row g-4">
 
@@ -29,7 +30,7 @@
                             <div class="card-body">
                                 <div class="mb-3">
                                     <label for="image" class="form-label">Imagen del Curso</label>
-                                    <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+                                    <input type="file" class="form-control" id="image" name="imageFile" accept="image/*" required>
                                     <div class="form-text">Se recomienda una imagen de 1280x720 px.</div>
                                 </div>
 
@@ -97,7 +98,7 @@
                                 <div id="topics-container">
                                     <div class="input-group mb-2">
                                         <span class="input-group-text"><i class="bi bi-tag"></i></span>
-                                        <input type="text" class="form-control" name="tags" placeholder="Ej: Desarrollo Web"
+                                        <input type="text" class="form-control" name="tagNames" placeholder="Ej: Desarrollo Web"
                                             required>
                                         <button class="btn btn-delete" type="button"
                                             onclick="this.parentElement.remove()">×</button>
@@ -141,9 +142,9 @@
                                     <div class="border rounded p-3 mb-3 module-item bg-light">
                                         <div class="d-flex justify-content-between mb-3 align-items-center">
                                             <div class="flex-grow-1 me-3">
-                                                <input type="text" class="form-control fw-bold mb-2" name="moduleTitles"
+                                                <input type="text" class="form-control fw-bold mb-2" data-field="module-title" name="modules[0].title"
                                                     placeholder="Título del Módulo" value="Módulo 1: Introducción" required>
-                                                <input type="text" class="form-control text-muted" name="moduleDescriptions"
+                                                <input type="text" class="form-control text-muted" data-field="module-description" name="modules[0].description"
                                                     placeholder="Breve descripción del módulo" required>
                                             </div>
                                             <button type="button" class="btn btn-sm btn-delete"
@@ -155,12 +156,12 @@
                                             <div class="lessons-list">
                                                 <div class="input-group input-group-sm mb-2">
                                                     <span class="input-group-text bg-white"><i class="bi bi-play-circle"></i></span>
-                                                    <input type="text" class="form-control" name="lessonTitles"
+                                                    <input type="text" class="form-control" data-field="lesson-title" name="modules[0].lessons[0].title"
                                                         placeholder="Título de la lección" required>
-                                                    <input type="text" class="form-control" name="lessonUrls" 
+                                                    <input type="text" class="form-control" data-field="lesson-url" name="modules[0].lessons[0].videoUrl" 
                                                         placeholder="Enlace del vídeo (URL)" required>
                                                     <button class="btn btn-delete" type="button"
-                                                        onclick="this.parentElement.remove()">×</button>
+                                                        onclick="removeLesson(this)">×</button>
                                                 </div>
                                             </div>
                                             <button type="button" class="btn btn-sm btn-add mt-2"
