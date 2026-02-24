@@ -12,7 +12,6 @@ import java.util.List;
 
 import es.codeurjc.scam_g18.service.TagService;
 import es.codeurjc.scam_g18.model.Event;
-import es.codeurjc.scam_g18.model.User;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 
