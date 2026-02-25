@@ -183,6 +183,10 @@ public class UserService {
         user.setImage(img);
     }
 
+    public boolean isSuscribedToCourse(Long userId, Long courseId) {
+        return enrollmentRepository.existsByUserIdAndCourseId(userId, courseId);
+    }
+
     @Transactional
     public boolean registerUser(String username, String email, String rawPassword, String gender, String birthDate,
             String country, MultipartFile imageFile) throws IOException, SQLException {

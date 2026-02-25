@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.ui.Model;
 import es.codeurjc.scam_g18.service.CourseService;
+import es.codeurjc.scam_g18.service.ReviewService;
 import es.codeurjc.scam_g18.service.UserService;
 import es.codeurjc.scam_g18.model.Course;
 import es.codeurjc.scam_g18.model.User;
@@ -28,6 +29,9 @@ public class CourseController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ReviewService reviewService;
 
     public CourseController(CourseService courseService, TagService tagService) {
         this.courseService = courseService;
@@ -58,14 +62,22 @@ public class CourseController {
         }
 
         boolean canManage = false;
+        boolean isSuscribed = false;
+        boolean hasReviewed = false;
         if (principal != null) {
-            canManage = userService.getCurrentAuthenticatedUser()
-                .map(currentUser -> courseService.canManageCourse(course, currentUser))
-                .orElse(false);
+            var currentUserOpt = userService.getCurrentAuthenticatedUser();
+            if (currentUserOpt.isPresent()) {
+                User currentUser = currentUserOpt.get();
+                canManage = courseService.canManageCourse(course, currentUser);
+                isSuscribed = userService.isSuscribedToCourse(currentUser.getId(), id);
+                hasReviewed = reviewService.hasUserReviewed(currentUser.getId(), id);
+            }
         }
 
         model.addAllAttributes(detailData);
         model.addAttribute("canEdit", canManage);
+        model.addAttribute("isSuscribedToCourse", isSuscribed);
+        model.addAttribute("hasReviewed", hasReviewed);
 
         return "course";
     }
@@ -125,7 +137,8 @@ public class CourseController {
 
         var currentUserOpt = userService.getCurrentAuthenticatedUser();
         if (currentUserOpt.isPresent()) {
-            boolean updated = courseService.updateCourseIfAuthorized(id, courseUpdate, currentUserOpt.get(), imageFile, tagNames);
+            boolean updated = courseService.updateCourseIfAuthorized(id, courseUpdate, currentUserOpt.get(), imageFile,
+                    tagNames);
             if (updated) {
                 return "redirect:/course/" + id;
             }
@@ -133,7 +146,6 @@ public class CourseController {
 
         return "redirect:/courses";
     }
-
 
     @GetMapping("/courses/new")
     public String newCourseForm(Model model) {
@@ -159,6 +171,33 @@ public class CourseController {
         courseService.createCourse(course, tagNames, creatorOpt.get(), imageFile);
 
         return "redirect:/courses";
+    }
+
+    @PostMapping("/course/{id}/review")
+    public String addReview(@PathVariable long id,
+            @RequestParam int rating,
+            @RequestParam String content,
+            Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        var currentUserOpt = userService.getCurrentAuthenticatedUser();
+        if (currentUserOpt.isEmpty()) {
+            return "redirect:/login";
+        }
+
+        Course course;
+        try {
+            course = courseService.getCourseById(id);
+        } catch (RuntimeException e) {
+            return "redirect:/courses";
+        }
+
+        User currentUser = currentUserOpt.get();
+        reviewService.addReview(currentUser, course, rating, content);
+
+        return "redirect:/course/" + id + "#reviews";
     }
 
     private boolean hasInvalidCourseData(Course course) {

@@ -19,28 +19,29 @@ import jakarta.persistence.Transient;
 @Entity
 @Table(name = "reviews")
 public class Review {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;
-    
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-    
+
     @Column(columnDefinition = "TEXT")
     private String content;
-    
+
     private Integer rating;
-    
+
     @CreationTimestamp
     private LocalDateTime createdAt;
-    
-    public Review() {}
+
+    public Review() {
+    }
 
     public Review(User user, Course course, String content, Integer rating) {
         this.user = user;
