@@ -59,9 +59,14 @@ public class EventController {
                 .map(currentUser -> eventService.canManageEvent(event, currentUser))
                 .orElse(false);
 
+        boolean alreadyPurchased = userService.getCurrentAuthenticatedUser()
+            .map(currentUser -> eventService.hasUserPurchasedEvent(currentUser.getId(), event.getId()))
+            .orElse(false);
+
         model.addAttribute("canEdit", canManage);
         model.addAttribute("canDelete", canManage);
         model.addAttribute("errorFull", "full".equals(error));
+        model.addAttribute("alreadyPurchased", alreadyPurchased);
 
         return "event";
     }

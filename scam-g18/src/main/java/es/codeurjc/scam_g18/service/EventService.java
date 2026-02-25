@@ -5,6 +5,7 @@ import es.codeurjc.scam_g18.model.EventSession;
 import es.codeurjc.scam_g18.model.Status;
 import es.codeurjc.scam_g18.model.User;
 import es.codeurjc.scam_g18.repository.EventRepository;
+import es.codeurjc.scam_g18.repository.EventRegistrationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,9 @@ public class EventService {
 
     @Autowired
     private es.codeurjc.scam_g18.repository.LocationRepository locationRepository;
+
+    @Autowired
+    private EventRegistrationRepository eventRegistrationRepository;
 
     public List<Event> getAllEvents() {
         return eventRepository.findAll();
@@ -109,6 +113,13 @@ public class EventService {
         boolean isAdmin = user.getRoles().stream().anyMatch(role -> role.getName().equals("ADMIN"));
         boolean isCreator = event.getCreator() != null && event.getCreator().getId().equals(user.getId());
         return isAdmin || isCreator;
+    }
+
+    public boolean hasUserPurchasedEvent(Long userId, Long eventId) {
+        if (userId == null || eventId == null) {
+            return false;
+        }
+        return eventRegistrationRepository.existsByUserIdAndEventId(userId, eventId);
     }
 
     public boolean deleteEventIfAuthorized(long id, User user) {
