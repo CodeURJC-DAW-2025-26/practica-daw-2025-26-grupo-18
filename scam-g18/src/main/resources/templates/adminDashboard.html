@@ -1,18 +1,18 @@
-﻿    {{>header}}
+﻿{{>header}}
 
-    <main class="main">
+<main class="main">
 
     <!-- Page Title -->
     <div class="page-title light-background">
         <div class="container">
-        <nav class="breadcrumbs">
-            <ol>
-                <li><a href="/">Inicio</a></li>
-                <li class="current">Dashboard</li>
-            </ol>
-        </nav>
-        <h1>Dashboard de Administrador</h1>
-    </div>
+            <nav class="breadcrumbs">
+                <ol>
+                    <li><a href="/">Inicio</a></li>
+                    <li class="current">Dashboard</li>
+                </ol>
+            </nav>
+            <h1>Dashboard de Administrador</h1>
+        </div>
     </div><!-- End Page Title -->
 
     <!-- Admin Dashboard Section -->
@@ -50,328 +50,361 @@
 
                 <div class="tab-content">
 
-                <!-- ==================== USUARIOS ==================== -->
-                <div class="tab-pane fade" id="usersTab" role="tabpanel">
-                    <div class="card border-0 shadow-sm mb-4">
-                        <div class="card-body p-4">
-                            <form action="/admin" method="get">
-                                <input type="hidden" name="activeTab" value="users">
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
-                                    <input type="text" name="userQuery" class="form-control border-start-0"
-                                        placeholder="Buscar usuario por nombre..." value="{{userQuery}}">
-                                    <button class="btn btn-accent" type="submit">Buscar</button>
-                                    <a href="/admin?activeTab=users" class="btn btn-accent-outline">Limpiar</a>
+                    <!-- ==================== USUARIOS ==================== -->
+                    <div class="tab-pane fade" id="usersTab" role="tabpanel">
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-body p-4">
+                                <form action="/admin" method="get">
+                                    <input type="hidden" name="activeTab" value="users">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white border-end-0"><i
+                                                class="bi bi-search"></i></span>
+                                        <input type="text" name="userQuery" class="form-control border-start-0"
+                                            placeholder="Buscar usuario por nombre..." value="{{userQuery}}">
+                                        <button class="btn btn-accent" type="submit">Buscar</button>
+                                        <a href="/admin?activeTab=users" class="btn btn-accent-outline">Limpiar</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Usuario</th>
+                                                <th>Email</th>
+                                                <th>Estado</th>
+                                                <th class="text-end">Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {{#users}}
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <i class="bi bi-person-circle fs-4 text-muted"></i>
+                                                        <span class="fw-semibold">{{username}}</span>
+                                                    </div>
+                                                </td>
+                                                <td class="text-muted">{{email}}</td>
+                                                <td>
+                                                    {{#isActive}}<span
+                                                        class="badge bg-success">Activo</span>{{/isActive}}
+                                                    {{^isActive}}<span
+                                                        class="badge bg-danger">Baneado</span>{{/isActive}}
+                                                </td>
+                                                <td class="text-end">
+                                                    <div
+                                                        class="d-flex justify-content-end align-items-start gap-2 flex-nowrap">
+                                                        <a href="/profile/{{id}}" class="btn btn-sm btn-accent-outline">
+                                                            Ver perfil
+                                                        </a>
+                                                        {{#isActive}}
+                                                        <form action="/admin/users/{{id}}/ban" method="post"
+                                                            class="d-flex align-items-start">
+                                                            <input type="hidden" name="{{_csrf.parameterName}}"
+                                                                value="{{_csrf.token}}">
+                                                            <button type="submit" class="btn btn-sm btn-accent-outline"
+                                                                onclick="return confirm('¿Banear a {{username}}?')">
+                                                                <i class="bi bi-slash-circle"></i> Banear
+                                                            </button>
+                                                        </form>
+                                                        {{/isActive}}
+                                                        {{^isActive}}
+                                                        <form action="/admin/users/{{id}}/unban" method="post"
+                                                            class="d-flex align-items-start">
+                                                            <input type="hidden" name="{{_csrf.parameterName}}"
+                                                                value="{{_csrf.token}}">
+                                                            <button type="submit" class="btn btn-sm btn-accent">
+                                                                <i class="bi bi-check-circle"></i> Desbanear
+                                                            </button>
+                                                        </form>
+                                                        {{/isActive}}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {{/users}}
+                                            {{^users}}
+                                            <tr>
+                                                <td colspan="4" class="text-center text-muted py-4">No se encontraron
+                                                    usuarios.</td>
+                                            </tr>
+                                            {{/users}}
+                                        </tbody>
+                                    </table>
                                 </div>
-                            </form>
-                        </div>
-                    </div>
-
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Usuario</th>
-                                            <th>Email</th>
-                                            <th>Estado</th>
-                                            <th class="text-end">Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {{#users}}
-                                        <tr>
-                                            <td>
-                                                <div class="d-flex align-items-center gap-2">
-                                                    <i class="bi bi-person-circle fs-4 text-muted"></i>
-                                                    <span class="fw-semibold">{{username}}</span>
-                                                </div>
-                                            </td>
-                                            <td class="text-muted">{{email}}</td>
-                                            <td>
-                                                {{#isActive}}<span class="badge bg-success">Activo</span>{{/isActive}}
-                                                {{^isActive}}<span class="badge bg-danger">Baneado</span>{{/isActive}}
-                                            </td>
-                                            <td class="text-end">
-                                                <div class="d-flex justify-content-end align-items-start gap-2 flex-nowrap">
-                                                    <a href="/profile/{{id}}" class="btn btn-sm btn-accent-outline">
-                                                        Ver perfil
-                                                    </a>
-                                                    {{#isActive}}
-                                                    <form action="/admin/users/{{id}}/ban" method="post" class="d-flex align-items-start">
-                                                        <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}">
-                                                        <button type="submit" class="btn btn-sm btn-accent-outline"
-                                                            onclick="return confirm('¿Banear a {{username}}?')">
-                                                            <i class="bi bi-slash-circle"></i> Banear
-                                                        </button>
-                                                    </form>
-                                                    {{/isActive}}
-                                                    {{^isActive}}
-                                                    <form action="/admin/users/{{id}}/unban" method="post" class="d-flex align-items-start">
-                                                        <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}">
-                                                        <button type="submit" class="btn btn-sm btn-accent">
-                                                            <i class="bi bi-check-circle"></i> Desbanear
-                                                        </button>
-                                                    </form>
-                                                    {{/isActive}}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        {{/users}}
-                                        {{^users}}
-                                        <tr>
-                                            <td colspan="4" class="text-center text-muted py-4">No se encontraron usuarios.</td>
-                                        </tr>
-                                        {{/users}}
-                                    </tbody>
-                                </table>
                             </div>
                         </div>
-                    </div>
-                </div><!-- end usersTab -->
+                    </div><!-- end usersTab -->
 
-                <!-- ==================== CURSOS ==================== -->
-                <div class="tab-pane fade" id="coursesTab" role="tabpanel">
-                    <div class="card border-0 shadow-sm mb-4">
-                        <div class="card-body p-4">
-                            <form action="/admin" method="get">
-                                <input type="hidden" name="activeTab" value="courses">
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
-                                    <input type="text" name="courseQuery" class="form-control border-start-0"
-                                        placeholder="Buscar curso por tí­tulo..." value="{{courseQuery}}">
-                                    <button class="btn btn-accent" type="submit">Buscar</button>
-                                    <a href="/admin?activeTab=courses" class="btn btn-accent-outline">Limpiar</a>
+                    <!-- ==================== CURSOS ==================== -->
+                    <div class="tab-pane fade" id="coursesTab" role="tabpanel">
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-body p-4">
+                                <form action="/admin" method="get">
+                                    <input type="hidden" name="activeTab" value="courses">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white border-end-0"><i
+                                                class="bi bi-search"></i></span>
+                                        <input type="text" name="courseQuery" class="form-control border-start-0"
+                                            placeholder="Buscar curso por tí­tulo..." value="{{courseQuery}}">
+                                        <button class="btn btn-accent" type="submit">Buscar</button>
+                                        <a href="/admin?activeTab=courses" class="btn btn-accent-outline">Limpiar</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Curso</th>
+                                                <th>Instructor</th>
+                                                <th>Estado</th>
+                                                <th class="text-end">Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {{#courses}}
+                                            <tr {{#isPendingReview}}class="table-warning" {{/isPendingReview}}>
+                                                <td>
+                                                    <div>
+                                                        <span class="fw-semibold">{{title}}</span>
+                                                        {{#isPendingReview}}<span
+                                                            class="badge bg-light text-accent ms-2">En
+                                                            revisión</span>{{/isPendingReview}}
+                                                        <p class="text-muted small mb-0">{{shortDescription}}</p>
+                                                    </div>
+                                                </td>
+                                                <td class="text-muted">{{creator.username}}</td>
+                                                <td>
+                                                    {{#isPendingReview}}<span
+                                                        class="badge bg-light text-accent">Pendiente</span>{{/isPendingReview}}
+                                                    {{^isPendingReview}}<span
+                                                        class="badge bg-secondary">{{status}}</span>{{/isPendingReview}}
+                                                </td>
+                                                <td class="text-end">
+                                                    <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                                        <a href="/course/{{id}}" class="btn btn-sm btn-accent-outline">
+                                                            <i class="bi bi-eye"></i> Ver
+                                                        </a>
+                                                        <a href="/course/{{id}}/edit"
+                                                            class="btn btn-sm btn-accent-outline">
+                                                            <i class="bi bi-pencil"></i> Editar
+                                                        </a>
+                                                        {{#isPendingReview}}
+                                                        <form action="/admin/courses/{{id}}/approve" method="post"
+                                                            class="d-inline">
+                                                            <input type="hidden" name="{{_csrf.parameterName}}"
+                                                                value="{{_csrf.token}}">
+                                                            <button type="submit" class="btn btn-sm btn-accent">
+                                                                <i class="bi bi-check-lg"></i> Aprobar
+                                                            </button>
+                                                        </form>
+                                                        <form action="/admin/courses/{{id}}/reject" method="post"
+                                                            class="d-inline">
+                                                            <input type="hidden" name="{{_csrf.parameterName}}"
+                                                                value="{{_csrf.token}}">
+                                                            <button type="submit" class="btn btn-sm btn-accent-outline"
+                                                                onclick="return confirm('Â¿Rechazar este curso?')">
+                                                                <i class="bi bi-x-lg"></i> Rechazar
+                                                            </button>
+                                                        </form>
+                                                        {{/isPendingReview}}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {{/courses}}
+                                            {{^courses}}
+                                            <tr>
+                                                <td colspan="4" class="text-center text-muted py-4">No se encontraron
+                                                    cursos.</td>
+                                            </tr>
+                                            {{/courses}}
+                                        </tbody>
+                                    </table>
                                 </div>
-                            </form>
-                        </div>
-                    </div>
-
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Curso</th>
-                                            <th>Instructor</th>
-                                            <th>Estado</th>
-                                            <th class="text-end">Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {{#courses}}
-                                        <tr {{#isPendingReview}}class="table-warning"{{/isPendingReview}}>
-                                            <td>
-                                                <div>
-                                                    <span class="fw-semibold">{{title}}</span>
-                                                    {{#isPendingReview}}<span class="badge bg-light text-accent ms-2">En revisiÃ³n</span>{{/isPendingReview}}
-                                                    <p class="text-muted small mb-0">{{shortDescription}}</p>
-                                                </div>
-                                            </td>
-                                            <td class="text-muted">{{creator.username}}</td>
-                                            <td>
-                                                {{#isPendingReview}}<span class="badge bg-light text-accent">Pendiente</span>{{/isPendingReview}}
-                                                {{^isPendingReview}}<span class="badge bg-secondary">{{status}}</span>{{/isPendingReview}}
-                                            </td>
-                                            <td class="text-end">
-                                                <div class="d-flex justify-content-end gap-2 flex-wrap">
-                                                    <a href="/course/{{id}}" class="btn btn-sm btn-accent-outline">
-                                                        <i class="bi bi-eye"></i> Ver
-                                                    </a>
-                                                    <a href="/course/{{id}}/edit" class="btn btn-sm btn-accent-outline">
-                                                        <i class="bi bi-pencil"></i> Editar
-                                                    </a>
-                                                    {{#isPendingReview}}
-                                                    <form action="/admin/courses/{{id}}/approve" method="post" class="d-inline">
-                                                        <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}">
-                                                        <button type="submit" class="btn btn-sm btn-accent">
-                                                            <i class="bi bi-check-lg"></i> Aprobar
-                                                        </button>
-                                                    </form>
-                                                    <form action="/admin/courses/{{id}}/reject" method="post" class="d-inline">
-                                                        <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}">
-                                                        <button type="submit" class="btn btn-sm btn-accent-outline"
-                                                            onclick="return confirm('Â¿Rechazar este curso?')">
-                                                            <i class="bi bi-x-lg"></i> Rechazar
-                                                        </button>
-                                                    </form>
-                                                    {{/isPendingReview}}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        {{/courses}}
-                                        {{^courses}}
-                                        <tr>
-                                            <td colspan="4" class="text-center text-muted py-4">No se encontraron cursos.</td>
-                                        </tr>
-                                        {{/courses}}
-                                    </tbody>
-                                </table>
                             </div>
                         </div>
-                    </div>
-                </div><!-- end coursesTab -->
+                    </div><!-- end coursesTab -->
 
-                <!-- ==================== EVENTOS ==================== -->
-                <div class="tab-pane fade" id="eventsTab" role="tabpanel">
-                    <div class="card border-0 shadow-sm mb-4">
-                        <div class="card-body p-4">
-                            <form action="/admin" method="get">
-                                <input type="hidden" name="activeTab" value="events">
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
-                                    <input type="text" name="eventQuery" class="form-control border-start-0"
-                                        placeholder="Buscar evento por tí­tulo..." value="{{eventQuery}}">
-                                    <button class="btn btn-accent" type="submit">Buscar</button>
-                                    <a href="/admin?activeTab=events" class="btn btn-accent-outline">Limpiar</a>
+                    <!-- ==================== EVENTOS ==================== -->
+                    <div class="tab-pane fade" id="eventsTab" role="tabpanel">
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-body p-4">
+                                <form action="/admin" method="get">
+                                    <input type="hidden" name="activeTab" value="events">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-white border-end-0"><i
+                                                class="bi bi-search"></i></span>
+                                        <input type="text" name="eventQuery" class="form-control border-start-0"
+                                            placeholder="Buscar evento por tí­tulo..." value="{{eventQuery}}">
+                                        <button class="btn btn-accent" type="submit">Buscar</button>
+                                        <a href="/admin?activeTab=events" class="btn btn-accent-outline">Limpiar</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Evento</th>
+                                                <th>Organizador</th>
+                                                <th>Estado</th>
+                                                <th class="text-end">Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {{#events}}
+                                            <tr {{#isPendingReview}}class="table-warning" {{/isPendingReview}}>
+                                                <td>
+                                                    <div>
+                                                        <span class="fw-semibold">{{title}}</span>
+                                                        {{#isPendingReview}}<span
+                                                            class="badge bg-light text-accent ms-2">En
+                                                            revisión</span>{{/isPendingReview}}
+                                                        <p class="text-muted small mb-0">{{category}}</p>
+                                                    </div>
+                                                </td>
+                                                <td class="text-muted">{{creator.username}}</td>
+                                                <td>
+                                                    {{#isPendingReview}}<span
+                                                        class="badge bg-light text-accent">Pendiente</span>{{/isPendingReview}}
+                                                    {{^isPendingReview}}<span
+                                                        class="badge bg-secondary">{{status}}</span>{{/isPendingReview}}
+                                                </td>
+                                                <td class="text-end">
+                                                    <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                                        <a href="/event/{{id}}" class="btn btn-sm btn-accent-outline">
+                                                            <i class="bi bi-eye"></i> Ver
+                                                        </a>
+                                                        <a href="/events/{{id}}/edit"
+                                                            class="btn btn-sm btn-accent-outline">
+                                                            <i class="bi bi-pencil"></i> Editar
+                                                        </a>
+                                                        {{#isPendingReview}}
+                                                        <form action="/admin/events/{{id}}/approve" method="post"
+                                                            class="d-inline">
+                                                            <input type="hidden" name="{{_csrf.parameterName}}"
+                                                                value="{{_csrf.token}}">
+                                                            <button type="submit" class="btn btn-sm btn-accent">
+                                                                <i class="bi bi-check-lg"></i> Aprobar
+                                                            </button>
+                                                        </form>
+                                                        <form action="/admin/events/{{id}}/reject" method="post"
+                                                            class="d-inline">
+                                                            <input type="hidden" name="{{_csrf.parameterName}}"
+                                                                value="{{_csrf.token}}">
+                                                            <button type="submit" class="btn btn-sm btn-accent-outline"
+                                                                onclick="return confirm('Â¿Rechazar este evento?')">
+                                                                <i class="bi bi-x-lg"></i> Rechazar
+                                                            </button>
+                                                        </form>
+                                                        {{/isPendingReview}}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {{/events}}
+                                            {{^events}}
+                                            <tr>
+                                                <td colspan="4" class="text-center text-muted py-4">No se encontraron
+                                                    eventos.</td>
+                                            </tr>
+                                            {{/events}}
+                                        </tbody>
+                                    </table>
                                 </div>
-                            </form>
-                        </div>
-                    </div>
-
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Evento</th>
-                                            <th>Organizador</th>
-                                            <th>Estado</th>
-                                            <th class="text-end">Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {{#events}}
-                                        <tr {{#isPendingReview}}class="table-warning"{{/isPendingReview}}>
-                                            <td>
-                                                <div>
-                                                    <span class="fw-semibold">{{title}}</span>
-                                                    {{#isPendingReview}}<span class="badge bg-light text-accent ms-2">En revisiÃ³n</span>{{/isPendingReview}}
-                                                    <p class="text-muted small mb-0">{{category}}</p>
-                                                </div>
-                                            </td>
-                                            <td class="text-muted">{{creator.username}}</td>
-                                            <td>
-                                                {{#isPendingReview}}<span class="badge bg-light text-accent">Pendiente</span>{{/isPendingReview}}
-                                                {{^isPendingReview}}<span class="badge bg-secondary">{{status}}</span>{{/isPendingReview}}
-                                            </td>
-                                            <td class="text-end">
-                                                <div class="d-flex justify-content-end gap-2 flex-wrap">
-                                                    <a href="/event/{{id}}" class="btn btn-sm btn-accent-outline">
-                                                        <i class="bi bi-eye"></i> Ver
-                                                    </a>
-                                                    <a href="/events/{{id}}/edit" class="btn btn-sm btn-accent-outline">
-                                                        <i class="bi bi-pencil"></i> Editar
-                                                    </a>
-                                                    {{#isPendingReview}}
-                                                    <form action="/admin/events/{{id}}/approve" method="post" class="d-inline">
-                                                        <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}">
-                                                        <button type="submit" class="btn btn-sm btn-accent">
-                                                            <i class="bi bi-check-lg"></i> Aprobar
-                                                        </button>
-                                                    </form>
-                                                    <form action="/admin/events/{{id}}/reject" method="post" class="d-inline">
-                                                        <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}">
-                                                        <button type="submit" class="btn btn-sm btn-accent-outline"
-                                                            onclick="return confirm('Â¿Rechazar este evento?')">
-                                                            <i class="bi bi-x-lg"></i> Rechazar
-                                                        </button>
-                                                    </form>
-                                                    {{/isPendingReview}}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        {{/events}}
-                                        {{^events}}
-                                        <tr>
-                                            <td colspan="4" class="text-center text-muted py-4">No se encontraron eventos.</td>
-                                        </tr>
-                                        {{/events}}
-                                    </tbody>
-                                </table>
                             </div>
                         </div>
-                    </div>
-                </div><!-- end eventsTab -->
+                    </div><!-- end eventsTab -->
 
-                <!-- ==================== PEDIDOS ==================== -->
-                <div class="tab-pane fade" id="ordersTab" role="tabpanel">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Pedido</th>
-                                            <th>Usuario</th>
-                                            <th>Cliente</th>
-                                            <th>Estado</th>
-                                            <th>Fecha</th>
-                                            <th>Pago</th>
-                                            <th class="text-end">Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {{#orders}}
-                                        <tr>
-                                            <td class="fw-semibold">#{{id}}</td>
-                                            <td>
-                                                {{#user}}{{username}}{{/user}}
-                                                {{^user}}-{{/user}}
-                                            </td>
-                                            <td>
-                                                <div>{{billingFullName}}</div>
-                                                <small class="text-muted">{{billingEmail}}</small>
-                                            </td>
-                                            <td><span class="badge bg-secondary">{{status}}</span></td>
-                                            <td>
-                                                {{#paidAt}}{{paidAt}}{{/paidAt}}
-                                                {{^paidAt}}{{createdAt}}{{/paidAt}}
-                                            </td>
-                                            <td>
-                                                <div>{{paymentMethod}}</div>
-                                                <small class="text-muted">{{paymentReference}}</small>
-                                            </td>
-                                            <td class="text-end fw-semibold">{{totalAmountCents}} cts</td>
-                                        </tr>
-                                        {{/orders}}
-                                        {{^orders}}
-                                        <tr>
-                                            <td colspan="7" class="text-center text-muted py-4">No hay pedidos registrados.</td>
-                                        </tr>
-                                        {{/orders}}
-                                    </tbody>
-                                </table>
+                    <!-- ==================== PEDIDOS ==================== -->
+                    <div class="tab-pane fade" id="ordersTab" role="tabpanel">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Pedido</th>
+                                                <th>Usuario</th>
+                                                <th>Cliente</th>
+                                                <th>Estado</th>
+                                                <th>Fecha</th>
+                                                <th>Pago</th>
+                                                <th class="text-end">Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {{#orders}}
+                                            <tr>
+                                                <td class="fw-semibold">#{{id}}</td>
+                                                <td>
+                                                    {{#user}}{{username}}{{/user}}
+                                                    {{^user}}-{{/user}}
+                                                </td>
+                                                <td>
+                                                    <div>{{billingFullName}}</div>
+                                                    <small class="text-muted">{{billingEmail}}</small>
+                                                </td>
+                                                <td><span class="badge bg-secondary">{{status}}</span></td>
+                                                <td>
+                                                    {{#paidAt}}{{paidAt}}{{/paidAt}}
+                                                    {{^paidAt}}{{createdAt}}{{/paidAt}}
+                                                </td>
+                                                <td>
+                                                    <div>{{paymentMethod}}</div>
+                                                    <small class="text-muted">{{paymentReference}}</small>
+                                                </td>
+                                                <td class="text-end fw-semibold">{{totalAmountCents}} cts</td>
+                                            </tr>
+                                            {{/orders}}
+                                            {{^orders}}
+                                            <tr>
+                                                <td colspan="7" class="text-center text-muted py-4">No hay pedidos
+                                                    registrados.</td>
+                                            </tr>
+                                            {{/orders}}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div><!-- end ordersTab -->
+                    </div><!-- end ordersTab -->
 
-            </div><!-- end tab-content -->
+                </div><!-- end tab-content -->
             </div><!-- end service-tabs -->
         </div>
     </section>
 
-    </main>
+</main>
 
-    {{>footer}}
+{{>footer}}
 
-    <script>
-        // Activate the tab based on server-provided activeTab value
-        document.addEventListener('DOMContentLoaded', function () {
-            var activeTabKey = '{{activeTab}}';
-            var tabBtn = document.querySelector('#adminTabs [data-tab-key="' + activeTabKey + '"]');
-            if (tabBtn) {
-                new bootstrap.Tab(tabBtn).show();
-            } else {
-                // default to users tab
-                new bootstrap.Tab(document.getElementById('tab-users')).show();
-            }
-        });
-    </script>
+<script>
+    // Activate the tab based on server-provided activeTab value
+    document.addEventListener('DOMContentLoaded', function () {
+        var activeTabKey = '{{activeTab}}';
+        var tabBtn = document.querySelector('#adminTabs [data-tab-key="' + activeTabKey + '"]');
+        if (tabBtn) {
+            new bootstrap.Tab(tabBtn).show();
+        } else {
+            // default to users tab
+            new bootstrap.Tab(document.getElementById('tab-users')).show();
+        }
+    });
+</script>
 
 </body>
+
 </html>

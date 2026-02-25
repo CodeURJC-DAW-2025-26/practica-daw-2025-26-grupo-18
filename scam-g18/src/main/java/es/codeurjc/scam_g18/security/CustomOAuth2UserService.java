@@ -45,7 +45,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         User dbUser = userOptional.get();
 
-        // 4. Cargamos los roles de NUESTRA base de datos
+        // 4. Comprobamos si el usuario está activo
+        if (!dbUser.getIsActive()) {
+            throw new org.springframework.security.oauth2.core.OAuth2AuthenticationException(
+                    new org.springframework.security.oauth2.core.OAuth2Error("account_disabled"),
+                    "El usuario está baneado");
+        }
+
+        // 5. Cargamos los roles de NUESTRA base de datos
         List<GrantedAuthority> authorities = new ArrayList<>();
         for (Role role : dbUser.getRoles()) {
             authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
