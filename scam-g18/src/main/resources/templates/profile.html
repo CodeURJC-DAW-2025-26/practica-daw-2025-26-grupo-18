@@ -24,7 +24,7 @@
 						<div class="card-body p-4 text-center">
 							<!-- Vista normal -->
 							<div id="profile-view">
-								<img src="{{profileImage}}" alt="Foto de perfil" class="rounded-circle mb-3"
+								<img src="/images/users/{{user.id}}/profile" alt="Foto de perfil" class="rounded-circle mb-3"
 									width="120" height="120">
 								<h3 class="h5 fw-bold mb-1">{{user.username}}</h3>
 								<p class="text-muted mb-1">@{{user.username}}</p>
@@ -52,7 +52,7 @@
 
 									<!-- Imagen de perfil -->
 									<div class="mb-3">
-										<img id="preview-img" src="{{profileImage}}" alt="Foto de perfil" class="rounded-circle mb-2"
+										<img id="preview-img" src="/images/users/{{user.id}}/profile" alt="Foto de perfil" class="rounded-circle mb-2"
 											width="120" height="120">
 										<div>
 											<label for="imageFile" class="form-label small text-muted">Cambiar imagen</label>

@@ -107,8 +107,8 @@ public class EventService {
         eventData.put("soldOut", !event.hasAvailableSeats());
 
         String imageUrl = "/img/default_img.png";
-        if (event.getImage() != null) {
-            imageUrl = imageService.getConnectionImage(event.getImage());
+        if (event.getId() != null) {
+            imageUrl = "/images/events/" + event.getId();
         }
         eventData.put("image", imageUrl);
 

@@ -139,8 +139,8 @@ public class CourseService {
 
         Map<String, Object> imageData = new HashMap<>();
         String courseImageUrl = "/img/default_img.png";
-        if (course.getImage() != null) {
-            courseImageUrl = imageService.getConnectionImage(course.getImage());
+        if (course.getId() != null) {
+            courseImageUrl = "/images/courses/" + course.getId();
         }
         imageData.put("url", courseImageUrl);
         courseData.put("image", imageData);
@@ -179,11 +179,12 @@ public class CourseService {
             User user = review.getUser();
             String username = user != null && user.getUsername() != null ? user.getUsername() : "Anónimo";
             userData.put("username", username);
+            userData.put("id", user != null ? user.getId() : null);
             userData.put("initials", user != null ? user.getInitials() : getInitials(username));
 
             if (user != null && user.getImage() != null) {
                 Map<String, Object> userImageData = new HashMap<>();
-                userImageData.put("url", imageService.getConnectionImage(user.getImage()));
+                userImageData.put("url", "/images/users/" + user.getId() + "/profile");
                 userData.put("image", userImageData);
             }
 
@@ -264,8 +265,8 @@ public class CourseService {
                     enrollment.getProgressPercentage() != null ? enrollment.getProgressPercentage() : 0);
 
             String courseImageUrl = "/img/default_img.png";
-            if (course.getImage() != null) {
-                courseImageUrl = imageService.getConnectionImage(course.getImage());
+            if (course.getId() != null) {
+                courseImageUrl = "/images/courses/" + course.getId();
             }
             courseData.put("imageUrl", courseImageUrl);
 

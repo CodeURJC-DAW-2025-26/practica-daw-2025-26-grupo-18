@@ -100,8 +100,8 @@ public class UserService {
     @Transactional
     public String getProfileImage(Long id) {
         Optional<User> user = findById(id);
-        if (user.isPresent() && user.get().getImage() != null) {
-            return imageService.getConnectionImage(user.get().getImage());
+        if (user.isPresent()) {
+            return "/images/users/" + id + "/profile";
         }
         return "/img/default_avatar.png";
     }
