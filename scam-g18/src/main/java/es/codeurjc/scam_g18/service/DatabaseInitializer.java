@@ -106,6 +106,7 @@ public class DatabaseInitializer {
         context.locations = initializeLocations();
 
         List<Course> courses = initializeCourses(context);
+        ensureSubscribedRoleForCourseCreators(courses);
         List<Event> events = initializeEvents(context);
 
         initializeEnrollmentsAndLessonProgress(context, courses);
@@ -749,6 +750,21 @@ public class DatabaseInitializer {
         }
 
         courseRepository.saveAll(courses);
+    }
+
+    private void ensureSubscribedRoleForCourseCreators(List<Course> courses) {
+        Role subscribedRole = ensureRoleExists("SUBSCRIBED");
+        Set<User> creators = courses.stream()
+                .map(Course::getCreator)
+                .filter(user -> user != null)
+                .collect(Collectors.toSet());
+
+        for (User creator : creators) {
+            if (!creator.getRoles().contains(subscribedRole)) {
+                creator.getRoles().add(subscribedRole);
+                userRepository.save(creator);
+            }
+        }
     }
 
     private void refreshEventAttendees(List<Event> events) {
