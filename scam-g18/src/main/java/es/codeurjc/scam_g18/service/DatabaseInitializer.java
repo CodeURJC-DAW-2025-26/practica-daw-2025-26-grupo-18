@@ -1,21 +1,51 @@
 package es.codeurjc.scam_g18.service;
 
-import es.codeurjc.scam_g18.model.*;
+import es.codeurjc.scam_g18.model.Course;
+import es.codeurjc.scam_g18.model.Enrollment;
+import es.codeurjc.scam_g18.model.Event;
+import es.codeurjc.scam_g18.model.EventRegistration;
+import es.codeurjc.scam_g18.model.EventSession;
+import es.codeurjc.scam_g18.model.Lesson;
+import es.codeurjc.scam_g18.model.LessonProgress;
+import es.codeurjc.scam_g18.model.Location;
 import es.codeurjc.scam_g18.model.Module;
-import es.codeurjc.scam_g18.repository.*;
+import es.codeurjc.scam_g18.model.Order;
+import es.codeurjc.scam_g18.model.OrderItem;
+import es.codeurjc.scam_g18.model.OrderStatus;
+import es.codeurjc.scam_g18.model.Review;
+import es.codeurjc.scam_g18.model.Role;
+import es.codeurjc.scam_g18.model.Status;
+import es.codeurjc.scam_g18.model.Subscription;
+import es.codeurjc.scam_g18.model.SubscriptionStatus;
+import es.codeurjc.scam_g18.model.Tag;
+import es.codeurjc.scam_g18.model.User;
+import es.codeurjc.scam_g18.repository.CourseRepository;
+import es.codeurjc.scam_g18.repository.EnrollmentRepository;
+import es.codeurjc.scam_g18.repository.EventRegistrationRepository;
+import es.codeurjc.scam_g18.repository.EventRepository;
+import es.codeurjc.scam_g18.repository.LessonProgressRepository;
+import es.codeurjc.scam_g18.repository.LocationRepository;
+import es.codeurjc.scam_g18.repository.OrderItemRepository;
+import es.codeurjc.scam_g18.repository.OrderRepository;
+import es.codeurjc.scam_g18.repository.ReviewRepository;
+import es.codeurjc.scam_g18.repository.RoleRepository;
+import es.codeurjc.scam_g18.repository.SubscriptionRepository;
+import es.codeurjc.scam_g18.repository.TagRepository;
+import es.codeurjc.scam_g18.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class DatabaseInitializer {
@@ -39,366 +69,717 @@ public class DatabaseInitializer {
     private LocationRepository locationRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private EnrollmentRepository enrollmentRepository;
 
     @Autowired
-    private ImageService imageService;
+    private LessonProgressRepository lessonProgressRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+    @Autowired
+    private SubscriptionRepository subscriptionRepository;
+
+    @Autowired
+    private EventRegistrationRepository eventRegistrationRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private OrderItemRepository orderItemRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostConstruct
-    public void init() throws IOException, SQLException {
-        if (roleRepository.count() == 0) {
-            initializeRoles();
-            initializeUsers();
-            initializeTags();
-            initializeCourses();
-            initializeEvents();
+    public void init() {
+        if (!shouldSeed()) {
+            return;
         }
-        ensureDefaultImagesForExistingData();
+
+        initializeRoles();
+
+        SeedContext context = new SeedContext();
+        context.users = initializeUsers();
+        context.tags = initializeTags();
+        context.locations = initializeLocations();
+
+        List<Course> courses = initializeCourses(context);
+        List<Event> events = initializeEvents(context);
+
+        initializeEnrollmentsAndLessonProgress(context, courses);
+        initializeReviews(context, courses);
+        initializeEventRegistrations(context, events);
+        initializeSubscriptions(context);
+        initializeOrders(context, courses, events);
+
+        refreshCourseSubscribers(courses);
+        refreshEventAttendees(events);
     }
 
-    private void ensureDefaultImagesForExistingData() throws IOException, SQLException {
-        List<Course> courses = courseRepository.findAll();
-        String[] courseImagePaths = { "/img/features/features-1.webp", "/img/features/features-2.webp",
-                "/img/features/features-3.webp" };
-
-        for (int i = 0; i < courses.size(); i++) {
-            Course course = courses.get(i);
-            if (course.getImage() == null) {
-                String imagePath = courseImagePaths[i % courseImagePaths.length];
-                course.setImage(imageService.saveImage(imagePath));
-                courseRepository.save(course);
-            }
-        }
-
-        List<Event> events = eventRepository.findAll();
-        String[] eventImagePaths = { "/img/services/services-1.webp", "/img/services/Services-3.webp",
-                "/img/services/services-7.webp" };
-
-        for (int i = 0; i < events.size(); i++) {
-            Event event = events.get(i);
-            if (event.getImage() == null) {
-                String imagePath = eventImagePaths[i % eventImagePaths.length];
-                event.setImage(imageService.saveImage(imagePath));
-                eventRepository.save(event);
-            }
-        }
+    private boolean shouldSeed() {
+        return userRepository.count() == 0
+                && courseRepository.count() == 0
+                && eventRepository.count() == 0
+                && orderRepository.count() == 0
+                && subscriptionRepository.count() == 0;
     }
 
     private void initializeRoles() {
-        roleRepository.save(new Role("USER"));
-        roleRepository.save(new Role("ADMIN"));
-        roleRepository.save(new Role("SUBSCRIBED"));
+        ensureRoleExists("USER");
+        ensureRoleExists("ADMIN");
+        ensureRoleExists("SUBSCRIBED");
     }
 
-    private void initializeUsers() {
-        // Admin
-        User admin = new User();
-        admin.setUsername("admin");
-        admin.setEmail("admin@scam.com");
-        admin.setPassword(passwordEncoder.encode("adminpass"));
-        admin.setGender("MALE");
-        admin.setBirthDate(LocalDate.of(1990, 1, 1));
-        admin.setShortDescription("Administrador del sistema con acceso total.");
-        admin.setCountry("Spain");
-        admin.setCurrentGoal("Evolucionar economicamente.");
-        admin.setIsActive(true);
-        // Roles: USER, ADMIN
-        Set<Role> adminRoles = new HashSet<>();
-        adminRoles.add(roleRepository.findByName("USER").orElseThrow());
-        adminRoles.add(roleRepository.findByName("ADMIN").orElseThrow());
-        admin.setRoles(adminRoles);
-        userRepository.save(admin);
+    private Role ensureRoleExists(String roleName) {
+        return roleRepository.findByName(roleName)
+                .orElseGet(() -> roleRepository.save(new Role(roleName)));
+    }
 
-        // User
+    private Map<String, User> initializeUsers() {
+        Map<String, User> users = new HashMap<>();
+
+        Role userRole = ensureRoleExists("USER");
+        Role adminRole = ensureRoleExists("ADMIN");
+        Role subscribedRole = ensureRoleExists("SUBSCRIBED");
+
+        users.put("admin", createUser("admin", "admin@scam.com", "adminpass", "MALE",
+                LocalDate.of(1990, 1, 1), "Spain",
+                Set.of(userRole, adminRole),
+                "Administrador principal de la plataforma", "Supervisar calidad de contenido"));
+
+        users.put("content_lead", createUser("content_lead", "lead@scam.com", "leadpass", "FEMALE",
+                LocalDate.of(1992, 4, 17), "Spain",
+                Set.of(userRole, adminRole),
+                "Responsable de contenido premium", "Escalar catálogo educativo"));
+
+        users.put("mentor_ai", createUser("mentor_ai", "mentor.ai@scam.com", "mentorpass", "MALE",
+                LocalDate.of(1988, 9, 3), "Mexico",
+                Set.of(userRole),
+                "Creador experto en IA aplicada", "Ayudar a lanzar productos IA"));
+
+        users.put("coach_growth", createUser("coach_growth", "coach.growth@scam.com", "coachpass", "FEMALE",
+                LocalDate.of(1991, 11, 20), "Colombia",
+                Set.of(userRole),
+                "Coach de crecimiento profesional", "Optimizar hábitos de alto rendimiento"));
+
+        users.put("finance_master", createUser("finance_master", "finance.master@scam.com", "financepass", "MALE",
+                LocalDate.of(1987, 6, 9), "Argentina",
+                Set.of(userRole),
+                "Analista financiero y formador", "Impulsar alfabetización financiera"));
+
+        for (int i = 1; i <= 18; i++) {
+            String username = "learner" + i;
+            String email = "learner" + i + "@scam.com";
+            String gender = (i % 3 == 0) ? "PREFER_NOT_TO_SAY" : (i % 2 == 0 ? "FEMALE" : "MALE");
+            Set<Role> roles = new HashSet<>();
+            roles.add(userRole);
+            if (i <= 10) {
+                roles.add(subscribedRole);
+            }
+
+            users.put(username, createUser(
+                    username,
+                    email,
+                    "pass" + i,
+                    gender,
+                    LocalDate.of(1994 + (i % 8), (i % 12) + 1, (i % 27) + 1),
+                    switch (i % 6) {
+                        case 0 -> "Spain";
+                        case 1 -> "Mexico";
+                        case 2 -> "Chile";
+                        case 3 -> "Peru";
+                        case 4 -> "Colombia";
+                        default -> "Argentina";
+                    },
+                    roles,
+                    "Usuario activo de pruebas #" + i,
+                    "Completar rutas formativas y asistir a eventos"));
+        }
+
+        return users;
+    }
+
+    private User createUser(String username, String email, String rawPassword, String gender, LocalDate birthDate,
+            String country, Set<Role> roles, String shortDescription, String currentGoal) {
+
         User user = new User();
-        user.setUsername("user");
-        user.setEmail("user@scam.com");
-        user.setPassword(passwordEncoder.encode("userpass"));
-        user.setShortDescription("Usuario estándar del sistema.");
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode(rawPassword));
+        user.setGender(gender);
+        user.setBirthDate(birthDate);
+        user.setCountry(country);
+        user.setShortDescription(shortDescription);
+        user.setCurrentGoal(currentGoal);
+        user.setWeeklyRoutine("3 sesiones semanales de aprendizaje y práctica");
+        user.setComunity("Comunidad global de aprendizaje digital");
         user.setIsActive(true);
-        user.setCurrentGoal("Evolucionar economicamente.");
-        user.setCountry("Spain");
-        Set<Role> userRoles = new HashSet<>();
-        userRoles.add(roleRepository.findByName("USER").orElseThrow());
-        user.setRoles(userRoles);
-        userRepository.save(user);
-
-        // Creator (Profesor)
-        User creator = new User();
-        creator.setUsername("juan_inversor");
-        creator.setEmail("juan@scam.com");
-        creator.setPassword(passwordEncoder.encode("juanpass"));
-        creator.setShortDescription("Creador de contenido del sistema.");
-        creator.setIsActive(true);
-        creator.setCurrentGoal("Evolucionar economicamente.");
-        creator.setCountry("Estados Unidos");
-        Set<Role> creatorRoles = new HashSet<>();
-        creatorRoles.add(roleRepository.findByName("USER").orElseThrow());
-        creator.setRoles(creatorRoles);
-        userRepository.save(creator);
+        user.setRoles(new HashSet<>(roles));
+        return userRepository.save(user);
     }
 
-    private void initializeTags() {
-        tagRepository.save(new Tag("Desarrollo Personal"));
-        tagRepository.save(new Tag("Emprendimiento"));
-        tagRepository.save(new Tag("Finanzas"));
-        tagRepository.save(new Tag("Liderazgo"));
-        tagRepository.save(new Tag("Productividad"));
-        tagRepository.save(new Tag("Libertad Financiera"));
+    private Map<String, Tag> initializeTags() {
+        String[] tagNames = {
+                "Desarrollo Personal", "Emprendimiento", "Finanzas", "Liderazgo", "Productividad",
+                "Libertad Financiera", "Ventas", "Marketing Digital", "IA", "Programación",
+                "Comunicación", "Negociación", "Gestión del Tiempo", "Startups", "Networking", "Inversión"
+        };
+
+        Map<String, Tag> tags = new HashMap<>();
+        for (String tagName : tagNames) {
+            Tag tag = tagRepository.findByName(tagName)
+                    .orElseGet(() -> tagRepository.save(new Tag(tagName)));
+            tags.put(tagName, tag);
+        }
+
+        return tags;
     }
 
-    private void initializeCourses() throws IOException, SQLException {
-        User creator = userRepository.findByUsername("admin").orElseThrow();
-        User juan = userRepository.findByUsername("juan_inversor").orElseThrow();
+    private List<Location> initializeLocations() {
+        List<Location> locations = new ArrayList<>();
 
-        Tag finanzas = tagRepository.findByName("Finanzas").orElseThrow();
-        Tag libertad = tagRepository.findByName("Libertad Financiera").orElseThrow();
-        Tag emprendimiento = tagRepository.findByName("Emprendimiento").orElseThrow();
-        Tag productividad = tagRepository.findByName("Productividad").orElseThrow();
-        Tag liderazgo = tagRepository.findByName("Liderazgo").orElseThrow();
+        locations.add(createLocation("Palacio de Congresos", "Paseo de la Castellana 123", "Madrid", "Spain",
+                40.45798, -3.69058));
+        locations.add(createLocation("Tech Hub BCN", "Carrer de la Marina 15", "Barcelona", "Spain",
+                41.39111, 2.19123));
+        locations.add(createLocation("Innovation Center", "Gran Via 77", "Valencia", "Spain",
+                39.46990, -0.37629));
+        locations.add(createLocation("Campus Latam", "Av. Reforma 210", "Ciudad de Mexico", "Mexico",
+                19.43307, -99.15394));
+        locations.add(createLocation("Centro de Negocios Andino", "Cra 7 #71", "Bogota", "Colombia",
+                4.65333, -74.08365));
+        locations.add(createLocation("Distrito Creativo", "Av. Libertador 1450", "Buenos Aires", "Argentina",
+                -34.58610, -58.40255));
+        locations.add(createLocation("Foro Pacífico", "Av. Providencia 99", "Santiago", "Chile",
+                -33.43212, -70.61672));
+        locations.add(createLocation("Hub Innova", "Jr. de la Union 540", "Lima", "Peru",
+                -12.04637, -77.04279));
 
-        // --- COURSE 1: Libertad Financiera ---
-        Set<Tag> tags1 = new HashSet<>();
-        tags1.add(finanzas);
-        tags1.add(libertad);
-
-        List<String> points1 = new ArrayList<>();
-        points1.add("Gestión de activos y pasivos.");
-        points1.add("Estrategias de inversión a largo plazo.");
-        points1.add("Cómo salir de deudas rápidamente.");
-
-        List<String> prereqs1 = new ArrayList<>();
-        prereqs1.add("Ninguno, empezamos desde cero.");
-
-        // Módulo 1 y sus Lecciones
-        Module m1c1 = new Module();
-        m1c1.setTitle("Módulo 1: Fundamentos del Dinero");
-        m1c1.setDescription("Aprende la diferencia real entre activos y pasivos.");
-        m1c1.setOrderIndex(1);
-
-        Lesson l1m1c1 = new Lesson();
-        l1m1c1.setTitle("Introducción a la Inteligencia Financiera");
-        l1m1c1.setDescription("Conceptos básicos que no te enseñan en la escuela.");
-        l1m1c1.setVideoUrl("https://www.youtube.com/embed/ejemplo1");
-        l1m1c1.setOrderIndex(1);
-        m1c1.addLesson(l1m1c1); // addLesson ya hace l1m1c1.setModule(m1c1)
-
-        Lesson l2m1c1 = new Lesson();
-        l2m1c1.setTitle("Activos vs Pasivos");
-        l2m1c1.setDescription("Por qué tu casa no es una inversión.");
-        l2m1c1.setVideoUrl("https://www.youtube.com/embed/ejemplo2");
-        l2m1c1.setOrderIndex(2);
-        m1c1.addLesson(l2m1c1);
-
-        // Módulo 2 y sus Lecciones
-        Module m2c1 = new Module();
-        m2c1.setTitle("Módulo 2: Eliminación de Deudas");
-        m2c1.setDescription("Estrategia bola de nieve y avalancha.");
-        m2c1.setOrderIndex(2);
-
-        Lesson l1m2c1 = new Lesson();
-        l1m2c1.setTitle("El método de la bola de nieve");
-        l1m2c1.setDescription("Empieza por las deudas más pequeñas para ganar momento.");
-        l1m2c1.setVideoUrl("https://www.youtube.com/embed/ejemplo3");
-        l1m2c1.setOrderIndex(1);
-        m2c1.addLesson(l1m2c1);
-
-        List<Module> modules1 = new ArrayList<>(List.of(m1c1, m2c1));
-
-        Course course1 = new Course(
-                creator,
-                "Libertad Financiera en 30 días",
-                "Consigue tu libertad financiera con nuestro método probado.",
-                "Descubre los secretos que los bancos no quieren que sepas...",
-                "Español",
-                4999, // cents
-                Status.PUBLISHED,
-                tags1,
-                modules1,
-                new ArrayList<>(),
-                points1,
-                prereqs1,
-                2.5, // videoHours
-                5 // downloadableResources
-        );
-        course1.setImage(imageService.saveImage("/img/features/features-1.webp"));
-        courseRepository.save(course1);
-
-        // --- COURSE 2: Emprende tu Negocio Online ---
-        Set<Tag> tags2 = new HashSet<>();
-        tags2.add(emprendimiento);
-        tags2.add(productividad);
-
-        List<String> points2 = new ArrayList<>();
-        points2.add("Validación de ideas de negocio.");
-        points2.add("Creación de MVP sin código.");
-        points2.add("Marketing de guerrilla.");
-
-        // Módulo 1 y sus Lecciones
-        Module m1c2 = new Module();
-        m1c2.setTitle("Módulo 1: Encontrar tu Nicho");
-        m1c2.setDescription("Técnicas de validación de mercado.");
-        m1c2.setOrderIndex(1);
-
-        Lesson l1m1c2 = new Lesson();
-        l1m1c2.setTitle("Análisis de Competencia");
-        l1m1c2.setDescription("Cómo espiar a tu competencia legalmente.");
-        l1m1c2.setVideoUrl("https://www.youtube.com/embed/ejemplo4");
-        l1m1c2.setOrderIndex(1);
-        m1c2.addLesson(l1m1c2);
-
-        // Módulo 2 y sus Lecciones
-        Module m2c2 = new Module();
-        m2c2.setTitle("Módulo 2: Tu primer MVP");
-        m2c2.setDescription("Herramientas No-Code para lanzar en tiempo récord.");
-        m2c2.setOrderIndex(2);
-
-        Lesson l1m2c2 = new Lesson();
-        l1m2c2.setTitle("Creando una Landing Page en 1 hora");
-        l1m2c2.setDescription("Uso de herramientas gratuitas para captar leads.");
-        l1m2c2.setVideoUrl("https://www.youtube.com/embed/ejemplo5");
-        l1m2c2.setOrderIndex(1);
-        m2c2.addLesson(l1m2c2);
-
-        List<Module> modules2 = new ArrayList<>(List.of(m1c2, m2c2));
-
-        Course course2 = new Course(
-                juan,
-                "Emprende tu Negocio Online",
-                "Lanza tu startup en menos de una semana.",
-                "Guía paso a paso para crear un negocio digital rentable desde cero. Sin necesidad de experiencia previa.",
-                "Español",
-                9999,
-                Status.PUBLISHED,
-                tags2,
-                modules2,
-                new ArrayList<>(),
-                points2,
-                List.of("Ordenador", "Conexión a Internet"),
-                5.0, // videoHours (5 horas completas)
-                12 // downloadableResources (12 plantillas/archivos)
-        );
-        course2.setImage(imageService.saveImage("/img/features/features-2.webp"));
-        courseRepository.save(course2);
-
-        // --- COURSE 3: Liderazgo Exponencial ---
-        Set<Tag> tags3 = new HashSet<>();
-        tags3.add(liderazgo);
-        tags3.add(productividad);
-
-        Module m1c3 = new Module();
-        m1c3.setTitle("Módulo 1: El Mindset del Líder");
-        m1c3.setDescription("Cómo transicionar de jefe a líder inspirador.");
-        m1c3.setOrderIndex(1);
-
-        Lesson l1m1c3 = new Lesson();
-        l1m1c3.setTitle("Escucha Activa");
-        l1m1c3.setDescription("El 80% del liderazgo es saber escuchar a tu equipo.");
-        l1m1c3.setVideoUrl("https://www.youtube.com/embed/ejemplo6");
-        l1m1c3.setOrderIndex(1);
-        m1c3.addLesson(l1m1c3);
-
-        List<Module> modules3 = new ArrayList<>(List.of(m1c3));
-
-        Course course3 = new Course(
-                creator,
-                "Liderazgo Exponencial",
-                "Aprende a liderar equipos de alto rendimiento.",
-                "El liderazgo no es dar órdenes, es inspirar. Conviértete en el líder que todos quieren seguir. Técnicas de coaching y gestión de equipos multiculturales.",
-                "Inglés",
-                5999,
-                Status.PUBLISHED,
-                tags3,
-                modules3,
-                new ArrayList<>(),
-                List.of("Comunicación asertiva", "Delegación efectiva"),
-                List.of("Experiencia previa gestionando personas recomendada"),
-                7.5, // videoHours (7 horas y media)
-                3 // downloadableResources (3 PDFs de resumen)
-        );
-        course3.setImage(imageService.saveImage("/img/features/features-3.webp"));
-        courseRepository.save(course3);
+        return locations;
     }
 
-    private void initializeEvents() throws IOException, SQLException {
-        User creator = userRepository.findByUsername("admin").orElseThrow();
-        Tag liderazgo = tagRepository.findByName("Liderazgo").orElseThrow();
-        Tag personal = tagRepository.findByName("Desarrollo Personal").orElseThrow();
-        Tag emprendimiento = tagRepository.findByName("Emprendimiento").orElseThrow();
+    private Location createLocation(String name, String address, String city, String country, Double latitude,
+            Double longitude) {
+        Location location = new Location();
+        location.setName(name);
+        location.setAddress(address);
+        location.setCity(city);
+        location.setCountry(country);
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
+        return locationRepository.save(location);
+    }
 
-        // Event 1
-        Location loc1 = new Location();
-        loc1.setName("Palacio de Congresos");
-        loc1.setCity("Madrid");
-        loc1.setAddress("Paseo de la Castellana 123");
-        loc1.setCountry("España");
-        loc1.setLatitude(40.45798923792695);
-        loc1.setLongitude(-3.6905805690206726);
-        locationRepository.save(loc1);
+    private List<Course> initializeCourses(SeedContext context) {
+        List<User> creators = List.of(
+                context.users.get("mentor_ai"),
+                context.users.get("coach_growth"),
+                context.users.get("finance_master"),
+                context.users.get("admin"),
+                context.users.get("content_lead"));
 
-        Set<Tag> tags1 = new HashSet<>();
-        tags1.add(liderazgo);
-        tags1.add(emprendimiento);
+        String[] titles = {
+                "Fundamentos de Libertad Financiera", "Emprender con IA desde Cero", "Liderazgo para Equipos Remotos",
+                "Ventas Consultivas de Alto Ticket", "Productividad Extrema para Profesionales",
+                "Inversión Inteligente en Mercados Globales", "Storytelling para Vender Ideas",
+                "Marketing Digital 360", "Negociación Estratégica en Negocios", "Creación de Startups Rentables",
+                "Automatización de Procesos con IA", "Finanzas Personales para Autónomos",
+                "Comunicación Persuasiva para Líderes", "Escala tu Negocio de Servicios", "Gestión del Tiempo sin Estrés",
+                "Diseño de Ofertas Irresistibles", "Networking Profesional Efectivo", "Roadmap de Carrera Tech"
+        };
 
-        Event event1 = new Event(
-                creator,
-                loc1,
-                imageService.saveImage("/img/services/services-1.webp"),
-                "Cumbre de Liderazgo 2026",
-                "El evento más importante para CEOs y directivos en Europa.",
-                15000, // 150.00
-                LocalDateTime.of(2026, 5, 20, 9, 0),
-                LocalDateTime.of(2026, 5, 22, 18, 0),
-                "Conferencia",
-                Status.PUBLISHED,
-                500);
-        event1.getTags().addAll(tags1);
-        eventRepository.save(event1);
+        String[][] tagMatrix = {
+                { "Finanzas", "Libertad Financiera", "Inversión" },
+                { "IA", "Emprendimiento", "Startups" },
+                { "Liderazgo", "Comunicación", "Productividad" },
+                { "Ventas", "Negociación", "Comunicación" },
+                { "Productividad", "Gestión del Tiempo", "Desarrollo Personal" },
+                { "Finanzas", "Inversión", "Liderazgo" },
+                { "Comunicación", "Ventas", "Marketing Digital" },
+                { "Marketing Digital", "Emprendimiento", "Networking" },
+                { "Negociación", "Liderazgo", "Ventas" },
+                { "Startups", "Emprendimiento", "Finanzas" },
+                { "IA", "Programación", "Productividad" },
+                { "Finanzas", "Gestión del Tiempo", "Desarrollo Personal" },
+                { "Comunicación", "Liderazgo", "Desarrollo Personal" },
+                { "Emprendimiento", "Ventas", "Productividad" },
+                { "Gestión del Tiempo", "Productividad", "Desarrollo Personal" },
+                { "Ventas", "Marketing Digital", "Negociación" },
+                { "Networking", "Comunicación", "Liderazgo" },
+                { "Programación", "IA", "Carrera" }
+        };
 
-        // Event 2 (Online)
-        Set<Tag> tags2 = new HashSet<>();
-        tags2.add(personal);
+        List<Course> courses = new ArrayList<>();
+        for (int i = 0; i < titles.length; i++) {
+            User creator = creators.get(i % creators.size());
+            Set<Tag> courseTags = toTagSet(context.tags, tagMatrix[i]);
+            List<Module> modules = buildModulesForCourse(i + 1);
 
-        Event event2 = new Event(
-                creator,
-                null, // Online has no location
-                imageService.saveImage("/img/services/Services-3.webp"),
-                "Webinar: Despierta tu Potencial",
-                "Taller online intensivo para romper tus barreras mentales.",
-                0, // Free
-                LocalDateTime.of(2026, 3, 15, 19, 0),
-                LocalDateTime.of(2026, 3, 15, 21, 0),
-                "Webinar",
-                Status.PUBLISHED,
-                1000);
-        event2.getTags().addAll(tags2);
-        eventRepository.save(event2);
+            Status status;
+            if (i < 13) {
+                status = Status.PUBLISHED;
+            } else if (i < 16) {
+                status = Status.PENDING_REVIEW;
+            } else {
+                status = Status.DRAFT;
+            }
 
-        // Event 3
-        Location loc3 = new Location();
-        loc3.setName("Co-working Space The Shed");
-        loc3.setCity("Barcelona");
-        loc3.setAddress("Carrer de la Marina 15");
-        loc3.setCountry("España");
-        locationRepository.save(loc3);
+            List<String> learningPoints = List.of(
+                    "Aplicar un framework práctico desde la primera semana",
+                    "Implementar un sistema medible con KPIs reales",
+                    "Evitar errores frecuentes con plantillas reutilizables");
 
-        Set<Tag> tags3 = new HashSet<>();
-        tags3.add(emprendimiento);
+            List<String> prerequisites = List.of(
+                    "Interés por la temática y compromiso de estudio",
+                    "Acceso a ordenador y conexión estable a internet");
 
-        Event event3 = new Event(
-                creator,
-                loc3,
-                imageService.saveImage("/img/services/services-7.webp"),
-                "Networking & Tapas",
-                "Conoce a otros emprendedores en un ambiente distendido.",
-                1500, // 15.00
-                LocalDateTime.of(2026, 4, 10, 18, 30),
-                LocalDateTime.of(2026, 4, 10, 21, 30),
-                "Networking",
-                Status.PUBLISHED,
-                50);
-        event3.getTags().addAll(tags3);
-        event3.setAttendeesCount(50);
-        eventRepository.save(event3);
+            Course course = new Course(
+                    creator,
+                    titles[i],
+                    "Curso práctico para dominar " + titles[i].toLowerCase() + ".",
+                    "Programa completo con enfoque aplicado y orientado a resultados para "
+                            + titles[i].toLowerCase() + ".",
+                    (i % 4 == 0) ? "Inglés" : "Español",
+                    2900 + (i * 450),
+                    status,
+                    courseTags,
+                    modules,
+                    new ArrayList<>(),
+                    learningPoints,
+                    prerequisites,
+                    3.0 + (i % 6),
+                    4 + (i % 10));
+
+            course.setSubscribersNumber(0);
+            courses.add(courseRepository.save(course));
+        }
+
+        return courses;
+    }
+
+    private List<Module> buildModulesForCourse(int courseIndex) {
+        List<Module> modules = new ArrayList<>();
+        int moduleCount = 2 + (courseIndex % 2);
+
+        for (int m = 1; m <= moduleCount; m++) {
+            Module module = new Module();
+            module.setTitle("Módulo " + m + " - Bloque principal");
+            module.setDescription("Contenido estructurado del módulo " + m + " para el curso " + courseIndex + ".");
+            module.setOrderIndex(m);
+
+            for (int l = 1; l <= 3; l++) {
+                Lesson lesson = new Lesson();
+                lesson.setTitle("Lección " + m + "." + l + " - Caso práctico");
+                lesson.setDescription("Demostración y ejercicios aplicados para reforzar conceptos clave.");
+                lesson.setVideoUrl("https://www.youtube.com/embed/demo_" + courseIndex + "_" + m + "_" + l);
+                lesson.setOrderIndex(l);
+                module.addLesson(lesson);
+            }
+
+            modules.add(module);
+        }
+
+        return modules;
+    }
+
+    private List<Event> initializeEvents(SeedContext context) {
+        List<User> creators = List.of(
+                context.users.get("admin"),
+                context.users.get("content_lead"),
+                context.users.get("mentor_ai"));
+
+        String[] titles = {
+                "Summit de Innovación 2026", "Webinar Growth Hacking", "Foro de Liderazgo Ejecutivo",
+                "Bootcamp de Ventas B2B", "Networking de Founders", "Masterclass de Finanzas Inteligentes",
+                "Taller de Comunicación de Impacto", "Jornada Productividad Pro", "Conferencia IA para Negocios",
+                "Meetup de Inversores", "Demo Day Startups", "Evento Híbrido de Estrategia Comercial"
+        };
+
+        String[] categories = {
+                "Conferencia", "Webinar", "Foro", "Bootcamp", "Networking", "Masterclass",
+                "Taller", "Jornada", "Conferencia", "Meetup", "Demo Day", "Evento Híbrido"
+        };
+
+        String[][] tagMatrix = {
+                { "Emprendimiento", "Liderazgo", "Networking" },
+                { "Marketing Digital", "Productividad", "Ventas" },
+                { "Liderazgo", "Comunicación", "Negociación" },
+                { "Ventas", "Negociación", "Productividad" },
+                { "Networking", "Startups", "Emprendimiento" },
+                { "Finanzas", "Inversión", "Libertad Financiera" },
+                { "Comunicación", "Desarrollo Personal", "Liderazgo" },
+                { "Gestión del Tiempo", "Productividad", "Desarrollo Personal" },
+                { "IA", "Emprendimiento", "Programación" },
+                { "Inversión", "Networking", "Finanzas" },
+                { "Startups", "Emprendimiento", "Ventas" },
+                { "Ventas", "Marketing Digital", "Liderazgo" }
+        };
+
+        List<Event> events = new ArrayList<>();
+        LocalDateTime baseDate = LocalDateTime.of(2026, 3, 1, 9, 0);
+
+        for (int i = 0; i < titles.length; i++) {
+            Event event = new Event();
+            event.setCreator(creators.get(i % creators.size()));
+            event.setTitle(titles[i]);
+            event.setDescription("Evento orientado a casos reales y networking profesional sobre " + titles[i] + ".");
+            event.setCategory(categories[i]);
+            event.setPriceCents((i % 3 == 0) ? 0 : (1500 + (i * 500)));
+            event.setStartDate(baseDate.plusDays(i * 9L));
+            event.setEndDate(baseDate.plusDays(i * 9L).plusHours(3 + (i % 5)));
+            event.setCapacity(40 + (i * 10));
+            event.setAttendeesCount(0);
+            event.setSpeakers(List.of("Speaker " + (i + 1), "Guest " + (i + 11)));
+
+            if (i % 4 == 0) {
+                event.setStatus(Status.PENDING_REVIEW);
+            } else if (i % 7 == 0) {
+                event.setStatus(Status.DRAFT);
+            } else {
+                event.setStatus(Status.PUBLISHED);
+            }
+
+            if (i % 3 != 1) {
+                event.setLocation(context.locations.get(i % context.locations.size()));
+            }
+
+            event.getTags().addAll(toTagSet(context.tags, tagMatrix[i]));
+
+            List<EventSession> sessions = new ArrayList<>();
+            sessions.add(new EventSession("09:30", "Apertura", "Contexto de mercado y objetivos del evento"));
+            sessions.add(new EventSession("11:00", "Caso práctico", "Aplicación paso a paso con métricas"));
+            sessions.add(new EventSession("12:30", "Panel", "Preguntas y networking guiado"));
+            event.setSessions(sessions);
+
+            events.add(eventRepository.save(event));
+        }
+
+        return events;
+    }
+
+    private void initializeEnrollmentsAndLessonProgress(SeedContext context, List<Course> courses) {
+        List<Course> publishedCourses = courses.stream()
+                .filter(course -> course.getStatus() == Status.PUBLISHED)
+                .toList();
+
+        List<User> learners = context.users.values().stream()
+                .filter(user -> !user.getUsername().equals("admin") && !user.getUsername().equals("content_lead"))
+                .toList();
+
+        List<Enrollment> enrollments = new ArrayList<>();
+        Set<String> enrollmentKeys = new HashSet<>();
+
+        int[] progressPattern = { 5, 20, 35, 55, 70, 85, 100 };
+
+        for (int u = 0; u < learners.size(); u++) {
+            User learner = learners.get(u);
+            int enrollmentCount = 3 + (u % 4);
+
+            for (int j = 0; j < enrollmentCount; j++) {
+                Course course = publishedCourses.get((u + j) % publishedCourses.size());
+                String key = learner.getId() + "-" + course.getId();
+                if (enrollmentKeys.contains(key)) {
+                    continue;
+                }
+
+                Enrollment enrollment = new Enrollment(learner, course);
+                enrollment.setProgressPercentage(progressPattern[(u + j) % progressPattern.length]);
+                enrollments.add(enrollment);
+                enrollmentKeys.add(key);
+            }
+        }
+
+        enrollmentRepository.saveAll(enrollments);
+
+        List<LessonProgress> progresses = new ArrayList<>();
+        for (Enrollment enrollment : enrollments) {
+            Course course = enrollment.getCourse();
+            List<Lesson> lessons = course.getModules().stream()
+                    .flatMap(module -> module.getLessons().stream())
+                    .sorted((a, b) -> a.getOrderIndex().compareTo(b.getOrderIndex()))
+                    .toList();
+
+            if (lessons.isEmpty()) {
+                continue;
+            }
+
+            int completedLessons = Math.round(lessons.size() * (enrollment.getProgressPercentage() / 100f));
+            for (int i = 0; i < lessons.size(); i++) {
+                LessonProgress progress = new LessonProgress();
+                progress.setUser(enrollment.getUser());
+                progress.setLesson(lessons.get(i));
+                boolean isCompleted = i < completedLessons;
+                progress.setIsCompleted(isCompleted);
+                if (isCompleted) {
+                    progress.setCompletedAt(LocalDateTime.now().minusDays(lessons.size() - i));
+                }
+                progresses.add(progress);
+            }
+        }
+
+        lessonProgressRepository.saveAll(progresses);
+    }
+
+    private void initializeReviews(SeedContext context, List<Course> courses) {
+        List<Course> publishedCourses = courses.stream()
+                .filter(course -> course.getStatus() == Status.PUBLISHED)
+                .toList();
+
+        List<User> reviewers = context.users.values().stream()
+                .filter(user -> user.getUsername().startsWith("learner"))
+                .toList();
+
+        List<Review> reviews = new ArrayList<>();
+        Set<String> reviewKeys = new HashSet<>();
+
+        for (int c = 0; c < publishedCourses.size(); c++) {
+            Course course = publishedCourses.get(c);
+
+            for (int r = 0; r < 6; r++) {
+                User reviewer = reviewers.get((c + r) % reviewers.size());
+                if (course.getCreator() != null && course.getCreator().getId().equals(reviewer.getId())) {
+                    continue;
+                }
+
+                String key = reviewer.getId() + "-" + course.getId();
+                if (reviewKeys.contains(key)) {
+                    continue;
+                }
+
+                Review review = new Review();
+                review.setCourse(course);
+                review.setUser(reviewer);
+                review.setRating(3 + ((c + r) % 3));
+                review.setContent("Valoración de prueba para " + course.getTitle() + " con feedback detallado #" + (r + 1));
+                reviews.add(review);
+                reviewKeys.add(key);
+            }
+        }
+
+        reviewRepository.saveAll(reviews);
+    }
+
+    private void initializeEventRegistrations(SeedContext context, List<Event> events) {
+        List<Event> publishedEvents = events.stream()
+                .filter(event -> event.getStatus() == Status.PUBLISHED)
+                .toList();
+
+        List<User> attendees = context.users.values().stream()
+                .filter(user -> user.getUsername().startsWith("learner") || user.getUsername().startsWith("mentor")
+                        || user.getUsername().startsWith("coach") || user.getUsername().startsWith("finance"))
+                .toList();
+
+        List<EventRegistration> registrations = new ArrayList<>();
+        Set<String> registrationKeys = new HashSet<>();
+
+        for (int e = 0; e < publishedEvents.size(); e++) {
+            Event event = publishedEvents.get(e);
+            int target = Math.min(event.getCapacity(), 8 + (e * 2));
+
+            for (int i = 0; i < target; i++) {
+                User attendee = attendees.get((e + i) % attendees.size());
+                String key = attendee.getId() + "-" + event.getId();
+                if (registrationKeys.contains(key)) {
+                    continue;
+                }
+
+                EventRegistration registration = new EventRegistration();
+                registration.setUser(attendee);
+                registration.setEvent(event);
+                registrations.add(registration);
+                registrationKeys.add(key);
+            }
+        }
+
+        eventRegistrationRepository.saveAll(registrations);
+    }
+
+    private void initializeSubscriptions(SeedContext context) {
+        List<User> users = context.users.values().stream()
+                .filter(user -> user.getUsername().startsWith("learner"))
+                .sorted((a, b) -> a.getUsername().compareToIgnoreCase(b.getUsername()))
+                .toList();
+
+        List<Subscription> subscriptions = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
+
+        for (int i = 0; i < users.size(); i++) {
+            User user = users.get(i);
+
+            Subscription subscription = new Subscription();
+            subscription.setUser(user);
+
+            if (i < 10) {
+                subscription.setStatus(SubscriptionStatus.ACTIVE);
+                subscription.setStartDate(now.minusDays(10 + i));
+                subscription.setEndDate(now.plusDays(20 + i));
+            } else if (i < 14) {
+                subscription.setStatus(SubscriptionStatus.EXPIRED);
+                subscription.setStartDate(now.minusDays(80 + i));
+                subscription.setEndDate(now.minusDays(10 + i));
+            } else {
+                subscription.setStatus(SubscriptionStatus.CANCELLED);
+                subscription.setStartDate(now.minusDays(30 + i));
+                subscription.setEndDate(now.plusDays(5));
+            }
+
+            subscriptions.add(subscription);
+        }
+
+        subscriptionRepository.saveAll(subscriptions);
+    }
+
+    private void initializeOrders(SeedContext context, List<Course> courses, List<Event> events) {
+        List<Course> publishedCourses = courses.stream()
+                .filter(course -> course.getStatus() == Status.PUBLISHED)
+                .toList();
+
+        List<Event> publishedEvents = events.stream()
+                .filter(event -> event.getStatus() == Status.PUBLISHED)
+                .toList();
+
+        List<User> buyers = context.users.values().stream()
+                .filter(user -> user.getUsername().startsWith("learner"))
+                .sorted((a, b) -> a.getUsername().compareToIgnoreCase(b.getUsername()))
+                .toList();
+
+        for (int i = 0; i < buyers.size(); i++) {
+            User buyer = buyers.get(i);
+
+            Course firstCourse = publishedCourses.get(i % publishedCourses.size());
+            Event firstEvent = publishedEvents.get(i % publishedEvents.size());
+
+            createOrderWithItems(
+                    buyer,
+                    OrderStatus.PAID,
+                    "CARD",
+                    "PAY-OK-" + String.format("%04d", i + 1),
+                    nowMinusDays(i + 1),
+                    List.of(
+                            orderItemData(firstCourse, null, firstCourse.getPriceCents(), false),
+                            orderItemData(null, firstEvent, firstEvent.getPriceCents(), false),
+                            orderItemData(null, null, 1999, true)));
+
+            Course secondCourse = publishedCourses.get((i + 4) % publishedCourses.size());
+            OrderStatus secondStatus = (i % 5 == 0) ? OrderStatus.FAILED : OrderStatus.PENDING;
+
+            createOrderWithItems(
+                    buyer,
+                    secondStatus,
+                    (secondStatus == OrderStatus.PENDING) ? "PENDING" : "CARD",
+                    (secondStatus == OrderStatus.PENDING) ? "PAY-PENDING-" + String.format("%04d", i + 1)
+                        : "PAY-ERR-" + String.format("%04d", i + 1),
+                    (secondStatus == OrderStatus.PENDING) ? null : nowMinusDays(i + 2),
+                    List.of(orderItemData(secondCourse, null, secondCourse.getPriceCents(), false)));
+
+            if (i % 6 == 0) {
+                Course refundCourse = publishedCourses.get((i + 2) % publishedCourses.size());
+                createOrderWithItems(
+                        buyer,
+                        OrderStatus.REFUNDED,
+                        "CARD",
+                        "PAY-RF-" + String.format("%04d", i + 1),
+                        nowMinusDays(i + 3),
+                        List.of(orderItemData(refundCourse, null, refundCourse.getPriceCents(), false)));
+            }
+        }
+    }
+
+    private LocalDateTime nowMinusDays(int days) {
+        return LocalDateTime.now().minusDays(days);
+    }
+
+    private OrderItemData orderItemData(Course course, Event event, Integer priceCents, boolean isSubscription) {
+        OrderItemData data = new OrderItemData();
+        data.course = course;
+        data.event = event;
+        data.priceCents = priceCents == null ? 0 : priceCents;
+        data.isSubscription = isSubscription;
+        return data;
+    }
+
+    private void createOrderWithItems(User user, OrderStatus status, String paymentMethod, String paymentReference,
+            LocalDateTime paidAt, List<OrderItemData> itemDataList) {
+
+        int totalAmount = itemDataList.stream().mapToInt(item -> item.priceCents).sum();
+
+        Order order = new Order();
+        order.setUser(user);
+        order.setStatus(status);
+        order.setTotalAmountCents(totalAmount);
+        order.setPaidAt(paidAt);
+        order.setPaymentMethod(paymentMethod);
+        order.setPaymentReference(paymentReference);
+        order.setBillingFullName(user.getUsername() + " Test");
+        order.setBillingEmail(user.getEmail());
+        order.setCardLast4((status == OrderStatus.PAID || status == OrderStatus.REFUNDED) ? "42" + String.format("%02d", user.getId() % 100) : null);
+        order.setInvoicePending(status == OrderStatus.PAID && user.getId() % 3 == 0);
+
+        Order savedOrder = orderRepository.save(order);
+
+        List<OrderItem> items = new ArrayList<>();
+        for (OrderItemData data : itemDataList) {
+            OrderItem item = new OrderItem();
+            item.setOrder(savedOrder);
+            item.setCourse(data.course);
+            item.setEvent(data.event);
+            item.setPriceAtPurchaseCents(data.priceCents);
+            item.setSubscription(data.isSubscription);
+            items.add(item);
+        }
+
+        savedOrder.setItems(items);
+        orderItemRepository.saveAll(items);
+        orderRepository.save(savedOrder);
+    }
+
+    private void refreshCourseSubscribers(List<Course> courses) {
+        Map<Long, Long> subscribersByCourse = enrollmentRepository.findAll().stream()
+                .collect(Collectors.groupingBy(enrollment -> enrollment.getCourse().getId(), Collectors.counting()));
+
+        for (Course course : courses) {
+            int subscribers = subscribersByCourse.getOrDefault(course.getId(), 0L).intValue();
+            course.setSubscribersNumber(subscribers);
+        }
+
+        courseRepository.saveAll(courses);
+    }
+
+    private void refreshEventAttendees(List<Event> events) {
+        Map<Long, Long> attendeesByEvent = eventRegistrationRepository.findAll().stream()
+                .collect(Collectors.groupingBy(registration -> registration.getEvent().getId(), Collectors.counting()));
+
+        for (Event event : events) {
+            int attendees = attendeesByEvent.getOrDefault(event.getId(), 0L).intValue();
+            event.setAttendeesCount(attendees);
+        }
+
+        eventRepository.saveAll(events);
+    }
+
+    private Set<Tag> toTagSet(Map<String, Tag> tags, String[] tagNames) {
+        Set<Tag> result = new HashSet<>();
+        for (String tagName : tagNames) {
+            Tag tag = tags.get(tagName);
+            if (tag != null) {
+                result.add(tag);
+            }
+        }
+        return result;
+    }
+
+    private static class SeedContext {
+        private Map<String, User> users;
+        private Map<String, Tag> tags;
+        private List<Location> locations;
+    }
+
+    private static class OrderItemData {
+        private Course course;
+        private Event event;
+        private int priceCents;
+        private boolean isSubscription;
     }
 }

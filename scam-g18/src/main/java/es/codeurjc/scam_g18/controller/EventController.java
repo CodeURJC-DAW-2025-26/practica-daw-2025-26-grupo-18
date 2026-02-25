@@ -36,7 +36,8 @@ public class EventController {
     @GetMapping("/events")
     public String events(Model model, @RequestParam(required = false) String search,
             @RequestParam(required = false) List<String> tags) {
-        model.addAttribute("events", eventService.getEventsViewData(search, tags));
+        Long currentUserId = userService.getCurrentAuthenticatedUser().map(user -> user.getId()).orElse(null);
+        model.addAttribute("events", eventService.getEventsViewData(search, tags, currentUserId));
         model.addAttribute("search", search);
         model.addAttribute("tagsView", tagService.getTagsView(tags));
 

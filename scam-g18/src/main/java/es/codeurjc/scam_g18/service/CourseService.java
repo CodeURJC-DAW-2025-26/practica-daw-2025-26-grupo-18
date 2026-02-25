@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.HashMap;
 import java.util.List;
@@ -62,14 +63,27 @@ public class CourseService {
         return courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Course not found"));
     }
 
-    public List<Map<String, Object>> getCoursesViewData(String keyword, List<String> tags) {
+    public List<Map<String, Object>> getCoursesViewData(String keyword, List<String> tags, Long userId) {
         List<Course> allCourses = searchCourses(keyword, tags);
-        List<Map<String, Object>> enrichedCourses = new ArrayList<>();
+        List<Course> publishedCourses = new ArrayList<>();
 
         for (Course course : allCourses) {
-            if (course.getStatus() != Status.PUBLISHED) {
-                continue;
+            if (course.getStatus() == Status.PUBLISHED) {
+                publishedCourses.add(course);
             }
+        }
+
+        Set<String> subscribedTagNames = getSubscribedCourseTagNames(userId);
+        if (!subscribedTagNames.isEmpty()) {
+            publishedCourses.sort(
+                    Comparator.comparingInt((Course course) -> countMatchingTags(course.getTags(), subscribedTagNames))
+                            .reversed()
+                            .thenComparing(Course::getTitle, String.CASE_INSENSITIVE_ORDER));
+        }
+
+        List<Map<String, Object>> enrichedCourses = new ArrayList<>();
+
+        for (Course course : publishedCourses) {
 
             Map<String, Object> courseData = new HashMap<>();
             courseData.put("id", course.getId());
@@ -187,6 +201,49 @@ public class CourseService {
         detailData.put("averageRatingStars", getStarsFromAverage(course));
 
         return detailData;
+    }
+
+    private Set<String> getSubscribedCourseTagNames(Long userId) {
+        Set<String> subscribedTagNames = new HashSet<>();
+        if (userId == null) {
+            return subscribedTagNames;
+        }
+
+        List<Enrollment> enrollments = enrollmentRepository.findByUserId(userId);
+        for (Enrollment enrollment : enrollments) {
+            Course subscribedCourse = enrollment.getCourse();
+            if (subscribedCourse == null || subscribedCourse.getTags() == null) {
+                continue;
+            }
+
+            for (Tag tag : subscribedCourse.getTags()) {
+                if (tag != null && tag.getName() != null && !tag.getName().isBlank()) {
+                    subscribedTagNames.add(tag.getName().trim().toLowerCase());
+                }
+            }
+        }
+
+        return subscribedTagNames;
+    }
+
+    private int countMatchingTags(Set<Tag> candidateTags, Set<String> subscribedTagNames) {
+        if (candidateTags == null || candidateTags.isEmpty() || subscribedTagNames.isEmpty()) {
+            return 0;
+        }
+
+        int matches = 0;
+        for (Tag tag : candidateTags) {
+            if (tag == null || tag.getName() == null) {
+                continue;
+            }
+
+            String normalizedName = tag.getName().trim().toLowerCase();
+            if (!normalizedName.isBlank() && subscribedTagNames.contains(normalizedName)) {
+                matches++;
+            }
+        }
+
+        return matches;
     }
 
     public List<Map<String, Object>> getSubscribedCoursesViewData(Long userId) {

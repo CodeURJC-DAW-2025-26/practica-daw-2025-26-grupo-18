@@ -41,7 +41,8 @@ public class CourseController {
     @GetMapping("/courses")
     public String courses(Model model, @RequestParam(required = false) String search,
             @RequestParam(required = false) List<String> tags) {
-        model.addAttribute("courses", courseService.getCoursesViewData(search, tags));
+        Long currentUserId = userService.getCurrentAuthenticatedUser().map(User::getId).orElse(null);
+        model.addAttribute("courses", courseService.getCoursesViewData(search, tags, currentUserId));
         model.addAttribute("search", search);
         model.addAttribute("tagsView", tagService.getTagsView(tags));
         return "courses";

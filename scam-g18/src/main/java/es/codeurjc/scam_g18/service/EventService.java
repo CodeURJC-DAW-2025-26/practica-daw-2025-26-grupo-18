@@ -1,8 +1,10 @@
 package es.codeurjc.scam_g18.service;
 
 import es.codeurjc.scam_g18.model.Event;
+import es.codeurjc.scam_g18.model.EventRegistration;
 import es.codeurjc.scam_g18.model.EventSession;
 import es.codeurjc.scam_g18.model.Status;
+import es.codeurjc.scam_g18.model.Tag;
 import es.codeurjc.scam_g18.model.User;
 import es.codeurjc.scam_g18.repository.EventRepository;
 import es.codeurjc.scam_g18.repository.EventRegistrationRepository;
@@ -14,10 +16,13 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class EventService {
@@ -61,14 +66,27 @@ public class EventService {
         return eventRepository.findById(id);
     }
 
-    public List<Map<String, Object>> getEventsViewData(String keyword, List<String> tags) {
+    public List<Map<String, Object>> getEventsViewData(String keyword, List<String> tags, Long userId) {
         List<Event> allEvents = searchEvents(keyword, tags);
-        List<Map<String, Object>> eventsData = new ArrayList<>();
+        List<Event> publishedEvents = new ArrayList<>();
 
         for (Event event : allEvents) {
-            if (event.getStatus() != Status.PUBLISHED) {
-                continue;
+            if (event.getStatus() == Status.PUBLISHED) {
+                publishedEvents.add(event);
             }
+        }
+
+        Set<String> subscribedTagNames = getSubscribedEventTagNames(userId);
+        if (!subscribedTagNames.isEmpty()) {
+            publishedEvents.sort(
+                    Comparator.comparingInt((Event event) -> countMatchingTags(event.getTags(), subscribedTagNames))
+                            .reversed()
+                            .thenComparing(Event::getTitle, String.CASE_INSENSITIVE_ORDER));
+        }
+
+        List<Map<String, Object>> eventsData = new ArrayList<>();
+
+        for (Event event : publishedEvents) {
             eventsData.add(buildEventCardData(event));
         }
 
@@ -315,5 +333,48 @@ public class EventService {
         eventData.put("sessions", event.getSessions());
 
         return eventData;
+    }
+
+    private Set<String> getSubscribedEventTagNames(Long userId) {
+        Set<String> subscribedTagNames = new HashSet<>();
+        if (userId == null) {
+            return subscribedTagNames;
+        }
+
+        List<EventRegistration> registrations = eventRegistrationRepository.findByUserId(userId);
+        for (EventRegistration registration : registrations) {
+            Event subscribedEvent = registration.getEvent();
+            if (subscribedEvent == null || subscribedEvent.getTags() == null) {
+                continue;
+            }
+
+            for (Tag tag : subscribedEvent.getTags()) {
+                if (tag != null && tag.getName() != null && !tag.getName().isBlank()) {
+                    subscribedTagNames.add(tag.getName().trim().toLowerCase());
+                }
+            }
+        }
+
+        return subscribedTagNames;
+    }
+
+    private int countMatchingTags(Set<Tag> candidateTags, Set<String> subscribedTagNames) {
+        if (candidateTags == null || candidateTags.isEmpty() || subscribedTagNames.isEmpty()) {
+            return 0;
+        }
+
+        int matches = 0;
+        for (Tag tag : candidateTags) {
+            if (tag == null || tag.getName() == null) {
+                continue;
+            }
+
+            String normalizedName = tag.getName().trim().toLowerCase();
+            if (!normalizedName.isBlank() && subscribedTagNames.contains(normalizedName)) {
+                matches++;
+            }
+        }
+
+        return matches;
     }
 }

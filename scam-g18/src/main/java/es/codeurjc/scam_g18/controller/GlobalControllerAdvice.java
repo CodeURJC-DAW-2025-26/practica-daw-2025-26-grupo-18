@@ -12,10 +12,16 @@ import org.springframework.security.web.csrf.CsrfToken;
 public class GlobalControllerAdvice {
 
     public static class CsrfViewModel {
+        private final String parameterName;
         private final String token;
 
-        public CsrfViewModel(String token) {
+        public CsrfViewModel(String parameterName, String token) {
+            this.parameterName = (parameterName == null || parameterName.isBlank()) ? "_csrf" : parameterName;
             this.token = token == null ? "" : token;
+        }
+
+        public String getParameterName() {
+            return parameterName;
         }
 
         public String getToken() {
@@ -30,25 +36,30 @@ public class GlobalControllerAdvice {
     public void addAttributes(Model model, HttpServletRequest request) {
         boolean hasPrincipal = (request.getUserPrincipal() != null);
 
+        String csrfParameterName = "_csrf";
         String csrfTokenValue = "";
         Object csrfAttr = request.getAttribute("_csrf");
         if (csrfAttr instanceof CsrfToken csrfToken) {
             try {
+                csrfParameterName = csrfToken.getParameterName();
                 csrfTokenValue = csrfToken.getToken();
             } catch (Exception ignored) {
+                csrfParameterName = "_csrf";
                 csrfTokenValue = "";
             }
         } else {
             Object classAttr = request.getAttribute(CsrfToken.class.getName());
             if (classAttr instanceof CsrfToken csrfToken) {
                 try {
+                    csrfParameterName = csrfToken.getParameterName();
                     csrfTokenValue = csrfToken.getToken();
                 } catch (Exception ignored) {
+                    csrfParameterName = "_csrf";
                     csrfTokenValue = "";
                 }
             }
         }
-        model.addAttribute("_csrf", new CsrfViewModel(csrfTokenValue));
+        model.addAttribute("_csrf", new CsrfViewModel(csrfParameterName, csrfTokenValue));
 
         // Valores por defecto siempre presentes para el header (Mustache falla si no existen)
         model.addAttribute("isUserLoggedIn", false);
