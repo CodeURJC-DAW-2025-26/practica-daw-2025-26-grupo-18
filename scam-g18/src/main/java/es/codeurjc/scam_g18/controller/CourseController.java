@@ -11,12 +11,17 @@ import es.codeurjc.scam_g18.model.Course;
 import es.codeurjc.scam_g18.model.User;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import es.codeurjc.scam_g18.service.TagService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class CourseController {
@@ -57,10 +62,7 @@ public class CourseController {
             return "redirect:/courses";
         }
 
-        var detailData = courseService.getCourseDetailViewData(id);
-        if (detailData == null) {
-            return "redirect:/courses";
-        }
+        Long currentUserId = null;
 
         boolean canManage = false;
         boolean isSuscribed = false;
@@ -69,10 +71,16 @@ public class CourseController {
             var currentUserOpt = userService.getCurrentAuthenticatedUser();
             if (currentUserOpt.isPresent()) {
                 User currentUser = currentUserOpt.get();
+                currentUserId = currentUser.getId();
                 canManage = courseService.canManageCourse(course, currentUser);
                 isSuscribed = userService.isSuscribedToCourse(currentUser.getId(), id);
                 hasReviewed = reviewService.hasUserReviewed(currentUser.getId(), id);
             }
+        }
+
+        var detailData = courseService.getCourseDetailViewData(id, currentUserId);
+        if (detailData == null) {
+            return "redirect:/courses";
         }
 
         model.addAllAttributes(detailData);
@@ -81,6 +89,54 @@ public class CourseController {
         model.addAttribute("hasReviewed", hasReviewed);
 
         return "course";
+    }
+
+    @PostMapping("/course/{courseId}/lesson/{lessonId}/complete")
+    public String markLessonAsCompleted(@PathVariable long courseId, @PathVariable long lessonId, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        var currentUserOpt = userService.getCurrentAuthenticatedUser();
+        if (currentUserOpt.isEmpty()) {
+            return "redirect:/login";
+        }
+
+        courseService.markLessonAsCompleted(courseId, lessonId, currentUserOpt.get().getId());
+        return "redirect:/course/" + courseId;
+    }
+
+    @PostMapping("/course/{courseId}/lesson/{lessonId}/complete-ajax")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> markLessonAsCompletedAjax(
+            @PathVariable long courseId,
+            @PathVariable long lessonId,
+            Principal principal) {
+
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        var currentUserOpt = userService.getCurrentAuthenticatedUser();
+        if (currentUserOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        Long userId = currentUserOpt.get().getId();
+        boolean completed = courseService.markLessonAsCompleted(courseId, lessonId, userId);
+        if (!completed) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        int progressPercentage = courseService.getProgressPercentageForUserCourse(courseId, userId).orElse(0);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("completed", true);
+        response.put("lessonId", lessonId);
+        response.put("courseId", courseId);
+        response.put("progressPercentage", progressPercentage);
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/courses/subscribed")

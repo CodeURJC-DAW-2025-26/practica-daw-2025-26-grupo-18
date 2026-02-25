@@ -2,6 +2,7 @@ package es.codeurjc.scam_g18.service;
 
 import es.codeurjc.scam_g18.model.Course;
 import es.codeurjc.scam_g18.model.Enrollment;
+import es.codeurjc.scam_g18.model.LessonProgress;
 import es.codeurjc.scam_g18.model.Lesson;
 import es.codeurjc.scam_g18.model.Module;
 import es.codeurjc.scam_g18.model.Review;
@@ -12,6 +13,7 @@ import es.codeurjc.scam_g18.model.OrderStatus;
 import es.codeurjc.scam_g18.repository.CourseRepository;
 import es.codeurjc.scam_g18.repository.EnrollmentRepository;
 import es.codeurjc.scam_g18.repository.LessonProgressRepository;
+import es.codeurjc.scam_g18.repository.LessonRepository;
 import es.codeurjc.scam_g18.repository.OrderItemRepository;
 import es.codeurjc.scam_g18.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +42,13 @@ public class CourseService {
     private EnrollmentRepository enrollmentRepository;
 
     @Autowired
-    private OrderItemRepository orderItemRepository;
+    private LessonRepository lessonRepository;
 
     @Autowired
     private LessonProgressRepository lessonProgressRepository;
+
+    @Autowired
+    private OrderItemRepository orderItemRepository;
 
     @Autowired
     private TagRepository tagRepository;
@@ -115,12 +120,17 @@ public class CourseService {
         return enrichedCourses;
     }
 
-    public Map<String, Object> getCourseDetailViewData(Long id) {
+    public Map<String, Object> getCourseDetailViewData(Long id, Long currentUserId) {
         Course course;
         try {
             course = getCourseById(id);
         } catch (RuntimeException e) {
             return null;
+        }
+
+        Set<Long> completedLessonIds = new HashSet<>();
+        if (currentUserId != null) {
+            completedLessonIds = lessonProgressRepository.findCompletedLessonIdsByUserIdAndCourseId(currentUserId, id);
         }
 
         Map<String, Object> detailData = new HashMap<>();
@@ -169,8 +179,11 @@ public class CourseService {
             List<Lesson> lessons = module.getLessons() != null ? module.getLessons() : new ArrayList<>();
             for (Lesson lesson : lessons) {
                 Map<String, Object> lessonData = new HashMap<>();
+                lessonData.put("id", lesson.getId());
+                lessonData.put("courseId", course.getId());
                 lessonData.put("title", lesson.getTitle());
                 lessonData.put("videoUrl", lesson.getVideoUrl());
+                lessonData.put("completed", completedLessonIds.contains(lesson.getId()));
                 lessonsData.add(lessonData);
             }
             moduleData.put("lessons", lessonsData);
@@ -210,8 +223,74 @@ public class CourseService {
         detailData.put("ratingCount", getRatingCount(course));
         detailData.put("reviewsNumber", getReviewsNumber(course));
         detailData.put("averageRatingStars", getStarsFromAverage(course));
+        int courseProgressPercentage = 0;
+        if (currentUserId != null) {
+            courseProgressPercentage = getProgressPercentageForUserCourse(id, currentUserId).orElse(0);
+        }
+        detailData.put("courseProgressPercentage", courseProgressPercentage);
 
         return detailData;
+    }
+
+    @Transactional
+    public boolean markLessonAsCompleted(Long courseId, Long lessonId, Long userId) {
+        if (courseId == null || lessonId == null || userId == null) {
+            return false;
+        }
+
+        var enrollmentOpt = enrollmentRepository.findByUserIdAndCourseId(userId, courseId);
+        if (enrollmentOpt.isEmpty() || !enrollmentOpt.get().isActive()) {
+            return false;
+        }
+
+        var lessonOpt = lessonRepository.findById(lessonId);
+        if (lessonOpt.isEmpty()) {
+            return false;
+        }
+
+        Lesson lesson = lessonOpt.get();
+        if (lesson.getModule() == null || lesson.getModule().getCourse() == null
+                || !courseId.equals(lesson.getModule().getCourse().getId())) {
+            return false;
+        }
+
+        Enrollment enrollment = enrollmentOpt.get();
+
+        var lessonProgressOpt = lessonProgressRepository.findByUserIdAndLessonId(userId, lessonId);
+        if (lessonProgressOpt.isPresent()) {
+            LessonProgress lessonProgress = lessonProgressOpt.get();
+            if (!Boolean.TRUE.equals(lessonProgress.getIsCompleted())) {
+                lessonProgress.setIsCompleted(true);
+                lessonProgress.setCompletedAt(java.time.LocalDateTime.now());
+                lessonProgressRepository.save(lessonProgress);
+            }
+        } else {
+            LessonProgress lessonProgress = new LessonProgress();
+            lessonProgress.setUser(enrollment.getUser());
+            lessonProgress.setLesson(lesson);
+            lessonProgress.setIsCompleted(true);
+            lessonProgress.setCompletedAt(java.time.LocalDateTime.now());
+            lessonProgressRepository.save(lessonProgress);
+        }
+
+        long totalLessons = lessonRepository.countByModuleCourseId(courseId);
+        long completedLessons = lessonProgressRepository
+            .countByUserIdAndLessonModuleCourseIdAndIsCompletedTrue(userId, courseId);
+
+        int progressPercentage = 0;
+        if (totalLessons > 0) {
+            progressPercentage = (int) Math.round((completedLessons * 100.0) / totalLessons);
+        }
+
+        enrollment.setProgressPercentage(Math.min(100, progressPercentage));
+        enrollmentRepository.save(enrollment);
+
+        return true;
+    }
+
+    public java.util.Optional<Integer> getProgressPercentageForUserCourse(Long courseId, Long userId) {
+        return enrollmentRepository.findByUserIdAndCourseId(userId, courseId)
+                .map(enrollment -> enrollment.getProgressPercentage() != null ? enrollment.getProgressPercentage() : 0);
     }
 
     private Set<String> getSubscribedCourseTagNames(Long userId) {

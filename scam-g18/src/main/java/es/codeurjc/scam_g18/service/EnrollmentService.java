@@ -17,6 +17,7 @@ import es.codeurjc.scam_g18.model.EventRegistration;
 import es.codeurjc.scam_g18.model.Tag;
 import es.codeurjc.scam_g18.repository.EnrollmentRepository;
 import es.codeurjc.scam_g18.repository.EventRegistrationRepository;
+import es.codeurjc.scam_g18.repository.LessonProgressRepository;
 
 @Service
 public class EnrollmentService {
@@ -26,6 +27,9 @@ public class EnrollmentService {
 
     @Autowired
     private EventRegistrationRepository eventRegistrationRepository;
+
+    @Autowired
+    private LessonProgressRepository lessonProgressRepository;
 
     public List<Enrollment> findByUserId(Long userId) {
         return enrollmentRepository.findByUserId(userId);
@@ -110,5 +114,24 @@ public class EnrollmentService {
     public int getInProgressCount(Long userId) {
         return enrollmentRepository.countByUserIdAndProgressPercentageGreaterThanAndProgressPercentageLessThan(userId,
                 0, 100);
+    }
+
+    public int getOverallCourseProgress(Long userId) {
+        List<Enrollment> enrollments = enrollmentRepository.findByUserId(userId);
+        if (enrollments.isEmpty()) {
+            return 0;
+        }
+
+        int totalProgress = enrollments.stream()
+                .map(Enrollment::getProgressPercentage)
+                .filter(progress -> progress != null)
+                .mapToInt(Integer::intValue)
+                .sum();
+
+        return Math.round((float) totalProgress / enrollments.size());
+    }
+
+    public int getCompletedLessonsCount(Long userId) {
+        return (int) lessonProgressRepository.countByUserIdAndIsCompletedTrue(userId);
     }
 }

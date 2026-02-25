@@ -505,20 +505,24 @@ public class DatabaseInitializer {
                 continue;
             }
 
-            int completedLessons = Math.round(lessons.size() * (enrollment.getProgressPercentage() / 100f));
+            int targetProgress = enrollment.getProgressPercentage() == null ? 0 : enrollment.getProgressPercentage();
+            int completedLessons = Math.round(lessons.size() * (targetProgress / 100f));
+            int normalizedProgress = (int) Math.round((completedLessons * 100.0) / lessons.size());
+            enrollment.setProgressPercentage(Math.max(0, Math.min(100, normalizedProgress)));
             for (int i = 0; i < lessons.size(); i++) {
-                LessonProgress progress = new LessonProgress();
-                progress.setUser(enrollment.getUser());
-                progress.setLesson(lessons.get(i));
                 boolean isCompleted = i < completedLessons;
-                progress.setIsCompleted(isCompleted);
                 if (isCompleted) {
+                    LessonProgress progress = new LessonProgress();
+                    progress.setUser(enrollment.getUser());
+                    progress.setLesson(lessons.get(i));
+                    progress.setIsCompleted(true);
                     progress.setCompletedAt(LocalDateTime.now().minusDays(lessons.size() - i));
+                    progresses.add(progress);
                 }
-                progresses.add(progress);
             }
         }
 
+        enrollmentRepository.saveAll(enrollments);
         lessonProgressRepository.saveAll(progresses);
     }
 

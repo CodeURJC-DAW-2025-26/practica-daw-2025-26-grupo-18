@@ -51,6 +51,8 @@ public class ProfileController {
         model.addAttribute("completedCourses", userService.getCompletedCoursesCount(id));
         model.addAttribute("completedCourseNames", enrollmentService.getCompletedCourseNames(id));
         model.addAttribute("inProgressCount", enrollmentService.getInProgressCount(id));
+        model.addAttribute("overallProgress", enrollmentService.getOverallCourseProgress(id));
+        model.addAttribute("completedLessons", enrollmentService.getCompletedLessonsCount(id));
         model.addAttribute("userType", userService.getUserType(id));
         model.addAttribute("userTags", enrollmentService.getTagNamesByUserId(id));
         model.addAttribute("subscribedCourses", enrollmentService.getSubscribedCoursesData(id));
