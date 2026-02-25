@@ -51,7 +51,7 @@
                                     {{event.locationCity}},
                                     {{event.locationCountry}} {{/event.isLocation}} {{^event.isLocation}} Online
                                     {{/event.isLocation}}</span>
-                                <span><i class="bi bi-people"></i> {{event.capacity}} plazas</span>
+                                <span><i class="bi bi-people"></i> {{event.attendeesCount}} / {{event.capacity}} plazas ocupadas</span>
                             </div>
                             <p class="lead">{{event.description}}</p>
                         </div>
@@ -164,10 +164,34 @@
                         <div class="action-card">
                             <h3>Reserva tu plaza</h3>
                             <p>Acceso completo al evento.</p>
+                            {{#alreadyPurchased}}
+                            <div class="purchase-status purchase-status-success" role="status" aria-live="polite">
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Ya has comprado la entrada para este evento.</span>
+                            </div>
+                            {{/alreadyPurchased}}
+                            {{^alreadyPurchased}}
+                            {{#errorFull}}
+                            <div class="purchase-status purchase-status-error" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                                <span>No quedan plazas disponibles para este evento.</span>
+                            </div>
+                            {{/errorFull}}
+                            {{#event.soldOut}}
+                            <div class="purchase-status purchase-status-warning" role="alert">
+                                <i class="bi bi-slash-circle-fill"></i>
+                                <span>Evento completo. No se pueden comprar más entradas.</span>
+                            </div>
+                            {{/event.soldOut}}
                             <form action="/cart/add/event/{{event.id}}" method="post">
                                 <input type="hidden" name="_csrf" value="{{_csrf.token}}">
-                                <button type="submit" class="btn-primary">Comprar entrada · {{event.priceEuros}} €</button>
+                                <button type="submit" class="btn-primary" {{#event.soldOut}}disabled{{/event.soldOut}}>
+                                    {{#event.soldOut}}Entradas agotadas{{/event.soldOut}}
+                                    {{^event.soldOut}}Comprar entrada · {{event.priceEuros}} €{{/event.soldOut}}
+                                </button>
                             </form>
+                            {{/alreadyPurchased}}
+                            <p class="mt-2 mb-0"><small>Plazas disponibles: {{event.remainingSeats}}</small></p>
                             <span class="guarantee"><i class="bi bi-shield-check"></i> Confirmación inmediata por
                                 email</span>
                         </div>

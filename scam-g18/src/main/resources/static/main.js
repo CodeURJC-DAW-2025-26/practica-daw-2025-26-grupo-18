@@ -307,7 +307,10 @@ function addModule() {
     refreshModuleBindings();
 }
 
-document.addEventListener("DOMContentLoaded", refreshModuleBindings);
+document.addEventListener("DOMContentLoaded", () => {
+    refreshModuleBindings();
+    updateModuleCount();
+});
 
 // ── Sesiones de agenda ────────────────────────────────────────────────────
 function addAgendaItem() {

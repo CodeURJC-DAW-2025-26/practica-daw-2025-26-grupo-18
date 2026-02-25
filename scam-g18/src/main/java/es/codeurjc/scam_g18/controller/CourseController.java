@@ -40,21 +40,32 @@ public class CourseController {
         model.addAttribute("courses", courseService.getCoursesViewData(search, tags));
         model.addAttribute("search", search);
         model.addAttribute("tagsView", tagService.getTagsView(tags));
-        
-
-        
-
         return "courses";
     }
 
     @GetMapping("/course/{id}")
-    public String showCourse(Model model, @PathVariable long id) {
+    public String showCourse(Model model, @PathVariable long id, Principal principal) {
+        Course course;
+        try {
+            course = courseService.getCourseById(id);
+        } catch (RuntimeException e) {
+            return "redirect:/courses";
+        }
+
         var detailData = courseService.getCourseDetailViewData(id);
         if (detailData == null) {
             return "redirect:/courses";
         }
 
+        boolean canManage = false;
+        if (principal != null) {
+            canManage = userService.getCurrentAuthenticatedUser()
+                .map(currentUser -> courseService.canManageCourse(course, currentUser))
+                .orElse(false);
+        }
+
         model.addAllAttributes(detailData);
+        model.addAttribute("canEdit", canManage);
 
         return "course";
     }
@@ -78,6 +89,51 @@ public class CourseController {
         return "subscribedCourses";
     }
 
+    @GetMapping("/course/{id}/edit")
+    public String editCourseForm(Model model, @PathVariable long id) {
+        Course course;
+        try {
+            course = courseService.getCourseById(id);
+        } catch (RuntimeException e) {
+            return "redirect:/courses";
+        }
+
+        var currentUserOpt = userService.getCurrentAuthenticatedUser();
+        if (currentUserOpt.isEmpty() || !courseService.canManageCourse(course, currentUserOpt.get())) {
+            return "redirect:/courses";
+        }
+
+        if (course.getPriceCents() != null) {
+            course.setPrice(course.getPriceCents() / 100.0);
+        }
+
+        model.addAttribute("course", course);
+        return "editCourse";
+    }
+
+    @PostMapping("/course/{id}/edit")
+    public String updateCourse(
+            @PathVariable long id,
+            Course courseUpdate,
+            @RequestParam(required = false) List<String> tagNames,
+            @RequestParam(name = "imageFile", required = false) org.springframework.web.multipart.MultipartFile imageFile)
+            throws java.io.IOException, java.sql.SQLException {
+
+        if (hasInvalidCourseData(courseUpdate)) {
+            return "redirect:/course/" + id + "/edit";
+        }
+
+        var currentUserOpt = userService.getCurrentAuthenticatedUser();
+        if (currentUserOpt.isPresent()) {
+            boolean updated = courseService.updateCourseIfAuthorized(id, courseUpdate, currentUserOpt.get(), imageFile, tagNames);
+            if (updated) {
+                return "redirect:/course/" + id;
+            }
+        }
+
+        return "redirect:/courses";
+    }
+
 
     @GetMapping("/courses/new")
     public String newCourseForm(Model model) {
@@ -91,19 +147,7 @@ public class CourseController {
             @RequestParam(name = "imageFile", required = false) org.springframework.web.multipart.MultipartFile imageFile)
             throws java.io.IOException, java.sql.SQLException {
 
-        if (course.getTitle() == null || course.getTitle().isBlank()) {
-            return "redirect:/courses/new";
-        }
-        if (course.getShortDescription() == null || course.getShortDescription().isBlank()) {
-            return "redirect:/courses/new";
-        }
-        if (course.getLongDescription() == null || course.getLongDescription().isBlank()) {
-            return "redirect:/courses/new";
-        }
-        if (course.getLanguage() == null || course.getLanguage().isBlank()) {
-            return "redirect:/courses/new";
-        }
-        if (course.getPrice() == null || course.getPrice() < 0) {
+        if (hasInvalidCourseData(course)) {
             return "redirect:/courses/new";
         }
 
@@ -115,6 +159,28 @@ public class CourseController {
         courseService.createCourse(course, tagNames, creatorOpt.get(), imageFile);
 
         return "redirect:/courses";
+    }
+
+    private boolean hasInvalidCourseData(Course course) {
+        if (course == null) {
+            return true;
+        }
+        if (course.getTitle() == null || course.getTitle().isBlank()) {
+            return true;
+        }
+        if (course.getShortDescription() == null || course.getShortDescription().isBlank()) {
+            return true;
+        }
+        if (course.getLongDescription() == null || course.getLongDescription().isBlank()) {
+            return true;
+        }
+        if (course.getLanguage() == null || course.getLanguage().isBlank()) {
+            return true;
+        }
+        if (course.getPrice() == null || course.getPrice() < 0) {
+            return true;
+        }
+        return false;
     }
 
 }

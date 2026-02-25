@@ -78,6 +78,9 @@ public class SecurityConfiguration {
                                                 .requestMatchers("/courses/new", "/events/new")
                                                 .hasAnyRole("SUBSCRIBED", "ADMIN")
 
+                                                .requestMatchers("/course/new", "/event/new")
+                                                .hasAnyRole("SUBSCRIBED", "ADMIN")
+
                                                 // Editar y borrar (la comprobación de "dueño" va en el controlador,
                                                 // pero aquí filtramos el rol mínimo)
                                                 .requestMatchers("/course/{id}/edit", "/course/{id}/delete")

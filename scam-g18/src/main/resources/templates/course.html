@@ -18,12 +18,17 @@
                     <div class="mb-5">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <span class="badge" style="background-color: var(--accent-color)">Actualizado {{course.updatedAt}}</span>
-                            
-                            <!--Boton aun no funciona-->
-                            <button class="btn btn-outline-danger btn-sm" onclick="if (confirm('¿Estás seguro de eliminar este curso?')) 
-                            location.href = 'index.html';">
-                                <i class="bi bi-trash me-1"></i> Eliminar curso</button>
-                        
+                            <div class="d-flex gap-2">
+                                {{#canEdit}}
+                                <a href="/course/{{course.id}}/edit" class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-pencil me-1"></i> Editar curso
+                                </a>
+                                <!--Boton aun no funciona-->
+                                <button class="btn btn-outline-danger btn-sm" onclick="if (confirm('¿Estás seguro de eliminar este curso?')) 
+                                location.href = '/course/{{course.id}}/delete';">
+                                    <i class="bi bi-trash me-1"></i> Eliminar curso</button>
+                                {{/canEdit}}
+                            </div>
                         </div>
                         <h1 class="display-5 fw-bold text-dark mb-3">{{course.title}}</h1>
                         <p class="lead text-muted">{{course.shortDescription}}</p>
@@ -32,9 +37,7 @@
                             <div class="d-flex align-items-center">
                                 <i class="bi bi-person-circle me-2 fs-5"></i>
                                 <span>
-                                    Por
-                                    <!--Falta por poner la href al perfil del creador-->
-                                    <a href="#" class="fw-bold text-decoration-none">{{course.creator.username}}</a>
+                                    Por {{course.creator.username}}
                                 </span>
                             </div>
                             <div class="vr"></div>
@@ -235,12 +238,20 @@
 
                             <div class="px-4 pb-4">
                                 <div class="cta mb-4">
+                                    {{#isUserLoggedIn}}
                                     <form action="/cart/add/course/{{course.id}}" method="post">
                                         <input type="hidden" name="_csrf" value="{{_csrf.token}}">
                                         <button type="submit" class="btn btn-choose w-100 py-3 fw-bold fs-5"
                                             style="background-color: #d96d3c; border-color: #d96d3c; color: white">
                                             Añadir al carrito</button>
                                     </form>
+                                    {{/isUserLoggedIn}}
+                                    {{^isUserLoggedIn}}
+                                    <a href="/login" class="btn btn-choose w-100 py-3 fw-bold fs-5"
+                                        style="background-color: #d96d3c; border-color: #d96d3c; color: white; display: inline-block; text-align: center;">
+                                        Inicia sesión para comprar
+                                    </a>
+                                    {{/isUserLoggedIn}}
                                 </div>
 
                                 <p class="fw-bold text-dark mb-2 small text-uppercase">Este curso incluye:</p>

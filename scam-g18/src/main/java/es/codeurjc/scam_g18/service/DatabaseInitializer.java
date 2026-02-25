@@ -398,6 +398,7 @@ public class DatabaseInitializer {
                 Status.PUBLISHED,
                 50);
         event3.getTags().addAll(tags3);
+        event3.setAttendeesCount(50);
         eventRepository.save(event3);
     }
 }

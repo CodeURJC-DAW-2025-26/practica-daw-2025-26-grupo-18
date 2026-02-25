@@ -3839,6 +3839,35 @@ section,
     opacity: 0.9;
 }
 
+.service-details .service-sidebar .action-card .purchase-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin-bottom: 14px;
+    font-size: 14px;
+    font-weight: 500;
+    background-color: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    color: var(--contrast-color);
+}
+
+.service-details .service-sidebar .action-card .purchase-status i {
+    font-size: 16px;
+}
+
+.service-details .service-sidebar .action-card .purchase-status-success {
+    background-color: rgba(255, 255, 255, 0.22);
+}
+
+.service-details .service-sidebar .action-card .purchase-status-warning,
+.service-details .service-sidebar .action-card .purchase-status-error {
+    background-color: rgba(66, 40, 35, 0.2);
+}
+
 .service-details .service-sidebar .action-card .btn-primary {
     background-color: var(--contrast-color);
     color: var(--accent-color);

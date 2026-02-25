@@ -11,6 +11,18 @@ import org.springframework.security.web.csrf.CsrfToken;
 @ControllerAdvice
 public class GlobalControllerAdvice {
 
+    public static class CsrfViewModel {
+        private final String token;
+
+        public CsrfViewModel(String token) {
+            this.token = token == null ? "" : token;
+        }
+
+        public String getToken() {
+            return token;
+        }
+    }
+
     @Autowired
     private UserService userService;
 
@@ -18,10 +30,25 @@ public class GlobalControllerAdvice {
     public void addAttributes(Model model, HttpServletRequest request) {
         boolean hasPrincipal = (request.getUserPrincipal() != null);
 
-        CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
-        if (csrfToken != null) {
-            model.addAttribute("_csrf", csrfToken);
+        String csrfTokenValue = "";
+        Object csrfAttr = request.getAttribute("_csrf");
+        if (csrfAttr instanceof CsrfToken csrfToken) {
+            try {
+                csrfTokenValue = csrfToken.getToken();
+            } catch (Exception ignored) {
+                csrfTokenValue = "";
+            }
+        } else {
+            Object classAttr = request.getAttribute(CsrfToken.class.getName());
+            if (classAttr instanceof CsrfToken csrfToken) {
+                try {
+                    csrfTokenValue = csrfToken.getToken();
+                } catch (Exception ignored) {
+                    csrfTokenValue = "";
+                }
+            }
         }
+        model.addAttribute("_csrf", new CsrfViewModel(csrfTokenValue));
 
         // Valores por defecto siempre presentes para el header (Mustache falla si no existen)
         model.addAttribute("isUserLoggedIn", false);

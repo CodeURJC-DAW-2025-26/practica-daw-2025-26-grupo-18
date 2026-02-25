@@ -1,0 +1,307 @@
+{{>header}}
+
+<main class="main">
+
+    <div class="page-title light-background">
+        <div class="container">
+            <nav class="breadcrumbs">
+                <ol>
+                    <li><a href="/">Inicio</a></li>
+                    <li><a href="/courses">Cursos</a></li>
+                    <li><a href="/course/{{course.id}}">{{course.title}}</a></li>
+                    <li class="current">Editar Curso</li>
+                </ol>
+            </nav>
+            <h1>Editar Curso: {{course.title}}</h1>
+        </div>
+    </div>
+
+    <section id="edit-course-section" class="section">
+        <div class="container" data-aos="fade-up">
+
+            <form action="/course/{{course.id}}/edit" method="POST" enctype="multipart/form-data" class="needs-validation">
+                <input type="hidden" name="_csrf" value="{{_csrf.token}}">
+
+                <div class="row g-4">
+
+                    <div class="col-lg-8">
+
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-white py-3">
+                                <h5 class="mb-0">Información Básica</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="image" class="form-label">Imagen del Curso (dejar vacío para mantener la actual)</label>
+                                    <input type="file" class="form-control" id="image" name="imageFile" accept="image/*">
+                                    <div class="form-text">Se recomienda una imagen de 1280x720 px.</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">Título del Curso</label>
+                                    <input type="text" class="form-control" id="title" name="title" value="{{course.title}}" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="shortDescription" class="form-label">Descripción Breve</label>
+                                    <textarea class="form-control" id="shortDescription" name="shortDescription" rows="3" required>{{course.shortDescription}}</textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="longDescription" class="form-label">Descripción Detallada</label>
+                                    <textarea class="form-control" id="longDescription" name="longDescription" rows="6" required>{{course.longDescription}}</textarea>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="language" class="form-label">Idioma</label>
+                                        <select class="form-select" id="language" name="language" required>
+                                            <option value="Español">Español</option>
+                                            <option value="Inglés">Inglés</option>
+                                            <option value="Francés">Francés</option>
+                                            <option value="Alemán">Alemán</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Lo que aprenderás</h5>
+                                <button type="button" class="btn btn-sm btn-add"
+                                    onclick="addDynamicItem('learning-container', 'Nuevo objetivo de aprendizaje', 'bi-check-lg')">+
+                                    Añadir</button>
+                            </div>
+                            <div class="card-body">
+                                <div id="learning-container">
+                                    {{#course.learningPoints}}
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text"><i class="bi bi-check-lg"></i></span>
+                                        <input type="text" class="form-control" name="learningPoints" value="{{.}}" required>
+                                        <button class="btn btn-delete" type="button" onclick="this.parentElement.remove()">×</button>
+                                    </div>
+                                    {{/course.learningPoints}}
+                                    {{^course.learningPoints}}
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text"><i class="bi bi-check-lg"></i></span>
+                                        <input type="text" class="form-control" name="learningPoints"
+                                            placeholder="Ej: Dominar funciones asíncronas" required>
+                                        <button class="btn btn-delete" type="button" onclick="this.parentElement.remove()">×</button>
+                                    </div>
+                                    {{/course.learningPoints}}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Temas Relacionados (Etiquetas)</h5>
+                                <button type="button" class="btn btn-sm btn-add"
+                                    onclick="addDynamicItem('topics-container', 'Nuevo tema relacionado', 'bi-tag')">+
+                                    Añadir</button>
+                            </div>
+                            <div class="card-body">
+                                <div id="topics-container">
+                                    {{#course.tags}}
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text"><i class="bi bi-tag"></i></span>
+                                        <input type="text" class="form-control" name="tagNames" value="{{name}}" required>
+                                        <button class="btn btn-delete" type="button" onclick="this.parentElement.remove()">×</button>
+                                    </div>
+                                    {{/course.tags}}
+                                    {{^course.tags}}
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text"><i class="bi bi-tag"></i></span>
+                                        <input type="text" class="form-control" name="tagNames" placeholder="Ej: Desarrollo Web" required>
+                                        <button class="btn btn-delete" type="button" onclick="this.parentElement.remove()">×</button>
+                                    </div>
+                                    {{/course.tags}}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Requisitos Previos</h5>
+                                <button type="button" class="btn btn-sm btn-add"
+                                    onclick="addDynamicItem('prerequisites-container', 'Nuevo requisito', 'bi-exclamation-circle')">+
+                                    Añadir</button>
+                            </div>
+                            <div class="card-body">
+                                <div id="prerequisites-container">
+                                    {{#course.prerequisites}}
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text"><i class="bi bi-exclamation-circle"></i></span>
+                                        <input type="text" class="form-control" name="prerequisites" value="{{.}}" required>
+                                        <button class="btn btn-delete" type="button" onclick="this.parentElement.remove()">×</button>
+                                    </div>
+                                    {{/course.prerequisites}}
+                                    {{^course.prerequisites}}
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text"><i class="bi bi-exclamation-circle"></i></span>
+                                        <input type="text" class="form-control" name="prerequisites"
+                                            placeholder="Ej: Conocimientos básicos de HTML y CSS" required>
+                                        <button class="btn btn-delete" type="button" onclick="this.parentElement.remove()">×</button>
+                                    </div>
+                                    {{/course.prerequisites}}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Contenido del Curso</h5>
+                                <button type="button" class="btn btn-sm btn-add" onclick="addModule()">+ Añadir
+                                    Módulo</button>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Número total de módulos: <span id="moduleCount"
+                                            class="fw-bold">0</span></label>
+                                </div>
+                                <div id="modules-container">
+                                    {{#course.modules}}
+                                    <div class="border rounded p-3 mb-3 module-item bg-light">
+                                        <div class="d-flex justify-content-between mb-3 align-items-center">
+                                            <div class="flex-grow-1 me-3">
+                                                <input type="text" class="form-control fw-bold mb-2" data-field="module-title"
+                                                    value="{{title}}" placeholder="Título del Módulo" required>
+                                                <input type="text" class="form-control text-muted" data-field="module-description"
+                                                    value="{{description}}" placeholder="Breve descripción del módulo" required>
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-delete"
+                                                onclick="removeModule(this)">Eliminar Módulo</button>
+                                        </div>
+
+                                        <div class="lessons-container ms-3 border-start ps-3">
+                                            <label class="form-label small text-muted mb-2">Lecciones</label>
+                                            <div class="lessons-list">
+                                                {{#lessons}}
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <span class="input-group-text bg-white"><i class="bi bi-play-circle"></i></span>
+                                                    <input type="text" class="form-control" data-field="lesson-title"
+                                                        value="{{title}}" placeholder="Título de la lección" required>
+                                                    <input type="text" class="form-control" data-field="lesson-url"
+                                                        value="{{videoUrl}}" placeholder="Enlace del vídeo (URL)" required>
+                                                    <button class="btn btn-delete" type="button"
+                                                        onclick="removeLesson(this)">×</button>
+                                                </div>
+                                                {{/lessons}}
+                                                {{^lessons}}
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <span class="input-group-text bg-white"><i class="bi bi-play-circle"></i></span>
+                                                    <input type="text" class="form-control" data-field="lesson-title"
+                                                        placeholder="Título de la lección" required>
+                                                    <input type="text" class="form-control" data-field="lesson-url"
+                                                        placeholder="Enlace del vídeo (URL)" required>
+                                                    <button class="btn btn-delete" type="button"
+                                                        onclick="removeLesson(this)">×</button>
+                                                </div>
+                                                {{/lessons}}
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-add mt-2"
+                                                onclick="addLesson(this)">+ Añadir Lección</button>
+                                        </div>
+                                    </div>
+                                    {{/course.modules}}
+                                    {{^course.modules}}
+                                    <div class="border rounded p-3 mb-3 module-item bg-light">
+                                        <div class="d-flex justify-content-between mb-3 align-items-center">
+                                            <div class="flex-grow-1 me-3">
+                                                <input type="text" class="form-control fw-bold mb-2" data-field="module-title"
+                                                    placeholder="Título del Módulo" value="Módulo 1: Introducción" required>
+                                                <input type="text" class="form-control text-muted" data-field="module-description"
+                                                    placeholder="Breve descripción del módulo" required>
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-delete"
+                                                onclick="removeModule(this)">Eliminar Módulo</button>
+                                        </div>
+
+                                        <div class="lessons-container ms-3 border-start ps-3">
+                                            <label class="form-label small text-muted mb-2">Lecciones</label>
+                                            <div class="lessons-list">
+                                                <div class="input-group input-group-sm mb-2">
+                                                    <span class="input-group-text bg-white"><i class="bi bi-play-circle"></i></span>
+                                                    <input type="text" class="form-control" data-field="lesson-title"
+                                                        placeholder="Título de la lección" required>
+                                                    <input type="text" class="form-control" data-field="lesson-url"
+                                                        placeholder="Enlace del vídeo (URL)" required>
+                                                    <button class="btn btn-delete" type="button"
+                                                        onclick="removeLesson(this)">×</button>
+                                                </div>
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-add mt-2"
+                                                onclick="addLesson(this)">+ Añadir Lección</button>
+                                        </div>
+                                    </div>
+                                    {{/course.modules}}
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-white py-3">
+                                <h5 class="mb-0">Detalles Adicionales</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="price" class="form-label">Precio (€)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">€</span>
+                                        <input type="number" class="form-control" id="price" name="price" value="{{course.price}}"
+                                            step="0.01" required>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="videoHours" class="form-label">Horas de Vídeo bajo demanda</label>
+                                    <input type="number" class="form-control" id="videoHours" name="videoHours" value="{{course.videoHours}}" step="0.1" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="downloadableResources" class="form-label">Recursos descargables</label>
+                                    <input type="number" class="form-control" id="downloadableResources"
+                                        name="downloadableResources" value="{{course.downloadableResources}}" required>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="row mt-4 mb-5">
+                    <div class="col-12">
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg"
+                                style="background-color: #D96D3C; border-color: #D96D3C;">Guardar Cambios</button>
+                            <a href="/course/{{course.id}}" class="btn btn-outline-secondary">Cancelar</a>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+    </section>
+
+</main>
+
+{{>footer}}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const languageSelect = document.getElementById('language');
+        if (languageSelect) {
+            languageSelect.value = '{{course.language}}';
+        }
+    });
+</script>
+
+</body>
+
+</html>
