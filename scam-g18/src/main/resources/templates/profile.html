@@ -1,4 +1,4 @@
-{{>header}}
+﻿{{>header}}
 
 <main class="main">
 
@@ -42,7 +42,6 @@
 									<p class="mb-2"><i class="bi bi-envelope me-2"></i> {{user.email}}</p>
 									<p class="mb-2"><i class="bi bi-geo-alt me-2"></i> {{user.country}}</p>
 									<p class="mb-0"><i class="bi bi-calendar-event me-2"></i> Miembro desde 2024</p>
-									<p class="mb-0"><i class="bi bi-briefcase me-2"></i> Disponibilidad: tardes</p>
 								</div>
 							</div>
 
@@ -239,12 +238,15 @@
 							<span class="badge status-badge">LOGROS</span>
 						</div>
 						<h3>Certificados</h3>
-						<p>2 certificados completados y 1 ruta avanzada en progreso.</p>
+						<p>{{completedCourses}} certificados completados y {{inProgressCount}} cursos en progreso.</p>
 						<ul class="feature-list">
-							<li><i class="bi bi-check-circle"></i> Liderazgo y Gestion</li>
-							<li><i class="bi bi-check-circle"></i> Productividad Pro</li>
+							{{#completedCourseNames}}
+							<li><i class="bi bi-check-circle"></i> {{.}}</li>
+							{{/completedCourseNames}}
+							{{^completedCourseNames}}
+							<li class="text-muted"><i class="bi bi-info-circle"></i> Aun no has completado ningun curso</li>
+							{{/completedCourseNames}}
 						</ul>
-						<a href="#" class="read-more">Descargar diplomas <i class="bi bi-arrow-right"></i></a>
 					</div>
 				</div>
 			</div>
@@ -252,6 +254,7 @@
 		</div>
 	</section>
 
+	{{#isPublisher}}
 	<!-- Instructor Panel (Role >= 2) -->
 	<section class="section bg-light">
 		<div class="container" data-aos="fade-up">
@@ -308,6 +311,7 @@
 			</div>
 		</div>
 	</section>
+	{{/isPublisher}}
 
 	<!-- Courses List -->
 	<section class="courses-catalog section">
@@ -318,54 +322,31 @@
 			</div>
 
 			<div class="course-list">
-				<article class="course-card-full" data-aos="fade-up" data-aos-delay="50">
+				{{#subscribedCourses}}
+				<article class="course-card-full" data-aos="fade-up">
 					<div class="course-card-header">
 						<div>
-							<h3 class="course-card-title">Ruta de Desarrollo Personal</h3>
+							<h3 class="course-card-title">{{title}}</h3>
 							<div class="course-tags">
-								<span class="course-tag">Motivacion</span>
-								<span class="course-tag">Liderazgo</span>
-								<span class="course-tag">Habitos</span>
+								{{#tags}}
+								<span class="course-tag">{{.}}</span>
+								{{/tags}}
 							</div>
 						</div>
-						<div class="course-card-price">En curso</div>
+						<div class="course-card-price">{{#isCompleted}}Completado{{/isCompleted}}{{^isCompleted}}En curso ({{progress}}%){{/isCompleted}}</div>
 					</div>
-					<p class="course-card-desc">Fortalece tu liderazgo con tecnicas de comunicacion y enfoque para
-						equipos de alto rendimiento.</p>
+					<p class="course-card-desc">{{description}}</p>
 					<div class="course-card-meta">
-						<div><i class="bi bi-play-circle"></i> Proxima clase: Modulo 3</div>
-						<div><i class="bi bi-clock"></i> 1h 20m pendientes</div>
-						<div><i class="bi bi-person"></i> Ana Martinez</div>
+						<div><i class="bi bi-person"></i> {{creatorName}}</div>
 					</div>
 					<div class="course-card-actions">
-						<a href="#" class="btn btn-sm btn-accent-outline course-card-btn">Ver detalles</a>
-						<a href="#" class="btn btn-sm btn-accent course-card-btn">Continuar</a>
+						<a href="/course/{{courseId}}" class="btn btn-sm btn-accent-outline course-card-btn">Ver detalles</a>
 					</div>
 				</article>
-
-				<article class="course-card-full" data-aos="fade-up" data-aos-delay="100">
-					<div class="course-card-header">
-						<div>
-							<h3 class="course-card-title">Creacion de Startups</h3>
-							<div class="course-tags">
-								<span class="course-tag">Emprendimiento</span>
-								<span class="course-tag">Estrategia</span>
-							</div>
-						</div>
-						<div class="course-card-price">En curso</div>
-					</div>
-					<p class="course-card-desc">Define tu propuesta de valor, valida con clientes reales y diseña tu
-						roadmap de crecimiento.</p>
-					<div class="course-card-meta">
-						<div><i class="bi bi-play-circle"></i> Proxima clase: Pitch deck</div>
-						<div><i class="bi bi-clock"></i> 2h 10m pendientes</div>
-						<div><i class="bi bi-person"></i> Carlos Ruiz</div>
-					</div>
-					<div class="course-card-actions">
-						<a href="#" class="btn btn-sm btn-accent-outline course-card-btn">Ver detalles</a>
-						<a href="#" class="btn btn-sm btn-accent course-card-btn">Continuar</a>
-					</div>
-				</article>
+				{{/subscribedCourses}}
+				{{^subscribedCourses}}
+				<p class="text-muted text-center">No estas suscrito a ningun curso todavia.</p>
+				{{/subscribedCourses}}
 			</div>
 		</div>
 	</section>
@@ -378,30 +359,19 @@
 				<p>Actividades que has marcado para ampliar tu red profesional.</p>
 			</div>
 			<div class="list-group">
-				<a href="#"
+				{{#userEvents}}
+				<a href="/event/{{eventId}}"
 					class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
 					<div>
-						<h6 class="mb-1">Foro de Innovacion &amp; Startups 2026</h6>
-						<small class="text-muted"><i class="bi bi-geo-alt me-1"></i> IFEMA, Madrid</small>
+						<h6 class="mb-1">{{title}}</h6>
+						<small class="text-muted"><i class="bi bi-geo-alt me-1"></i> {{locationName}}, {{locationCity}}</small>
 					</div>
-					<span class="badge bg-light text-dark border">18 Feb</span>
+					<span class="badge bg-light text-dark border">{{startDate}}</span>
 				</a>
-				<a href="#"
-					class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-					<div>
-						<h6 class="mb-1">Meet &amp; Greet con lideres Tech</h6>
-						<small class="text-muted"><i class="bi bi-geo-alt me-1"></i> SCAM Hub, Mostoles</small>
-					</div>
-					<span class="badge bg-light text-dark border">22 Feb</span>
-				</a>
-				<a href="#"
-					class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-					<div>
-						<h6 class="mb-1">Charla IA aplicada a Productividad</h6>
-						<small class="text-muted"><i class="bi bi-broadcast me-1"></i> Online</small>
-					</div>
-					<span class="badge bg-light text-dark border">26 Feb</span>
-				</a>
+				{{/userEvents}}
+				{{^userEvents}}
+				<p class="text-muted text-center">No tienes eventos guardados.</p>
+				{{/userEvents}}
 			</div>
 		</div>
 	</section>
