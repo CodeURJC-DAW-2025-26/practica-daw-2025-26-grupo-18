@@ -140,34 +140,133 @@
                                         <h5 class="mb-0">Información de Tarjeta</h5>
                                     </div>
                                     <div class="card-body">
-                                        <form action="/cart/checkout" method="post">
+                                        <form action="/cart/checkout" method="post" id="checkoutForm" novalidate>
                                             <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
                                             <div class="mb-3">
                                                 <label for="cardName" class="form-label">Nombre en la tarjeta</label>
                                                 <input type="text" class="form-control" id="cardName" name="cardName" required />
+                                                <div class="invalid-feedback">Introduce el nombre del titular.</div>
                                             </div>
                                             <div class="mb-3">
                                                 <label for="billingEmail" class="form-label">Email para factura</label>
                                                 <input type="email" class="form-control" id="billingEmail" name="billingEmail" required />
+                                                <div class="invalid-feedback">Introduce un email válido.</div>
                                             </div>
                                             <div class="mb-3">
                                                 <label for="cardNumber" class="form-label">Número de tarjeta</label>
-                                                <input type="text" class="form-control" id="cardNumber" name="cardNumber" placeholder="0000 0000 0000 0000" required />
+                                                <input type="text" class="form-control" id="cardNumber" name="cardNumber" 
+                                                       placeholder="0000 0000 0000 0000" maxlength="19" required />
+                                                <div class="invalid-feedback">El número de tarjeta debe tener 16 dígitos.</div>
                                             </div>
                                             <div class="row">
                                                 <div class="col-6 mb-3">
                                                     <label for="cardExpiry" class="form-label">Caducidad (MM/YY)</label>
-                                                    <input type="text" class="form-control" id="cardExpiry" name="cardExpiry" required />
+                                                    <input type="text" class="form-control" id="cardExpiry" name="cardExpiry" 
+                                                           placeholder="MM/YY" maxlength="5" required />
+                                                    <div class="invalid-feedback">Introduce una fecha válida (MM/YY) no expirada.</div>
                                                 </div>
                                                 <div class="col-6 mb-3">
                                                     <label for="cardCvv" class="form-label">CVV</label>
-                                                    <input type="password" class="form-control" id="cardCvv" autocomplete="off" required />
+                                                    <input type="password" class="form-control" id="cardCvv" name="cardCvv"
+                                                           maxlength="3" autocomplete="off" required />
+                                                    <div class="invalid-feedback">El CVV debe tener 3 dígitos.</div>
                                                 </div>
                                             </div>
                                             <div class="d-grid gap-2">
                                                 <button type="submit" class="btn btn-success">Confirmar Pago</button>
                                             </div>
                                         </form>
+
+                                        <script>
+                                        (function() {
+                                            const form = document.getElementById('checkoutForm');
+                                            const cardNumber = document.getElementById('cardNumber');
+                                            const cardExpiry = document.getElementById('cardExpiry');
+                                            const cardCvv = document.getElementById('cardCvv');
+
+                                            // Auto-format card number: 0000 0000 0000 0000
+                                            cardNumber.addEventListener('input', function() {
+                                                let v = this.value.replace(/\D/g, '').substring(0, 16);
+                                                this.value = v.replace(/(.{4})/g, '$1 ').trim();
+                                            });
+
+                                            // Auto-format expiry: MM/YY
+                                            cardExpiry.addEventListener('input', function() {
+                                                let v = this.value.replace(/\D/g, '').substring(0, 4);
+                                                if (v.length >= 3) {
+                                                    v = v.substring(0, 2) + '/' + v.substring(2);
+                                                }
+                                                this.value = v;
+                                            });
+
+                                            // Only allow digits in CVV
+                                            cardCvv.addEventListener('input', function() {
+                                                this.value = this.value.replace(/\D/g, '').substring(0, 3);
+                                            });
+
+                                            // Validation on submit
+                                            form.addEventListener('submit', function(e) {
+                                                let valid = true;
+
+                                                // Reset
+                                                form.querySelectorAll('.form-control').forEach(function(el) {
+                                                    el.classList.remove('is-invalid');
+                                                });
+
+                                                // Card name
+                                                if (!document.getElementById('cardName').value.trim()) {
+                                                    document.getElementById('cardName').classList.add('is-invalid');
+                                                    valid = false;
+                                                }
+
+                                                // Email
+                                                var email = document.getElementById('billingEmail');
+                                                if (!email.value.trim() || !email.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                                                    email.classList.add('is-invalid');
+                                                    valid = false;
+                                                }
+
+                                                // Card number: exactly 16 digits
+                                                var digits = cardNumber.value.replace(/\D/g, '');
+                                                if (digits.length !== 16) {
+                                                    cardNumber.classList.add('is-invalid');
+                                                    valid = false;
+                                                }
+
+                                                // Expiry: MM/YY format and not expired
+                                                var expiryMatch = cardExpiry.value.match(/^(0[1-9]|1[0-2])\/(\d{2})$/);
+                                                if (!expiryMatch) {
+                                                    cardExpiry.classList.add('is-invalid');
+                                                    valid = false;
+                                                } else {
+                                                    var expMonth = parseInt(expiryMatch[1], 10);
+                                                    var expYear = 2000 + parseInt(expiryMatch[2], 10);
+                                                    var now = new Date();
+                                                    var currentMonth = now.getMonth() + 1;
+                                                    var currentYear = now.getFullYear();
+                                                    if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
+                                                        cardExpiry.classList.add('is-invalid');
+                                                        valid = false;
+                                                    }
+                                                }
+
+                                                // CVV: exactly 3 digits
+                                                if (!/^\d{3}$/.test(cardCvv.value)) {
+                                                    cardCvv.classList.add('is-invalid');
+                                                    valid = false;
+                                                }
+
+                                                if (!valid) {
+                                                    e.preventDefault();
+                                                }
+
+                                                // Set clean card number (digits only) before submit
+                                                if (valid) {
+                                                    cardNumber.value = digits;
+                                                }
+                                            });
+                                        })();
+                                        </script>
                                     </div>
                                 </div>
                             </div>
