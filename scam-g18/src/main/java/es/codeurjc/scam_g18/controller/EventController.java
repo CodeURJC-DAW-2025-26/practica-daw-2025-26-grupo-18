@@ -44,7 +44,7 @@ public class EventController {
     }
 
     @GetMapping("/event/{id}")
-    public String showEvent(Model model, @PathVariable long id) {
+    public String showEvent(Model model, @PathVariable long id, @RequestParam(required = false) String error) {
         var eventOpt = eventService.getEventById(id);
         if (eventOpt.isEmpty()) {
             return "redirect:/events";
@@ -61,6 +61,7 @@ public class EventController {
 
         model.addAttribute("canEdit", canManage);
         model.addAttribute("canDelete", canManage);
+        model.addAttribute("errorFull", "full".equals(error));
 
         return "event";
     }

@@ -25,6 +25,7 @@ import es.codeurjc.scam_g18.repository.SubscriptionRepository;
 import es.codeurjc.scam_g18.repository.OrderRepository;
 import es.codeurjc.scam_g18.repository.OrderItemRepository;
 import es.codeurjc.scam_g18.repository.RoleRepository;
+import es.codeurjc.scam_g18.repository.EventRepository;
 import es.codeurjc.scam_g18.model.Role;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +46,8 @@ public class CartService {
     private UserService userService;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private EventRepository eventRepository;
     @Autowired
     private InvoicePdfService invoicePdfService;
     @Autowired
@@ -67,6 +70,11 @@ public class CartService {
     }
 
     public void addEventToOrder(Order order, Event event) {
+        Event currentEvent = eventRepository.findById(event.getId()).orElse(event);
+        if (!currentEvent.hasAvailableSeats()) {
+            throw new IllegalStateException("EVENT_FULL");
+        }
+
         OrderItem item = new OrderItem(order, null, event, event.getPriceCents());
         order.getItems().add(item);
         order.setTotalAmountCents(calculateSubtotal(order));
@@ -147,6 +155,15 @@ public class CartService {
             String cardExpiry) {
         if (order.getItems() == null || order.getItems().isEmpty()) {
             return;
+        }
+
+        for (OrderItem item : order.getItems()) {
+            if (item.getEvent() != null) {
+                Event event = eventRepository.findById(item.getEvent().getId()).orElse(null);
+                if (event == null || !event.hasAvailableSeats()) {
+                    throw new IllegalStateException("EVENT_FULL");
+                }
+            }
         }
 
         order.setStatus(OrderStatus.PAID);
@@ -247,8 +264,16 @@ public class CartService {
 
     private void registerForEvent(User user, Event event) {
         if (!eventRegistrationRepository.existsByUserIdAndEventId(user.getId(), event.getId())) {
-            EventRegistration registration = new EventRegistration(user, event);
+            Event managedEvent = eventRepository.findById(event.getId()).orElse(null);
+            if (managedEvent == null || !managedEvent.hasAvailableSeats()) {
+                throw new IllegalStateException("EVENT_FULL");
+            }
+
+            EventRegistration registration = new EventRegistration(user, managedEvent);
             eventRegistrationRepository.save(registration);
+
+            managedEvent.incrementAttendeesCount();
+            eventRepository.save(managedEvent);
         }
     }
 

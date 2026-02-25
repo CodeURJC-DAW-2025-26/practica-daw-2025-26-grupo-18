@@ -16,8 +16,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import es.codeurjc.scam_g18.model.Image;
 import es.codeurjc.scam_g18.model.Role;
+import es.codeurjc.scam_g18.model.SubscriptionStatus;
 import es.codeurjc.scam_g18.model.User;
 import es.codeurjc.scam_g18.repository.EnrollmentRepository;
+import es.codeurjc.scam_g18.repository.SubscriptionRepository;
 import es.codeurjc.scam_g18.repository.UserRepository;
 
 @Service
@@ -37,6 +39,9 @@ public class UserService {
 
     @Autowired
     private EnrollmentRepository enrollmentRepository;
+
+    @Autowired
+    private SubscriptionRepository subscriptionRepository;
 
     public boolean isUserLoggedIn() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

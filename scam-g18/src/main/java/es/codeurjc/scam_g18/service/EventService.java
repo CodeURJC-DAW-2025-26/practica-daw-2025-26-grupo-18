@@ -80,6 +80,9 @@ public class EventService {
         Event event = eventOpt.get();
         Map<String, Object> eventData = buildEventCardData(event);
         eventData.put("capacity", event.getCapacity());
+        eventData.put("attendeesCount", event.getAttendeesCount());
+        eventData.put("remainingSeats", event.getRemainingSeats());
+        eventData.put("soldOut", !event.hasAvailableSeats());
 
         String imageUrl = "/img/default_img.png";
         if (event.getImage() != null) {
@@ -143,6 +146,7 @@ public class EventService {
         }
         event.setStatus(Status.PENDING_REVIEW);
         event.setCreator(creator);
+        event.setAttendeesCount(0);
 
         if (event.getStartDateStr() != null && event.getStartTimeStr() != null) {
             LocalDateTime start = LocalDateTime.of(

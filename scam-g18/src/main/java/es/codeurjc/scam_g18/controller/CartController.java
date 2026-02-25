@@ -35,7 +35,7 @@ public class CartController {
     private EventService eventService;
 
     @GetMapping("/cart")
-    public String viewCart(Model model) {
+    public String viewCart(Model model, @RequestParam(required = false) String error) {
         User currentUser = getCurrentUser();
         if (currentUser == null) {
             return "redirect:/login";
@@ -52,6 +52,7 @@ public class CartController {
         model.addAttribute("subtotal", cartService.formatPriceInEuros(subtotalCents));
         model.addAttribute("tax", cartService.formatPriceInEuros(taxCents));
         model.addAttribute("total", cartService.formatPriceInEuros(totalCents));
+        model.addAttribute("errorNoSeats", "eventFull".equals(error));
 
         return "cart";
     }
@@ -80,7 +81,11 @@ public class CartController {
         Optional<Event> eventOpt = eventService.getEventById(id);
         if (eventOpt.isPresent()) {
             Order order = cartService.getOrCreatePendingOrder(currentUser);
-            cartService.addEventToOrder(order, eventOpt.get());
+            try {
+                cartService.addEventToOrder(order, eventOpt.get());
+            } catch (IllegalStateException e) {
+                return "redirect:/event/" + id + "?error=full";
+            }
         }
 
         return "redirect:/cart";
@@ -110,7 +115,11 @@ public class CartController {
         }
 
         Order order = cartService.getOrCreatePendingOrder(currentUser);
-        cartService.processPayment(order, cardName, billingEmail, cardNumber, cardExpiry);
+        try {
+            cartService.processPayment(order, cardName, billingEmail, cardNumber, cardExpiry);
+        } catch (IllegalStateException e) {
+            return "redirect:/cart?error=eventFull";
+        }
 
         return "redirect:/courses/subscribed";
     }

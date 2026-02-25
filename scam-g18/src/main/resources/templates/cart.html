@@ -18,6 +18,11 @@
             <!-- Cart Section -->
             <section id="cart-section" class="section">
                 <div class="container" data-aos="fade-up">
+                    {{#errorNoSeats}}
+                    <div class="alert alert-danger" role="alert">
+                        No se ha podido completar la compra porque uno de los eventos ya no tiene plazas disponibles.
+                    </div>
+                    {{/errorNoSeats}}
                     <!-- Back Button -->
                     <div class="mb-4">
                         <a href="/" class="btn btn-secondary d-inline-flex align-items-center gap-2" style="background-color: #85613d; border-color: #85613d"> <i class="bi bi-arrow-left"></i> Volver </a>

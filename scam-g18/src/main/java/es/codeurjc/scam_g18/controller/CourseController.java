@@ -40,10 +40,6 @@ public class CourseController {
         model.addAttribute("courses", courseService.getCoursesViewData(search, tags));
         model.addAttribute("search", search);
         model.addAttribute("tagsView", tagService.getTagsView(tags));
-        
-
-        
-
         return "courses";
     }
 

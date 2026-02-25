@@ -60,6 +60,8 @@ public class Event {
 
     private Integer capacity;
 
+    private Integer attendeesCount = 0;
+
     private String category;
     @ManyToMany
     @JoinTable(name = "event_tags", joinColumns = @JoinColumn(name = "event_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
@@ -228,6 +230,7 @@ public class Event {
         this.category = category;
         this.status = status;
         this.capacity = capacity; // Valor por defecto, se puede modificar con un setter
+        this.attendeesCount = 0;
     }
 
     public Long getId() {
@@ -344,6 +347,42 @@ public class Event {
 
     public void setCapacity(Integer capacity) {
         this.capacity = capacity;
+        if (this.capacity != null && this.capacity >= 0 && getAttendeesCount() > this.capacity) {
+            this.attendeesCount = this.capacity;
+        }
+    }
+
+    public Integer getAttendeesCount() {
+        return attendeesCount == null ? 0 : attendeesCount;
+    }
+
+    public void setAttendeesCount(Integer attendeesCount) {
+        if (attendeesCount == null || attendeesCount < 0) {
+            this.attendeesCount = 0;
+            return;
+        }
+
+        if (this.capacity != null && this.capacity >= 0) {
+            this.attendeesCount = Math.min(attendeesCount, this.capacity);
+            return;
+        }
+
+        this.attendeesCount = attendeesCount;
+    }
+
+    public Integer getRemainingSeats() {
+        if (capacity == null || capacity < 0) {
+            return 0;
+        }
+        return Math.max(capacity - getAttendeesCount(), 0);
+    }
+
+    public boolean hasAvailableSeats() {
+        return getRemainingSeats() > 0;
+    }
+
+    public void incrementAttendeesCount() {
+        setAttendeesCount(getAttendeesCount() + 1);
     }
 
     public List<String> getSpeakers() {
