@@ -148,6 +148,18 @@ public class CourseController {
         return "redirect:/courses";
     }
 
+    @PostMapping("/course/{id}/delete")
+    public String deleteCourse(@PathVariable long id) {
+        var currentUserOpt = userService.getCurrentAuthenticatedUser();
+        if (currentUserOpt.isPresent()) {
+            boolean deleted = courseService.deleteCourseIfAuthorized(id, currentUserOpt.get());
+            if (deleted) {
+                return "redirect:/courses";
+            }
+        }
+        return "redirect:/course/" + id;
+    }
+
     @GetMapping("/courses/new")
     public String newCourseForm(Model model) {
         return "createCourse";

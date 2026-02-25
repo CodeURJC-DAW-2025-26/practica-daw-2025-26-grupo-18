@@ -23,10 +23,13 @@
                                 <a href="/course/{{course.id}}/edit" class="btn btn-outline-secondary btn-sm">
                                     <i class="bi bi-pencil me-1"></i> Editar curso
                                 </a>
-                                <!--Boton aun no funciona-->
-                                <button class="btn btn-outline-danger btn-sm" onclick="if (confirm('¿Estás seguro de eliminar este curso?')) 
-                                location.href = '/course/{{course.id}}/delete';">
+                                <button class="btn btn-outline-danger btn-sm" type="button"
+                                    onclick="if (confirm('¿Estás seguro de eliminar este curso?')) { document.getElementById('delete-course-form').submit(); }">
                                     <i class="bi bi-trash me-1"></i> Eliminar curso</button>
+                                <form id="delete-course-form" action="/course/{{course.id}}/delete" method="POST"
+                                    style="display:none;">
+                                    <input type="hidden" name="_csrf" value="{{_csrf.token}}">
+                                </form>
                                 {{/canEdit}}
                             </div>
                         </div>

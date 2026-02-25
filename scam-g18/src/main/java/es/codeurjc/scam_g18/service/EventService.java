@@ -93,6 +93,50 @@ public class EventService {
         return eventsData;
     }
 
+    public List<Map<String, Object>> getPurchasedEventsViewData(Long userId) {
+        List<EventRegistration> registrations = eventRegistrationRepository.findByUserId(userId);
+        List<Map<String, Object>> purchasedEvents = new ArrayList<>();
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        for (EventRegistration registration : registrations) {
+            Event event = registration.getEvent();
+            if (event == null) {
+                continue;
+            }
+
+            Map<String, Object> eventData = new HashMap<>();
+            eventData.put("id", event.getId());
+            eventData.put("title", event.getTitle());
+            eventData.put("description", event.getDescription());
+
+            if (event.getStartDate() != null) {
+                eventData.put("formattedDate", event.getStartDate().format(dateFormatter));
+
+                String timeStr = event.getStartDate().format(timeFormatter);
+                if (event.getEndDate() != null) {
+                    timeStr += " - " + event.getEndDate().format(timeFormatter);
+                }
+                eventData.put("formattedTime", timeStr);
+            } else {
+                eventData.put("formattedDate", "Fecha por confirmar");
+                eventData.put("formattedTime", "--:--");
+            }
+
+            if (event.getLocation() != null && event.getLocation().getName() != null
+                    && !event.getLocation().getName().isBlank()) {
+                eventData.put("locationName", event.getLocation().getName());
+            } else {
+                eventData.put("locationName", "Online");
+            }
+
+            purchasedEvents.add(eventData);
+        }
+
+        return purchasedEvents;
+    }
+
     public Map<String, Object> getEventDetailViewData(long id) {
         Optional<Event> eventOpt = getEventById(id);
         if (eventOpt.isEmpty()) {

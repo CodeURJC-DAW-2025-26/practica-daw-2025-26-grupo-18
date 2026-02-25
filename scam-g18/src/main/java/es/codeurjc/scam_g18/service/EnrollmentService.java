@@ -68,11 +68,27 @@ public class EnrollmentService {
         List<Map<String, Object>> events = new ArrayList<>();
         for (EventRegistration reg : registrations) {
             Event event = reg.getEvent();
+            if (event == null) {
+                continue;
+            }
+
             Map<String, Object> eventData = new HashMap<>();
             eventData.put("eventId", event.getId());
             eventData.put("title", event.getTitle());
-            eventData.put("locationName", event.getLocationName() != null ? event.getLocationName() : "");
-            eventData.put("locationCity", event.getLocationCity() != null ? event.getLocationCity() : "");
+
+            String locationLabel = "Online";
+            if (event.getLocation() != null) {
+                String locationName = event.getLocation().getName();
+                String locationCity = event.getLocation().getCity();
+                if (locationName != null && !locationName.isBlank()) {
+                    locationLabel = locationName;
+                    if (locationCity != null && !locationCity.isBlank()) {
+                        locationLabel += ", " + locationCity;
+                    }
+                }
+            }
+            eventData.put("locationLabel", locationLabel);
+
             if (event.getStartDate() != null) {
                 eventData.put("startDate", event.getStartDate().getDayOfMonth() + " "
                         + event.getStartDate().getMonth().toString().substring(0, 3));

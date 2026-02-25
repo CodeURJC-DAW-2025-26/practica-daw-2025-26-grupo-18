@@ -44,6 +44,24 @@ public class EventController {
         return "events";
     }
 
+    @GetMapping("/events/purchased")
+    public String purchasedEvents(Model model, java.security.Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        var userOpt = userService.getCurrentAuthenticatedUser();
+        if (userOpt.isEmpty()) {
+            return "redirect:/login";
+        }
+
+        var purchasedEvents = eventService.getPurchasedEventsViewData(userOpt.get().getId());
+        model.addAttribute("events", purchasedEvents);
+        model.addAttribute("hasPurchasedEvents", !purchasedEvents.isEmpty());
+
+        return "purchasedEvents";
+    }
+
     @GetMapping("/event/{id}")
     public String showEvent(Model model, @PathVariable long id, @RequestParam(required = false) String error) {
         var eventOpt = eventService.getEventById(id);

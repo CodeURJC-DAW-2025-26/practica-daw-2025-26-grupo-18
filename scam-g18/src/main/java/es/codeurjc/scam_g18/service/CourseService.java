@@ -8,11 +8,15 @@ import es.codeurjc.scam_g18.model.Review;
 import es.codeurjc.scam_g18.model.Status;
 import es.codeurjc.scam_g18.model.Tag;
 import es.codeurjc.scam_g18.model.User;
+import es.codeurjc.scam_g18.model.OrderStatus;
 import es.codeurjc.scam_g18.repository.CourseRepository;
 import es.codeurjc.scam_g18.repository.EnrollmentRepository;
+import es.codeurjc.scam_g18.repository.LessonProgressRepository;
+import es.codeurjc.scam_g18.repository.OrderItemRepository;
 import es.codeurjc.scam_g18.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -34,6 +38,12 @@ public class CourseService {
 
     @Autowired
     private EnrollmentRepository enrollmentRepository;
+
+    @Autowired
+    private OrderItemRepository orderItemRepository;
+
+    @Autowired
+    private LessonProgressRepository lessonProgressRepository;
 
     @Autowired
     private TagRepository tagRepository;
@@ -357,6 +367,29 @@ public class CourseService {
         }
 
         courseRepository.save(course);
+        return true;
+    }
+
+    @Transactional
+    public boolean deleteCourseIfAuthorized(long id, User user) {
+        var courseOpt = courseRepository.findById(id);
+        if (courseOpt.isEmpty()) {
+            return false;
+        }
+
+        Course course = courseOpt.get();
+        if (!canManageCourse(course, user)) {
+            return false;
+        }
+
+        lessonProgressRepository.deleteByCourseId(course.getId());
+
+        enrollmentRepository.deleteByCourseId(course.getId());
+
+        orderItemRepository.deleteByCourseIdAndOrderStatus(course.getId(), OrderStatus.PENDING);
+        orderItemRepository.clearCourseReferenceByCourseIdAndOrderStatusNot(course.getId(), OrderStatus.PENDING);
+
+        courseRepository.delete(course);
         return true;
     }
 
