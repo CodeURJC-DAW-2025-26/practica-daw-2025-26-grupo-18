@@ -426,6 +426,7 @@ public class CourseService {
         return isAdmin || isCreator;
     }
 
+    @Transactional
     public boolean updateCourseIfAuthorized(long id, Course courseUpdate, User user,
             org.springframework.web.multipart.MultipartFile imageFile, List<String> tagNames)
             throws java.io.IOException, java.sql.SQLException {
@@ -439,6 +440,12 @@ public class CourseService {
             return false;
         }
 
+        List<Enrollment> enrollmentsForCourse = enrollmentRepository.findByCourseId(course.getId());
+        Map<Long, Map<String, Integer>> completedLessonKeyCountsByUser = captureCompletedLessonKeyCountsByUser(course,
+            enrollmentsForCourse);
+
+        lessonProgressRepository.deleteByCourseId(course.getId());
+
         applyCommonCourseFormData(course, courseUpdate, tagNames);
 
         if (imageFile != null && !imageFile.isEmpty()) {
@@ -446,6 +453,8 @@ public class CourseService {
         }
 
         courseRepository.save(course);
+        restoreProgressAfterCourseStructureUpdate(course, enrollmentsForCourse, completedLessonKeyCountsByUser);
+        enrollmentRepository.saveAll(enrollmentsForCourse);
         return true;
     }
 
@@ -510,6 +519,106 @@ public class CourseService {
         for (Module module : normalizedModules) {
             target.addModule(module);
         }
+    }
+
+    private Map<Long, Map<String, Integer>> captureCompletedLessonKeyCountsByUser(Course course,
+            List<Enrollment> enrollments) {
+        Map<Long, Map<String, Integer>> result = new HashMap<>();
+
+        Map<Long, String> lessonKeyById = new HashMap<>();
+        List<Module> modules = course.getModules() != null ? course.getModules() : new ArrayList<>();
+        for (Module module : modules) {
+            if (module.getLessons() == null) {
+                continue;
+            }
+            for (Lesson lesson : module.getLessons()) {
+                if (lesson.getId() != null) {
+                    lessonKeyById.put(lesson.getId(), buildLessonCompletionKey(lesson));
+                }
+            }
+        }
+
+        for (Enrollment enrollment : enrollments) {
+            Long userId = enrollment.getUser() != null ? enrollment.getUser().getId() : null;
+            if (userId == null || course.getId() == null) {
+                continue;
+            }
+
+            Set<Long> completedIds = lessonProgressRepository.findCompletedLessonIdsByUserIdAndCourseId(userId,
+                    course.getId());
+            Map<String, Integer> keyCounts = new HashMap<>();
+            for (Long completedLessonId : completedIds) {
+                String key = lessonKeyById.get(completedLessonId);
+                if (key != null) {
+                    keyCounts.merge(key, 1, Integer::sum);
+                }
+            }
+            result.put(userId, keyCounts);
+        }
+
+        return result;
+    }
+
+    private void restoreProgressAfterCourseStructureUpdate(Course course,
+            List<Enrollment> enrollments,
+            Map<Long, Map<String, Integer>> completedLessonKeyCountsByUser) {
+
+        List<Lesson> updatedLessons = new ArrayList<>();
+        List<Module> modules = course.getModules() != null ? course.getModules() : new ArrayList<>();
+        for (Module module : modules) {
+            if (module.getLessons() != null) {
+                updatedLessons.addAll(module.getLessons());
+            }
+        }
+
+        List<LessonProgress> restoredProgressRows = new ArrayList<>();
+        int totalLessons = updatedLessons.size();
+
+        for (Enrollment enrollment : enrollments) {
+            Long userId = enrollment.getUser() != null ? enrollment.getUser().getId() : null;
+            if (userId == null) {
+                enrollment.setProgressPercentage(0);
+                continue;
+            }
+
+            Map<String, Integer> remainingByKey = new HashMap<>(
+                    completedLessonKeyCountsByUser.getOrDefault(userId, new HashMap<>()));
+
+            int completedLessons = 0;
+            for (Lesson lesson : updatedLessons) {
+                String key = buildLessonCompletionKey(lesson);
+                int remainingMatches = remainingByKey.getOrDefault(key, 0);
+                if (remainingMatches <= 0) {
+                    continue;
+                }
+
+                LessonProgress restoredProgress = new LessonProgress();
+                restoredProgress.setUser(enrollment.getUser());
+                restoredProgress.setLesson(lesson);
+                restoredProgress.setIsCompleted(true);
+                restoredProgress.setCompletedAt(java.time.LocalDateTime.now());
+                restoredProgressRows.add(restoredProgress);
+
+                remainingByKey.put(key, remainingMatches - 1);
+                completedLessons++;
+            }
+
+            int progressPercentage = 0;
+            if (totalLessons > 0) {
+                progressPercentage = (int) Math.round((completedLessons * 100.0) / totalLessons);
+            }
+            enrollment.setProgressPercentage(Math.max(0, Math.min(100, progressPercentage)));
+        }
+
+        if (!restoredProgressRows.isEmpty()) {
+            lessonProgressRepository.saveAll(restoredProgressRows);
+        }
+    }
+
+    private String buildLessonCompletionKey(Lesson lesson) {
+        String title = lesson.getTitle() == null ? "" : lesson.getTitle().trim().toLowerCase();
+        String videoUrl = lesson.getVideoUrl() == null ? "" : lesson.getVideoUrl().trim().toLowerCase();
+        return title + "|" + videoUrl;
     }
 
     private Set<Tag> normalizeTags(List<String> tagNames) {
