@@ -93,6 +93,7 @@ public class DatabaseInitializer {
     private PasswordEncoder passwordEncoder;
 
     @PostConstruct
+    // Inicializa datos de demo en la base de datos al arrancar la aplicación.
     public void init() {
         if (!shouldSeed()) {
             return;
@@ -119,6 +120,7 @@ public class DatabaseInitializer {
         refreshEventAttendees(events);
     }
 
+    // Determina si procede ejecutar la carga inicial de datos.
     private boolean shouldSeed() {
         return userRepository.count() == 0
                 && courseRepository.count() == 0
@@ -127,17 +129,20 @@ public class DatabaseInitializer {
                 && subscriptionRepository.count() == 0;
     }
 
+    // Garantiza que existan los roles base del sistema.
     private void initializeRoles() {
         ensureRoleExists("USER");
         ensureRoleExists("ADMIN");
         ensureRoleExists("SUBSCRIBED");
     }
 
+    // Busca un rol por nombre y lo crea si no existe.
     private Role ensureRoleExists(String roleName) {
         return roleRepository.findByName(roleName)
                 .orElseGet(() -> roleRepository.save(new Role(roleName)));
     }
 
+    // Crea usuarios de ejemplo con distintos perfiles y roles.
     private Map<String, User> initializeUsers() {
         Map<String, User> users = new HashMap<>();
 
@@ -202,6 +207,7 @@ public class DatabaseInitializer {
         return users;
     }
 
+    // Construye y guarda un usuario de prueba.
     private User createUser(String username, String email, String rawPassword, String gender, LocalDate birthDate,
             String country, Set<Role> roles, String shortDescription, String currentGoal) {
 
@@ -221,6 +227,7 @@ public class DatabaseInitializer {
         return userRepository.save(user);
     }
 
+    // Crea y devuelve el catálogo de etiquetas de ejemplo.
     private Map<String, Tag> initializeTags() {
         String[] tagNames = {
                 "Desarrollo Personal", "Emprendimiento", "Finanzas", "Liderazgo", "Productividad",
@@ -238,6 +245,7 @@ public class DatabaseInitializer {
         return tags;
     }
 
+    // Crea y guarda ubicaciones físicas de ejemplo para eventos.
     private List<Location> initializeLocations() {
         List<Location> locations = new ArrayList<>();
 
@@ -261,6 +269,7 @@ public class DatabaseInitializer {
         return locations;
     }
 
+    // Crea y guarda una ubicación con coordenadas.
     private Location createLocation(String name, String address, String city, String country, Double latitude,
             Double longitude) {
         Location location = new Location();
@@ -273,6 +282,7 @@ public class DatabaseInitializer {
         return locationRepository.save(location);
     }
 
+    // Genera cursos de ejemplo con módulos, lecciones y estado.
     private List<Course> initializeCourses(SeedContext context) {
         List<User> creators = List.of(
                 context.users.get("mentor_ai"),
@@ -360,6 +370,7 @@ public class DatabaseInitializer {
         return courses;
     }
 
+    // Construye módulos y lecciones de ejemplo para un curso.
     private List<Module> buildModulesForCourse(int courseIndex) {
         List<Module> modules = new ArrayList<>();
         int moduleCount = 2 + (courseIndex % 2);
@@ -385,6 +396,7 @@ public class DatabaseInitializer {
         return modules;
     }
 
+    // Genera eventos de ejemplo con sesiones, etiquetas y ubicación.
     private List<Event> initializeEvents(SeedContext context) {
         List<User> creators = List.of(
                 context.users.get("admin"),
@@ -460,6 +472,7 @@ public class DatabaseInitializer {
         return events;
     }
 
+    // Crea matrículas y progreso de lecciones de ejemplo.
     private void initializeEnrollmentsAndLessonProgress(SeedContext context, List<Course> courses) {
         List<Course> publishedCourses = courses.stream()
                 .filter(course -> course.getStatus() == Status.PUBLISHED)
@@ -527,6 +540,7 @@ public class DatabaseInitializer {
         lessonProgressRepository.saveAll(progresses);
     }
 
+    // Crea reseñas de ejemplo para cursos publicados.
     private void initializeReviews(SeedContext context, List<Course> courses) {
         List<Course> publishedCourses = courses.stream()
                 .filter(course -> course.getStatus() == Status.PUBLISHED)
@@ -566,6 +580,7 @@ public class DatabaseInitializer {
         reviewRepository.saveAll(reviews);
     }
 
+    // Crea inscripciones de ejemplo de usuarios a eventos publicados.
     private void initializeEventRegistrations(SeedContext context, List<Event> events) {
         List<Event> publishedEvents = events.stream()
                 .filter(event -> event.getStatus() == Status.PUBLISHED)
@@ -601,6 +616,7 @@ public class DatabaseInitializer {
         eventRegistrationRepository.saveAll(registrations);
     }
 
+    // Crea suscripciones de ejemplo con diferentes estados.
     private void initializeSubscriptions(SeedContext context) {
         List<User> users = context.users.values().stream()
                 .filter(user -> user.getUsername().startsWith("learner"))
@@ -636,6 +652,7 @@ public class DatabaseInitializer {
         subscriptionRepository.saveAll(subscriptions);
     }
 
+    // Crea pedidos y líneas de pedido de ejemplo para usuarios.
     private void initializeOrders(SeedContext context, List<Course> courses, List<Event> events) {
         List<Course> publishedCourses = courses.stream()
                 .filter(course -> course.getStatus() == Status.PUBLISHED)
@@ -692,10 +709,12 @@ public class DatabaseInitializer {
         }
     }
 
+    // Devuelve la fecha/hora actual menos los días indicados.
     private LocalDateTime nowMinusDays(int days) {
         return LocalDateTime.now().minusDays(days);
     }
 
+    // Construye la estructura interna de una línea de pedido de ejemplo.
     private OrderItemData orderItemData(Course course, Event event, Integer priceCents, boolean isSubscription) {
         OrderItemData data = new OrderItemData();
         data.course = course;
@@ -705,6 +724,7 @@ public class DatabaseInitializer {
         return data;
     }
 
+    // Crea un pedido con sus líneas asociadas.
     private void createOrderWithItems(User user, OrderStatus status, String paymentMethod, String paymentReference,
             LocalDateTime paidAt, List<OrderItemData> itemDataList) {
 
@@ -740,6 +760,7 @@ public class DatabaseInitializer {
         orderRepository.save(savedOrder);
     }
 
+    // Recalcula y guarda el número de suscriptores de cada curso.
     private void refreshCourseSubscribers(List<Course> courses) {
         Map<Long, Long> subscribersByCourse = enrollmentRepository.findAll().stream()
                 .collect(Collectors.groupingBy(enrollment -> enrollment.getCourse().getId(), Collectors.counting()));
@@ -752,6 +773,7 @@ public class DatabaseInitializer {
         courseRepository.saveAll(courses);
     }
 
+    // Asegura el rol SUBSCRIBED para creadores de cursos.
     private void ensureSubscribedRoleForCourseCreators(List<Course> courses) {
         Role subscribedRole = ensureRoleExists("SUBSCRIBED");
         Set<User> creators = courses.stream()
@@ -767,6 +789,7 @@ public class DatabaseInitializer {
         }
     }
 
+    // Recalcula y guarda asistentes de cada evento.
     private void refreshEventAttendees(List<Event> events) {
         Map<Long, Long> attendeesByEvent = eventRegistrationRepository.findAll().stream()
                 .collect(Collectors.groupingBy(registration -> registration.getEvent().getId(), Collectors.counting()));
@@ -779,6 +802,7 @@ public class DatabaseInitializer {
         eventRepository.saveAll(events);
     }
 
+    // Convierte nombres de etiquetas en un conjunto de entidades Tag.
     private Set<Tag> toTagSet(Map<String, Tag> tags, String[] tagNames) {
         Set<Tag> result = new HashSet<>();
         for (String tagName : tagNames) {

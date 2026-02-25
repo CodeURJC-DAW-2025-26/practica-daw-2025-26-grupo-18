@@ -31,10 +31,12 @@ public class EnrollmentService {
     @Autowired
     private LessonProgressRepository lessonProgressRepository;
 
+    // Obtiene las matrículas de cursos de un usuario.
     public List<Enrollment> findByUserId(Long userId) {
         return enrollmentRepository.findByUserId(userId);
     }
 
+    // Devuelve el conjunto de nombres de etiquetas de los cursos del usuario.
     public Set<String> getTagNamesByUserId(Long userId) {
         List<Enrollment> enrollments = enrollmentRepository.findByUserId(userId);
         return enrollments.stream()
@@ -43,6 +45,7 @@ public class EnrollmentService {
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 
+    // Construye los datos de cursos suscritos para la vista de perfil.
     public List<Map<String, Object>> getSubscribedCoursesData(Long userId) {
         List<Enrollment> enrollments = enrollmentRepository.findByUserId(userId);
         List<Map<String, Object>> courses = new ArrayList<>();
@@ -67,6 +70,7 @@ public class EnrollmentService {
         return courses;
     }
 
+    // Construye los datos de eventos del usuario para la vista de perfil.
     public List<Map<String, Object>> getUserEvents(Long userId) {
         List<EventRegistration> registrations = eventRegistrationRepository.findByUserId(userId);
         List<Map<String, Object>> events = new ArrayList<>();
@@ -104,6 +108,7 @@ public class EnrollmentService {
         return events;
     }
 
+    // Obtiene los nombres de cursos completados por el usuario.
     public List<String> getCompletedCourseNames(Long userId) {
         List<Enrollment> completed = enrollmentRepository.findByUserIdAndProgressPercentage(userId, 100);
         return completed.stream()
@@ -111,11 +116,13 @@ public class EnrollmentService {
                 .collect(Collectors.toList());
     }
 
+    // Cuenta los cursos que el usuario tiene en progreso.
     public int getInProgressCount(Long userId) {
         return enrollmentRepository.countByUserIdAndProgressPercentageGreaterThanAndProgressPercentageLessThan(userId,
                 0, 100);
     }
 
+    // Calcula el progreso medio del usuario en sus cursos.
     public int getOverallCourseProgress(Long userId) {
         List<Enrollment> enrollments = enrollmentRepository.findByUserId(userId);
         if (enrollments.isEmpty()) {
@@ -131,6 +138,7 @@ public class EnrollmentService {
         return Math.round((float) totalProgress / enrollments.size());
     }
 
+    // Cuenta las lecciones completadas por el usuario.
     public int getCompletedLessonsCount(Long userId) {
         return (int) lessonProgressRepository.countByUserIdAndIsCompletedTrue(userId);
     }

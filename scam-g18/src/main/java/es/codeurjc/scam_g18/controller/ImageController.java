@@ -40,6 +40,7 @@ public class ImageController {
     @Autowired
     private EventRepository eventRepository;
 
+    // Sirve la imagen de perfil de un usuario o redirige a una imagen por defecto.
     @GetMapping("/users/{userId}/profile")
     @Transactional
     public ResponseEntity<byte[]> getUserProfileImage(@PathVariable Long userId) {
@@ -50,6 +51,7 @@ public class ImageController {
         return buildImageResponse(userOpt.get().getImage(), "/img/default_avatar.png");
     }
 
+    // Sirve la imagen de un curso o redirige a una imagen por defecto.
     @GetMapping("/courses/{courseId}")
     @Transactional
     public ResponseEntity<byte[]> getCourseImage(@PathVariable Long courseId) {
@@ -60,6 +62,7 @@ public class ImageController {
         return buildImageResponse(courseOpt.get().getImage(), "/img/default_img.png");
     }
 
+    // Sirve la imagen de un evento o redirige a una imagen por defecto.
     @GetMapping("/events/{eventId}")
     @Transactional
     public ResponseEntity<byte[]> getEventImage(@PathVariable Long eventId) {
@@ -70,6 +73,7 @@ public class ImageController {
         return buildImageResponse(eventOpt.get().getImage(), "/img/default_img.png");
     }
 
+    // Construye la respuesta HTTP con los bytes de imagen y su tipo MIME.
     private ResponseEntity<byte[]> buildImageResponse(Image image, String fallbackPath) {
         if (image == null || image.getData() == null) {
             return redirectToDefault(fallbackPath);
@@ -89,12 +93,14 @@ public class ImageController {
         }
     }
 
+    // Redirige al recurso estático de imagen por defecto indicado.
     private ResponseEntity<byte[]> redirectToDefault(String path) {
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create(path));
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
+    // Intenta detectar el tipo de contenido de la imagen y usa JPEG como fallback.
     private MediaType resolveMediaType(byte[] content) {
         try {
             String guessedType = URLConnection.guessContentTypeFromStream(new ByteArrayInputStream(content));

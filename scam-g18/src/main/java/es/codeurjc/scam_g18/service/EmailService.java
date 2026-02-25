@@ -15,6 +15,7 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
+    // Envía un correo de texto simple.
     private void sendMail(String destinatario, String asunto, String cuerpo) {
         SimpleMailMessage mensaje = new SimpleMailMessage();
         mensaje.setFrom("scam.noreply67@gmail.com");
@@ -26,6 +27,7 @@ public class EmailService {
         System.out.println("¡Correo enviado con éxito!");
     }
 
+    // Envía un correo con un archivo adjunto.
     private void sendMailWithAttachment(String destinatario, String asunto, String cuerpo, byte[] attachment,
             String attachmentName) {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -45,6 +47,7 @@ public class EmailService {
         }
     }
 
+    // Envía el mensaje de bienvenida al crear una cuenta nueva.
     public void newAccountMessage(String newUserMail, String newUsername) {
         String message = """
                 ¡Hola %s!
@@ -61,6 +64,7 @@ public class EmailService {
         sendMail(newUserMail, "Bienvenido a SCAM", message);
     }
 
+    // Notifica al creador cuando su curso ha sido publicado.
     public void cursePublished(String userMail, String courseName, String creatorName) {
         String message = """
                 ¡Enhorabuena, %s! 🎉
@@ -77,6 +81,7 @@ public class EmailService {
         sendMail(userMail, "SE HA PUBLICADO TU CURSO", message);
     }
 
+    // Informa al usuario de que su cuenta ha sido suspendida.
     public void accountBannedMessage(String userEmail, String userName) {
         String message = """
                 Hola %s,
@@ -93,6 +98,7 @@ public class EmailService {
         sendMail(userEmail, "⚠️ Notificación de suspensión de cuenta", message);
     }
 
+    // Notifica al creador cuando su evento ha sido publicado.
     public void eventPublished(String userMail, String eventName, String creatorName) {
         String message = """
                 ¡Enhorabuena, %s! 🎉
@@ -110,6 +116,7 @@ public class EmailService {
 
     }
 
+    // Envía por correo la factura PDF de un pedido.
     public void orderInvoiceMessage(String userMail, String userName, Long orderId, byte[] invoicePdf) {
         String message = """
                 Hola %s,

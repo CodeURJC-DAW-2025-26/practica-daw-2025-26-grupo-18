@@ -34,6 +34,7 @@ public class CartController {
     @Autowired
     private EventService eventService;
 
+    // Muestra el carrito del usuario autenticado con subtotal, impuestos y total.
     @GetMapping("/cart")
     public String viewCart(Model model, @RequestParam(required = false) String error) {
         User currentUser = getCurrentUser();
@@ -57,6 +58,7 @@ public class CartController {
         return "cart";
     }
 
+    // Añade un curso al pedido pendiente del usuario actual.
     @PostMapping("/cart/add/course/{id}")
     public String addCourseToCart(@PathVariable Long id) {
         User currentUser = getCurrentUser();
@@ -76,6 +78,7 @@ public class CartController {
         return "redirect:/cart";
     }
 
+    // Añade un evento al pedido pendiente y controla si no quedan plazas disponibles.
     @PostMapping("/cart/add/event/{id}")
     public String addEventToCart(@PathVariable Long id) {
         User currentUser = getCurrentUser();
@@ -96,6 +99,7 @@ public class CartController {
         return "redirect:/cart";
     }
 
+    // Elimina un elemento concreto del carrito del usuario autenticado.
     @PostMapping("/cart/remove/{itemId}")
     public String removeItemFromCart(@PathVariable Long itemId) {
         User currentUser = getCurrentUser();
@@ -109,6 +113,7 @@ public class CartController {
         return "redirect:/cart";
     }
 
+    // Procesa el pago del pedido pendiente y finaliza la compra.
     @PostMapping("/cart/checkout")
     public String checkout(@RequestParam String cardName,
             @RequestParam String billingEmail,
@@ -129,6 +134,7 @@ public class CartController {
         return "redirect:/";
     }
 
+    // Obtiene el usuario autenticado actual o null si no hay sesión.
     private User getCurrentUser() {
         return userService.getCurrentAuthenticatedUser().orElse(null);
     }

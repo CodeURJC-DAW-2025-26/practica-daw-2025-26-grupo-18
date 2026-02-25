@@ -16,10 +16,12 @@ public class TagService {
     @Autowired
     private TagRepository tagRepository;
 
+    // Obtiene todas las etiquetas disponibles.
     public List<Tag> getAllTags() {
         return tagRepository.findAll();
     }
 
+    // Construye la vista de etiquetas marcando cuáles están seleccionadas.
     public List<Map<String, Object>> getTagsView(List<String> selectedTags) {
         List<Map<String, Object>> tagsView = new ArrayList<>();
         List<Tag> allTags = getAllTags();

@@ -53,14 +53,17 @@ public class CourseService {
     @Autowired
     private TagRepository tagRepository;
 
+    // Obtiene cursos destacados para la portada.
     public List<Course> getFeaturedCourses() {
         return courseRepository.findAll();
     }
 
+    // Obtiene todos los cursos.
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
     }
 
+    // Busca cursos por palabra clave y etiquetas.
     public List<Course> searchCourses(String keyword, List<String> tags) {
         if ((keyword == null || keyword.trim().isEmpty()) && (tags == null || tags.isEmpty())) {
             return getAllCourses();
@@ -74,10 +77,12 @@ public class CourseService {
         return courseRepository.findByKeywordAndTags(keyword, tags);
     }
 
+    // Obtiene un curso por id o lanza excepción si no existe.
     public Course getCourseById(Long id) {
         return courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Course not found"));
     }
 
+    // Construye los datos de listado de cursos publicados para la vista.
     public List<Map<String, Object>> getCoursesViewData(String keyword, List<String> tags, Long userId) {
         List<Course> allCourses = searchCourses(keyword, tags);
         List<Course> publishedCourses = new ArrayList<>();
@@ -120,6 +125,7 @@ public class CourseService {
         return enrichedCourses;
     }
 
+    // Construye el detalle completo de un curso para la vista.
     public Map<String, Object> getCourseDetailViewData(Long id, Long currentUserId) {
         Course course;
         try {
@@ -233,6 +239,7 @@ public class CourseService {
     }
 
     @Transactional
+    // Marca una lección como completada y recalcula el progreso del curso.
     public boolean markLessonAsCompleted(Long courseId, Long lessonId, Long userId) {
         if (courseId == null || lessonId == null || userId == null) {
             return false;
@@ -288,11 +295,13 @@ public class CourseService {
         return true;
     }
 
+    // Obtiene el porcentaje de progreso de un usuario en un curso.
     public java.util.Optional<Integer> getProgressPercentageForUserCourse(Long courseId, Long userId) {
         return enrollmentRepository.findByUserIdAndCourseId(userId, courseId)
                 .map(enrollment -> enrollment.getProgressPercentage() != null ? enrollment.getProgressPercentage() : 0);
     }
 
+    // Obtiene etiquetas de cursos ya suscritos por el usuario.
     private Set<String> getSubscribedCourseTagNames(Long userId) {
         Set<String> subscribedTagNames = new HashSet<>();
         if (userId == null) {
@@ -316,6 +325,7 @@ public class CourseService {
         return subscribedTagNames;
     }
 
+    // Cuenta coincidencias de etiquetas entre curso y preferencias del usuario.
     private int countMatchingTags(Set<Tag> candidateTags, Set<String> subscribedTagNames) {
         if (candidateTags == null || candidateTags.isEmpty() || subscribedTagNames.isEmpty()) {
             return 0;
@@ -336,6 +346,7 @@ public class CourseService {
         return matches;
     }
 
+    // Construye los datos de cursos suscritos para la vista de usuario.
     public List<Map<String, Object>> getSubscribedCoursesViewData(Long userId) {
         List<Enrollment> enrollments = enrollmentRepository.findByUserId(userId);
         List<Map<String, Object>> subscribedCourses = new ArrayList<>();
@@ -365,6 +376,7 @@ public class CourseService {
         return subscribedCourses;
     }
 
+    // Calcula la valoración media de un curso.
     public Double getAverageRating(Course course) {
         if (course.getReviews() == null || course.getReviews().isEmpty())
             return 0.0;
@@ -375,6 +387,7 @@ public class CourseService {
                 .orElse(0.0);
     }
 
+    // Cuenta cuántas valoraciones numéricas tiene un curso.
     public Integer getRatingCount(Course course) {
         if (course.getReviews() == null)
             return 0;
@@ -383,23 +396,27 @@ public class CourseService {
                 .count();
     }
 
+    // Formatea el precio del curso en euros.
     public String getPriceInEuros(Course course) {
         if (course.getPriceCents() == null)
             return "0.00";
         return String.format("%.2f", course.getPriceCents() / 100.0);
     }
 
+    // Cuenta el número de reseñas de un curso.
     public int getReviewsNumber(Course course) {
         if (course.getReviews() == null)
             return 0;
         return course.getReviews().size();
     }
 
+    // Incrementa en uno el número de suscriptores de un curso.
     public void incrementSubscribers(Course course) {
         course.setSubscribersNumber(course.getSubscribersNumber() + 1);
         courseRepository.save(course);
     }
 
+    // Crea un curso nuevo aplicando normalización de datos del formulario.
     public void createCourse(Course course, List<String> tagNames, User creator,
             org.springframework.web.multipart.MultipartFile imageFile)
             throws java.io.IOException, java.sql.SQLException {
@@ -416,6 +433,7 @@ public class CourseService {
         courseRepository.save(course);
     }
 
+    // Comprueba si un usuario puede gestionar un curso.
     public boolean canManageCourse(Course course, User user) {
         if (course == null || user == null) {
             return false;
@@ -427,6 +445,7 @@ public class CourseService {
     }
 
     @Transactional
+    // Actualiza un curso si el usuario tiene permisos y restaura progreso.
     public boolean updateCourseIfAuthorized(long id, Course courseUpdate, User user,
             org.springframework.web.multipart.MultipartFile imageFile, List<String> tagNames)
             throws java.io.IOException, java.sql.SQLException {
@@ -459,6 +478,7 @@ public class CourseService {
     }
 
     @Transactional
+    // Elimina un curso si el usuario está autorizado.
     public boolean deleteCourseIfAuthorized(long id, User user) {
         var courseOpt = courseRepository.findById(id);
         if (courseOpt.isEmpty()) {
@@ -481,6 +501,7 @@ public class CourseService {
         return true;
     }
 
+    // Aplica y normaliza los datos comunes de formulario sobre un curso.
     private void applyCommonCourseFormData(Course target, Course source, List<String> tagNames) {
         target.setTitle(source.getTitle());
         target.setShortDescription(source.getShortDescription());
@@ -521,6 +542,7 @@ public class CourseService {
         }
     }
 
+    // Captura progreso histórico por claves de lección para cada usuario matriculado.
     private Map<Long, Map<String, Integer>> captureCompletedLessonKeyCountsByUser(Course course,
             List<Enrollment> enrollments) {
         Map<Long, Map<String, Integer>> result = new HashMap<>();
@@ -550,7 +572,7 @@ public class CourseService {
             for (Long completedLessonId : completedIds) {
                 String key = lessonKeyById.get(completedLessonId);
                 if (key != null) {
-                    keyCounts.merge(key, 1, Integer::sum);
+                    keyCounts.put(key, keyCounts.getOrDefault(key, 0) + 1);
                 }
             }
             result.put(userId, keyCounts);
@@ -559,6 +581,7 @@ public class CourseService {
         return result;
     }
 
+    // Restaura el progreso de lecciones tras cambios estructurales del curso.
     private void restoreProgressAfterCourseStructureUpdate(Course course,
             List<Enrollment> enrollments,
             Map<Long, Map<String, Integer>> completedLessonKeyCountsByUser) {
@@ -615,12 +638,14 @@ public class CourseService {
         }
     }
 
+    // Genera una clave estable para identificar una lección por contenido.
     private String buildLessonCompletionKey(Lesson lesson) {
         String title = lesson.getTitle() == null ? "" : lesson.getTitle().trim().toLowerCase();
         String videoUrl = lesson.getVideoUrl() == null ? "" : lesson.getVideoUrl().trim().toLowerCase();
         return title + "|" + videoUrl;
     }
 
+    // Normaliza y persiste etiquetas recibidas en el formulario de curso.
     private Set<Tag> normalizeTags(List<String> tagNames) {
         var tagSet = new HashSet<Tag>();
         if (tagNames != null) {
@@ -635,6 +660,7 @@ public class CourseService {
         return tagSet;
     }
 
+    // Normaliza módulos y lecciones descartando elementos inválidos.
     private List<Module> normalizeModules(List<Module> sourceModules) {
         List<Module> normalizedModules = new ArrayList<>();
         if (sourceModules != null) {
@@ -670,6 +696,7 @@ public class CourseService {
         return normalizedModules;
     }
 
+    // Convierte la media de valoración en una lista de estrellas llenas/vacías.
     public List<Boolean> getStarsFromAverage(Course course) {
         List<Boolean> stars = new ArrayList<>();
         double average = getAverageRating(course); // tu método actual que devuelve double
@@ -681,6 +708,7 @@ public class CourseService {
         return stars;
     }
 
+    // Obtiene iniciales para avatares a partir del nombre de usuario.
     private String getInitials(String username) {
         if (username == null || username.isBlank()) {
             return "";

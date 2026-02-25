@@ -45,12 +45,14 @@ public class UserService {
     @Autowired
     private SubscriptionRepository subscriptionRepository;
 
+    // Indica si hay un usuario autenticado en la sesión actual.
     public boolean isUserLoggedIn() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return auth != null && auth.isAuthenticated() &&
                 !"anonymousUser".equals(auth.getPrincipal());
     }
 
+    // Devuelve el nombre del usuario autenticado actual.
     public String getCurrentUserName() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
@@ -59,6 +61,7 @@ public class UserService {
         return "";
     }
 
+    // Devuelve el id del usuario autenticado actual.
     public Long getCurrentUserId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
@@ -75,6 +78,7 @@ public class UserService {
         return null;
     }
 
+    // Devuelve la entidad User del usuario autenticado actual.
     public Optional<User> getCurrentAuthenticatedUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
@@ -89,6 +93,7 @@ public class UserService {
     }
 
     @Transactional
+    // Obtiene la imagen de perfil del usuario actual.
     public String getCurrentUserProfileImage() {
         Long userId = getCurrentUserId();
         if (userId != null) {
@@ -98,6 +103,7 @@ public class UserService {
     }
 
     @Transactional
+    // Obtiene la URL de imagen de perfil de un usuario por id.
     public String getProfileImage(Long id) {
         Optional<User> user = findById(id);
         if (user.isPresent()) {
@@ -106,23 +112,28 @@ public class UserService {
         return "/img/default_avatar.png";
     }
 
+    // Busca un usuario por username.
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
+    // Busca un usuario por email.
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
+    // Busca un usuario por id.
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }
 
+    // Guarda los cambios de un usuario.
     public void save(User user) {
         userRepository.save(user);
     }
 
     @Transactional
+    // Actualiza los datos editables del perfil de usuario.
     public boolean updateProfile(Long id, String username, String email, String country,
             String shortDescription, String currentGoal, String weeklyRoutine,
             String comunity, MultipartFile imageFile) throws IOException, SQLException {
@@ -151,10 +162,12 @@ public class UserService {
         return true;
     }
 
+    // Cuenta cursos completados por un usuario.
     public int getCompletedCoursesCount(Long userId) {
         return enrollmentRepository.countByUserIdAndProgressPercentage(userId, 100);
     }
 
+    // Devuelve el tipo de cuenta visible del usuario (Admin/Suscrito/Sin suscripción).
     public String getUserType(Long userId) {
         Optional<User> optUser = findById(userId);
         if (optUser.isEmpty())
@@ -172,24 +185,29 @@ public class UserService {
         return "Sin suscripción";
     }
 
+    // Actualiza el nombre de usuario en memoria.
     public void updateName(String newName, User user) {
         user.setUsername(newName);
     }
 
+    // Actualiza el país de un usuario en memoria.
     public void updateCountry(String country, User user) {
         user.setCountry(country);
     }
 
+    // Actualiza la imagen de usuario desde una ruta local.
     public void updateImage(String imgPath, User user) throws IOException, SQLException {
         Image img = imageService.saveImage(imgPath);
         user.setImage(img);
     }
 
+    // Comprueba si un usuario tiene suscripción activa a un curso.
     public boolean isSuscribedToCourse(Long userId, Long courseId) {
         return enrollmentRepository.existsByUserIdAndCourseIdAndExpiresAtAfter(userId, courseId, LocalDateTime.now());
     }
 
     @Transactional
+    // Expira una suscripción vencida y retira su rol asociado.
     public void checkAndExpireSubscription(User user) {
         Optional<Subscription> subscriptionOpt = subscriptionRepository.findByUserIdAndStatus(user.getId(),
                 SubscriptionStatus.ACTIVE);
@@ -206,6 +224,7 @@ public class UserService {
     }
 
     @Transactional
+    // Registra un nuevo usuario si username y email están disponibles.
     public boolean registerUser(String username, String email, String rawPassword, String gender, String birthDate,
             String country, MultipartFile imageFile) throws IOException, SQLException {
         if (findByUsername(username).isPresent()) {
