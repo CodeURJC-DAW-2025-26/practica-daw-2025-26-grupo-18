@@ -121,7 +121,7 @@ public class CartController {
             return "redirect:/cart?error=eventFull";
         }
 
-        return "redirect:/courses/subscribed";
+        return "redirect:/";
     }
 
     private User getCurrentUser() {
