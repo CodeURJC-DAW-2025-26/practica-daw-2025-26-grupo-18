@@ -3,6 +3,7 @@ package es.codeurjc.scam_g18.service;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import es.codeurjc.scam_g18.model.Image;
 import es.codeurjc.scam_g18.model.Role;
+import es.codeurjc.scam_g18.model.Subscription;
 import es.codeurjc.scam_g18.model.SubscriptionStatus;
 import es.codeurjc.scam_g18.model.User;
 import es.codeurjc.scam_g18.repository.EnrollmentRepository;
@@ -184,7 +186,23 @@ public class UserService {
     }
 
     public boolean isSuscribedToCourse(Long userId, Long courseId) {
-        return enrollmentRepository.existsByUserIdAndCourseId(userId, courseId);
+        return enrollmentRepository.existsByUserIdAndCourseIdAndExpiresAtAfter(userId, courseId, LocalDateTime.now());
+    }
+
+    @Transactional
+    public void checkAndExpireSubscription(User user) {
+        Optional<Subscription> subscriptionOpt = subscriptionRepository.findByUserIdAndStatus(user.getId(),
+                SubscriptionStatus.ACTIVE);
+        if (subscriptionOpt.isPresent()) {
+            Subscription subscription = subscriptionOpt.get();
+            if (subscription.getEndDate() != null && subscription.getEndDate().isBefore(LocalDateTime.now())) {
+                subscription.setStatus(SubscriptionStatus.EXPIRED);
+                subscriptionRepository.save(subscription);
+
+                user.getRoles().removeIf(role -> role.getName().equals("SUBSCRIBED"));
+                userRepository.save(user);
+            }
+        }
     }
 
     @Transactional
