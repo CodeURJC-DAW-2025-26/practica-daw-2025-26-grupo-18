@@ -61,7 +61,8 @@ public class GlobalControllerAdvice {
         }
         model.addAttribute("_csrf", new CsrfViewModel(csrfParameterName, csrfTokenValue));
 
-        // Valores por defecto siempre presentes para el header (Mustache falla si no existen)
+        // Valores por defecto siempre presentes para el header (Mustache falla si no
+        // existen)
         model.addAttribute("isUserLoggedIn", false);
         model.addAttribute("userId", "");
         model.addAttribute("userName", "");
@@ -76,6 +77,8 @@ public class GlobalControllerAdvice {
             // Solo se considera "logueado" si el usuario existe en nuestra BD
             // (los usuarios PENDING con Google aún no están registrados)
             if (currentUser != null) {
+                userService.checkAndExpireSubscription(currentUser);
+
                 model.addAttribute("isUserLoggedIn", true);
                 model.addAttribute("userId", currentUser.getId());
                 model.addAttribute("userName", currentUser.getUsername());
@@ -94,7 +97,7 @@ public class GlobalControllerAdvice {
                 model.addAttribute("isAdmin", isAdmin);
 
                 boolean isPublisher = currentUser.getRoles().stream()
-                    .anyMatch(role -> role.getName().equals("ADMIN") || role.getName().equals("SUBSCRIBED"));
+                        .anyMatch(role -> role.getName().equals("ADMIN") || role.getName().equals("SUBSCRIBED"));
                 model.addAttribute("isPublisher", isPublisher);
             }
         }

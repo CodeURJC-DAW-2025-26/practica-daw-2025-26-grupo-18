@@ -256,7 +256,15 @@ public class CartService {
     }
 
     private void enrollInCourse(User user, Course course) {
-        if (!enrollmentRepository.existsByUserIdAndCourseId(user.getId(), course.getId())) {
+        Optional<Enrollment> existingOpt = enrollmentRepository.findByUserIdAndCourseId(user.getId(), course.getId());
+        if (existingOpt.isPresent()) {
+            Enrollment existing = existingOpt.get();
+            if (!existing.isActive()) {
+                existing.setEnrolledAt(LocalDateTime.now());
+                existing.setExpiresAt(LocalDateTime.now().plusDays(30));
+                enrollmentRepository.save(existing);
+            }
+        } else {
             Enrollment enrollment = new Enrollment(user, course);
             enrollmentRepository.save(enrollment);
         }

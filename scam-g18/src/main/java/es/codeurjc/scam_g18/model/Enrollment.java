@@ -16,31 +16,36 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "enrollments")
 public class Enrollment {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-    
+
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;
-    
+
     @CreationTimestamp
     private LocalDateTime enrolledAt;
-    
+
+    private LocalDateTime expiresAt;
+
     @Column(columnDefinition = "int default 0")
     private Integer progressPercentage;
-    
-    public Enrollment() {}
+
+    public Enrollment() {
+    }
 
     public Enrollment(User user, Course course) {
         this.user = user;
         this.course = course;
         this.progressPercentage = 0;
+        this.enrolledAt = LocalDateTime.now();
+        this.expiresAt = this.enrolledAt.plusDays(30);
     }
 
     public Long getId() {
@@ -81,5 +86,17 @@ public class Enrollment {
 
     public void setProgressPercentage(Integer progressPercentage) {
         this.progressPercentage = progressPercentage;
+    }
+
+    public LocalDateTime getExpiresAt() {
+        return expiresAt;
+    }
+
+    public void setExpiresAt(LocalDateTime expiresAt) {
+        this.expiresAt = expiresAt;
+    }
+
+    public boolean isActive() {
+        return expiresAt == null || expiresAt.isAfter(LocalDateTime.now());
     }
 }
