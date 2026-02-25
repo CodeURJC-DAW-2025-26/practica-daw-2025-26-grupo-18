@@ -26,7 +26,7 @@
             {{/isUserLoggedIn}}
 
             {{#isUserLoggedIn}}
-            <div class="row g-4">
+            <div class="row g-3 purchased-events-grid">
                 {{^hasPurchasedEvents}}
                 <div class="col-12" data-aos="fade-up" data-aos-delay="100">
                     <div class="feature-card text-center">
@@ -44,12 +44,12 @@
 
                 {{#hasPurchasedEvents}}
                 {{#events}}
-                <div class="col-lg-6" data-aos="flip-left" data-aos-delay="100">
-                    <div class="feature-card h-100">
+                <div class="col-12 col-lg-6" data-aos="flip-left" data-aos-delay="100">
+                    <div class="feature-card purchased-event-card h-100">
                         <div class="row g-3 align-items-start">
                             <div class="col-md-4">
                                 <img src="/images/events/{{id}}" alt="{{title}}"
-                                    class="img-fluid rounded w-100 h-50 object-fit-cover">
+                                    class="img-fluid rounded w-100 object-fit-cover purchased-event-image">
                             </div>
                             <div class="col-md-8">
                                 <div class="icon-badge mb-2">
@@ -59,7 +59,7 @@
                                     <span class="badge status-badge">ENTRADA COMPRADA</span>
                                 </div>
                                 <h3>{{title}}</h3>
-                                <p>{{description}}</p>
+                                <p class="purchased-event-desc">{{description}}</p>
                                 <small class="d-block text-muted"><i class="bi bi-calendar-event me-1"></i>{{formattedDate}}</small>
                                 <small class="d-block text-muted"><i class="bi bi-clock me-1"></i>{{formattedTime}}</small>
                                 <small class="d-block text-muted"><i class="bi bi-geo-alt me-1"></i>{{locationName}}</small>
