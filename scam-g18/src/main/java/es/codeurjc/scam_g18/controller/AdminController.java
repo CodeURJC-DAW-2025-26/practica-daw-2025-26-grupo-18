@@ -57,15 +57,7 @@ public class AdminController {
 
     @GetMapping("/users/search")
     public String searchUser(@RequestParam String name, Model model) {
-        var user = adminService.findUserByUsername(name);
-
-        model.addAttribute("searchQuery", name);
-
-        if (user.isPresent()) {
-            model.addAttribute("searchedUser", user.get());
-        } else {
-            model.addAttribute("searchError", "Usuario " + name + " no encontrado:");
-        }
+        populateModel(model, name, null, null, "users");
         return "adminDashboard";
     }
 

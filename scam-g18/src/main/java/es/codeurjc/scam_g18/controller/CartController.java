@@ -64,7 +64,12 @@ public class CartController {
             return "redirect:/login";
         }
 
-        Course course = courseService.getCourseById(id);
+        Course course;
+        try {
+            course = courseService.getCourseById(id);
+        } catch (RuntimeException e) {
+            return "redirect:/courses";
+        }
         Order order = cartService.getOrCreatePendingOrder(currentUser);
         cartService.addCourseToOrder(order, course);
 

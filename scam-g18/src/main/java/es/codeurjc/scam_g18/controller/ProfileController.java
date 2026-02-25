@@ -36,7 +36,7 @@ public class ProfileController {
     public String myProfile(Principal principal) {
         if (principal == null)
             return "redirect:/login";
-        return userService.findByUsername(principal.getName())
+        return userService.getCurrentAuthenticatedUser()
                 .map(user -> "redirect:/profile/" + user.getId())
                 .orElse("redirect:/login");
     }
@@ -72,6 +72,11 @@ public class ProfileController {
             @RequestParam(required = false) String comunity,
             @RequestParam(required = false) MultipartFile imageFile,
             HttpServletRequest request) throws IOException, SQLException {
+
+        var currentUserOpt = userService.getCurrentAuthenticatedUser();
+        if (currentUserOpt.isEmpty() || !currentUserOpt.get().getId().equals(id)) {
+            return "redirect:/login";
+        }
 
         userService.updateProfile(id, username, email, country, shortDescription, currentGoal, weeklyRoutine,
                 comunity, imageFile);
