@@ -69,6 +69,7 @@ public class CourseController {
             var currentUserOpt = userService.getCurrentAuthenticatedUser();
             if (currentUserOpt.isPresent()) {
                 User currentUser = currentUserOpt.get();
+                model.addAttribute("userId", currentUser.getId());
                 canManage = courseService.canManageCourse(course, currentUser);
                 isSuscribed = userService.isSuscribedToCourse(currentUser.getId(), id);
                 hasReviewed = reviewService.hasUserReviewed(currentUser.getId(), id);
@@ -81,6 +82,7 @@ public class CourseController {
         model.addAttribute("hasReviewed", hasReviewed);
 
         return "course";
+
     }
 
     @GetMapping("/courses/subscribed")

@@ -1,8 +1,8 @@
 package es.codeurjc.scam_g18.controller;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.security.Principal;
+import java.sql.SQLException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +55,12 @@ public class ProfileController {
         model.addAttribute("userTags", enrollmentService.getTagNamesByUserId(id));
         model.addAttribute("subscribedCourses", enrollmentService.getSubscribedCoursesData(id));
         model.addAttribute("userEvents", enrollmentService.getUserEvents(id));
+        model.addAttribute("averageProgress", enrollmentService.getAverageProgress(id));
+        model.addAttribute("totalEnrollments", enrollmentService.getTotalEnrollments(id));
+        model.addAttribute("totalLessonsCompleted", enrollmentService.getTotalCompletedLessons(id));
+        model.addAttribute("completedLessonsThisMonth", enrollmentService.getLessonsCompletedThisMonth(id));
+        model.addAttribute("averageLessonsPerMonth",
+                String.format("%.1f", enrollmentService.getAverageLessonsPerMonth(id)));
 
         return "profile";
     }

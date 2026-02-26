@@ -15,8 +15,12 @@ import es.codeurjc.scam_g18.model.Enrollment;
 import es.codeurjc.scam_g18.model.Event;
 import es.codeurjc.scam_g18.model.EventRegistration;
 import es.codeurjc.scam_g18.model.Tag;
+import es.codeurjc.scam_g18.model.LessonProgress;
 import es.codeurjc.scam_g18.repository.EnrollmentRepository;
 import es.codeurjc.scam_g18.repository.EventRegistrationRepository;
+import es.codeurjc.scam_g18.repository.LessonProgressRepository;
+
+import java.time.LocalDateTime;
 
 @Service
 public class EnrollmentService {
@@ -26,6 +30,9 @@ public class EnrollmentService {
 
     @Autowired
     private EventRegistrationRepository eventRegistrationRepository;
+
+    @Autowired
+    private LessonProgressRepository lessonProgressRepository;
 
     public List<Enrollment> findByUserId(Long userId) {
         return enrollmentRepository.findByUserId(userId);
@@ -94,5 +101,48 @@ public class EnrollmentService {
     public int getInProgressCount(Long userId) {
         return enrollmentRepository.countByUserIdAndProgressPercentageGreaterThanAndProgressPercentageLessThan(userId,
                 0, 100);
+    }
+
+    public int getAverageProgress(Long userId) {
+        List<Enrollment> enrollments = enrollmentRepository.findByUserId(userId);
+        if (enrollments.isEmpty())
+            return 0;
+        int total = 0;
+        for (Enrollment e : enrollments) {
+            total += e.getProgressPercentage();
+        }
+        return total / enrollments.size();
+    }
+
+    public long getTotalCompletedLessons(Long userId) {
+        return lessonProgressRepository.findByUserIdAndIsCompletedTrue(userId).size();
+    }
+
+    public long getLessonsCompletedThisMonth(Long userId) {
+        List<LessonProgress> completed = lessonProgressRepository.findByUserIdAndIsCompletedTrue(userId);
+        LocalDateTime now = LocalDateTime.now();
+        return completed.stream()
+                .filter(lp -> lp.getCompletedAt() != null &&
+                        lp.getCompletedAt().getMonth() == now.getMonth() &&
+                        lp.getCompletedAt().getYear() == now.getYear())
+                .count();
+    }
+
+    public double getAverageLessonsPerMonth(Long userId) {
+        List<LessonProgress> completed = lessonProgressRepository.findByUserIdAndIsCompletedTrue(userId);
+        if (completed.isEmpty())
+            return 0;
+        long minMonth = completed.stream()
+                .map(lp -> lp.getCompletedAt())
+                .filter(dt -> dt != null)
+                .mapToLong(dt -> dt.getYear() * 12 + dt.getMonthValue())
+                .min().orElse(0);
+        long maxMonth = LocalDateTime.now().getYear() * 12 + LocalDateTime.now().getMonthValue();
+        long diff = maxMonth - minMonth + 1;
+        return (double) completed.size() / diff;
+    }
+
+    public int getTotalEnrollments(Long userId) {
+        return enrollmentRepository.findByUserId(userId).size();
     }
 }

@@ -430,7 +430,8 @@ public class CourseService {
                 if (sourceModule.getLessons() != null) {
                     int lessonIndex = 0;
                     for (Lesson sourceLesson : sourceModule.getLessons()) {
-                        if (sourceLesson == null || sourceLesson.getTitle() == null || sourceLesson.getTitle().isBlank()) {
+                        if (sourceLesson == null || sourceLesson.getTitle() == null
+                                || sourceLesson.getTitle().isBlank()) {
                             continue;
                         }
 
@@ -471,5 +472,111 @@ public class CourseService {
             }
         }
         return initials.toString();
+    }
+
+    public Map<String, Long> getNumberGenre(Long courseId) {
+        Map<String, Long> genreCount = new HashMap<>();
+        genreCount.put("MALE", 0L);
+        genreCount.put("FEMALE", 0L);
+
+        List<Enrollment> enrollments = enrollmentRepository.findAll();
+        for (Enrollment e : enrollments) {
+            Course c = e.getCourse();
+            if (c != null && (courseId == null || c.getId().equals(courseId))) {
+                User u = e.getUser();
+                if (u != null && u.getGender() != null) {
+                    String g = u.getGender().toUpperCase();
+                    if (g.equals("MALE") || g.equals("FEMALE")) {
+                        genreCount.put(g, genreCount.getOrDefault(g, 0L) + 1);
+                    }
+                }
+            }
+        }
+        return genreCount;
+    }
+
+    public List<Long> getAgesCourse(Long courseId) {
+        long count18_25 = 0;
+        long count26_35 = 0;
+        long count36_50 = 0;
+        long count50plus = 0;
+
+        List<Enrollment> enrollments = enrollmentRepository.findAll();
+        for (Enrollment e : enrollments) {
+            Course c = e.getCourse();
+            if (c != null && (courseId == null || c.getId().equals(courseId))) {
+                User u = e.getUser();
+                if (u != null && u.getBirthDate() != null) {
+                    int age = java.time.Period.between(u.getBirthDate(), java.time.LocalDate.now()).getYears();
+                    if (age >= 18 && age <= 25) {
+                        count18_25++;
+                    } else if (age > 25 && age <= 35) {
+                        count26_35++;
+                    } else if (age > 35 && age <= 50) {
+                        count36_50++;
+                    } else if (age > 50) {
+                        count50plus++;
+                    }
+                }
+            }
+        }
+        return java.util.Arrays.asList(count18_25, count26_35, count36_50, count50plus);
+    }
+
+    public List<Tag> getCommonTags(long userId) {
+        Set<Tag> userTags = new HashSet<>();
+        List<Enrollment> userEnrollments = enrollmentRepository.findByUserId(userId);
+        for (Enrollment e : userEnrollments) {
+            Course c = e.getCourse();
+            if (c != null && c.getTags() != null) {
+                userTags.addAll(c.getTags());
+            }
+        }
+
+        Map<Tag, Set<Long>> tagUsers = new HashMap<>();
+        for (Tag t : userTags) {
+            tagUsers.put(t, new HashSet<>());
+        }
+
+        List<Enrollment> allEnrollments = enrollmentRepository.findAll();
+        for (Enrollment e : allEnrollments) {
+            Course c = e.getCourse();
+            User u = e.getUser();
+            if (c != null && c.getTags() != null && u != null) {
+                for (Tag t : c.getTags()) {
+                    if (tagUsers.containsKey(t)) {
+                        if (!u.getId().equals(userId)) {
+                            tagUsers.get(t).add(u.getId());
+                        }
+                    }
+                }
+            }
+        }
+
+        List<Tag> sortedTags = new ArrayList<>();
+        for (Map.Entry<Tag, Set<Long>> entry : tagUsers.entrySet()) {
+            if (entry.getValue().size() > 0) {
+                sortedTags.add(entry.getKey());
+            }
+        }
+
+        sortedTags.sort((t1, t2) -> {
+            int count1 = tagUsers.get(t1).size();
+            int count2 = tagUsers.get(t2).size();
+            return Integer.compare(count2, count1);
+        });
+
+        return sortedTags.size() > 3 ? sortedTags.subList(0, 3) : sortedTags;
+    }
+
+    public long getTotalLessons(Long courseId) {
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if (course == null || course.getModules() == null) {
+            return 0;
+        }
+        return course.getModules().stream()
+                .filter(m -> m.getLessons() != null)
+                .mapToLong(m -> m.getLessons().size())
+                .sum();
     }
 }

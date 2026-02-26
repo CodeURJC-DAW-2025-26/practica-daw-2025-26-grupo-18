@@ -181,22 +181,22 @@
 							<span class="badge status-badge">ACTIVO</span>
 						</div>
 						<h3>Cursos en progreso</h3>
-						<p>Actualmente estas avanzando en 3 cursos con mentorias semanales.</p>
+						<p>Actualmente estas avanzando en {{inProgressCount}} cursos. Total inscritos: {{totalEnrollments}}.</p>
 						<div class="course-progress">
-							<small class="course-progress-label">Progreso global: 58%</small>
+							<small class="course-progress-label">Progreso global: {{averageProgress}}%</small>
 							<div class="course-progress-bar">
-								<div class="course-progress-fill course-progress-fill--65"></div>
+								<div class="course-progress-fill" style="width: {{averageProgress}}%;"></div>
 							</div>
 						</div>
 						<ul class="feature-list">
-							<li><i class="bi bi-check-circle"></i> 24 clases completadas</li>
-							<li><i class="bi bi-check-circle"></i> 6 practicas entregadas</li>
+							<li><i class="bi bi-check-circle"></i> {{completedCourses}} cursos completados</li>
+							<li><i class="bi bi-hourglass-split"></i> {{inProgressCount}} cursos en progreso</li>
 						</ul>
-						<div class="text-center mt-3">
-							<img src="../img/chart_student_status_pie.png" alt="Estado de cursos"
-								class="img-fluid rounded shadow-sm" style="max-height: 200px;">
+						<div class="text-center mt-3" style="height: 280px; overflow: hidden;">
+							<iframe src="/statistics/course-progress?userId={{user.id}}"
+								width="100%" height="100%" style="border:none; overflow:hidden;" scrolling="no"></iframe>
 						</div>
-						<a href="#" class="read-more">Ver mis cursos <i class="bi bi-arrow-right"></i></a>
+						<a href="#cursos-suscritos" class="read-more">Ver mis cursos <i class="bi bi-arrow-right"></i></a>
 					</div>
 				</div>
 
@@ -208,24 +208,24 @@
 							</div>
 							<span class="badge status-badge">CONSTANCIA</span>
 						</div>
-						<h3>Horas de estudio</h3>
-						<p>Has acumulado 42 horas de formacion en los ultimos 30 dias.</p>
-						<!-- Weekly Activity Chart -->
-						<div class="text-center mt-3 mb-3">
-							<img src="../img/chart_student_weekly_bar.png" alt="Actividad semanal"
-								class="img-fluid rounded shadow-sm" style="max-height: 180px;">
+						<h3>Lecciones aprendidas</h3>
+						<p>Has completado {{totalLessonsCompleted}} lecciones en total.</p>
+						<!-- Lessons Chart -->
+						<div class="text-center mt-3 mb-3" style="height: 200px; overflow: hidden;">
+							<iframe src="/statistics/lessons-learned?userId={{user.id}}"
+								width="100%" height="100%" style="border:none; overflow:hidden;" scrolling="no"></iframe>
 						</div>
 						<div class="course-progress">
-							<small class="course-progress-label">Meta mensual: 50h</small>
+							<small class="course-progress-label">Rendimiento mensual</small>
 							<div class="course-progress-bar">
-								<div class="course-progress-fill course-progress-fill--40"></div>
+								<div class="course-progress-fill" style="width: 75%;"></div>
 							</div>
 						</div>
 						<ul class="feature-list">
-							<li><i class="bi bi-check-circle"></i> 4 semanas consecutivas</li>
-							<li><i class="bi bi-check-circle"></i> 3 sesiones en vivo</li>
+							<li><i class="bi bi-check-circle"></i> {{completedLessonsThisMonth}} lecciones este mes</li>
+							<li><i class="bi bi-check-circle"></i> {{averageLessonsPerMonth}} lecciones/mes (promedio)</li>
 						</ul>
-						<a href="#" class="read-more">Ver estadisticas <i class="bi bi-arrow-right"></i></a>
+						<a href="#" class="read-more">Ver estadísticas <i class="bi bi-arrow-right"></i></a>
 					</div>
 				</div>
 
