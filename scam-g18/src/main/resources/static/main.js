@@ -360,10 +360,7 @@ function setupRegisterAvailabilityValidation() {
         checkInProgress = true;
 
         try {
-            const response = await fetch(
-                `/register/check-availability?username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}`,
-                { method: "GET", headers: { "Accept": "application/json" } }
-            );
+            const response = await fetch(`/register/check-availability?username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}`, { method: "GET", headers: { Accept: "application/json" } });
 
             if (!response.ok) {
                 return;
