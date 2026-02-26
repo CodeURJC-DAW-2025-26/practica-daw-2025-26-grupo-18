@@ -1,8 +1,8 @@
 package es.codeurjc.scam_g18.controller;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.security.Principal;
+import java.sql.SQLException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ public class ProfileController {
     public String myProfile(Principal principal) {
         if (principal == null)
             return "redirect:/login";
-        return userService.findByUsername(principal.getName())
+        return userService.getCurrentAuthenticatedUser()
                 .map(user -> "redirect:/profile/" + user.getId())
                 .orElse("redirect:/login");
     }
@@ -49,8 +49,18 @@ public class ProfileController {
         model.addAttribute("user", user.get());
         model.addAttribute("profileImage", userService.getProfileImage(id));
         model.addAttribute("completedCourses", userService.getCompletedCoursesCount(id));
+        model.addAttribute("completedCourseNames", enrollmentService.getCompletedCourseNames(id));
+        model.addAttribute("inProgressCount", enrollmentService.getInProgressCount(id));
         model.addAttribute("userType", userService.getUserType(id));
         model.addAttribute("userTags", enrollmentService.getTagNamesByUserId(id));
+        model.addAttribute("subscribedCourses", enrollmentService.getSubscribedCoursesData(id));
+        model.addAttribute("userEvents", enrollmentService.getUserEvents(id));
+        model.addAttribute("averageProgress", enrollmentService.getAverageProgress(id));
+        model.addAttribute("totalEnrollments", enrollmentService.getTotalEnrollments(id));
+        model.addAttribute("totalLessonsCompleted", enrollmentService.getTotalCompletedLessons(id));
+        model.addAttribute("completedLessonsThisMonth", enrollmentService.getLessonsCompletedThisMonth(id));
+        model.addAttribute("averageLessonsPerMonth",
+                String.format("%.1f", enrollmentService.getAverageLessonsPerMonth(id)));
 
         return "profile";
     }
@@ -66,6 +76,11 @@ public class ProfileController {
             @RequestParam(required = false) String comunity,
             @RequestParam(required = false) MultipartFile imageFile,
             HttpServletRequest request) throws IOException, SQLException {
+
+        var currentUserOpt = userService.getCurrentAuthenticatedUser();
+        if (currentUserOpt.isEmpty() || !currentUserOpt.get().getId().equals(id)) {
+            return "redirect:/login";
+        }
 
         userService.updateProfile(id, username, email, country, shortDescription, currentGoal, weeklyRoutine,
                 comunity, imageFile);

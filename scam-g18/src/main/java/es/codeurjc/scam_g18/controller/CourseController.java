@@ -11,12 +11,18 @@ import es.codeurjc.scam_g18.model.Course;
 import es.codeurjc.scam_g18.model.User;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import es.codeurjc.scam_g18.service.TagService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class CourseController {
@@ -33,11 +39,13 @@ public class CourseController {
     @Autowired
     private ReviewService reviewService;
 
+    // Construye el controlador con los servicios principales de cursos y etiquetas.
     public CourseController(CourseService courseService, TagService tagService) {
         this.courseService = courseService;
         this.tagService = tagService;
     }
 
+    // Muestra el listado de cursos con búsqueda y filtro por etiquetas.
     @GetMapping("/courses")
     public String courses(Model model, @RequestParam(required = false) String search,
             @RequestParam(required = false) List<String> tags) {
@@ -48,6 +56,7 @@ public class CourseController {
         return "courses";
     }
 
+    // Muestra el detalle de un curso y los datos de progreso/reseñas del usuario.
     @GetMapping("/course/{id}")
     public String showCourse(Model model, @PathVariable long id, Principal principal) {
         Course course;
@@ -57,10 +66,7 @@ public class CourseController {
             return "redirect:/courses";
         }
 
-        var detailData = courseService.getCourseDetailViewData(id);
-        if (detailData == null) {
-            return "redirect:/courses";
-        }
+        Long currentUserId = null;
 
         boolean canManage = false;
         boolean isSuscribed = false;
@@ -69,20 +75,80 @@ public class CourseController {
             var currentUserOpt = userService.getCurrentAuthenticatedUser();
             if (currentUserOpt.isPresent()) {
                 User currentUser = currentUserOpt.get();
+                currentUserId = currentUser.getId();
                 canManage = courseService.canManageCourse(course, currentUser);
                 isSuscribed = userService.isSuscribedToCourse(currentUser.getId(), id);
                 hasReviewed = reviewService.hasUserReviewed(currentUser.getId(), id);
             }
         }
 
+        var detailData = courseService.getCourseDetailViewData(id, currentUserId);
+        if (detailData == null) {
+            return "redirect:/courses";
+        }
+
         model.addAllAttributes(detailData);
         model.addAttribute("canEdit", canManage);
         model.addAttribute("isSuscribedToCourse", isSuscribed);
         model.addAttribute("hasReviewed", hasReviewed);
+        model.addAttribute("userId", currentUserId);
 
         return "course";
+
     }
 
+    // Marca una lección como completada y redirige al detalle del curso.
+    @PostMapping("/course/{courseId}/lesson/{lessonId}/complete")
+    public String markLessonAsCompleted(@PathVariable long courseId, @PathVariable long lessonId, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        var currentUserOpt = userService.getCurrentAuthenticatedUser();
+        if (currentUserOpt.isEmpty()) {
+            return "redirect:/login";
+        }
+
+        courseService.markLessonAsCompleted(courseId, lessonId, currentUserOpt.get().getId());
+        return "redirect:/course/" + courseId;
+    }
+
+    // Marca una lección como completada vía AJAX y devuelve el progreso
+    // actualizado.
+    @PostMapping("/course/{courseId}/lesson/{lessonId}/complete-ajax")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> markLessonAsCompletedAjax(
+            @PathVariable long courseId,
+            @PathVariable long lessonId,
+            Principal principal) {
+
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        var currentUserOpt = userService.getCurrentAuthenticatedUser();
+        if (currentUserOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        Long userId = currentUserOpt.get().getId();
+        boolean completed = courseService.markLessonAsCompleted(courseId, lessonId, userId);
+        if (!completed) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        int progressPercentage = courseService.getProgressPercentageForUserCourse(courseId, userId).orElse(0);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("completed", true);
+        response.put("lessonId", lessonId);
+        response.put("courseId", courseId);
+        response.put("progressPercentage", progressPercentage);
+
+        return ResponseEntity.ok(response);
+    }
+
+    // Muestra los cursos a los que el usuario autenticado está suscrito.
     @GetMapping("/courses/subscribed")
     public String subscribedCourses(Model model, Principal principal) {
         if (principal == null) {
@@ -102,6 +168,7 @@ public class CourseController {
         return "subscribedCourses";
     }
 
+    // Muestra el formulario de edición de un curso si el usuario tiene permisos.
     @GetMapping("/course/{id}/edit")
     public String editCourseForm(Model model, @PathVariable long id) {
         Course course;
@@ -124,6 +191,7 @@ public class CourseController {
         return "editCourse";
     }
 
+    // Actualiza un curso existente cuando el usuario está autorizado.
     @PostMapping("/course/{id}/edit")
     public String updateCourse(
             @PathVariable long id,
@@ -148,11 +216,26 @@ public class CourseController {
         return "redirect:/courses";
     }
 
+    // Elimina un curso si el usuario actual tiene permisos de gestión.
+    @PostMapping("/course/{id}/delete")
+    public String deleteCourse(@PathVariable long id) {
+        var currentUserOpt = userService.getCurrentAuthenticatedUser();
+        if (currentUserOpt.isPresent()) {
+            boolean deleted = courseService.deleteCourseIfAuthorized(id, currentUserOpt.get());
+            if (deleted) {
+                return "redirect:/courses";
+            }
+        }
+        return "redirect:/course/" + id;
+    }
+
+    // Muestra el formulario para crear un nuevo curso.
     @GetMapping("/courses/new")
     public String newCourseForm(Model model) {
         return "createCourse";
     }
 
+    // Crea un nuevo curso con sus etiquetas e imagen asociadas.
     @PostMapping("/courses/new")
     public String createCourse(
             Course course,
@@ -174,6 +257,7 @@ public class CourseController {
         return "redirect:/courses";
     }
 
+    // Añade una reseña al curso desde el usuario autenticado.
     @PostMapping("/course/{id}/review")
     public String addReview(@PathVariable long id,
             @RequestParam int rating,
@@ -201,6 +285,7 @@ public class CourseController {
         return "redirect:/course/" + id + "#reviews";
     }
 
+    // Valida los campos obligatorios y reglas básicas de negocio para un curso.
     private boolean hasInvalidCourseData(Course course) {
         if (course == null) {
             return true;

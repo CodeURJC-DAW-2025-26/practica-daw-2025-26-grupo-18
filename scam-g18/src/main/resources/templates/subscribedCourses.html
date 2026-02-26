@@ -30,7 +30,7 @@
                 {{/isUserLoggedIn}}
 
                 {{#isUserLoggedIn}}
-                <div class="row g-4">
+                <div class="row g-3 subscribed-courses-grid">
                     {{^hasSubscribedCourses}}
                     <div class="col-12" data-aos="fade-up" data-aos-delay="100">
                         <div class="feature-card text-center">
@@ -48,11 +48,11 @@
 
                     {{#hasSubscribedCourses}}
                     {{#courses}}
-                    <div class="col-lg-6" data-aos="flip-left" data-aos-delay="100">
-                        <div class="feature-card h-100">
+                    <div class="col-12 col-lg-6" data-aos="flip-left" data-aos-delay="100">
+                        <div class="feature-card subscribed-course-card h-100">
                             <div class="row g-3 align-items-start">
                                 <div class="col-md-4">
-                                    <img src="{{imageUrl}}" alt="{{title}}" class="img-fluid rounded w-100 h-50 object-fit-cover">
+                                    <img src="/images/courses/{{id}}" alt="{{title}}" class="img-fluid rounded w-100 object-fit-cover subscribed-course-image">
                                 </div>
                                 <div class="col-md-8">
                                     <div class="icon-badge mb-2">
@@ -62,7 +62,7 @@
                                         <span class="badge status-badge">EN CURSO</span>
                                     </div>
                                     <h3>{{title}}</h3>
-                                    <p>{{shortDescription}}</p>
+                                    <p class="subscribed-course-desc">{{shortDescription}}</p>
                                     <div class="course-progress">
                                         <small class="course-progress-label">Progreso: {{progressPercentage}}%</small>
                                         <div class="course-progress-bar">

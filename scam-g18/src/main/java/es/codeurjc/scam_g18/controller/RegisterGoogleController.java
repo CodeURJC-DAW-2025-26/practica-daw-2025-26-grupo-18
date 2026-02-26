@@ -2,6 +2,7 @@ package es.codeurjc.scam_g18.controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Locale;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,6 +50,8 @@ public class RegisterGoogleController {
 
         String email = oAuth2User.getAttribute("email");
         model.addAttribute("googleEmail", email);
+        model.addAttribute("googleSuggestedUsername", buildSuggestedUsername(oAuth2User, email));
+        model.addAttribute("googleSuggestedCountry", buildSuggestedCountry(oAuth2User));
 
         if ("userExists".equals(error)) {
             model.addAttribute("errorMsg",
@@ -56,6 +59,39 @@ public class RegisterGoogleController {
         }
 
         return "registerGoogle";
+    }
+
+    private String buildSuggestedUsername(OAuth2User oAuth2User, String email) {
+        String suggestedUsername = oAuth2User.getAttribute("given_name");
+
+        if (suggestedUsername == null || suggestedUsername.isBlank()) {
+            suggestedUsername = oAuth2User.getAttribute("name");
+        }
+
+        if ((suggestedUsername == null || suggestedUsername.isBlank()) && email != null && email.contains("@")) {
+            suggestedUsername = email.substring(0, email.indexOf('@'));
+        }
+
+        if (suggestedUsername == null) {
+            return "";
+        }
+
+        return suggestedUsername.trim().replaceAll("\\s+", "");
+    }
+
+    private String buildSuggestedCountry(OAuth2User oAuth2User) {
+        String localeAttribute = oAuth2User.getAttribute("locale");
+
+        if (localeAttribute == null || localeAttribute.isBlank()) {
+            return "";
+        }
+
+        Locale googleLocale = Locale.forLanguageTag(localeAttribute.replace('_', '-'));
+        if (googleLocale.getCountry() == null || googleLocale.getCountry().isBlank()) {
+            return "";
+        }
+
+        return googleLocale.getDisplayCountry(Locale.of("es", "ES"));
     }
 
     /**

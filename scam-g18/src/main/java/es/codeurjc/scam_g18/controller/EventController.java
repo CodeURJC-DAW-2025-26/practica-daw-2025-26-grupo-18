@@ -26,6 +26,7 @@ public class EventController {
 
     private final es.codeurjc.scam_g18.service.UserService userService;
 
+    // Construye el controlador con los servicios necesarios para gestionar eventos.
     public EventController(EventService eventService, TagService tagService,
             es.codeurjc.scam_g18.service.UserService userService) {
         this.eventService = eventService;
@@ -33,6 +34,7 @@ public class EventController {
         this.userService = userService;
     }
 
+    // Muestra el listado de eventos con búsqueda y filtros por etiquetas.
     @GetMapping("/events")
     public String events(Model model, @RequestParam(required = false) String search,
             @RequestParam(required = false) List<String> tags) {
@@ -44,6 +46,26 @@ public class EventController {
         return "events";
     }
 
+    // Muestra los eventos comprados por el usuario autenticado.
+    @GetMapping("/events/purchased")
+    public String purchasedEvents(Model model, java.security.Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        var userOpt = userService.getCurrentAuthenticatedUser();
+        if (userOpt.isEmpty()) {
+            return "redirect:/login";
+        }
+
+        var purchasedEvents = eventService.getPurchasedEventsViewData(userOpt.get().getId());
+        model.addAttribute("events", purchasedEvents);
+        model.addAttribute("hasPurchasedEvents", !purchasedEvents.isEmpty());
+
+        return "purchasedEvents";
+    }
+
+    // Muestra el detalle de un evento y permisos de gestión/compra del usuario actual.
     @GetMapping("/event/{id}")
     public String showEvent(Model model, @PathVariable long id, @RequestParam(required = false) String error) {
         var eventOpt = eventService.getEventById(id);
@@ -72,6 +94,7 @@ public class EventController {
         return "event";
     }
 
+    // Elimina un evento cuando el usuario actual está autorizado.
     @PostMapping("/event/{id}/delete")
     public String deleteEvent(@PathVariable long id) {
         userService.getCurrentAuthenticatedUser()
@@ -79,6 +102,7 @@ public class EventController {
         return "redirect:/events";
     }
 
+    // Muestra el formulario de edición de un evento si el usuario puede gestionarlo.
     @GetMapping("/event/{id}/edit")
     public String editEventForm(Model model, @PathVariable long id) {
         var eventOpt = eventService.getEventById(id);
@@ -88,16 +112,33 @@ public class EventController {
             var currentUserOpt = userService.getCurrentAuthenticatedUser();
             if (currentUserOpt.isPresent() && eventService.canManageEvent(event, currentUserOpt.get())) {
                 model.addAttribute("event", event);
-                model.addAttribute("startDateStr", event.getStartDate().toLocalDate().toString());
-                model.addAttribute("startTimeStr", event.getStartDate().toLocalTime().toString());
-                model.addAttribute("endDateStr", event.getEndDate().toLocalDate().toString());
-                model.addAttribute("endTimeStr", event.getEndDate().toLocalTime().toString());
+                model.addAttribute("startDateStr",
+                    event.getStartDate() != null ? event.getStartDate().toLocalDate().toString() : "");
+                model.addAttribute("startTimeStr",
+                    event.getStartDate() != null ? event.getStartDate().toLocalTime().toString() : "");
+                model.addAttribute("endDateStr",
+                    event.getEndDate() != null ? event.getEndDate().toLocalDate().toString() : "");
+                model.addAttribute("endTimeStr",
+                    event.getEndDate() != null ? event.getEndDate().toLocalTime().toString() : "");
+                model.addAttribute("locationName",
+                    event.getLocation() != null && event.getLocation().getName() != null
+                        ? event.getLocation().getName()
+                        : "");
+                model.addAttribute("priceValue",
+                    event.getPriceCents() != null
+                        ? String.format(java.util.Locale.US, "%.2f", event.getPriceCents() / 100.0)
+                        : "0.00");
+                model.addAttribute("isConferencia", "Conferencia".equalsIgnoreCase(event.getCategory()));
+                model.addAttribute("isWebinar", "Webinar".equalsIgnoreCase(event.getCategory()));
+                model.addAttribute("isTaller", "Taller".equalsIgnoreCase(event.getCategory()));
+                model.addAttribute("isNetworking", "Networking".equalsIgnoreCase(event.getCategory()));
                 return "editEvent";
             }
         }
         return "redirect:/events";
     }
 
+    // Actualiza un evento existente cuando los datos son válidos y hay permisos.
     @PostMapping("/event/{id}/edit")
     public String updateEvent(
             @PathVariable long id,
@@ -119,11 +160,13 @@ public class EventController {
         return "redirect:/events";
     }
 
+    // Muestra el formulario para crear un nuevo evento.
     @GetMapping("/events/new")
     public String newEventForm(Model model) {
         return "createEvent";
     }
 
+    // Crea un nuevo evento con sus datos e imagen opcional.
     @PostMapping("/event/new")
     public String createEvent(
             Event event,
@@ -144,6 +187,7 @@ public class EventController {
         return "redirect:/events";
     }
 
+    // Valida los campos obligatorios y reglas básicas de un evento.
     private boolean hasInvalidEventData(Event event) {
         if (event == null) {
             return true;

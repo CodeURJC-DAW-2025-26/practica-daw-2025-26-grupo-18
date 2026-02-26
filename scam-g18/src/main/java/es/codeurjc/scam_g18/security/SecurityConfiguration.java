@@ -57,6 +57,8 @@ public class SecurityConfiguration {
                 http.authenticationProvider(authenticationProvider());
 
                 http
+                                .headers(headers -> headers
+                                                .frameOptions(frameOptions -> frameOptions.sameOrigin()))
                                 .authorizeHttpRequests(authorize -> authorize
                                                 // NIVEL 0: ANONYMOUS (Público)
                                                 .requestMatchers("/css/**", "/js/**", "/img/**", "/images/**", "/*.css",
@@ -65,6 +67,9 @@ public class SecurityConfiguration {
                                                 .requestMatchers("/", "/courses", "/events").permitAll()
                                                 .requestMatchers("/login", "/register", "/error").permitAll()
                                                 .requestMatchers("/course/{id}", "/event/{id}").permitAll()
+                                                .requestMatchers("/statistics/course-ages",
+                                                                "/statistics/course-genders", "/statistics/course-tags")
+                                                .permitAll()
 
                                                 // Registro completar datos via Google (solo usuarios PENDING)
                                                 .requestMatchers("/register/google", "/register/google/cancel")

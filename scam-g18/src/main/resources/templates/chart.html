@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<style>
+		html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background: transparent; }
+		body { display: flex; justify-content: center; align-items: center; }
+		canvas { width: 100% !important; height: 100% !important; }
+	</style>
+</head>
+<body>
+	<canvas id="genericChart"></canvas>
+	<script>
+		var labels = [{{#chartLabels}}"{{.}}",{{/chartLabels}}];
+		var values = [{{#chartValues}}{{.}},{{/chartValues}}];
+		var chartType = "{{chartType}}";
+		var chartTitle = "{{chartTitle}}";
+
+		var colors = [
+			'rgba(217, 109, 60, 0.8)', /* Accent: #d96d3c */
+			'rgba(133, 97, 61, 0.8)',  /* Heading: #85613d */
+			'rgba(66, 40, 35, 0.8)',   /* Default: #422823 */
+			'rgba(199, 167, 119, 0.8)',/* Secondary: #c7a777 */
+			'rgba(243, 228, 201, 0.8)',/* Surface: #f3e4c9 */
+			'rgba(180, 90, 50, 0.8)',  /* Darker accent */
+			'rgba(160, 118, 75, 0.8)', /* Mid brown */
+			'rgba(100, 60, 50, 0.8)',  /* Mid dark brown */
+			'rgba(235, 175, 125, 0.8)',/* Lighter secondary */
+			'rgba(255, 240, 215, 0.8)' /* Lighter surface */
+		];
+		var borderColors = colors.map(function(c) { return c.replace('0.8', '1'); });
+
+		new Chart(document.getElementById('genericChart'), {
+			type: chartType,
+			data: {
+				labels: labels,
+				datasets: [{
+					label: chartTitle,
+					data: values,
+					backgroundColor: colors.slice(0, values.length),
+					borderColor: borderColors.slice(0, values.length),
+					borderWidth: 2
+				}]
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				plugins: {
+					legend: { position: 'bottom', labels: { boxWidth: 12, padding: 10, font: { size: 11 } } },
+					title: { display: false }
+				},
+				layout: { padding: 5 }
+			}
+		});
+	</script>
+</body>
+</html>

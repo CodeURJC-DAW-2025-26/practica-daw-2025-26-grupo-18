@@ -39,10 +39,12 @@ public class EventService {
     @Autowired
     private EventRegistrationRepository eventRegistrationRepository;
 
+    // Obtiene todos los eventos.
     public List<Event> getAllEvents() {
         return eventRepository.findAll();
     }
 
+    // Busca eventos por palabra clave y etiquetas.
     public List<Event> searchEvents(String keyword, List<String> tags) {
         if ((keyword == null || keyword.trim().isEmpty()) && (tags == null || tags.isEmpty())) {
             return getAllEvents();
@@ -56,16 +58,19 @@ public class EventService {
         return eventRepository.findByKeywordAndTags(keyword, tags);
     }
 
+    // Formatea el precio de un evento en euros.
     public String getPriceInEuros(Event event) {
         if (event.getPriceCents() == null)
             return "0.00";
         return String.format("%.2f", event.getPriceCents() / 100.0);
     }
 
+    // Busca un evento por id.
     public Optional<Event> getEventById(long id) {
         return eventRepository.findById(id);
     }
 
+    // Construye los datos de listado de eventos publicados para la vista.
     public List<Map<String, Object>> getEventsViewData(String keyword, List<String> tags, Long userId) {
         List<Event> allEvents = searchEvents(keyword, tags);
         List<Event> publishedEvents = new ArrayList<>();
@@ -93,6 +98,52 @@ public class EventService {
         return eventsData;
     }
 
+    // Construye los datos de eventos comprados por un usuario.
+    public List<Map<String, Object>> getPurchasedEventsViewData(Long userId) {
+        List<EventRegistration> registrations = eventRegistrationRepository.findByUserId(userId);
+        List<Map<String, Object>> purchasedEvents = new ArrayList<>();
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        for (EventRegistration registration : registrations) {
+            Event event = registration.getEvent();
+            if (event == null) {
+                continue;
+            }
+
+            Map<String, Object> eventData = new HashMap<>();
+            eventData.put("id", event.getId());
+            eventData.put("title", event.getTitle());
+            eventData.put("description", event.getDescription());
+
+            if (event.getStartDate() != null) {
+                eventData.put("formattedDate", event.getStartDate().format(dateFormatter));
+
+                String timeStr = event.getStartDate().format(timeFormatter);
+                if (event.getEndDate() != null) {
+                    timeStr += " - " + event.getEndDate().format(timeFormatter);
+                }
+                eventData.put("formattedTime", timeStr);
+            } else {
+                eventData.put("formattedDate", "Fecha por confirmar");
+                eventData.put("formattedTime", "--:--");
+            }
+
+            if (event.getLocation() != null && event.getLocation().getName() != null
+                    && !event.getLocation().getName().isBlank()) {
+                eventData.put("locationName", event.getLocation().getName());
+            } else {
+                eventData.put("locationName", "Online");
+            }
+
+            purchasedEvents.add(eventData);
+        }
+
+        return purchasedEvents;
+    }
+
+    // Construye el detalle de un evento para la vista.
     public Map<String, Object> getEventDetailViewData(long id) {
         Optional<Event> eventOpt = getEventById(id);
         if (eventOpt.isEmpty()) {
@@ -107,22 +158,25 @@ public class EventService {
         eventData.put("soldOut", !event.hasAvailableSeats());
 
         String imageUrl = "/img/default_img.png";
-        if (event.getImage() != null) {
-            imageUrl = imageService.getConnectionImage(event.getImage());
+        if (event.getId() != null) {
+            imageUrl = "/images/events/" + event.getId();
         }
         eventData.put("image", imageUrl);
 
         return eventData;
     }
 
+    // Guarda un evento.
     public void saveEvent(Event event) {
         eventRepository.save(event);
     }
 
+    // Elimina un evento por id.
     public void deleteEvent(long id) {
         eventRepository.deleteById(id);
     }
 
+    // Comprueba si un usuario puede gestionar un evento.
     public boolean canManageEvent(Event event, User user) {
         if (event == null || user == null) {
             return false;
@@ -133,6 +187,7 @@ public class EventService {
         return isAdmin || isCreator;
     }
 
+    // Comprueba si un usuario ya compró un evento.
     public boolean hasUserPurchasedEvent(Long userId, Long eventId) {
         if (userId == null || eventId == null) {
             return false;
@@ -140,6 +195,7 @@ public class EventService {
         return eventRegistrationRepository.existsByUserIdAndEventId(userId, eventId);
     }
 
+    // Elimina un evento solo si el usuario está autorizado.
     public boolean deleteEventIfAuthorized(long id, User user) {
         var eventOpt = getEventById(id);
         if (eventOpt.isPresent() && canManageEvent(eventOpt.get(), user)) {
@@ -149,6 +205,7 @@ public class EventService {
         return false;
     }
 
+    // Actualiza un evento solo si el usuario está autorizado.
     public boolean updateEventIfAuthorized(long id, Event eventUpdate, User user,
             org.springframework.web.multipart.MultipartFile imageFile)
             throws java.io.IOException, java.sql.SQLException {
@@ -167,6 +224,7 @@ public class EventService {
         return true;
     }
 
+    // Crea un evento desde datos de formulario.
     public void createEventFromForm(Event event, User creator,
             org.springframework.web.multipart.MultipartFile imageFile)
             throws java.io.IOException, java.sql.SQLException {
@@ -217,6 +275,7 @@ public class EventService {
         createEvent(event, imageFile);
     }
 
+    // Persiste un evento y su imagen/ubicación.
     public void createEvent(Event event, org.springframework.web.multipart.MultipartFile imageFile)
             throws java.io.IOException, java.sql.SQLException {
         if (imageFile != null && !imageFile.isEmpty()) {
@@ -230,6 +289,7 @@ public class EventService {
         eventRepository.save(event);
     }
 
+    // Aplica los datos editables del formulario sobre un evento existente.
     private void applyEventFormData(Event target, Event source) {
         target.setTitle(source.getTitle());
         target.setDescription(source.getDescription());
@@ -283,6 +343,7 @@ public class EventService {
         }
     }
 
+    // Construye el mapa de datos reutilizable para tarjetas y detalle de evento.
     private Map<String, Object> buildEventCardData(Event event) {
         Map<String, Object> eventData = new HashMap<>();
         eventData.put("id", event.getId());
@@ -335,6 +396,7 @@ public class EventService {
         return eventData;
     }
 
+    // Obtiene etiquetas de eventos previamente comprados por el usuario.
     private Set<String> getSubscribedEventTagNames(Long userId) {
         Set<String> subscribedTagNames = new HashSet<>();
         if (userId == null) {
@@ -358,6 +420,7 @@ public class EventService {
         return subscribedTagNames;
     }
 
+    // Cuenta coincidencias de etiquetas entre candidato y preferencias del usuario.
     private int countMatchingTags(Set<Tag> candidateTags, Set<String> subscribedTagNames) {
         if (candidateTags == null || candidateTags.isEmpty() || subscribedTagNames.isEmpty()) {
             return 0;

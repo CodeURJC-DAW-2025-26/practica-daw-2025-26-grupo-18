@@ -17,6 +17,7 @@ import es.codeurjc.scam_g18.model.Image;
 public class ImageService {
 
     @Transactional
+    // Convierte un archivo subido en una entidad Image persistible.
     public Image saveImage(MultipartFile file) throws IOException, SQLException {
         if (file.isEmpty()) {
             return null;
@@ -28,6 +29,7 @@ public class ImageService {
     }
 
     @Transactional
+    // Devuelve la imagen en formato data URI o una imagen por defecto.
     public String getConnectionImage(Image image) {
         if (image != null && image.getData() != null) {
             try {
@@ -45,6 +47,7 @@ public class ImageService {
     }
 
     @Transactional
+    // Carga una imagen desde ruta local y la transforma en entidad Image.
     public Image saveImage(String path) throws IOException, SQLException {
         java.nio.file.Path file = java.nio.file.Paths.get("src/main/resources/static" + path);
         if (!java.nio.file.Files.exists(file)) {

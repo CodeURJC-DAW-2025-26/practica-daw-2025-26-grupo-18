@@ -42,22 +42,27 @@ public class AdminService {
     @Autowired
     private EmailService emailService;
 
+    // Obtiene todos los usuarios registrados.
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
+    // Busca usuarios por coincidencia parcial de username.
     public List<User> searchUsers(String query) {
         return userRepository.findByUsernameContainingIgnoreCase(query);
     }
 
+    // Busca un usuario por id.
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
 
+    // Busca un usuario por nombre de usuario exacto.
     public Optional<User> findUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
+    // Desactiva un usuario y le envía notificación por correo.
     public void banUser(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
@@ -69,6 +74,7 @@ public class AdminService {
         }
     }
 
+    // Reactiva una cuenta de usuario bloqueada.
     public void unbanUser(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
@@ -80,6 +86,7 @@ public class AdminService {
 
     // ---- Courses ----
 
+    // Obtiene cursos priorizando los pendientes de revisión.
     public List<Course> getAllCoursesSortedByStatus() {
         List<Course> pending = courseRepository.findByStatus(Status.PENDING_REVIEW);
         List<Course> others = courseRepository.findAll().stream()
@@ -90,6 +97,7 @@ public class AdminService {
         return result;
     }
 
+    // Busca cursos por título priorizando los pendientes.
     public List<Course> searchCourses(String query) {
         List<Course> found = courseRepository.findByTitleContainingIgnoreCase(query);
         // pending first
@@ -102,10 +110,12 @@ public class AdminService {
         return result;
     }
 
+    // Obtiene cursos pendientes de revisión.
     public List<Course> getPendingCourses() {
         return courseRepository.findByStatus(Status.PENDING_REVIEW);
     }
 
+    // Publica un curso pendiente y notifica a su creador.
     public void approveCourse(Long courseId) {
         Optional<Course> courseOptional = courseRepository.findById(courseId);
         if (courseOptional.isPresent()) {
@@ -120,6 +130,7 @@ public class AdminService {
         }
     }
 
+    // Rechaza un curso devolviéndolo a borrador.
     public void rejectCourse(Long courseId) {
         Optional<Course> courseOptional = courseRepository.findById(courseId);
         if (courseOptional.isPresent()) {
@@ -129,6 +140,7 @@ public class AdminService {
         }
     }
 
+    // Archiva un curso.
     public void archiveCourse(Long courseId) {
         Optional<Course> courseOptional = courseRepository.findById(courseId);
         if (courseOptional.isPresent()) {
@@ -140,6 +152,7 @@ public class AdminService {
 
     // ---- Events ----
 
+    // Obtiene eventos priorizando los pendientes de revisión.
     public List<Event> getAllEventsSortedByStatus() {
         List<Event> pending = eventRepository.findByStatus(Status.PENDING_REVIEW);
         List<Event> others = eventRepository.findAll().stream()
@@ -150,6 +163,7 @@ public class AdminService {
         return result;
     }
 
+    // Busca eventos por título priorizando los pendientes.
     public List<Event> searchEvents(String query) {
         List<Event> found = eventRepository.findByTitleContainingIgnoreCase(query);
         List<Event> pending = found.stream().filter(e -> e.getStatus() == Status.PENDING_REVIEW)
@@ -161,6 +175,7 @@ public class AdminService {
         return result;
     }
 
+    // Publica un evento pendiente y notifica al creador.
     public void approveEvent(Long eventId) {
         Optional<Event> opt = eventRepository.findById(eventId);
         if (opt.isPresent()) {
@@ -175,6 +190,7 @@ public class AdminService {
         }
     }
 
+    // Rechaza un evento devolviéndolo a borrador.
     public void rejectEvent(Long eventId) {
         Optional<Event> opt = eventRepository.findById(eventId);
         if (opt.isPresent()) {
@@ -186,12 +202,14 @@ public class AdminService {
 
     // ---- Reviews ----
 
+    // Obtiene todas las reseñas del sistema.
     public List<Review> getAllReviews() {
         return reviewRepository.findAll();
     }
 
     // ---- Orders ----
 
+    // Obtiene todos los pedidos ordenados por fecha de creación descendente.
     public List<Order> getAllOrdersSortedByDate() {
         return orderRepository.findAll().stream()
                 .sorted((o1, o2) -> {
@@ -209,6 +227,7 @@ public class AdminService {
                 .collect(Collectors.toList());
     }
 
+    // Elimina una reseña por su id.
     public void deleteReview(Long reviewId) {
         reviewRepository.deleteById(reviewId);
     }
