@@ -86,6 +86,13 @@ public class Order {
         this.totalAmountCents = totalAmountCents;
     }
 
+    public String getTotalAmountEuros() {
+        if (totalAmountCents == null) {
+            return "0.00";
+        }
+        return String.format("%.2f", totalAmountCents / 100.0);
+    }
+
     public OrderStatus getStatus() {
         return status;
     }

@@ -190,7 +190,7 @@
                                                         class="badge bg-secondary">{{status}}</span>{{/isPendingReview}}
                                                 </td>
                                                 <td class="text-end">
-                                                    <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                                    <div class="d-flex justify-content-end align-items-start gap-2 flex-wrap">
                                                         <a href="/course/{{id}}" class="btn btn-sm btn-accent-outline">
                                                             <i class="bi bi-eye"></i> Ver
                                                         </a>
@@ -284,7 +284,7 @@
                                                         class="badge bg-secondary">{{status}}</span>{{/isPendingReview}}
                                                 </td>
                                                 <td class="text-end">
-                                                    <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                                    <div class="d-flex justify-content-end align-items-start gap-2 flex-wrap">
                                                         <a href="/event/{{id}}" class="btn btn-sm btn-accent-outline">
                                                             <i class="bi bi-eye"></i> Ver
                                                         </a>
@@ -366,7 +366,7 @@
                                                     <div>{{paymentMethod}}</div>
                                                     <small class="text-muted">{{paymentReference}}</small>
                                                 </td>
-                                                <td class="text-end fw-semibold">{{totalAmountCents}} cts</td>
+                                                <td class="text-end fw-semibold">{{totalAmountEuros}} €</td>
                                             </tr>
                                             {{/orders}}
                                             {{^orders}}
