@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import es.codeurjc.scam_g18.model.User;
+import es.codeurjc.scam_g18.service.EmailService;
 import es.codeurjc.scam_g18.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -36,6 +37,9 @@ public class RegisterGoogleController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private EmailService emailService;
 
     /**
      * Muestra el formulario para completar los datos del usuario registrado con
@@ -118,6 +122,8 @@ public class RegisterGoogleController {
         if (!registered) {
             return "redirect:/register/google?error=userExists";
         }
+
+        emailService.newAccountMessage(email, username);
 
         // Registro exitoso: cargamos el usuario recién creado para obtener sus roles
         // reales
