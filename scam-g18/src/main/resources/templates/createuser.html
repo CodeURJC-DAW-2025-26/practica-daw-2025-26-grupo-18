@@ -73,6 +73,11 @@
                             <h2 class="fw-bold text-dark">Crear Cuenta</h2>
                             <p class="text-muted">Empieza tu aprendizaje hoy</p>
                         </div>
+                        {{#error}}
+                        <div class="alert alert-danger" role="alert">
+                            {{error}}
+                        </div>
+                        {{/error}}
                         <form id="registerForm" action="/register" method="post" enctype="multipart/form-data">
                             <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
                             <div class="mb-3">

@@ -69,7 +69,8 @@ public class SecurityConfiguration {
                                                                 "/*.js", "/webjars/**")
                                                 .permitAll()
                                                 .requestMatchers("/", "/courses", "/events").permitAll()
-                                                .requestMatchers("/login", "/register", "/error").permitAll()
+                                                .requestMatchers("/login", "/register", "/register/check-availability", "/error")
+                                                .permitAll()
                                                 .requestMatchers("/course/{id}", "/event/{id}").permitAll()
                                                 .requestMatchers("/statistics/course-ages",
                                                                 "/statistics/course-genders", "/statistics/course-tags")

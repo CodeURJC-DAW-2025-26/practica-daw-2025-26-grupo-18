@@ -57,7 +57,13 @@ public class RegisterGoogleController {
         model.addAttribute("googleSuggestedUsername", buildSuggestedUsername(oAuth2User, email));
         model.addAttribute("googleSuggestedCountry", buildSuggestedCountry(oAuth2User));
 
-        if ("userExists".equals(error)) {
+        if ("usernameExists".equals(error)) {
+            model.addAttribute("errorMsg",
+                "Ese nombre de usuario ya está en uso. Por favor, prueba con otro.");
+        } else if ("emailExists".equals(error)) {
+            model.addAttribute("errorMsg",
+                "Ya existe una cuenta con este correo de Google. Inicia sesión normalmente.");
+        } else if ("userExists".equals(error)) {
             model.addAttribute("errorMsg",
                     "El nombre de usuario ya está en uso o este correo ya tiene una cuenta. Por favor, prueba con otro nombre de usuario o inicia sesión normalmente.");
         }
@@ -116,6 +122,14 @@ public class RegisterGoogleController {
             HttpServletResponse response) throws IOException, SQLException {
 
         String email = oAuth2User.getAttribute("email");
+
+        if (userService.usernameExists(username)) {
+            return "redirect:/register/google?error=usernameExists";
+        }
+
+        if (userService.emailExists(email)) {
+            return "redirect:/register/google?error=emailExists";
+        }
 
         boolean registered = userService.registerUser(username, email, password, gender, birthDate, country, imageFile);
 
