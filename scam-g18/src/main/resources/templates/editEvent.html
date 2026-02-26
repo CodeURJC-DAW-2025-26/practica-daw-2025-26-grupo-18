@@ -84,7 +84,7 @@
                                 <div class="mb-3">
                                     <label for="eventLocation" class="form-label">Ubicación</label>
                                     <input type="text" class="form-control" id="eventLocation" name="locationName"
-                                        value="{{event.location.name}}" required>
+                                        value="{{locationName}}" required>
                                 </div>
                             </div>
                         </div>
@@ -167,7 +167,7 @@
                                     <div class="input-group">
                                         <span class="input-group-text">€</span>
                                         <input type="number" class="form-control" id="eventPrice" name="price"
-                                            value="{{#event.priceCents}}{{event.priceCents}}{{/event.priceCents}}"
+                                            value="{{priceValue}}"
                                             step="0.01" required>
                                     </div>
                                 </div>
@@ -182,14 +182,14 @@
                                     <label for="eventType" class="form-label">Tipo de Evento</label>
                                     <select class="form-select" id="eventType" name="category">
                                         <option value="Conferencia"
-                                            {{#event.isConferencia}}selected{{/event.isConferencia}}>Conferencia
+                                            {{#isConferencia}}selected{{/isConferencia}}>Conferencia
                                         </option>
-                                        <option value="Webinar" {{#event.isWebinar}}selected{{/event.isWebinar}}>Webinar
+                                        <option value="Webinar" {{#isWebinar}}selected{{/isWebinar}}>Webinar
                                         </option>
-                                        <option value="Taller" {{#event.isTaller}}selected{{/event.isTaller}}>Taller
+                                        <option value="Taller" {{#isTaller}}selected{{/isTaller}}>Taller
                                         </option>
                                         <option value="Networking"
-                                            {{#event.isNetworking}}selected{{/event.isNetworking}}>Networking</option>
+                                            {{#isNetworking}}selected{{/isNetworking}}>Networking</option>
                                     </select>
                                 </div>
                             </div>

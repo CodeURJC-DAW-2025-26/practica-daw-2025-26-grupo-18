@@ -36,7 +36,7 @@ public class ProfileController {
     public String myProfile(Principal principal) {
         if (principal == null)
             return "redirect:/login";
-        return userService.findByUsername(principal.getName())
+        return userService.getCurrentAuthenticatedUser()
                 .map(user -> "redirect:/profile/" + user.getId())
                 .orElse("redirect:/login");
     }
@@ -51,6 +51,8 @@ public class ProfileController {
         model.addAttribute("completedCourses", userService.getCompletedCoursesCount(id));
         model.addAttribute("completedCourseNames", enrollmentService.getCompletedCourseNames(id));
         model.addAttribute("inProgressCount", enrollmentService.getInProgressCount(id));
+        model.addAttribute("overallProgress", enrollmentService.getOverallCourseProgress(id));
+        model.addAttribute("completedLessons", enrollmentService.getCompletedLessonsCount(id));
         model.addAttribute("userType", userService.getUserType(id));
         model.addAttribute("userTags", enrollmentService.getTagNamesByUserId(id));
         model.addAttribute("subscribedCourses", enrollmentService.getSubscribedCoursesData(id));
@@ -76,6 +78,11 @@ public class ProfileController {
             @RequestParam(required = false) String comunity,
             @RequestParam(required = false) MultipartFile imageFile,
             HttpServletRequest request) throws IOException, SQLException {
+
+        var currentUserOpt = userService.getCurrentAuthenticatedUser();
+        if (currentUserOpt.isEmpty() || !currentUserOpt.get().getId().equals(id)) {
+            return "redirect:/login";
+        }
 
         userService.updateProfile(id, username, email, country, shortDescription, currentGoal, weeklyRoutine,
                 comunity, imageFile);

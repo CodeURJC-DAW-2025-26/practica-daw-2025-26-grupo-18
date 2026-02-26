@@ -15,15 +15,18 @@ public class GlobalControllerAdvice {
         private final String parameterName;
         private final String token;
 
+        // Crea un modelo seguro para exponer nombre de parámetro y token CSRF en vistas.
         public CsrfViewModel(String parameterName, String token) {
             this.parameterName = (parameterName == null || parameterName.isBlank()) ? "_csrf" : parameterName;
             this.token = token == null ? "" : token;
         }
 
+        // Devuelve el nombre del parámetro que debe enviarse en formularios CSRF.
         public String getParameterName() {
             return parameterName;
         }
 
+        // Devuelve el valor del token CSRF para formularios y peticiones protegidas.
         public String getToken() {
             return token;
         }
@@ -32,6 +35,7 @@ public class GlobalControllerAdvice {
     @Autowired
     private UserService userService;
 
+    // Añade atributos globales de sesión, usuario y CSRF disponibles en todas las vistas.
     @ModelAttribute
     public void addAttributes(Model model, HttpServletRequest request) {
         boolean hasPrincipal = (request.getUserPrincipal() != null);

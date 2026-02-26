@@ -9,6 +9,8 @@ import java.util.Optional;
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     List<Enrollment> findByUserId(Long userId);
 
+    List<Enrollment> findByCourseId(Long courseId);
+
     Optional<Enrollment> findByUserIdAndCourseId(Long userId, Long courseId);
 
     boolean existsByUserIdAndCourseId(Long userId, Long courseId);
@@ -20,4 +22,6 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     List<Enrollment> findByUserIdAndProgressPercentage(Long userId, int progressPercentage);
 
     int countByUserIdAndProgressPercentageGreaterThanAndProgressPercentageLessThan(Long userId, int min, int max);
+
+    long deleteByCourseId(Long courseId);
 }

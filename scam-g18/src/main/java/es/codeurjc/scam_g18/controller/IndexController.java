@@ -8,11 +8,13 @@ import org.springframework.ui.Model;
 public class IndexController {
 
 
+    // Muestra la página principal de la aplicación.
     @GetMapping("/")
     public String index(Model model) {
         return "index";
     }
 
+    // Muestra una página de error genérica con un mensaje para el usuario.
     @GetMapping("/error")
     public String handleError(Model model) {
         model.addAttribute("errorMessage", "Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo más tarde.");

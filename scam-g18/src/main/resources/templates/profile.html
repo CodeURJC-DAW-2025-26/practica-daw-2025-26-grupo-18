@@ -24,7 +24,7 @@
 						<div class="card-body p-4 text-center">
 							<!-- Vista normal -->
 							<div id="profile-view">
-								<img src="{{profileImage}}" alt="Foto de perfil" class="rounded-circle mb-3"
+								<img src="/images/users/{{user.id}}/profile" alt="Foto de perfil" class="rounded-circle mb-3"
 									width="120" height="120">
 								<h3 class="h5 fw-bold mb-1">{{user.username}}</h3>
 								<p class="text-muted mb-1">@{{user.username}}</p>
@@ -52,7 +52,7 @@
 
 									<!-- Imagen de perfil -->
 									<div class="mb-3">
-										<img id="preview-img" src="{{profileImage}}" alt="Foto de perfil" class="rounded-circle mb-2"
+										<img id="preview-img" src="/images/users/{{user.id}}/profile" alt="Foto de perfil" class="rounded-circle mb-2"
 											width="120" height="120">
 										<div>
 											<label for="imageFile" class="form-label small text-muted">Cambiar imagen</label>
@@ -251,7 +251,6 @@
 				</div>
 			</div>
 		</div>
-		</div>
 	</section>
 
 	{{#isPublisher}}
@@ -333,11 +332,24 @@
 								{{/tags}}
 							</div>
 						</div>
-						<div class="course-card-price">{{#isCompleted}}Completado{{/isCompleted}}{{^isCompleted}}En curso ({{progress}}%){{/isCompleted}}</div>
+						<div class="course-card-price">
+							{{#isCompleted}}
+							<span class="badge bg-success">Completado · 100%</span>
+							{{/isCompleted}}
+							{{^isCompleted}}
+							<span class="badge" style="background-color: var(--accent-color); color: #fff;">En curso · {{progress}}%</span>
+							{{/isCompleted}}
+						</div>
 					</div>
 					<p class="course-card-desc">{{description}}</p>
 					<div class="course-card-meta">
 						<div><i class="bi bi-person"></i> {{creatorName}}</div>
+					</div>
+					<div class="course-progress mt-3">
+						<small class="course-progress-label">Avance actual</small>
+						<div class="course-progress-bar" style="height: 10px;">
+							<div class="course-progress-fill" data-progress="{{progress}}"></div>
+						</div>
 					</div>
 					<div class="course-card-actions">
 						<a href="/course/{{courseId}}" class="btn btn-sm btn-accent-outline course-card-btn">Ver detalles</a>
@@ -364,7 +376,7 @@
 					class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
 					<div>
 						<h6 class="mb-1">{{title}}</h6>
-						<small class="text-muted"><i class="bi bi-geo-alt me-1"></i> {{locationName}}, {{locationCity}}</small>
+						<small class="text-muted"><i class="bi bi-geo-alt me-1"></i> {{locationLabel}}</small>
 					</div>
 					<span class="badge bg-light text-dark border">{{startDate}}</span>
 				</a>
@@ -400,6 +412,13 @@ function previewImage(event) {
 	};
 	reader.readAsDataURL(event.target.files[0]);
 }
+
+document.querySelectorAll('.course-progress-fill[data-progress]').forEach(function (bar) {
+	var value = parseInt(bar.getAttribute('data-progress'), 10);
+	if (isNaN(value)) value = 0;
+	value = Math.max(0, Math.min(100, value));
+	bar.style.width = value + '%';
+});
 </script>
 
 </body>

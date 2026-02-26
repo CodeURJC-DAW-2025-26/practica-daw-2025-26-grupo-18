@@ -4407,6 +4407,48 @@ section,
     font-weight: 600;
 }
 
+.subscribed-courses-grid {
+    align-items: flex-start;
+}
+
+.subscribed-courses-grid .subscribed-course-card {
+    margin-bottom: 0;
+}
+
+.subscribed-courses-grid .subscribed-course-desc {
+    margin-bottom: 0.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.subscribed-courses-grid .subscribed-course-image {
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+}
+
+.purchased-events-grid {
+    align-items: flex-start;
+}
+
+.purchased-events-grid .purchased-event-card {
+    margin-bottom: 0;
+}
+
+.purchased-events-grid .purchased-event-desc {
+    margin-bottom: 0.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.purchased-events-grid .purchased-event-image {
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+}
+
 .modal-force-show {
     display: block;
     background-color: rgba(0, 0, 0, 0.5);
