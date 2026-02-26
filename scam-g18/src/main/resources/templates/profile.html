@@ -18,6 +18,11 @@
 	<!-- Profile Overview -->
 	<section class="section">
 		<div class="container" data-aos="fade-up">
+			{{#errorMessage}}
+			<div class="alert alert-warning mb-4" style="background-color: rgba(217, 109, 60, 0.15); color: #D96D3C; border: 1px solid #D96D3C;" role="alert">
+				<i class="bi bi-exclamation-triangle-fill"></i> {{{errorMessage}}}
+			</div>
+			{{/errorMessage}}
 			<div class="row g-4">
 				<div class="col-lg-4">
 					<div class="card border-0 shadow-sm bg-light h-100">
@@ -47,7 +52,7 @@
 
 							<!-- Vista edición -->
 							<div id="profile-edit" style="display: none;">
-								<form action="/profile/{{user.id}}/edit" method="post" enctype="multipart/form-data">
+								<form action="/profile/{{user.id}}/edit" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
 									<input type="hidden" name="_csrf" value="{{_csrf.token}}" />
 
 									<!-- Imagen de perfil -->
@@ -65,12 +70,14 @@
 									<div class="mb-3 text-start">
 										<label for="username" class="form-label fw-semibold"><i class="bi bi-person me-2"></i>Nombre de usuario</label>
 										<input type="text" class="form-control" id="username" name="username" value="{{user.username}}" required>
+										<div class="invalid-feedback">El nombre de usuario es obligatorio.</div>
 									</div>
 
 									<!-- Email -->
 									<div class="mb-3 text-start">
 										<label for="email" class="form-label fw-semibold"><i class="bi bi-envelope me-2"></i>Email</label>
 										<input type="email" class="form-control" id="email" name="email" value="{{user.email}}" required>
+										<div class="invalid-feedback">Por favor preste un correo electrónico válido.</div>
 									</div>
 
 									<!-- País -->
@@ -297,7 +304,7 @@
 									<i class="bi bi-plus-lg fs-3"></i>
 								</div>
 								<h5 class="fw-bold text-muted">Crear nuevo curso</h5>
-								<a href="createCourse.html" class="stretched-link"></a>
+								<a href="/courses/new" class="stretched-link"></a>
 							</div>
 						</div>
 					</div>
@@ -388,6 +395,17 @@
 {{>footer}}
 
 <script>
+{{#errorMessage}}
+document.addEventListener('DOMContentLoaded', function() {
+	var view = document.getElementById('profile-view');
+	var edit = document.getElementById('profile-edit');
+	if (view && edit) {
+		view.style.display = 'none';
+		edit.style.display = 'block';
+	}
+});
+{{/errorMessage}}
+
 function toggleEdit() {
 	var view = document.getElementById('profile-view');
 	var edit = document.getElementById('profile-edit');
@@ -414,6 +432,21 @@ document.querySelectorAll('.course-progress-fill[data-progress]').forEach(functi
 	value = Math.max(0, Math.min(100, value));
 	bar.style.width = value + '%';
 });
+
+(function () {
+	'use strict'
+	var forms = document.querySelectorAll('.needs-validation')
+	Array.prototype.slice.call(forms)
+		.forEach(function (form) {
+			form.addEventListener('submit', function (event) {
+				if (!form.checkValidity()) {
+					event.preventDefault()
+					event.stopPropagation()
+				}
+				form.classList.add('was-validated')
+			}, false)
+		})
+})()
 </script>
 
 </body>

@@ -167,7 +167,8 @@ public class UserService {
         return enrollmentRepository.countByUserIdAndProgressPercentage(userId, 100);
     }
 
-    // Devuelve el tipo de cuenta visible del usuario (Admin/Suscrito/Sin suscripción).
+    // Devuelve el tipo de cuenta visible del usuario (Admin/Suscrito/Sin
+    // suscripción).
     public String getUserType(Long userId) {
         Optional<User> optUser = findById(userId);
         if (optUser.isEmpty())
@@ -221,6 +222,60 @@ public class UserService {
                 userRepository.save(user);
             }
         }
+    }
+
+    // Valida que los datos provistos para registro/edición cumplan formatos lógicos
+    // y maneja restricciones de nulos/vacíos centrales.
+    public String validateUserAttributes(String username, String email, String password, String birthDateStr,
+            String gender, String country) {
+
+        StringBuilder errors = new StringBuilder();
+
+        // 1. Mandatory Fields Presence Check
+        if (username == null || username.isBlank() || email == null || email.isBlank()) {
+            return "El nombre de usuario y el correo electrónico son obligatorios.";
+        }
+
+        // Si se proveen el resto de campos (Registro normal), exigimos que no estén
+        // vacíos
+        if (password != null && password.isBlank()) {
+            return "Por favor, introduzca una contraseña.";
+        }
+        if (birthDateStr != null && birthDateStr.isBlank()) {
+            return "Por favor, introduzca una fecha de nacimiento.";
+        }
+        if (gender != null && gender.isBlank()) {
+            return "Por favor, seleccione un género.";
+        }
+        if (country != null && country.isBlank()) {
+            return "Por favor, seleccione un país.";
+        }
+
+        // 2. Format Checks
+        if (username != null) {
+            if (username.length() < 3 || username.length() > 20) {
+                errors.append("El nombre de usuario debe tener entre 3 y 20 caracteres.<br>");
+            }
+        }
+        if (password != null) {
+            String passwordPattern = "^(?=.*[0-9])(?=.*[A-Z])(?=\\S+$).{8,}$";
+            if (!password.matches(passwordPattern)) {
+                errors.append(
+                        "La contraseña debe tener al menos 8 caracteres, incluir un número y una letra mayúscula.<br>");
+            }
+        }
+        if (birthDateStr != null) {
+            try {
+                LocalDate birthDate = LocalDate.parse(birthDateStr);
+                if (birthDate.isAfter(LocalDate.now().minusYears(18))) {
+                    errors.append("Debes tener al menos 18 años para registrarte.<br>");
+                }
+            } catch (Exception e) {
+                errors.append("La fecha de nacimiento no tiene un formato válido.<br>");
+            }
+        }
+
+        return errors.length() > 0 ? errors.toString() : null;
     }
 
     @Transactional

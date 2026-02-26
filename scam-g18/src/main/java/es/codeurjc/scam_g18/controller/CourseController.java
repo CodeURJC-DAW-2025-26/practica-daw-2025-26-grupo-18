@@ -196,11 +196,17 @@ public class CourseController {
     public String updateCourse(
             @PathVariable long id,
             Course courseUpdate,
+            org.springframework.validation.BindingResult bindingResult,
             @RequestParam(required = false) List<String> tagNames,
-            @RequestParam(name = "imageFile", required = false) org.springframework.web.multipart.MultipartFile imageFile)
+            @RequestParam(name = "imageFile", required = false) org.springframework.web.multipart.MultipartFile imageFile,
+            org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes)
             throws java.io.IOException, java.sql.SQLException {
 
-        if (hasInvalidCourseData(courseUpdate)) {
+        String validationError = courseService.validateCourseData(courseUpdate, tagNames, imageFile, false,
+                bindingResult.hasErrors());
+
+        if (validationError != null && !validationError.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", validationError);
             return "redirect:/course/" + id + "/edit";
         }
 
@@ -232,6 +238,7 @@ public class CourseController {
     // Muestra el formulario para crear un nuevo curso.
     @GetMapping("/courses/new")
     public String newCourseForm(Model model) {
+        model.addAttribute("course", new Course());
         return "createCourse";
     }
 
@@ -239,11 +246,17 @@ public class CourseController {
     @PostMapping("/courses/new")
     public String createCourse(
             Course course,
+            org.springframework.validation.BindingResult bindingResult,
             @RequestParam(required = false) List<String> tagNames,
-            @RequestParam(name = "imageFile", required = false) org.springframework.web.multipart.MultipartFile imageFile)
+            @RequestParam(name = "imageFile", required = false) org.springframework.web.multipart.MultipartFile imageFile,
+            org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes)
             throws java.io.IOException, java.sql.SQLException {
 
-        if (hasInvalidCourseData(course)) {
+        String validationError = courseService.validateCourseData(course, tagNames, imageFile, true,
+                bindingResult.hasErrors());
+
+        if (validationError != null && !validationError.isEmpty()) {
+            redirectAttributes.addFlashAttribute("errorMessage", validationError);
             return "redirect:/courses/new";
         }
 
@@ -283,29 +296,6 @@ public class CourseController {
         reviewService.addReview(currentUser, course, rating, content);
 
         return "redirect:/course/" + id + "#reviews";
-    }
-
-    // Valida los campos obligatorios y reglas básicas de negocio para un curso.
-    private boolean hasInvalidCourseData(Course course) {
-        if (course == null) {
-            return true;
-        }
-        if (course.getTitle() == null || course.getTitle().isBlank()) {
-            return true;
-        }
-        if (course.getShortDescription() == null || course.getShortDescription().isBlank()) {
-            return true;
-        }
-        if (course.getLongDescription() == null || course.getLongDescription().isBlank()) {
-            return true;
-        }
-        if (course.getLanguage() == null || course.getLanguage().isBlank()) {
-            return true;
-        }
-        if (course.getPrice() == null || course.getPrice() < 0) {
-            return true;
-        }
-        return false;
     }
 
 }

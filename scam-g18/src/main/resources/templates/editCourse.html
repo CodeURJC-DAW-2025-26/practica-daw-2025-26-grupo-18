@@ -19,8 +19,14 @@
     <section id="edit-course-section" class="section">
         <div class="container" data-aos="fade-up">
 
-            <form action="/course/{{course.id}}/edit" method="POST" enctype="multipart/form-data" class="needs-validation">
+            <form action="/course/{{course.id}}/edit" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
                 <input type="hidden" name="_csrf" value="{{_csrf.token}}">
+
+                {{#errorMessage}}
+                <div class="alert" style="background-color: rgba(217, 109, 60, 0.15); color: #D96D3C; border: 1px solid #D96D3C;" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i> {{{errorMessage}}}
+                </div>
+                {{/errorMessage}}
 
                 <div class="row g-4">
 
@@ -40,16 +46,19 @@
                                 <div class="mb-3">
                                     <label for="title" class="form-label">Título del Curso</label>
                                     <input type="text" class="form-control" id="title" name="title" value="{{course.title}}" required>
+                                    <div class="invalid-feedback">Título de curso no válido.</div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="shortDescription" class="form-label">Descripción Breve</label>
                                     <textarea class="form-control" id="shortDescription" name="shortDescription" rows="3" required>{{course.shortDescription}}</textarea>
+                                    <div class="invalid-feedback">Descripción breve no válida.</div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="longDescription" class="form-label">Descripción Detallada</label>
                                     <textarea class="form-control" id="longDescription" name="longDescription" rows="6" required>{{course.longDescription}}</textarea>
+                                    <div class="invalid-feedback">Descripción detallada no válida.</div>
                                 </div>
 
                                 <div class="row">
@@ -61,6 +70,7 @@
                                             <option value="Francés">Francés</option>
                                             <option value="Alemán">Alemán</option>
                                         </select>
+                                        <div class="invalid-feedback">Idioma no válido. Seleccione uno.</div>
                                     </div>
                                 </div>
                             </div>
@@ -80,6 +90,7 @@
                                         <span class="input-group-text"><i class="bi bi-check-lg"></i></span>
                                         <input type="text" class="form-control" name="learningPoints" value="{{.}}" required>
                                         <button class="btn btn-delete" type="button" onclick="this.parentElement.remove()">×</button>
+                                        <div class="invalid-feedback">Punto de aprendizaje no válido.</div>
                                     </div>
                                     {{/course.learningPoints}}
                                     {{^course.learningPoints}}
@@ -88,6 +99,7 @@
                                         <input type="text" class="form-control" name="learningPoints"
                                             placeholder="Ej: Dominar funciones asíncronas" required>
                                         <button class="btn btn-delete" type="button" onclick="this.parentElement.remove()">×</button>
+                                        <div class="invalid-feedback">Punto de aprendizaje no válido.</div>
                                     </div>
                                     {{/course.learningPoints}}
                                 </div>
@@ -108,6 +120,7 @@
                                         <span class="input-group-text"><i class="bi bi-tag"></i></span>
                                         <input type="text" class="form-control" name="tagNames" value="{{name}}" required>
                                         <button class="btn btn-delete" type="button" onclick="this.parentElement.remove()">×</button>
+                                        <div class="invalid-feedback">Etiqueta de curso no válida.</div>
                                     </div>
                                     {{/course.tags}}
                                     {{^course.tags}}
@@ -115,6 +128,7 @@
                                         <span class="input-group-text"><i class="bi bi-tag"></i></span>
                                         <input type="text" class="form-control" name="tagNames" placeholder="Ej: Desarrollo Web" required>
                                         <button class="btn btn-delete" type="button" onclick="this.parentElement.remove()">×</button>
+                                        <div class="invalid-feedback">Etiqueta de curso no válida.</div>
                                     </div>
                                     {{/course.tags}}
                                 </div>
@@ -135,6 +149,7 @@
                                         <span class="input-group-text"><i class="bi bi-exclamation-circle"></i></span>
                                         <input type="text" class="form-control" name="prerequisites" value="{{.}}" required>
                                         <button class="btn btn-delete" type="button" onclick="this.parentElement.remove()">×</button>
+                                        <div class="invalid-feedback">Requisito previo no válido.</div>
                                     </div>
                                     {{/course.prerequisites}}
                                     {{^course.prerequisites}}
@@ -143,6 +158,7 @@
                                         <input type="text" class="form-control" name="prerequisites"
                                             placeholder="Ej: Conocimientos básicos de HTML y CSS" required>
                                         <button class="btn btn-delete" type="button" onclick="this.parentElement.remove()">×</button>
+                                        <div class="invalid-feedback">Requisito previo no válido.</div>
                                     </div>
                                     {{/course.prerequisites}}
                                 </div>
@@ -167,8 +183,10 @@
                                             <div class="flex-grow-1 me-3">
                                                 <input type="text" class="form-control fw-bold mb-2" data-field="module-title"
                                                     value="{{title}}" placeholder="Título del Módulo" required>
+                                                <div class="invalid-feedback">Título de módulo no válido.</div>
                                                 <input type="text" class="form-control text-muted" data-field="module-description"
                                                     value="{{description}}" placeholder="Breve descripción del módulo" required>
+                                                <div class="invalid-feedback">Descripción de módulo no válida.</div>
                                             </div>
                                             <button type="button" class="btn btn-sm btn-delete"
                                                 onclick="removeModule(this)">Eliminar Módulo</button>
@@ -186,6 +204,7 @@
                                                         value="{{videoUrl}}" placeholder="Enlace del vídeo (URL)" required>
                                                     <button class="btn btn-delete" type="button"
                                                         onclick="removeLesson(this)">×</button>
+                                                    <div class="invalid-feedback">Revise el título y enlace de la lección.</div>
                                                 </div>
                                                 {{/lessons}}
                                                 {{^lessons}}
@@ -197,6 +216,7 @@
                                                         placeholder="Enlace del vídeo (URL)" required>
                                                     <button class="btn btn-delete" type="button"
                                                         onclick="removeLesson(this)">×</button>
+                                                    <div class="invalid-feedback">Revise el título y enlace de la lección.</div>
                                                 </div>
                                                 {{/lessons}}
                                             </div>
@@ -211,8 +231,10 @@
                                             <div class="flex-grow-1 me-3">
                                                 <input type="text" class="form-control fw-bold mb-2" data-field="module-title"
                                                     placeholder="Título del Módulo" value="Módulo 1: Introducción" required>
+                                                <div class="invalid-feedback">Título de módulo no válido.</div>
                                                 <input type="text" class="form-control text-muted" data-field="module-description"
                                                     placeholder="Breve descripción del módulo" required>
+                                                <div class="invalid-feedback">Descripción de módulo no válida.</div>
                                             </div>
                                             <button type="button" class="btn btn-sm btn-delete"
                                                 onclick="removeModule(this)">Eliminar Módulo</button>
@@ -229,6 +251,7 @@
                                                         placeholder="Enlace del vídeo (URL)" required>
                                                     <button class="btn btn-delete" type="button"
                                                         onclick="removeLesson(this)">×</button>
+                                                    <div class="invalid-feedback">Revise el título y enlace de la lección.</div>
                                                 </div>
                                             </div>
                                             <button type="button" class="btn btn-sm btn-add mt-2"
@@ -253,19 +276,22 @@
                                     <div class="input-group">
                                         <span class="input-group-text">€</span>
                                         <input type="number" class="form-control" id="price" name="price" value="{{course.price}}"
-                                            step="0.01" required>
+                                            step="0.01" min="0" required>
+                                        <div class="invalid-feedback">Introduzca un precio numérico válido (mayor o igual a 0).</div>
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="videoHours" class="form-label">Horas de Vídeo bajo demanda</label>
-                                    <input type="number" class="form-control" id="videoHours" name="videoHours" value="{{course.videoHours}}" step="0.1" required>
+                                    <input type="number" class="form-control" id="videoHours" name="videoHours" value="{{course.videoHours}}" step="0.1" min="0" required>
+                                    <div class="invalid-feedback">Introduzca un número de horas válido (0 o superior).</div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="downloadableResources" class="form-label">Recursos descargables</label>
                                     <input type="number" class="form-control" id="downloadableResources"
-                                        name="downloadableResources" value="{{course.downloadableResources}}" required>
+                                        name="downloadableResources" value="{{course.downloadableResources}}" min="0" required>
+                                    <div class="invalid-feedback">Introduzca una cantidad válida de recursos (0 o superior).</div>
                                 </div>
                             </div>
                         </div>
@@ -292,6 +318,29 @@
 </main>
 
 {{>footer}}
+
+<script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function () {
+        'use strict'
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.querySelectorAll('.needs-validation')
+
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+</script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {

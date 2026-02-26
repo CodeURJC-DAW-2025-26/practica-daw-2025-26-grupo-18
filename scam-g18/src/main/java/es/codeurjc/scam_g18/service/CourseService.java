@@ -282,7 +282,7 @@ public class CourseService {
 
         long totalLessons = lessonRepository.countByModuleCourseId(courseId);
         long completedLessons = lessonProgressRepository
-            .countByUserIdAndLessonModuleCourseIdAndIsCompletedTrue(userId, courseId);
+                .countByUserIdAndLessonModuleCourseIdAndIsCompletedTrue(userId, courseId);
 
         int progressPercentage = 0;
         if (totalLessons > 0) {
@@ -416,6 +416,87 @@ public class CourseService {
         courseRepository.save(course);
     }
 
+    public String validateCourseData(Course course, List<String> tagNames,
+            org.springframework.web.multipart.MultipartFile imageFile, boolean isNewCourse, boolean hasBindingErrors) {
+        List<String> errors = new ArrayList<>();
+
+        if (hasBindingErrors) {
+            errors.add(
+                    "Error: Por favor, verifique que todos los campos numéricos (como precio, horas) tengan valores correctos.");
+        }
+
+        if (course == null) {
+            return "Error: Datos del curso nulos.";
+        }
+        if (course.getTitle() == null || course.getTitle().isBlank()) {
+            errors.add("Error: El título es obligatorio.");
+        }
+        if (course.getShortDescription() == null || course.getShortDescription().isBlank()) {
+            errors.add("Error: La descripción breve es obligatoria.");
+        }
+        if (course.getLongDescription() == null || course.getLongDescription().isBlank()) {
+            errors.add("Error: La descripción detallada es obligatoria.");
+        }
+        if (course.getLanguage() == null || course.getLanguage().isBlank()) {
+            errors.add("Error: El idioma es obligatorio.");
+        }
+        if (course.getPrice() == null || course.getPrice() < 0) {
+            errors.add("Error: El precio no puede ser negativo.");
+        }
+        if (course.getVideoHours() == null || course.getVideoHours() < 0) {
+            errors.add("Error: Las horas de vídeo no pueden ser negativas.");
+        }
+        if (course.getDownloadableResources() == null || course.getDownloadableResources() < 0) {
+            errors.add("Error: Los recursos descargables no pueden ser negativos.");
+        }
+        if (course.getLearningPoints() == null || course.getLearningPoints().isEmpty()) {
+            errors.add("Error: Debe incluir al menos un objetivo de aprendizaje.");
+        }
+        if (course.getPrerequisites() == null || course.getPrerequisites().isEmpty()) {
+            errors.add("Error: Debe incluir al menos un requisito previo.");
+        }
+
+        if (isNewCourse) {
+            if (imageFile == null || imageFile.isEmpty()) {
+                errors.add("Debe proporcionar una imagen para el curso.");
+            }
+            if (tagNames == null || tagNames.isEmpty()) {
+                errors.add("Debe añadir al menos una etiqueta (tema relacionado).");
+            }
+            if (course.getModules() == null || course.getModules().isEmpty()) {
+                errors.add("El curso debe contener al menos un módulo válido.");
+            } else {
+                for (es.codeurjc.scam_g18.model.Module module : course.getModules()) {
+                    if (module.getTitle() == null || module.getTitle().isBlank()) {
+                        errors.add("Todos los módulos deben tener un título válido.");
+                        break;
+                    }
+                    if (module.getLessons() == null || module.getLessons().isEmpty()) {
+                        errors.add("Cada módulo debe contener al menos una lección.");
+                        break;
+                    }
+                    boolean lessonError = false;
+                    for (es.codeurjc.scam_g18.model.Lesson lesson : module.getLessons()) {
+                        if (lesson.getTitle() == null || lesson.getTitle().isBlank() || lesson.getVideoUrl() == null
+                                || lesson.getVideoUrl().isBlank()) {
+                            errors.add("Todas las lecciones deben tener un título y una URL de vídeo válidos.");
+                            lessonError = true;
+                            break;
+                        }
+                    }
+                    if (lessonError)
+                        break;
+                }
+            }
+        }
+
+        if (errors.isEmpty()) {
+            return null;
+        } else {
+            return String.join("<br>", errors);
+        }
+    }
+
     // Crea un curso nuevo aplicando normalización de datos del formulario.
     public void createCourse(Course course, List<String> tagNames, User creator,
             org.springframework.web.multipart.MultipartFile imageFile)
@@ -461,7 +542,7 @@ public class CourseService {
 
         List<Enrollment> enrollmentsForCourse = enrollmentRepository.findByCourseId(course.getId());
         Map<Long, Map<String, Integer>> completedLessonKeyCountsByUser = captureCompletedLessonKeyCountsByUser(course,
-            enrollmentsForCourse);
+                enrollmentsForCourse);
 
         lessonProgressRepository.deleteByCourseId(course.getId());
 
@@ -542,7 +623,8 @@ public class CourseService {
         }
     }
 
-    // Captura progreso histórico por claves de lección para cada usuario matriculado.
+    // Captura progreso histórico por claves de lección para cada usuario
+    // matriculado.
     private Map<Long, Map<String, Integer>> captureCompletedLessonKeyCountsByUser(Course course,
             List<Enrollment> enrollments) {
         Map<Long, Map<String, Integer>> result = new HashMap<>();

@@ -20,8 +20,14 @@
     <section id="edit-event-section" class="section">
         <div class="container" data-aos="fade-up">
 
+            {{#errorMessage}}
+            <div class="alert alert-warning mb-4" style="background-color: rgba(217, 109, 60, 0.15); color: #D96D3C; border: 1px solid #D96D3C;" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i> {{{errorMessage}}}
+            </div>
+            {{/errorMessage}}
+
             <form class="needs-validation" action="/event/{{event.id}}/edit" method="post"
-                enctype="multipart/form-data">
+                enctype="multipart/form-data" novalidate>
                 <input type="hidden" name="_csrf" value="{{_csrf.token}}">
 
                 <div class="row g-4">
@@ -47,12 +53,14 @@
                                     <label for="eventTitle" class="form-label">Título del Evento</label>
                                     <input type="text" class="form-control" id="eventTitle" name="title"
                                         value="{{event.title}}" required>
+                                    <div class="invalid-feedback">El título del evento es obligatorio.</div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="eventDescription" class="form-label">Descripción Detallada</label>
                                     <textarea class="form-control" id="eventDescription" name="description" rows="6"
                                         required>{{event.description}}</textarea>
+                                    <div class="invalid-feedback">La descripción del evento es obligatoria.</div>
                                 </div>
 
                                 <div class="row">
@@ -60,11 +68,13 @@
                                         <label for="startDate" class="form-label">Fecha de Inicio</label>
                                         <input type="date" class="form-control" id="startDate" name="startDateStr"
                                             value="{{startDateStr}}" required>
+                                        <div class="invalid-feedback">Seleccione una fecha válida.</div>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="startTime" class="form-label">Hora de Inicio</label>
                                         <input type="time" class="form-control" id="startTime" name="startTimeStr"
                                             value="{{startTimeStr}}" required>
+                                        <div class="invalid-feedback">Seleccione una hora válida.</div>
                                     </div>
                                 </div>
 
@@ -73,11 +83,13 @@
                                         <label for="endDate" class="form-label">Fecha de Fin</label>
                                         <input type="date" class="form-control" id="endDate" name="endDateStr"
                                             value="{{endDateStr}}" required>
+                                        <div class="invalid-feedback">Seleccione una fecha válida.</div>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="endTime" class="form-label">Hora de Fin</label>
                                         <input type="time" class="form-control" id="endTime" name="endTimeStr"
                                             value="{{endTimeStr}}" required>
+                                        <div class="invalid-feedback">Seleccione una hora válida.</div>
                                     </div>
                                 </div>
 
@@ -85,6 +97,7 @@
                                     <label for="eventLocation" class="form-label">Ubicación</label>
                                     <input type="text" class="form-control" id="eventLocation" name="locationName"
                                         value="{{locationName}}" required>
+                                    <div class="invalid-feedback">Indique una ubicación.</div>
                                 </div>
                             </div>
                         </div>
@@ -168,14 +181,16 @@
                                         <span class="input-group-text">€</span>
                                         <input type="number" class="form-control" id="eventPrice" name="price"
                                             value="{{priceValue}}"
-                                            step="0.01" required>
+                                            step="0.01" min="0" required>
+                                        <div class="invalid-feedback">Introduzca un precio numérico válido (mayor o igual a 0).</div>
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="eventCapacity" class="form-label">Capacidad (Personas)</label>
                                     <input type="number" class="form-control" id="eventCapacity" name="capacity"
-                                        value="{{event.capacity}}" required>
+                                        value="{{event.capacity}}" min="1" required>
+                                    <div class="invalid-feedback">Introduzca una capacidad válida (mínimo 1).</div>
                                 </div>
 
                                 <div class="mb-3">
@@ -230,9 +245,11 @@
                 <div class="row g-2">
                     <div class="col-md-3">
                         <input type="time" class="form-control" name="sessionTimes" required>
+                        <div class="invalid-feedback">Requerido.</div>
                     </div>
                     <div class="col-md-9">
                         <input type="text" class="form-control" name="sessionTitles" placeholder="Título de la sesión" required>
+                        <div class="invalid-feedback">El título de sesión es obligatorio.</div>
                     </div>
                     <div class="col-12">
                         <textarea class="form-control" rows="2" name="sessionDescriptions" placeholder="Descripción de la sesión"></textarea>
@@ -254,11 +271,27 @@
                 <div class="row g-2">
                     <div class="col-md-12">
                         <input type="text" class="form-control" name="speakerNames" placeholder="Nombre completo y Cargo" required>
+                        <div class="invalid-feedback">Introduzca el nombre del ponente.</div>
                     </div>
                 </div>
             </div>`;
         container.insertAdjacentHTML('beforeend', html);
     }
+
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
 </script>
 
 </body>

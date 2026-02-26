@@ -162,7 +162,50 @@ public class CartService {
     @Transactional
     // Procesa el pago, activa compras y genera/manda factura.
     public void processPayment(Order order, String cardName, String billingEmail, String cardNumber,
-            String cardExpiry) {
+            String cardExpiry, String cardCvv) {
+
+        // --- BACKEND VALIDATION RULES ---
+        StringBuilder errors = new StringBuilder();
+
+        if (cardName == null || cardName.trim().isEmpty() || !cardName.matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$")) {
+            errors.append("El nombre en la tarjeta es inválido o está vacío.<br>");
+        }
+
+        if (billingEmail == null || !billingEmail.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            errors.append("El formato del email de facturación no es válido.<br>");
+        }
+
+        if (cardNumber == null || !cardNumber.matches("^\\d{16}$")) {
+            errors.append("El número de tarjeta debe contener exactamente 16 dígitos.<br>");
+        }
+
+        if (cardExpiry == null || !cardExpiry.matches("^(0[1-9]|1[0-2])/\\d{2}$")) {
+            errors.append("La fecha de caducidad debe tener formato MM/YY.<br>");
+        } else {
+            try {
+                int expMonth = Integer.parseInt(cardExpiry.substring(0, 2));
+                int expYear = 2000 + Integer.parseInt(cardExpiry.substring(3, 5));
+                java.time.LocalDate now = java.time.LocalDate.now();
+                int currentMonth = now.getMonthValue();
+                int currentYear = now.getYear();
+
+                if (expYear < currentYear || (expYear == currentYear && expMonth < currentMonth)) {
+                    errors.append("La tarjeta de crédito está caducada.<br>");
+                }
+            } catch (Exception e) {
+                errors.append("La fecha de caducidad no es una medida de tiempo válida.<br>");
+            }
+        }
+
+        if (cardCvv == null || !cardCvv.matches("^\\d{3}$")) {
+            errors.append("El CVV debe contener exactamente 3 dígitos.<br>");
+        }
+
+        // Check if any rule failed, throw exception
+        if (errors.length() > 0) {
+            throw new IllegalArgumentException(errors.toString());
+        }
+
         if (order.getItems() == null || order.getItems().isEmpty()) {
             return;
         }

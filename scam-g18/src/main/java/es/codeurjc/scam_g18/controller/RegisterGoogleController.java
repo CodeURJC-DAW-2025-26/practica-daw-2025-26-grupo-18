@@ -109,9 +109,18 @@ public class RegisterGoogleController {
             @RequestParam(value = "image", required = false) MultipartFile imageFile,
             @AuthenticationPrincipal OAuth2User oAuth2User,
             HttpServletRequest request,
-            HttpServletResponse response) throws IOException, SQLException {
+            org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes)
+            throws IOException, SQLException {
 
         String email = oAuth2User.getAttribute("email");
+
+        // Unified validation logic from Service layer
+        String validationErrors = userService.validateUserAttributes(username, email, password, birthDate, gender,
+                country);
+        if (validationErrors != null) {
+            redirectAttributes.addFlashAttribute("errorMsg", validationErrors);
+            return "redirect:/register/google";
+        }
 
         boolean registered = userService.registerUser(username, email, password, gender, birthDate, country, imageFile);
 

@@ -23,6 +23,13 @@
                         No se ha podido completar la compra porque uno de los eventos ya no tiene plazas disponibles.
                     </div>
                     {{/errorNoSeats}}
+
+                    {{#errorMessage}}
+                    <div class="alert mb-4" style="background-color: rgba(217, 109, 60, 0.15); color: #D96D3C; border: 1px solid #D96D3C;" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill"></i> {{{errorMessage}}}
+                    </div>
+                    {{/errorMessage}}
+
                     <!-- Back Button -->
                     <div class="mb-4">
                         <a href="/" class="btn btn-secondary d-inline-flex align-items-center gap-2" style="background-color: #85613d; border-color: #85613d"> <i class="bi bi-arrow-left"></i> Volver </a>

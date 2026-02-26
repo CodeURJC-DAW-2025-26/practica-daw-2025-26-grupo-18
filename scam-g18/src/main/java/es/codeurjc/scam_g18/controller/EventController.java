@@ -65,7 +65,8 @@ public class EventController {
         return "purchasedEvents";
     }
 
-    // Muestra el detalle de un evento y permisos de gestión/compra del usuario actual.
+    // Muestra el detalle de un evento y permisos de gestión/compra del usuario
+    // actual.
     @GetMapping("/event/{id}")
     public String showEvent(Model model, @PathVariable long id, @RequestParam(required = false) String error) {
         var eventOpt = eventService.getEventById(id);
@@ -83,8 +84,8 @@ public class EventController {
                 .orElse(false);
 
         boolean alreadyPurchased = userService.getCurrentAuthenticatedUser()
-            .map(currentUser -> eventService.hasUserPurchasedEvent(currentUser.getId(), event.getId()))
-            .orElse(false);
+                .map(currentUser -> eventService.hasUserPurchasedEvent(currentUser.getId(), event.getId()))
+                .orElse(false);
 
         model.addAttribute("canEdit", canManage);
         model.addAttribute("canDelete", canManage);
@@ -102,7 +103,8 @@ public class EventController {
         return "redirect:/events";
     }
 
-    // Muestra el formulario de edición de un evento si el usuario puede gestionarlo.
+    // Muestra el formulario de edición de un evento si el usuario puede
+    // gestionarlo.
     @GetMapping("/event/{id}/edit")
     public String editEventForm(Model model, @PathVariable long id) {
         var eventOpt = eventService.getEventById(id);
@@ -113,21 +115,21 @@ public class EventController {
             if (currentUserOpt.isPresent() && eventService.canManageEvent(event, currentUserOpt.get())) {
                 model.addAttribute("event", event);
                 model.addAttribute("startDateStr",
-                    event.getStartDate() != null ? event.getStartDate().toLocalDate().toString() : "");
+                        event.getStartDate() != null ? event.getStartDate().toLocalDate().toString() : "");
                 model.addAttribute("startTimeStr",
-                    event.getStartDate() != null ? event.getStartDate().toLocalTime().toString() : "");
+                        event.getStartDate() != null ? event.getStartDate().toLocalTime().toString() : "");
                 model.addAttribute("endDateStr",
-                    event.getEndDate() != null ? event.getEndDate().toLocalDate().toString() : "");
+                        event.getEndDate() != null ? event.getEndDate().toLocalDate().toString() : "");
                 model.addAttribute("endTimeStr",
-                    event.getEndDate() != null ? event.getEndDate().toLocalTime().toString() : "");
+                        event.getEndDate() != null ? event.getEndDate().toLocalTime().toString() : "");
                 model.addAttribute("locationName",
-                    event.getLocation() != null && event.getLocation().getName() != null
-                        ? event.getLocation().getName()
-                        : "");
+                        event.getLocation() != null && event.getLocation().getName() != null
+                                ? event.getLocation().getName()
+                                : "");
                 model.addAttribute("priceValue",
-                    event.getPriceCents() != null
-                        ? String.format(java.util.Locale.US, "%.2f", event.getPriceCents() / 100.0)
-                        : "0.00");
+                        event.getPriceCents() != null
+                                ? String.format(java.util.Locale.US, "%.2f", event.getPriceCents() / 100.0)
+                                : "0.00");
                 model.addAttribute("isConferencia", "Conferencia".equalsIgnoreCase(event.getCategory()));
                 model.addAttribute("isWebinar", "Webinar".equalsIgnoreCase(event.getCategory()));
                 model.addAttribute("isTaller", "Taller".equalsIgnoreCase(event.getCategory()));
@@ -143,10 +145,15 @@ public class EventController {
     public String updateEvent(
             @PathVariable long id,
             Event eventUpdate,
-            @RequestParam(required = false) org.springframework.web.multipart.MultipartFile imageFile)
+            org.springframework.validation.BindingResult bindingResult,
+            @RequestParam(required = false) org.springframework.web.multipart.MultipartFile imageFile,
+            org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes)
             throws java.io.IOException, java.sql.SQLException {
 
-        if (hasInvalidEventData(eventUpdate)) {
+        String validationErrors = eventService.validateEventData(eventUpdate, imageFile, false,
+                bindingResult.hasErrors());
+        if (validationErrors != null) {
+            redirectAttributes.addFlashAttribute("errorMessage", validationErrors);
             return "redirect:/event/" + id + "/edit";
         }
 
@@ -170,10 +177,14 @@ public class EventController {
     @PostMapping("/event/new")
     public String createEvent(
             Event event,
-            @RequestParam(required = false) org.springframework.web.multipart.MultipartFile imageFile)
+            org.springframework.validation.BindingResult bindingResult,
+            @RequestParam(required = false) org.springframework.web.multipart.MultipartFile imageFile,
+            org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes)
             throws java.io.IOException, java.sql.SQLException {
 
-        if (hasInvalidEventData(event)) {
+        String validationErrors = eventService.validateEventData(event, imageFile, true, bindingResult.hasErrors());
+        if (validationErrors != null) {
+            redirectAttributes.addFlashAttribute("errorMessage", validationErrors);
             return "redirect:/events/new";
         }
 
@@ -185,43 +196,5 @@ public class EventController {
         eventService.createEventFromForm(event, currentUserOpt.get(), imageFile);
 
         return "redirect:/events";
-    }
-
-    // Valida los campos obligatorios y reglas básicas de un evento.
-    private boolean hasInvalidEventData(Event event) {
-        if (event == null) {
-            return true;
-        }
-        if (event.getTitle() == null || event.getTitle().isBlank()) {
-            return true;
-        }
-        if (event.getDescription() == null || event.getDescription().isBlank()) {
-            return true;
-        }
-        if (event.getCategory() == null || event.getCategory().isBlank()) {
-            return true;
-        }
-        if (event.getLocationName() == null || event.getLocationName().isBlank()) {
-            return true;
-        }
-        if (event.getPrice() == null || event.getPrice() < 0) {
-            return true;
-        }
-        if (event.getCapacity() == null || event.getCapacity() <= 0) {
-            return true;
-        }
-        if (event.getStartDateStr() == null || event.getStartDateStr().isBlank()) {
-            return true;
-        }
-        if (event.getStartTimeStr() == null || event.getStartTimeStr().isBlank()) {
-            return true;
-        }
-        if (event.getEndDateStr() == null || event.getEndDateStr().isBlank()) {
-            return true;
-        }
-        if (event.getEndTimeStr() == null || event.getEndTimeStr().isBlank()) {
-            return true;
-        }
-        return false;
     }
 }

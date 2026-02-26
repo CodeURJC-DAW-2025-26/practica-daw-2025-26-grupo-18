@@ -73,7 +73,7 @@
                             <h2 class="fw-bold text-dark">Crear Cuenta</h2>
                             <p class="text-muted">Empieza tu aprendizaje hoy</p>
                         </div>
-                        <form id="registerForm" action="/register" method="post" enctype="multipart/form-data">
+                        <form id="registerForm" action="/register" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
                             <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
                             <div class="mb-3">
                                 <label for="regUsername" class="form-label small fw-bold">Nombre de usuario</label>
@@ -81,6 +81,7 @@
                                     <span class="input-group-text"><i class="bi bi-person"></i></span>
                                     <input type="text" class="form-control" id="regUsername" name="username"
                                         placeholder="Tu nombre de usuario" required />
+                                    <div class="invalid-feedback">El nombre de usuario es obligatorio.</div>
                                 </div>
                             </div>
 
@@ -90,6 +91,7 @@
                                     <span class="input-group-text"><i class="bi bi-envelope"></i></span>
                                     <input type="email" class="form-control" id="regEmail" name="email"
                                         placeholder="nombre@ejemplo.com" required />
+                                    <div class="invalid-feedback">Proporcione una dirección de correo válida.</div>
                                 </div>
                             </div>
 
@@ -99,6 +101,7 @@
                                     <span class="input-group-text"><i class="bi bi-lock"></i></span>
                                     <input type="password" class="form-control" id="regPassword" name="password"
                                         placeholder="••••••••" required />
+                                    <div class="invalid-feedback">La contraseña es obligatoria.</div>
                                 </div>
                             </div>
 
@@ -112,6 +115,7 @@
                                         <option value="FEMALE">Femenino</option>
                                         <option value="PREFER_NOT_TO_SAY">Prefiero no decirlo</option>
                                     </select>
+                                    <div class="invalid-feedback">Por favor preste un género.</div>
                                 </div>
                             </div>
 
@@ -120,6 +124,7 @@
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-calendar"></i></span>
                                     <input type="date" class="form-control" id="regBirthDate" name="birthDate" required />
+                                    <div class="invalid-feedback">La fecha de nacimiento es obligatoria.</div>
                                 </div>
                             </div>
 
@@ -129,6 +134,7 @@
                                     <span class="input-group-text"><i class="bi bi-globe"></i></span>
                                     <input type="text" class="form-control" id="regCountry" name="country"
                                         placeholder="Ej: España" required />
+                                    <div class="invalid-feedback">El país es obligatorio.</div>
                                 </div>
                             </div>
 
@@ -177,6 +183,24 @@
 </main>
 
 {{>footer}}
+
+<script>
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+</script>
+
 </body>
 
 </html>

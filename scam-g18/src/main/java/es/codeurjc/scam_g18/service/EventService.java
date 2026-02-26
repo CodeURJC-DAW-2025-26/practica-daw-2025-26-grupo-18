@@ -264,7 +264,8 @@ public class EventService {
                 String desc = (event.getSessionDescriptions() != null && i < event.getSessionDescriptions().size())
                         ? event.getSessionDescriptions().get(i)
                         : "";
-                event.getSessions().add(new EventSession(event.getSessionTimes().get(i), event.getSessionTitles().get(i), desc));
+                event.getSessions()
+                        .add(new EventSession(event.getSessionTimes().get(i), event.getSessionTitles().get(i), desc));
             }
         }
 
@@ -334,7 +335,8 @@ public class EventService {
                 String desc = (source.getSessionDescriptions() != null && i < source.getSessionDescriptions().size())
                         ? source.getSessionDescriptions().get(i)
                         : "";
-                target.getSessions().add(new EventSession(source.getSessionTimes().get(i), source.getSessionTitles().get(i), desc));
+                target.getSessions()
+                        .add(new EventSession(source.getSessionTimes().get(i), source.getSessionTitles().get(i), desc));
             }
         }
 
@@ -439,5 +441,57 @@ public class EventService {
         }
 
         return matches;
+    }
+
+    public String validateEventData(Event event, org.springframework.web.multipart.MultipartFile imageFile,
+            boolean isNew, boolean hasBindingErrors) {
+        List<String> errors = new ArrayList<>();
+
+        if (hasBindingErrors) {
+            errors.add("Error: Por favor, verifique que todos los campos numéricos tengan valores correctos.");
+        }
+
+        if (event == null)
+            return "Error: Datos del evento nulos.";
+
+        if (event.getTitle() == null || event.getTitle().isBlank())
+            errors.add("El título es obligatorio.");
+        if (event.getDescription() == null || event.getDescription().isBlank())
+            errors.add("La descripción detallada es obligatoria.");
+        if (event.getCategory() == null || event.getCategory().isBlank())
+            errors.add("El tipo de evento es obligatorio.");
+        if (event.getLocationName() == null || event.getLocationName().isBlank())
+            errors.add("La ubicación es obligatoria.");
+        if (event.getPrice() == null || event.getPrice() < 0)
+            errors.add("El precio no puede ser negativo.");
+        if (event.getCapacity() == null || event.getCapacity() <= 0)
+            errors.add("La capacidad debe ser mayor a 0.");
+
+        if (event.getStartDateStr() == null || event.getStartDateStr().isBlank() ||
+                event.getStartTimeStr() == null || event.getStartTimeStr().isBlank() ||
+                event.getEndDateStr() == null || event.getEndDateStr().isBlank() ||
+                event.getEndTimeStr() == null || event.getEndTimeStr().isBlank()) {
+            errors.add("Las fechas y horas de inicio y fin son obligatorias.");
+        } else {
+            try {
+                LocalDateTime start = LocalDateTime.of(LocalDate.parse(event.getStartDateStr()),
+                        LocalTime.parse(event.getStartTimeStr()));
+                LocalDateTime end = LocalDateTime.of(LocalDate.parse(event.getEndDateStr()),
+                        LocalTime.parse(event.getEndTimeStr()));
+                if (end.isBefore(start)) {
+                    errors.add("La fecha y hora de fin no puede ser anterior a la de inicio.");
+                }
+            } catch (Exception e) {
+                errors.add("Formato de fecha u hora no válido.");
+            }
+        }
+
+        if (isNew && (imageFile == null || imageFile.isEmpty())) {
+            errors.add("Debe proporcionar una imagen para el evento.");
+        }
+
+        if (errors.isEmpty())
+            return null;
+        return String.join("<br>", errors);
     }
 }

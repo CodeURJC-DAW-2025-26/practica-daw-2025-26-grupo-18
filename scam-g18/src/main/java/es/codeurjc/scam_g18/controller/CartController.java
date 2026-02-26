@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import es.codeurjc.scam_g18.model.Course;
 import es.codeurjc.scam_g18.model.Event;
@@ -78,7 +79,8 @@ public class CartController {
         return "redirect:/cart";
     }
 
-    // Añade un evento al pedido pendiente y controla si no quedan plazas disponibles.
+    // Añade un evento al pedido pendiente y controla si no quedan plazas
+    // disponibles.
     @PostMapping("/cart/add/event/{id}")
     public String addEventToCart(@PathVariable Long id) {
         User currentUser = getCurrentUser();
@@ -113,20 +115,30 @@ public class CartController {
         return "redirect:/cart";
     }
 
-    // Procesa el pago del pedido pendiente y finaliza la compra.
+    // Procesa el pago del pedido pendiente y finaliza la compra con validación de
+    // datos.
     @PostMapping("/cart/checkout")
-    public String checkout(@RequestParam String cardName,
-            @RequestParam String billingEmail,
-            @RequestParam String cardNumber,
-            @RequestParam String cardExpiry) {
+    public String checkout(
+            @RequestParam(required = false) String cardName,
+            @RequestParam(required = false) String billingEmail,
+            @RequestParam(required = false) String cardNumber,
+            @RequestParam(required = false) String cardExpiry,
+            @RequestParam(required = false) String cardCvv,
+            RedirectAttributes redirectAttributes) {
+
         User currentUser = getCurrentUser();
         if (currentUser == null) {
             return "redirect:/login";
         }
 
         Order order = cartService.getOrCreatePendingOrder(currentUser);
+
         try {
-            cartService.processPayment(order, cardName, billingEmail, cardNumber, cardExpiry);
+            cartService.processPayment(order, cardName, billingEmail, cardNumber, cardExpiry, cardCvv);
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            // Return to cart showing the errors at the top
+            return "redirect:/cart";
         } catch (IllegalStateException e) {
             return "redirect:/cart?error=eventFull";
         }

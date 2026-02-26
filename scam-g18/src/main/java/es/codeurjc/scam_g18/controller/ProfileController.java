@@ -75,11 +75,21 @@ public class ProfileController {
             @RequestParam(required = false) String weeklyRoutine,
             @RequestParam(required = false) String comunity,
             @RequestParam(required = false) MultipartFile imageFile,
-            HttpServletRequest request) throws IOException, SQLException {
+            HttpServletRequest request,
+            org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes)
+            throws IOException, SQLException {
 
         var currentUserOpt = userService.getCurrentAuthenticatedUser();
         if (currentUserOpt.isEmpty() || !currentUserOpt.get().getId().equals(id)) {
             return "redirect:/login";
+        }
+
+        // Use the updated UserService validator. We pass nulls to
+        // password/gender/birthDate since they aren't edited here.
+        String validationErrors = userService.validateUserAttributes(username, email, null, null, null, null);
+        if (validationErrors != null) {
+            redirectAttributes.addFlashAttribute("errorMessage", validationErrors);
+            return "redirect:/profile/" + id;
         }
 
         userService.updateProfile(id, username, email, country, shortDescription, currentGoal, weeklyRoutine,

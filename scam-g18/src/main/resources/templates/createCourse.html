@@ -16,8 +16,14 @@
     </div><section id="create-course-section" class="section">
         <div class="container" data-aos="fade-up">
 
-            <form action="/courses/new" method="POST" enctype="multipart/form-data" class="needs-validation">
+            <form action="/courses/new" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
                 <input type="hidden" name="_csrf" value="{{_csrf.token}}">
+                
+                {{#errorMessage}}
+                <div class="alert" style="background-color: rgba(217, 109, 60, 0.15); color: #D96D3C; border: 1px solid #D96D3C;" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i> {{{errorMessage}}}
+                </div>
+                {{/errorMessage}}
 
                 <div class="row g-4">
 
@@ -31,6 +37,7 @@
                                 <div class="mb-3">
                                     <label for="image" class="form-label">Imagen del Curso</label>
                                     <input type="file" class="form-control" id="image" name="imageFile" accept="image/*" required>
+                                    <div class="invalid-feedback">Imagen de curso no válida.</div>
                                     <div class="form-text">Se recomienda una imagen de 1280x720 px.</div>
                                 </div>
 
@@ -38,18 +45,21 @@
                                     <label for="title" class="form-label">Título del Curso</label>
                                     <input type="text" class="form-control" id="title" name="title"
                                         placeholder="Ej: Introducción a JavaScript" required>
+                                    <div class="invalid-feedback">Título de curso no válido.</div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="shortDescription" class="form-label">Descripción Breve</label>
                                     <textarea class="form-control" id="shortDescription" name="shortDescription" rows="3"
                                         placeholder="Resumen corto del curso..." required></textarea>
+                                    <div class="invalid-feedback">Descripción breve no válida.</div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="longDescription" class="form-label">Descripción Detallada</label>
                                     <textarea class="form-control" id="longDescription" name="longDescription" rows="6"
                                         placeholder="Detalles completos del curso..." required></textarea>
+                                    <div class="invalid-feedback">Descripción detallada no válida.</div>
                                 </div>
 
                                 <div class="row">
@@ -62,6 +72,7 @@
                                             <option value="Francés">Francés</option>
                                             <option value="Alemán">Alemán</option>
                                         </select>
+                                        <div class="invalid-feedback">Idioma no válido. Seleccione uno.</div>
                                     </div>
                                 </div>
                             </div>
@@ -82,6 +93,7 @@
                                             placeholder="Ej: Dominar funciones asíncronas" required>
                                         <button class="btn btn-delete" type="button"
                                             onclick="this.parentElement.remove()">×</button>
+                                        <div class="invalid-feedback">Punto de aprendizaje no válido.</div>
                                     </div>
                                 </div>
                             </div>
@@ -102,6 +114,7 @@
                                             required>
                                         <button class="btn btn-delete" type="button"
                                             onclick="this.parentElement.remove()">×</button>
+                                        <div class="invalid-feedback">Etiqueta de curso no válida.</div>
                                     </div>
                                 </div>
                             </div>
@@ -122,6 +135,7 @@
                                             placeholder="Ej: Conocimientos básicos de HTML y CSS" required>
                                         <button class="btn btn-delete" type="button"
                                             onclick="this.parentElement.remove()">×</button>
+                                        <div class="invalid-feedback">Requisito previo no válido.</div>
                                     </div>
                                 </div>
                             </div>
@@ -144,8 +158,10 @@
                                             <div class="flex-grow-1 me-3">
                                                 <input type="text" class="form-control fw-bold mb-2" data-field="module-title" name="modules[0].title"
                                                     placeholder="Título del Módulo" value="Módulo 1: Introducción" required>
+                                                <div class="invalid-feedback">Título de módulo no válido.</div>
                                                 <input type="text" class="form-control text-muted" data-field="module-description" name="modules[0].description"
                                                     placeholder="Breve descripción del módulo" required>
+                                                <div class="invalid-feedback">Descripción de módulo no válida.</div>
                                             </div>
                                             <button type="button" class="btn btn-sm btn-delete"
                                                 onclick="removeModule(this)">Eliminar Módulo</button>
@@ -162,6 +178,7 @@
                                                         placeholder="Enlace del vídeo (URL)" required>
                                                     <button class="btn btn-delete" type="button"
                                                         onclick="removeLesson(this)">×</button>
+                                                    <div class="invalid-feedback">Revise el título y enlace de la lección.</div>
                                                 </div>
                                             </div>
                                             <button type="button" class="btn btn-sm btn-add mt-2"
@@ -185,19 +202,22 @@
                                     <div class="input-group">
                                         <span class="input-group-text">€</span>
                                         <input type="number" class="form-control" id="price" name="price" placeholder="0.00"
-                                            step="0.01" required>
+                                            step="0.01" min="0" required>
+                                        <div class="invalid-feedback">Introduzca un precio válido (0 o superior).</div>
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="videoHours" class="form-label">Horas de Vídeo bajo demanda</label>
-                                    <input type="number" class="form-control" id="videoHours" name="videoHours" placeholder="Ej: 2.5" step="0.1" required>
+                                    <input type="number" class="form-control" id="videoHours" name="videoHours" placeholder="Ej: 2.5" step="0.1" min="0" required>
+                                    <div class="invalid-feedback">Introduzca las horas de vídeo válidas.</div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="downloadableResources" class="form-label">Recursos descargables</label>
                                     <input type="number" class="form-control" id="downloadableResources" name="downloadableResources" placeholder="Ej: 5"
-                                        value="0" required>
+                                        value="0" min="0" required>
+                                    <div class="invalid-feedback">Introduzca un número válido.</div>
                                 </div>
                             </div>
                         </div>
@@ -222,6 +242,29 @@
     </section>
 
 </main>
+
+<script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function () {
+        'use strict'
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.querySelectorAll('.needs-validation')
+
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+</script>
 
 {{>footer}}
 
