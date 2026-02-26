@@ -14,6 +14,7 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import org.springframework.web.bind.annotation.RequestParam;
@@ -90,6 +91,7 @@ public class CourseController {
         model.addAttribute("canEdit", canManage);
         model.addAttribute("isSuscribedToCourse", isSuscribed);
         model.addAttribute("hasReviewed", hasReviewed);
+        model.addAttribute("userId", currentUserId);
 
         return "course";
 

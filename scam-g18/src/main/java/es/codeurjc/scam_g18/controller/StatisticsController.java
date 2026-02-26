@@ -39,13 +39,14 @@ public class StatisticsController {
     public String courseProgress(Model model, @RequestParam Long userId) {
         int total = enrollmentRepository.findByUserId(userId).size();
         int completed = enrollmentRepository.countByUserIdAndProgressPercentage(userId, 100);
+        int remaining = total - completed;
         List<String> namesList = new ArrayList<>();
-        namesList.add("Total inscritos");
         namesList.add("Completados");
+        namesList.add("En progreso");
         List<Double> data = new ArrayList<>();
-        data.add((double) total);
         data.add((double) completed);
-        return createChart(model, "Cursos", "doughnut", namesList, data);
+        data.add((double) remaining);
+        return createChart(model, "Mis Cursos", "doughnut", namesList, data);
     }
 
     @GetMapping("/statistics/lessons-learned")

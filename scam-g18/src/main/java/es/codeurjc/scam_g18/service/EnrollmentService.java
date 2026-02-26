@@ -21,7 +21,6 @@ import es.codeurjc.scam_g18.repository.EventRegistrationRepository;
 import es.codeurjc.scam_g18.repository.LessonProgressRepository;
 
 import java.time.LocalDateTime;
-import es.codeurjc.scam_g18.repository.LessonProgressRepository;
 
 @Service
 public class EnrollmentService {
@@ -31,9 +30,6 @@ public class EnrollmentService {
 
     @Autowired
     private EventRegistrationRepository eventRegistrationRepository;
-
-    @Autowired
-    private LessonProgressRepository lessonProgressRepository;
 
     @Autowired
     private LessonProgressRepository lessonProgressRepository;
