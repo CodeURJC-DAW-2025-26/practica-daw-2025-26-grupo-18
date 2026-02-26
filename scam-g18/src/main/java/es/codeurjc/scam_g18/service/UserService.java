@@ -127,6 +127,22 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    // Comprueba si ya existe un usuario con ese username (sin distinguir mayúsculas).
+    public boolean usernameExists(String username) {
+        if (username == null || username.isBlank()) {
+            return false;
+        }
+        return userRepository.existsByUsernameIgnoreCase(username.trim());
+    }
+
+    // Comprueba si ya existe un usuario con ese email (sin distinguir mayúsculas).
+    public boolean emailExists(String email) {
+        if (email == null || email.isBlank()) {
+            return false;
+        }
+        return userRepository.existsByEmailIgnoreCase(email.trim());
+    }
+
     // Guarda los cambios de un usuario.
     public void save(User user) {
         userRepository.save(user);
@@ -282,16 +298,19 @@ public class UserService {
     // Registra un nuevo usuario si username y email están disponibles.
     public boolean registerUser(String username, String email, String rawPassword, String gender, String birthDate,
             String country, MultipartFile imageFile) throws IOException, SQLException {
-        if (findByUsername(username).isPresent()) {
+        String normalizedUsername = username != null ? username.trim() : "";
+        String normalizedEmail = email != null ? email.trim() : "";
+
+        if (usernameExists(normalizedUsername)) {
             return false;
         }
-        if (userRepository.findByEmail(email).isPresent()) {
+        if (emailExists(normalizedEmail)) {
             return false;
         }
 
         User newUser = new User();
-        newUser.setUsername(username);
-        newUser.setEmail(email);
+        newUser.setUsername(normalizedUsername);
+        newUser.setEmail(normalizedEmail);
         newUser.setPassword(passwordEncoder.encode(rawPassword));
         newUser.setGender(gender);
         newUser.setBirthDate(LocalDate.parse(birthDate));

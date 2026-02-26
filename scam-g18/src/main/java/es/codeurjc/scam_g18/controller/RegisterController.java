@@ -1,7 +1,12 @@
 package es.codeurjc.scam_g18.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +24,24 @@ public class RegisterController {
     @Autowired
     private UserService userService;
 
+    @GetMapping("/register/check-availability")
+    @ResponseBody
+    public Map<String, Boolean> checkAvailability(
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String email) {
+
+        Map<String, Boolean> response = new HashMap<>();
+
+        boolean usernameTaken = userService.usernameExists(username);
+        boolean emailTaken = userService.emailExists(email);
+
+        response.put("usernameTaken", usernameTaken);
+        response.put("emailTaken", emailTaken);
+        response.put("available", !usernameTaken && !emailTaken);
+
+        return response;
+    }
+
     @PostMapping("/register")
     public String registerUser(@RequestParam(required = false) String username,
             @RequestParam(required = false) String email,
@@ -34,6 +57,14 @@ public class RegisterController {
         if (validationErrors != null) {
             redirectAttributes.addFlashAttribute("error", validationErrors);
             return "redirect:/register";
+        }
+
+        if (userService.usernameExists(username)) {
+            return "redirect:/register?error=usernameExists";
+        }
+
+        if (userService.emailExists(email)) {
+            return "redirect:/register?error=emailExists";
         }
 
         boolean registered = userService.registerUser(username, email, password, gender, birthDate, country, imageFile);

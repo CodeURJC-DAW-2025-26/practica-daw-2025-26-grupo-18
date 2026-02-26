@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
@@ -21,6 +22,8 @@ public class SecurityConfiguration {
         public UserDetailsService userDetailsService;
         @Autowired
         private CustomOAuth2UserService customOAuth2UserService;
+        @Autowired
+        private ActiveUserSessionFilter activeUserSessionFilter;
 
         @Bean
         public PasswordEncoder passwordEncoder() {
@@ -57,6 +60,7 @@ public class SecurityConfiguration {
                 http.authenticationProvider(authenticationProvider());
 
                 http
+                                .addFilterBefore(activeUserSessionFilter, UsernamePasswordAuthenticationFilter.class)
                                 .headers(headers -> headers
                                                 .frameOptions(frameOptions -> frameOptions.sameOrigin()))
                                 .authorizeHttpRequests(authorize -> authorize
@@ -65,7 +69,8 @@ public class SecurityConfiguration {
                                                                 "/*.js", "/webjars/**")
                                                 .permitAll()
                                                 .requestMatchers("/", "/courses", "/events").permitAll()
-                                                .requestMatchers("/login", "/register", "/error").permitAll()
+                                                .requestMatchers("/login", "/register", "/register/check-availability", "/error")
+                                                .permitAll()
                                                 .requestMatchers("/course/{id}", "/event/{id}").permitAll()
                                                 .requestMatchers("/statistics/course-ages",
                                                                 "/statistics/course-genders", "/statistics/course-tags")

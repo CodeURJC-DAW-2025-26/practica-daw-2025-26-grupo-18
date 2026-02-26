@@ -33,7 +33,15 @@ public class LoginController {
     }
 
     @GetMapping("/register")
-    public String register(Model model) {
+    public String register(Model model,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) String error) {
+        if ("usernameExists".equals(error)) {
+            model.addAttribute("error", "Ese nombre de usuario ya está en uso.");
+        } else if ("emailExists".equals(error)) {
+            model.addAttribute("error", "Ese correo electrónico ya está registrado.");
+        } else if ("userExists".equals(error)) {
+            model.addAttribute("error", "Ya existe una cuenta con ese usuario o correo.");
+        }
         model.addAttribute("isRegister", true);
         return "createuser";
     }

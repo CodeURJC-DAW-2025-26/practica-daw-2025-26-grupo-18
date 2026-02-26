@@ -47,21 +47,64 @@ public class EmailService {
         }
     }
 
+    // Envía un correo en formato HTML.
+    private void sendHtmlMail(String destinatario, String asunto, String cuerpoHtml) {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            helper.setFrom("scam.noreply67@gmail.com");
+            helper.setTo(destinatario);
+            helper.setSubject(asunto);
+            helper.setText(cuerpoHtml, true);
+
+            mailSender.send(mimeMessage);
+            System.out.println("¡Correo HTML enviado con éxito!");
+        } catch (MessagingException e) {
+            throw new RuntimeException("No se pudo enviar el correo HTML", e);
+        }
+    }
+
     // Envía el mensaje de bienvenida al crear una cuenta nueva.
     public void newAccountMessage(String newUserMail, String newUsername) {
-        String message = """
-                ¡Hola %s!
+                String safeUsername = (newUsername == null || newUsername.isBlank()) ? "usuario" : newUsername;
 
-                Estamos muy emocionados de tenerte con nosotros. Tu cuenta en SCAM ha sido creada con éxito y ya puedes empezar a explorar todas nuestras funciones.
+                String messageHtml = """
+                                <div style="margin:0;padding:24px;background-color:#f3e4c9;font-family:Arial,sans-serif;color:#422823;">
+                                    <table role="presentation" width="100%%" cellspacing="0" cellpadding="0" style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e7d4b1;">
+                                        <tr>
+                                            <td style="padding:24px 28px;background:#422823;color:#ffffff;">
+                                                <h1 style="margin:0;font-size:24px;line-height:1.2;">¡Bienvenido a SCAM!</h1>
+                                                <p style="margin:8px 0 0 0;font-size:14px;opacity:0.95;">Tu cuenta ya está lista</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:28px;">
+                                                <p style="margin:0 0 16px 0;font-size:16px;">Hola <strong>%s</strong>,</p>
+                                                <p style="margin:0 0 14px 0;font-size:15px;line-height:1.6;">
+                                                    Nos alegra tenerte con nosotros. Tu cuenta se ha creado correctamente y ya puedes empezar a aprovechar todas las funcionalidades de la plataforma.
+                                                </p>
+                                                <div style="margin:20px 0;padding:14px 16px;background:#fff7eb;border:1px solid #e7d4b1;border-radius:8px;">
+                                                    <p style="margin:0 0 8px 0;font-size:14px;color:#85613d;"><strong>Siguiente paso recomendado:</strong></p>
+                                                    <p style="margin:0;font-size:14px;line-height:1.5;">Completa tu perfil y explora el catálogo para encontrar tus primeros cursos y eventos.</p>
+                                                </div>
+                                                <div style="margin:20px 0 0 0;">
+                                                    <a href="https://localhost:8443/" style="display:inline-block;background:#d96d3c;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:8px;font-size:14px;font-weight:700;">Ir a SCAM</a>
+                                                </div>
+                                                <p style="margin:0;font-size:14px;line-height:1.6;">Gracias por confiar en SCAM.</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:16px 28px;background:#fff7eb;border-top:1px solid #e7d4b1;font-size:12px;color:#85613d;">
+                                                Equipo de SCAM
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                """
+                                .formatted(safeUsername);
 
-                Para comenzar, te recomendamos completar tu perfil y revisar nuestro catálogo.
-
-                Saludos,
-                El equipo de SCAM
-                """
-                .formatted(newUsername); // Esto inyecta el nombre donde pusimos %s
-
-        sendMail(newUserMail, "Bienvenido a SCAM", message);
+                sendHtmlMail(newUserMail, "Bienvenido a SCAM", messageHtml);
     }
 
     // Notifica al creador cuando su curso ha sido publicado.

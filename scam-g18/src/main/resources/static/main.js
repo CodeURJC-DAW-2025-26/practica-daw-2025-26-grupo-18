@@ -312,6 +312,87 @@ document.addEventListener("DOMContentLoaded", () => {
     updateModuleCount();
 });
 
+function setupRegisterAvailabilityValidation() {
+    const form = document.getElementById("registerForm") || document.getElementById("googleRegisterForm");
+    if (!form) {
+        return;
+    }
+
+    const usernameInput = form.querySelector('input[name="username"]');
+    const emailInput = form.querySelector('input[name="email"]');
+
+    if (!usernameInput || !emailInput) {
+        return;
+    }
+
+    let checkInProgress = false;
+
+    const usernameFeedback = document.createElement("div");
+    usernameFeedback.className = "form-text text-danger d-none";
+    usernameInput.closest(".mb-3")?.appendChild(usernameFeedback);
+
+    const emailFeedback = document.createElement("div");
+    emailFeedback.className = "form-text text-danger d-none";
+    emailInput.closest(".mb-3")?.appendChild(emailFeedback);
+
+    const setFieldState = (input, feedback, hasError, message) => {
+        if (hasError) {
+            input.classList.add("is-invalid");
+            input.setCustomValidity(message || "Valor no disponible");
+            feedback.textContent = message || "Valor no disponible";
+            feedback.classList.remove("d-none");
+        } else {
+            input.classList.remove("is-invalid");
+            input.setCustomValidity("");
+            feedback.textContent = "";
+            feedback.classList.add("d-none");
+        }
+    };
+
+    const checkAvailability = async () => {
+        const username = usernameInput.value.trim();
+        const email = emailInput.value.trim();
+
+        if (!username || !email || checkInProgress) {
+            return;
+        }
+
+        checkInProgress = true;
+
+        try {
+            const response = await fetch(`/register/check-availability?username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}`, { method: "GET", headers: { Accept: "application/json" } });
+
+            if (!response.ok) {
+                return;
+            }
+
+            const data = await response.json();
+            setFieldState(usernameInput, usernameFeedback, data.usernameTaken, "Ese nombre de usuario ya está en uso");
+            setFieldState(emailInput, emailFeedback, data.emailTaken, "Ese correo electrónico ya está registrado");
+        } catch (_error) {
+            // En caso de error de red dejamos que valide el backend al enviar
+        } finally {
+            checkInProgress = false;
+        }
+    };
+
+    usernameInput.addEventListener("blur", checkAvailability);
+    emailInput.addEventListener("blur", checkAvailability);
+
+    form.addEventListener("submit", async (event) => {
+        await checkAvailability();
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+            form.reportValidity();
+        }
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    setupRegisterAvailabilityValidation();
+});
+
 // ── Sesiones de agenda ────────────────────────────────────────────────────
 function addAgendaItem() {
     const container = document.getElementById("agenda-container");

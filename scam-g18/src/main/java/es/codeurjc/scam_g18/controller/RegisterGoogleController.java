@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import es.codeurjc.scam_g18.model.User;
+import es.codeurjc.scam_g18.service.EmailService;
 import es.codeurjc.scam_g18.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -36,6 +37,9 @@ public class RegisterGoogleController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private EmailService emailService;
 
     /**
      * Muestra el formulario para completar los datos del usuario registrado con
@@ -53,7 +57,13 @@ public class RegisterGoogleController {
         model.addAttribute("googleSuggestedUsername", buildSuggestedUsername(oAuth2User, email));
         model.addAttribute("googleSuggestedCountry", buildSuggestedCountry(oAuth2User));
 
-        if ("userExists".equals(error)) {
+        if ("usernameExists".equals(error)) {
+            model.addAttribute("errorMsg",
+                    "Ese nombre de usuario ya está en uso. Por favor, prueba con otro.");
+        } else if ("emailExists".equals(error)) {
+            model.addAttribute("errorMsg",
+                    "Ya existe una cuenta con este correo de Google. Inicia sesión normalmente.");
+        } else if ("userExists".equals(error)) {
             model.addAttribute("errorMsg",
                     "El nombre de usuario ya está en uso o este correo ya tiene una cuenta. Por favor, prueba con otro nombre de usuario o inicia sesión normalmente.");
         }
@@ -122,11 +132,21 @@ public class RegisterGoogleController {
             return "redirect:/register/google";
         }
 
+        if (userService.usernameExists(username)) {
+            return "redirect:/register/google?error=usernameExists";
+        }
+
+        if (userService.emailExists(email)) {
+            return "redirect:/register/google?error=emailExists";
+        }
+
         boolean registered = userService.registerUser(username, email, password, gender, birthDate, country, imageFile);
 
         if (!registered) {
             return "redirect:/register/google?error=userExists";
         }
+
+        emailService.newAccountMessage(email, username);
 
         // Registro exitoso: cargamos el usuario recién creado para obtener sus roles
         // reales
