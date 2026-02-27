@@ -4697,6 +4697,10 @@ section,
     padding: 0.75rem;
 }
 
+#profile-page-main.profile-edit-mode > *:not(.profile-overview-section) {
+    display: none !important;
+}
+
 /* Instructor carousel controls */
 #instructorCoursesCarousel .carousel-control-prev,
 #instructorCoursesCarousel .carousel-control-next {

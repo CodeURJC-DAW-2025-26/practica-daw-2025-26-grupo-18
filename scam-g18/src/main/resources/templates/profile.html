@@ -1,6 +1,6 @@
 ﻿{{>header}}
 
-<main class="main">
+<main class="main" id="profile-page-main">
 
 	<!-- Page Title -->
 	<div class="page-title light-background">
@@ -16,7 +16,7 @@
 	</div><!-- End Page Title -->
 
 	<!-- Profile Overview -->
-	<section class="section">
+	<section class="section profile-overview-section">
 		<div class="container" data-aos="fade-up">
 			{{#errorMessage}}
 			<div class="alert alert-warning mb-4" style="background-color: rgba(217, 109, 60, 0.15); color: #D96D3C; border: 1px solid #D96D3C;" role="alert">
@@ -437,11 +437,20 @@
 <script>
 {{#errorMessage}}
 document.addEventListener('DOMContentLoaded', function() {
+	setProfileEditMode(true);
+});
+{{/errorMessage}}
+
+function setProfileEditMode(isEditing) {
+	var main = document.getElementById('profile-page-main');
 	var view = document.getElementById('profile-view');
 	var edit = document.getElementById('profile-edit');
 	var about = document.getElementById('profile-about-container');
 	var mainContainer = document.getElementById('profile-main-container');
-	if (view && edit) {
+
+	if (!view || !edit) return;
+
+	if (isEditing) {
 		view.style.display = 'none';
 		edit.style.display = 'block';
 		if (about) about.style.display = 'none';
@@ -449,16 +458,10 @@ document.addEventListener('DOMContentLoaded', function() {
 			mainContainer.classList.remove('col-lg-4');
 			mainContainer.classList.add('col-12', 'is-editing');
 		}
-	}
-});
-{{/errorMessage}}
-
-function toggleEdit() {
-	var view = document.getElementById('profile-view');
-	var edit = document.getElementById('profile-edit');
-	var about = document.getElementById('profile-about-container');
-	var mainContainer = document.getElementById('profile-main-container');
-	if (view.style.display === 'none') {
+		if (main) {
+			main.classList.add('profile-edit-mode');
+		}
+	} else {
 		view.style.display = 'block';
 		edit.style.display = 'none';
 		if (about) about.style.display = 'block';
@@ -466,14 +469,18 @@ function toggleEdit() {
 			mainContainer.classList.remove('col-12', 'is-editing');
 			mainContainer.classList.add('col-lg-4');
 		}
-	} else {
-		view.style.display = 'none';
-		edit.style.display = 'block';
-		if (about) about.style.display = 'none';
-		if (mainContainer) {
-			mainContainer.classList.remove('col-lg-4');
-			mainContainer.classList.add('col-12', 'is-editing');
+		if (main) {
+			main.classList.remove('profile-edit-mode');
 		}
+	}
+}
+
+function toggleEdit() {
+	var view = document.getElementById('profile-view');
+	if (view.style.display === 'none') {
+		setProfileEditMode(false);
+	} else {
+		setProfileEditMode(true);
 	}
 }
 
