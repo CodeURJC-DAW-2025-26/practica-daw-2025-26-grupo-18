@@ -107,35 +107,62 @@ public class EventController {
     // gestionarlo.
     @GetMapping("/event/{id}/edit")
     public String editEventForm(Model model, @PathVariable long id) {
-        var eventOpt = eventService.getEventById(id);
-        if (eventOpt.isPresent()) {
-            Event event = eventOpt.get();
+        try {
+            var eventOpt = eventService.getEventById(id);
+            if (eventOpt.isPresent()) {
+                Event event = eventOpt.get();
 
-            var currentUserOpt = userService.getCurrentAuthenticatedUser();
-            if (currentUserOpt.isPresent() && eventService.canManageEvent(event, currentUserOpt.get())) {
-                model.addAttribute("event", event);
-                model.addAttribute("startDateStr",
-                        event.getStartDate() != null ? event.getStartDate().toLocalDate().toString() : "");
-                model.addAttribute("startTimeStr",
-                        event.getStartDate() != null ? event.getStartDate().toLocalTime().toString() : "");
-                model.addAttribute("endDateStr",
-                        event.getEndDate() != null ? event.getEndDate().toLocalDate().toString() : "");
-                model.addAttribute("endTimeStr",
-                        event.getEndDate() != null ? event.getEndDate().toLocalTime().toString() : "");
-                model.addAttribute("locationName",
-                        event.getLocation() != null && event.getLocation().getName() != null
-                                ? event.getLocation().getName()
-                                : "");
-                model.addAttribute("priceValue",
-                        event.getPriceCents() != null
-                                ? String.format(java.util.Locale.US, "%.2f", event.getPriceCents() / 100.0)
-                                : "0.00");
-                model.addAttribute("isConferencia", "Conferencia".equalsIgnoreCase(event.getCategory()));
-                model.addAttribute("isWebinar", "Webinar".equalsIgnoreCase(event.getCategory()));
-                model.addAttribute("isTaller", "Taller".equalsIgnoreCase(event.getCategory()));
-                model.addAttribute("isNetworking", "Networking".equalsIgnoreCase(event.getCategory()));
-                return "editEvent";
+                var currentUserOpt = userService.getCurrentAuthenticatedUser();
+                if (currentUserOpt.isPresent() && eventService.canManageEvent(event, currentUserOpt.get())) {
+                    model.addAttribute("event", event);
+                    model.addAttribute("startDateStr",
+                            event.getStartDate() != null ? event.getStartDate().toLocalDate().toString() : "");
+                    model.addAttribute("startTimeStr",
+                            event.getStartDate() != null ? event.getStartDate().toLocalTime().toString() : "");
+                    model.addAttribute("endDateStr",
+                            event.getEndDate() != null ? event.getEndDate().toLocalDate().toString() : "");
+                    model.addAttribute("endTimeStr",
+                            event.getEndDate() != null ? event.getEndDate().toLocalTime().toString() : "");
+                    model.addAttribute("locationName",
+                            event.getLocation() != null && event.getLocation().getName() != null
+                                    ? event.getLocation().getName()
+                                    : "");
+                    model.addAttribute("priceValue",
+                            event.getPriceCents() != null
+                                    ? String.format(java.util.Locale.US, "%.2f", event.getPriceCents() / 100.0)
+                                    : "0.00");
+                    model.addAttribute("isConferencia", "Conferencia".equalsIgnoreCase(event.getCategory()));
+                    model.addAttribute("isWebinar", "Webinar".equalsIgnoreCase(event.getCategory()));
+                    model.addAttribute("isTaller", "Taller".equalsIgnoreCase(event.getCategory()));
+                    model.addAttribute("isNetworking", "Networking".equalsIgnoreCase(event.getCategory()));
+
+                    model.addAttribute("locationAddress",
+                            event.getLocation() != null ? event.getLocation().getAddress() : "");
+                    model.addAttribute("locationCity",
+                            event.getLocation() != null ? event.getLocation().getCity() : "");
+                    model.addAttribute("locationCountry",
+                            event.getLocation() != null ? event.getLocation().getCountry() : "");
+
+                    model.addAttribute("locationLat",
+                            event.getLocation() != null ? event.getLocation().getLatitude() : "");
+                    model.addAttribute("locationLon",
+                            event.getLocation() != null ? event.getLocation().getLongitude() : "");
+
+                    if (event.getLocation() != null) {
+                        event.setLocationLatitude(event.getLocation().getLatitude());
+                        event.setLocationLongitude(event.getLocation().getLongitude());
+                    }
+
+                    return "editEvent";
+                } else {
+                    System.out.println("User not authorized or current user is null for event: " + id);
+                }
+            } else {
+                System.out.println("Event not found for ID: " + id);
             }
+        } catch (Exception e) {
+            System.err.println("Error rendering editEvent form: " + e.getMessage());
+            e.printStackTrace();
         }
         return "redirect:/events";
     }

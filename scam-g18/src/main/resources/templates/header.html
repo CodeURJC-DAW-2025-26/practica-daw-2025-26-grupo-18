@@ -1,3 +1,6 @@
+<!DOCTYPE html>
+<html lang="es">
+
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
@@ -54,33 +57,42 @@
                 </ul>
                 <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
             </nav>
-            {{#isUserLoggedIn}}
+
             <div class="header-user-actions d-flex align-items-center gap-3">
                 <a href="/cart" class="header-cart-link" aria-label="Ir al carrito">
                     <i class="bi bi-bag"></i>
                 </a>
+
+                {{#isUserLoggedIn}}
                 <div class="header-profile dropdown">
-                    <a href="#" class="d-flex align-items-center gap-3 text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="font-family: var(--nav-font); color: var(--nav-color); font-size: 16px">
+                    <a href="#" class="d-flex align-items-center gap-3 text-decoration-none dropdown-toggle"
+                        data-bs-toggle="dropdown" aria-expanded="false"
+                        style="font-family: var(--nav-font); color: var(--nav-color); font-size: 16px">
                         <span class="profile-name">{{userName}}</span>
-                        <img src="/images/users/{{userId}}/profile" alt="Profile" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover" />
+                        <img src="/images/users/{{userId}}/profile" alt="Profile" class="rounded-circle"
+                            style="width: 40px; height: 40px; object-fit: cover" />
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end profile-dropdown" aria-labelledby="profileDropdown">
                         <li>
-                            <a class="dropdown-item" href="/profile/{{userId}}"><i class="bi bi-person-circle"></i> Mi Perfil</a>
+                            <a class="dropdown-item" href="/profile/{{userId}}"><i class="bi bi-person-circle"></i> Mi
+                                Perfil</a>
                         </li>
-                        <li><hr class="dropdown-divider" /></li>
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
                         <li>
                             <form action="/logout" method="post" class="m-0">
                                 <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
-                                <button type="submit" class="dropdown-item"><i class="bi bi-box-arrow-right"></i> Logout</button>
+                                <button type="submit" class="dropdown-item"><i class="bi bi-box-arrow-right"></i>
+                                    Logout</button>
                             </form>
                         </li>
                     </ul>
                 </div>
+                {{/isUserLoggedIn}}
+                {{^isUserLoggedIn}}
+                <a class="btn-getstarted" href="/login">Iniciar sesión/Registrarse</a>
+                {{/isUserLoggedIn}}
             </div>
-            {{/isUserLoggedIn}} {{^isUserLoggedIn}}
-            <a class="btn-getstarted" href="/login">Iniciar sesión/Registrarse</a>
-            {{/isUserLoggedIn}}
         </div>
     </header>
-</body>

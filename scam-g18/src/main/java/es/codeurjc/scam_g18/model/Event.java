@@ -108,6 +108,10 @@ public class Event {
     private List<String> sessionDescriptions;
     @Transient
     private List<String> speakerNames;
+    @Transient
+    private Double locationLatitude;
+    @Transient
+    private Double locationLongitude;
 
     public Event() {
     }
@@ -215,6 +219,22 @@ public class Event {
 
     public void setSpeakerNames(List<String> speakerNames) {
         this.speakerNames = speakerNames;
+    }
+
+    public Double getLocationLatitude() {
+        return locationLatitude;
+    }
+
+    public void setLocationLatitude(Double locationLatitude) {
+        this.locationLatitude = locationLatitude;
+    }
+
+    public Double getLocationLongitude() {
+        return locationLongitude;
+    }
+
+    public void setLocationLongitude(Double locationLongitude) {
+        this.locationLongitude = locationLongitude;
     }
 
     public Event(User creator, Location location, Image image, String title, String description, Integer priceCents,

@@ -253,11 +253,14 @@ public class EventService {
             event.setEndDate(end);
         }
 
-        if (event.getLocationName() != null) {
+        if (event.getLocationName() != null && !event.getLocationName().isBlank()) {
             es.codeurjc.scam_g18.model.Location location = new es.codeurjc.scam_g18.model.Location();
             location.setName(event.getLocationName());
-            location.setCity("Madrid");
-            location.setCountry("Spain");
+            location.setAddress(event.getLocationAddress());
+            location.setCity(event.getLocationCity() != null ? event.getLocationCity() : "Madrid");
+            location.setCountry(event.getLocationCountry() != null ? event.getLocationCountry() : "Spain");
+            location.setLatitude(event.getLocationLatitude());
+            location.setLongitude(event.getLocationLongitude());
             event.setLocation(location);
         }
 
@@ -320,16 +323,27 @@ public class EventService {
             target.setEndDate(end);
         }
 
-        if (source.getLocationName() != null) {
+        if (source.getLocationName() != null && !source.getLocationName().isBlank()) {
             if (target.getLocation() != null) {
                 target.getLocation().setName(source.getLocationName());
+                target.getLocation().setAddress(source.getLocationAddress());
+                target.getLocation().setCity(source.getLocationCity());
+                target.getLocation().setCountry(source.getLocationCountry());
+                target.getLocation().setLatitude(source.getLocationLatitude());
+                target.getLocation().setLongitude(source.getLocationLongitude());
             } else {
                 es.codeurjc.scam_g18.model.Location location = new es.codeurjc.scam_g18.model.Location();
                 location.setName(source.getLocationName());
-                location.setCity("Madrid");
-                location.setCountry("Spain");
+                location.setAddress(source.getLocationAddress());
+                location.setCity(source.getLocationCity() != null ? source.getLocationCity() : "Madrid");
+                location.setCountry(source.getLocationCountry() != null ? source.getLocationCountry() : "Spain");
+                location.setLatitude(source.getLocationLatitude());
+                location.setLongitude(source.getLocationLongitude());
                 target.setLocation(location);
             }
+        } else if (source.getLocationName() != null && source.getLocationName().isBlank()) {
+            // If location name is provided as empty string, it might mean it's online
+            target.setLocation(null);
         }
 
         target.getSessions().clear();

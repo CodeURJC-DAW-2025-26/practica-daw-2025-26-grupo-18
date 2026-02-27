@@ -1,4 +1,31 @@
 {{>header}}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<style>
+    .search-results {
+        position: absolute;
+        width: 100%;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .search-result-item {
+        padding: 8px 12px;
+        cursor: pointer;
+    }
+
+    .search-result-item:hover {
+        background-color: #f8f9fa;
+        color: #D96D3C;
+    }
+</style>
 
 <main class="main">
 
@@ -17,17 +44,19 @@
     </div><!-- End Page Title -->
 
     <!-- Edit Event Section -->
-    <section id="edit-event-section" class="section">
-        <div class="container" data-aos="fade-up">
+    <section id="event-edit" class="event-edit section">
+        <div class="container">
 
             {{#errorMessage}}
-            <div class="alert alert-warning mb-4" style="background-color: rgba(217, 109, 60, 0.15); color: #D96D3C; border: 1px solid #D96D3C;" role="alert">
+            <div class="alert alert-warning mb-4"
+                style="background-color: rgba(217, 109, 60, 0.15); color: #D96D3C; border: 1px solid #D96D3C;"
+                role="alert">
                 <i class="bi bi-exclamation-triangle-fill"></i> {{{errorMessage}}}
             </div>
             {{/errorMessage}}
 
-            <form class="needs-validation" action="/event/{{event.id}}/edit" method="post"
-                enctype="multipart/form-data" novalidate>
+            <form class="needs-validation" action="/event/{{event.id}}/edit" method="post" enctype="multipart/form-data"
+                novalidate>
                 <input type="hidden" name="_csrf" value="{{_csrf.token}}">
 
                 <div class="row g-4">
@@ -93,11 +122,52 @@
                                     </div>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label for="eventLocation" class="form-label">Ubicación</label>
-                                    <input type="text" class="form-control" id="eventLocation" name="locationName"
-                                        value="{{locationName}}" required>
-                                    <div class="invalid-feedback">Indique una ubicación.</div>
+                                <div class="mb-3 position-relative">
+                                    <label for="eventLocation" class="form-label">Ubicación del Evento</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                                        <input type="text" class="form-control" id="eventLocation" name="locationName"
+                                            value="{{locationName}}"
+                                            placeholder="Nombre del lugar (ej: Estadio Santiago Bernabéu)" required
+                                            autocomplete="off">
+                                    </div>
+                                    <div id="search-results-name" class="search-results d-none"></div>
+                                    <div class="form-text">Empieza a escribir para buscar lugares y direcciones.</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label for="locationAddress" class="form-label">Dirección Completa</label>
+                                        <input type="text" class="form-control" id="locationAddress"
+                                            name="locationAddress" value="{{locationAddress}}"
+                                            placeholder="Calle, número, etc." required>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="locationCity" class="form-label">Ciudad</label>
+                                        <input type="text" class="form-control" id="locationCity" name="locationCity"
+                                            value="{{locationCity}}" placeholder="Madrid" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="locationCountry" class="form-label">País</label>
+                                        <input type="text" class="form-control" id="locationCountry"
+                                            name="locationCountry" value="{{locationCountry}}" placeholder="España"
+                                            required>
+                                    </div>
+                                </div>
+
+                                <!-- Hidden coordinate fields -->
+                                <input type="hidden" id="locationLat" name="locationLatitude" value="{{locationLat}}">
+                                <input type="hidden" id="locationLon" name="locationLongitude" value="{{locationLon}}">
+
+                                <!-- Map Preview -->
+                                <div id="map-preview" class="rounded mb-3 border shadow-sm"
+                                    style="height: 250px; background: #eee;">
+                                    <div class="h-100 d-flex align-items-center justify-content-center text-muted">
+                                        <span>Cargando mapa...</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -180,9 +250,9 @@
                                     <div class="input-group">
                                         <span class="input-group-text">€</span>
                                         <input type="number" class="form-control" id="eventPrice" name="price"
-                                            value="{{priceValue}}"
-                                            step="0.01" min="0" required>
-                                        <div class="invalid-feedback">Introduzca un precio numérico válido (mayor o igual a 0).</div>
+                                            value="{{priceValue}}" step="0.01" min="0" required>
+                                        <div class="invalid-feedback">Introduzca un precio numérico válido (mayor o
+                                            igual a 0).</div>
                                     </div>
                                 </div>
 
@@ -196,15 +266,15 @@
                                 <div class="mb-3">
                                     <label for="eventType" class="form-label">Tipo de Evento</label>
                                     <select class="form-select" id="eventType" name="category">
-                                        <option value="Conferencia"
-                                            {{#isConferencia}}selected{{/isConferencia}}>Conferencia
+                                        <option value="Conferencia" {{#isConferencia}}selected{{/isConferencia}}>
+                                            Conferencia
                                         </option>
                                         <option value="Webinar" {{#isWebinar}}selected{{/isWebinar}}>Webinar
                                         </option>
                                         <option value="Taller" {{#isTaller}}selected{{/isTaller}}>Taller
                                         </option>
-                                        <option value="Networking"
-                                            {{#isNetworking}}selected{{/isNetworking}}>Networking</option>
+                                        <option value="Networking" {{#isNetworking}}selected{{/isNetworking}}>Networking
+                                        </option>
                                     </select>
                                 </div>
                             </div>
@@ -291,7 +361,92 @@
                     form.classList.add('was-validated')
                 }, false)
             })
-    })()
+    })();
+
+    // Geocoding and Map logic
+    document.addEventListener('DOMContentLoaded', function () {
+        var map = null;
+        var marker = null;
+        var searchTimeout = null;
+
+        const locationInput = document.getElementById('eventLocation');
+        const addressInput = document.getElementById('locationAddress');
+        const cityInput = document.getElementById('locationCity');
+        const countryInput = document.getElementById('locationCountry');
+        const latInput = document.getElementById('locationLat');
+        const lonInput = document.getElementById('locationLon');
+        const resultsContainer = document.getElementById('search-results-name');
+
+        function initMap(lat, lon) {
+            if (!map) {
+                document.getElementById('map-preview').innerHTML = '';
+                map = L.map('map-preview').setView([lat, lon], 15);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
+                marker = L.marker([lat, lon]).addTo(map);
+            } else {
+                const pos = [lat, lon];
+                map.setView(pos, 15);
+                marker.setLatLng(pos);
+            }
+        }
+
+        // Initialize map if coordinates exist
+        const initialLat = parseFloat(latInput.value);
+        const initialLon = parseFloat(lonInput.value);
+        if (!isNaN(initialLat) && !isNaN(initialLon)) {
+            initMap(initialLat, initialLon);
+        }
+
+        function handleSelection(result) {
+            locationInput.value = result.display_name.split(',')[0];
+            addressInput.value = result.address.road || result.address.pedestrian || result.display_name;
+            cityInput.value = result.address.city || result.address.town || result.address.village || '';
+            countryInput.value = result.address.country || '';
+            latInput.value = result.lat;
+            lonInput.value = result.lon;
+
+            resultsContainer.classList.add('d-none');
+            initMap(result.lat, result.lon);
+        }
+
+        locationInput.addEventListener('input', function () {
+            clearTimeout(searchTimeout);
+            const query = this.value;
+            if (query.length < 3) {
+                resultsContainer.classList.add('d-none');
+                return;
+            }
+
+            searchTimeout = setTimeout(() => {
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=5`)
+                    .then(response => response.json())
+                    .then(data => {
+                        resultsContainer.innerHTML = '';
+                        if (data.length > 0) {
+                            data.forEach(item => {
+                                const div = document.createElement('div');
+                                div.className = 'search-result-item';
+                                div.textContent = item.display_name;
+                                div.addEventListener('click', () => handleSelection(item));
+                                resultsContainer.appendChild(div);
+                            });
+                            resultsContainer.classList.remove('d-none');
+                        } else {
+                            resultsContainer.classList.add('d-none');
+                        }
+                    });
+            }, 500);
+        });
+
+        // Close results when clicking outside
+        document.addEventListener('click', function (e) {
+            if (e.target !== locationInput) {
+                resultsContainer.classList.add('d-none');
+            }
+        });
+    });
 </script>
 
 </body>
