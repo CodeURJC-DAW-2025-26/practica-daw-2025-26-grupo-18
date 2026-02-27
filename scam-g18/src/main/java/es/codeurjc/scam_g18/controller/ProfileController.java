@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import es.codeurjc.scam_g18.model.User;
+import es.codeurjc.scam_g18.service.CourseService;
 import es.codeurjc.scam_g18.service.EnrollmentService;
 import es.codeurjc.scam_g18.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,6 +32,9 @@ public class ProfileController {
 
     @Autowired
     private EnrollmentService enrollmentService;
+
+    @Autowired
+    private CourseService courseService;
 
     @GetMapping("/profile/me")
     public String myProfile(Principal principal) {
@@ -61,6 +65,11 @@ public class ProfileController {
         model.addAttribute("completedLessonsThisMonth", enrollmentService.getLessonsCompletedThisMonth(id));
         model.addAttribute("averageLessonsPerMonth",
                 String.format("%.1f", enrollmentService.getAverageLessonsPerMonth(id)));
+
+        // Retrieve created courses explicitly for publisher panel stats
+        java.util.List<java.util.Map<String, Object>> createdCourses = courseService.getCreatedCoursesWithStats(id);
+        model.addAttribute("createdCourses", createdCourses);
+        model.addAttribute("hasMultipleCourses", createdCourses.size() > 1);
 
         return "profile";
     }

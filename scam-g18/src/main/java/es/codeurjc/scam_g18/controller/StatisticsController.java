@@ -14,6 +14,7 @@ import es.codeurjc.scam_g18.model.LessonProgress;
 import es.codeurjc.scam_g18.repository.EnrollmentRepository;
 import es.codeurjc.scam_g18.repository.LessonProgressRepository;
 import es.codeurjc.scam_g18.service.CourseService;
+import java.util.Map;
 
 @Controller
 public class StatisticsController {
@@ -141,5 +142,21 @@ public class StatisticsController {
         values.add((double) remaining);
 
         return createChart(model, "Tu progreso", "pie", labels, values);
+    }
+
+    @GetMapping("/statistics/created-course-status")
+    public String createdCourseStatus(Model model, @RequestParam Long courseId) {
+        Map<String, Integer> stats = courseService.getCourseCompletionStats(courseId);
+
+        List<String> labels = new ArrayList<>();
+        List<Double> values = new ArrayList<>();
+
+        labels.add("Completado");
+        values.add(stats.getOrDefault("completed", 0).doubleValue());
+
+        labels.add("En progreso");
+        values.add(stats.getOrDefault("inProgress", 0).doubleValue());
+
+        return createChart(model, "Estado de estudiantes", "pie", labels, values);
     }
 }

@@ -514,6 +514,55 @@ public class CourseService {
         courseRepository.save(course);
     }
 
+    public List<Course> getCoursesByCreator(Long creatorId) {
+        return courseRepository.findByCreatorId(creatorId);
+    }
+
+    public List<Map<String, Object>> getCreatedCoursesWithStats(Long creatorId) {
+        List<Course> courses = courseRepository.findByCreatorId(creatorId);
+        List<Map<String, Object>> result = new ArrayList<>();
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+
+        for (Course c : courses) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("id", c.getId());
+            data.put("title", c.getTitle());
+            data.put("status", c.getStatus());
+
+            List<Enrollment> enrollments = enrollmentRepository.findByCourseId(c.getId());
+            data.put("totalSubscribers", enrollments.size());
+
+            long monthly = enrollments.stream()
+                    .filter(e -> e.getEnrolledAt() != null &&
+                            e.getEnrolledAt().getMonth() == now.getMonth() &&
+                            e.getEnrolledAt().getYear() == now.getYear())
+                    .count();
+            data.put("monthlySubscribers", monthly);
+
+            result.add(data);
+        }
+        return result;
+    }
+
+    // Obtiene el número de usuarios suscritos y los que han terminado un curso
+    public java.util.Map<String, Integer> getCourseCompletionStats(Long courseId) {
+        List<Enrollment> enrollments = enrollmentRepository.findByCourseId(courseId);
+        int totalEnrolled = enrollments.size();
+        int completed = 0;
+
+        for (Enrollment e : enrollments) {
+            if (e.getProgressPercentage() != null && e.getProgressPercentage() == 100) {
+                completed++;
+            }
+        }
+
+        java.util.Map<String, Integer> stats = new java.util.HashMap<>();
+        stats.put("total", totalEnrolled);
+        stats.put("completed", completed);
+        stats.put("inProgress", totalEnrolled - completed);
+        return stats;
+    }
+
     // Comprueba si un usuario puede gestionar un curso.
     public boolean canManageCourse(Course course, User user) {
         if (course == null || user == null) {
