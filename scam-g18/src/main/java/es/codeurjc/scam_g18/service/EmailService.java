@@ -70,10 +70,10 @@ public class EmailService {
                 String safeUsername = (newUsername == null || newUsername.isBlank()) ? "usuario" : newUsername;
 
                 String messageHtml = """
-                                <div style="margin:0;padding:24px;background-color:#f3e4c9;font-family:Arial,sans-serif;color:#422823;">
-                                    <table role="presentation" width="100%%" cellspacing="0" cellpadding="0" style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e7d4b1;">
+                                <div style="margin:0;padding:24px;font-family:Arial,sans-serif;color:#2f2f2f;">
+                                    <table role="presentation" width="100%%" cellspacing="0" cellpadding="0" style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e9e9e9;box-shadow:0 6px 20px rgba(0,0,0,0.06);">
                                         <tr>
-                                            <td style="padding:24px 28px;background:#422823;color:#ffffff;">
+                                            <td style="padding:24px 28px;background:#2f3b59;color:#ffffff;">
                                                 <h1 style="margin:0;font-size:24px;line-height:1.2;">¡Bienvenido a SCAM!</h1>
                                                 <p style="margin:8px 0 0 0;font-size:14px;opacity:0.95;">Tu cuenta ya está lista</p>
                                             </td>
@@ -84,18 +84,18 @@ public class EmailService {
                                                 <p style="margin:0 0 14px 0;font-size:15px;line-height:1.6;">
                                                     Nos alegra tenerte con nosotros. Tu cuenta se ha creado correctamente y ya puedes empezar a aprovechar todas las funcionalidades de la plataforma.
                                                 </p>
-                                                <div style="margin:20px 0;padding:14px 16px;background:#fff7eb;border:1px solid #e7d4b1;border-radius:8px;">
-                                                    <p style="margin:0 0 8px 0;font-size:14px;color:#85613d;"><strong>Siguiente paso recomendado:</strong></p>
+                                                <div style="margin:20px 0;padding:14px 16px;background:#f7f9fc;border:1px solid #d7e0f0;border-radius:10px;">
+                                                    <p style="margin:0 0 8px 0;font-size:14px;color:#405175;"><strong>Siguiente paso recomendado:</strong></p>
                                                     <p style="margin:0;font-size:14px;line-height:1.5;">Completa tu perfil y explora el catálogo para encontrar tus primeros cursos y eventos.</p>
                                                 </div>
                                                 <div style="margin:20px 0 0 0;">
-                                                    <a href="https://localhost:8443/" style="display:inline-block;background:#d96d3c;color:#ffffff;text-decoration:none;padding:10px 16px;border-radius:8px;font-size:14px;font-weight:700;">Ir a SCAM</a>
+                                                    <a href="https://localhost:8443/" style="display:inline-block;background:#2f3b59;color:#ffffff;text-decoration:none;padding:10px 18px;border-radius:8px;font-size:14px;font-weight:700;">Ir a SCAM</a>
                                                 </div>
                                                 <p style="margin:0;font-size:14px;line-height:1.6;">Gracias por confiar en SCAM.</p>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td style="padding:16px 28px;background:#fff7eb;border-top:1px solid #e7d4b1;font-size:12px;color:#85613d;">
+                                            <td style="padding:16px 28px;background:#f7f9fc;border-top:1px solid #d7e0f0;font-size:12px;color:#405175;">
                                                 Equipo de SCAM
                                             </td>
                                         </tr>
