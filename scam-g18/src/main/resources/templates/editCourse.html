@@ -20,7 +20,11 @@
         <div class="container" data-aos="fade-up">
 
             <form action="/course/{{course.id}}/edit" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
-                <input type="hidden" name="_csrf" value="{{_csrf.token}}">
+                <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}">
+
+                <div id="clientValidationAlert" class="alert alert-danger d-none" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i> Revisa los campos marcados antes de guardar.
+                </div>
 
                 {{#errorMessage}}
                 <div class="alert" style="background-color: rgba(217, 109, 60, 0.15); color: #D96D3C; border: 1px solid #D96D3C;" role="alert">
@@ -334,6 +338,11 @@
                     if (!form.checkValidity()) {
                         event.preventDefault()
                         event.stopPropagation()
+                        const alert = document.getElementById('clientValidationAlert')
+                        if (alert) {
+                            alert.classList.remove('d-none')
+                            alert.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                        }
                     }
 
                     form.classList.add('was-validated')

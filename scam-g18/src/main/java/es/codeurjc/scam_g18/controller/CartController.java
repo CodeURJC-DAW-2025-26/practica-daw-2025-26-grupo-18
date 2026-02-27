@@ -101,6 +101,20 @@ public class CartController {
         return "redirect:/cart";
     }
 
+    // Añade la suscripción premium al pedido pendiente del usuario autenticado.
+    @PostMapping("/cart/add/subscription")
+    public String addSubscriptionToCart() {
+        User currentUser = getCurrentUser();
+        if (currentUser == null) {
+            return "redirect:/login";
+        }
+
+        Order order = cartService.getOrCreatePendingOrder(currentUser);
+        cartService.addSubscriptionToOrder(order);
+
+        return "redirect:/cart";
+    }
+
     // Elimina un elemento concreto del carrito del usuario autenticado.
     @PostMapping("/cart/remove/{itemId}")
     public String removeItemFromCart(@PathVariable Long itemId) {
@@ -115,8 +129,7 @@ public class CartController {
         return "redirect:/cart";
     }
 
-    // Procesa el pago del pedido pendiente y finaliza la compra con validación de
-    // datos.
+    // Procesa el pago del pedido pendiente y finaliza la compra con validación de datos.
     @PostMapping("/cart/checkout")
     public String checkout(
             @RequestParam(required = false) String cardName,

@@ -53,7 +53,7 @@ public class CartService {
     @Autowired
     private EmailService emailService;
 
-    private static final int SUBSCRIPTION_PRICE_CENTS = 999;
+    private static final int SUBSCRIPTION_PRICE_CENTS = 1000;
     private static final int SUBSCRIPTION_DURATION_DAYS = 30;
 
     // Crea un pedido pendiente vacío para el usuario.
@@ -297,17 +297,18 @@ public class CartService {
         } else {
             subscription = new Subscription(user, java.time.LocalDateTime.now(),
                     java.time.LocalDateTime.now().plusDays(SUBSCRIPTION_DURATION_DAYS), SubscriptionStatus.ACTIVE);
+        }
 
-            // Actualizar rol de usuario a SUBSCRIBED si no lo tiene
-            Role subscribedRole = roleRepository.findByName("SUBSCRIBED").orElse(null);
-            if (subscribedRole != null) {
-                boolean hasRole = user.getRoles().stream().anyMatch(r -> r.getName().equals("SUBSCRIBED"));
-                if (!hasRole) {
-                    user.getRoles().add(subscribedRole);
-                    userService.save(user);
-                }
+        // Actualizar rol de usuario a SUBSCRIBED si no lo tiene
+        Role subscribedRole = roleRepository.findByName("SUBSCRIBED").orElse(null);
+        if (subscribedRole != null) {
+            boolean hasRole = user.getRoles().stream().anyMatch(r -> r.getName().equals("SUBSCRIBED"));
+            if (!hasRole) {
+                user.getRoles().add(subscribedRole);
+                userService.save(user);
             }
         }
+
         subscriptionRepository.save(subscription);
     }
 

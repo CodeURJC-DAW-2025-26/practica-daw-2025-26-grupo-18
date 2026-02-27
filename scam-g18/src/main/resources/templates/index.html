@@ -752,203 +752,87 @@
     <!-- Section Title -->
     <div class="container section-title" data-aos="fade-up">
       <span class="description-title">Planes</span>
-      <h2>Elige tu Plan Perfecto</h2>
-      <p>Planes para estudiantes y profesores. Los cursos se compran por separado.</p>
+      <h2>Elige tu Suscripción</h2>
+      <p>Plan gratuito por defecto al iniciar sesión y plan premium para crear cursos y eventos.</p>
     </div><!-- End Section Title -->
 
     <div class="container" data-aos="fade-up" data-aos-delay="100">
 
-      <!-- ESTUDIANTES PLANS -->
-      <div class="mb-5">
-        <div class="pricing-toggle-container mb-5 text-center" data-aos="zoom-in" data-aos-delay="150">
-          <div class="pricing-toggle d-inline-flex align-items-center gap-3 px-3 py-2 rounded-pill">
-            <span class="monthly active">Mensual</span>
-            <label class="switch m-0">
-              <input type="checkbox" aria-label="Toggle pricing">
-              <span class="slider"></span>
-            </label>
-            <span class="yearly">Anual</span>
-          </div>
+      <div class="row gy-4 justify-content-center">
+
+        <div class="col-lg-5" data-aos="fade-up" data-aos-delay="200">
+          <article class="price-card pricing-item h-100">
+            <div class="card-head">
+              <span class="badge-title">Gratis</span>
+              <h3 class="title">Plan Básico</h3>
+              <p class="subtitle">Se activa por defecto al iniciar sesión.</p>
+              <div class="price-wrap">
+                <span class="price"><sup>€</sup>0<span class="period">/mes</span></span>
+              </div>
+            </div>
+
+            <ul class="feature-list list-unstyled mb-4">
+              <li><i class="bi bi-check-circle"></i> Acceso a la plataforma</li>
+              <li><i class="bi bi-check-circle"></i> Ver cursos y eventos</li>
+              <li><i class="bi bi-check-circle"></i> Comprar cursos y eventos</li>
+              <li class="muted"><i class="bi bi-dash-circle"></i> No permite crear cursos ni eventos</li>
+            </ul>
+
+            <div class="cta">
+              {{#isUserLoggedIn}}
+              {{^isPublisher}}
+              <span class="btn btn-choose w-100 disabled">Plan actual</span>
+              {{/isPublisher}}
+              {{#isPublisher}}
+              <span class="btn btn-choose w-100 disabled">Incluido en Premium</span>
+              {{/isPublisher}}
+              {{/isUserLoggedIn}}
+              {{^isUserLoggedIn}}
+              <a href="/login" class="btn btn-choose w-100">Iniciar sesión</a>
+              {{/isUserLoggedIn}}
+            </div>
+          </article>
         </div>
 
-        <h3 class="text-center mb-4" data-aos="fade-up">
-          <i class="bi bi-mortarboard"></i> Planes para Estudiantes
-        </h3>
+        <div class="col-lg-5" data-aos="fade-up" data-aos-delay="250">
+          <article class="price-card featured pricing-item h-100 position-relative">
+            <div class="ribbon"><i class="bi bi-star-fill"></i> Premium</div>
 
-        <div class="row gy-4">
-
-          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
-            <article class="price-card pricing-item h-100">
-              <div class="card-head">
-                <span class="badge-title">Gratuito</span>
-                <h3 class="title">Principiante</h3>
-                <p class="subtitle">Acceso básico a la plataforma.</p>
-                <div class="price-wrap">
-                  <span class="price price-monthly"><sup>$</sup>0<span class="period">/mes</span></span>
-                  <span class="price price-yearly"><sup>$</sup>0<span class="period">/año</span></span>
-                </div>
+            <div class="card-head">
+              <span class="badge-title">Premium</span>
+              <h3 class="title">Creador</h3>
+              <p class="subtitle">Permite crear cursos y eventos.</p>
+              <div class="price-wrap">
+                <span class="price"><sup>€</sup>10<span class="period">/mes</span></span>
               </div>
+            </div>
 
-              <ul class="feature-list list-unstyled mb-4">
-                <li><i class="bi bi-check-circle"></i> Acceso a comunidad</li>
-                <li><i class="bi bi-check-circle"></i> Webinars gratuitos mensuales</li>
-                <li><i class="bi bi-check-circle"></i> Perfil de estudiante</li>
-                <li class="muted"><i class="bi bi-dash-circle"></i> Sin acceso a cursos premium</li>
-                <li class="muted"><i class="bi bi-dash-circle"></i> Sin soporte prioritario</li>
-              </ul>
+            <ul class="feature-list list-unstyled mb-4">
+              <li><i class="bi bi-check-circle"></i> Todo lo del plan gratis</li>
+              <li><i class="bi bi-check-circle"></i> Crear cursos</li>
+              <li><i class="bi bi-check-circle"></i> Crear eventos</li>
+              <li><i class="bi bi-check-circle"></i> Rol de creador tras la compra</li>
+            </ul>
 
-              <div class="cta">
-                <a href="#" class="btn btn-choose w-100">Crear Cuenta</a>
-              </div>
-            </article><!-- End Pricing Item -->
-          </div>
-
-          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="250">
-            <article class="price-card featured pricing-item h-100 position-relative">
-              <div class="ribbon"><i class="bi bi-star-fill"></i> Popular</div>
-
-              <div class="card-head">
-                <span class="badge-title">Intermedio</span>
-                <h3 class="title">Aprendiz</h3>
-                <p class="subtitle">Máximo potencial para aprender.</p>
-                <div class="price-wrap">
-                  <span class="price price-monthly"><sup>$</sup>9.99<span class="period">/mes</span></span>
-                  <span class="price price-yearly"><sup>$</sup>99.90<span class="period">/año</span></span>
-                </div>
-              </div>
-
-              <ul class="feature-list list-unstyled mb-4">
-                <li><i class="bi bi-check-circle"></i> Todo del plan Principiante</li>
-                <li><i class="bi bi-check-circle"></i> Descuento 10% en cursos</li>
-                <li><i class="bi bi-check-circle"></i> Acceso a foros privados</li>
-                <li><i class="bi bi-check-circle"></i> Certificados digitales</li>
-                <li><i class="bi bi-check-circle"></i> Soporte por email</li>
-              </ul>
-
-              <div class="cta">
-                <a href="#" class="btn btn-choose w-100">Suscribirse Ahora</a>
-              </div>
-            </article><!-- End Pricing Item -->
-          </div>
-
-          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
-            <article class="price-card pricing-item h-100">
-              <div class="card-head">
-                <span class="badge-title">Premium</span>
-                <h3 class="title">Experto</h3>
-                <p class="subtitle">Acceso completo y soporte premium.</p>
-                <div class="price-wrap">
-                  <span class="price price-monthly"><sup>$</sup>19.99<span class="period">/mes</span></span>
-                  <span class="price price-yearly"><sup>$</sup>199.90<span class="period">/año</span></span>
-                </div>
-              </div>
-
-              <ul class="feature-list list-unstyled mb-4">
-                <li><i class="bi bi-check-circle"></i> Todo del plan Aprendiz</li>
-                <li><i class="bi bi-check-circle"></i> Descuento 20% en cursos</li>
-                <li><i class="bi bi-check-circle"></i> Mentoría grupal semanal</li>
-                <li><i class="bi bi-check-circle"></i> Soporte prioritario 24/7</li>
-                <li><i class="bi bi-check-circle"></i> Sesiones Q&A con expertos</li>
-              </ul>
-
-              <div class="cta">
-                <a href="#" class="btn btn-choose w-100">Upgrade Premium</a>
-              </div>
-            </article><!-- End Pricing Item -->
-          </div>
-
+            <div class="cta">
+              {{#isUserLoggedIn}}
+              {{#isPublisher}}
+              <span class="btn btn-choose w-100 disabled">Ya tienes Premium</span>
+              {{/isPublisher}}
+              {{^isPublisher}}
+              <form action="/cart/add/subscription" method="post">
+                <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}" />
+                <button type="submit" class="btn btn-choose w-100">Comprar por 10€</button>
+              </form>
+              {{/isPublisher}}
+              {{/isUserLoggedIn}}
+              {{^isUserLoggedIn}}
+              <a href="/login" class="btn btn-choose w-100">Iniciar sesión para comprar</a>
+              {{/isUserLoggedIn}}
+            </div>
+          </article>
         </div>
-      </div>
 
-      <!-- PROFESORES/MENTORES PLANS -->
-      <div class="mt-5 pt-5 border-top">
-        <h3 class="text-center mb-4" data-aos="fade-up">
-          <i class="bi bi-person-badge"></i> Planes para Profesores y Mentores
-        </h3>
-
-        <div class="row gy-4">
-
-          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
-            <article class="price-card pricing-item h-100">
-              <div class="card-head">
-                <span class="badge-title">Básico</span>
-                <h3 class="title">Instructor</h3>
-                <p class="subtitle">Comienza a compartir tu conocimiento.</p>
-                <div class="price-wrap">
-                  <span class="price price-monthly"><sup>$</sup>29<span class="period">/mes</span></span>
-                  <span class="price price-yearly"><sup>$</sup>290<span class="period">/año</span></span>
-                </div>
-              </div>
-
-              <ul class="feature-list list-unstyled mb-4">
-                <li><i class="bi bi-check-circle"></i> Publicar 1 curso</li>
-                <li><i class="bi bi-check-circle"></i> Analytics básicos</li>
-                <li><i class="bi bi-check-circle"></i> Perfil de profesor</li>
-                <li><i class="bi bi-check-circle"></i> Comisión 70% por venta</li>
-                <li class="muted"><i class="bi bi-dash-circle"></i> Sin publicar eventos</li>
-              </ul>
-
-              <div class="cta">
-                <a href="#" class="btn btn-choose w-100">Solicitar Acceso</a>
-              </div>
-            </article><!-- End Pricing Item -->
-          </div>
-
-          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="250">
-            <article class="price-card featured pricing-item h-100 position-relative">
-              <div class="ribbon"><i class="bi bi-star-fill"></i> Recomendado</div>
-
-              <div class="card-head">
-                <span class="badge-title">Profesional</span>
-                <h3 class="title">Mentor</h3>
-                <p class="subtitle">Expande tu alcance y monetiza.</p>
-                <div class="price-wrap">
-                  <span class="price price-monthly"><sup>$</sup>79<span class="period">/mes</span></span>
-                  <span class="price price-yearly"><sup>$</sup>790<span class="period">/año</span></span>
-                </div>
-              </div>
-
-              <ul class="feature-list list-unstyled mb-4">
-                <li><i class="bi bi-check-circle"></i> Publicar hasta 5 cursos</li>
-                <li><i class="bi bi-check-circle"></i> Publicar eventos y webinars</li>
-                <li><i class="bi bi-check-circle"></i> Analytics avanzados</li>
-                <li><i class="bi bi-check-circle"></i> Comisión 75% por venta</li>
-                <li><i class="bi bi-check-circle"></i> Soporte prioritario</li>
-              </ul>
-
-              <div class="cta">
-                <a href="#" class="btn btn-choose w-100">Convertirse en Mentor</a>
-              </div>
-            </article><!-- End Pricing Item -->
-          </div>
-
-          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
-            <article class="price-card pricing-item h-100">
-              <div class="card-head">
-                <span class="badge-title">Experto</span>
-                <h3 class="title">Especialista</h3>
-                <p class="subtitle">Acceso completo y máximas ganancias.</p>
-                <div class="price-wrap">
-                  <span class="price price-monthly"><sup>$</sup>199<span class="period">/mes</span></span>
-                  <span class="price price-yearly"><sup>$</sup>1990<span class="period">/año</span></span>
-                </div>
-              </div>
-
-              <ul class="feature-list list-unstyled mb-4">
-                <li><i class="bi bi-check-circle"></i> Publicar cursos ilimitados</li>
-                <li><i class="bi bi-check-circle"></i> Eventos y webinars ilimitados</li>
-                <li><i class="bi bi-check-circle"></i> Certificados personalizados</li>
-                <li><i class="bi bi-check-circle"></i> Comisión 80% por venta</li>
-                <li><i class="bi bi-check-circle"></i> Soporte dedicado VIP</li>
-              </ul>
-
-              <div class="cta">
-                <a href="#" class="btn btn-choose w-100">Solicitar Plan VIP</a>
-              </div>
-            </article><!-- End Pricing Item -->
-          </div>
-
-        </div>
       </div>
 
     </div>
