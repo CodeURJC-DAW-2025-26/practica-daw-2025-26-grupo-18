@@ -26,9 +26,9 @@
             {{/isUserLoggedIn}}
 
             {{#isUserLoggedIn}}
-            <div class="row g-3 purchased-events-grid">
+            <div class="purchased-events-grid">
                 {{^hasPurchasedEvents}}
-                <div class="col-12" data-aos="fade-up" data-aos-delay="100">
+                <div class="purchased-events-grid-item purchased-events-grid-item-full" data-aos="fade-up" data-aos-delay="100">
                     <div class="feature-card text-center">
                         <div class="icon-badge justify-content-center">
                             <div class="icon-box icon-box-compact">
@@ -44,7 +44,7 @@
 
                 {{#hasPurchasedEvents}}
                 {{#events}}
-                <div class="col-12 col-lg-6" data-aos="flip-left" data-aos-delay="100">
+                <div class="purchased-events-grid-item" data-aos="flip-left" data-aos-delay="100">
                     <div class="feature-card purchased-event-card h-100">
                         <div class="row g-3 align-items-start">
                             <div class="col-md-4">

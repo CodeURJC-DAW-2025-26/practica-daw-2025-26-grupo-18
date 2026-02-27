@@ -119,6 +119,12 @@ public class CourseService {
             courseData.put("subscribersNumber", course.getSubscribersNumber());
             courseData.put("videoHours", course.getVideoHours());
             courseData.put("downloadableResources", course.getDownloadableResources());
+                boolean isSubscribed = userId != null
+                    && enrollmentRepository.existsByUserIdAndCourseIdAndExpiresAtAfter(
+                        userId,
+                        course.getId(),
+                        java.time.LocalDateTime.now());
+                courseData.put("isSubscribed", isSubscribed);
             enrichedCourses.add(courseData);
         }
 
@@ -160,7 +166,52 @@ public class CourseService {
         if (course.getCreator() != null && course.getCreator().getUsername() != null) {
             creatorUsername = course.getCreator().getUsername();
         }
+        String creatorShortDescription = "Este instructor aún no ha añadido descripción a su perfil.";
+        String creatorCurrentGoal = "Instructor";
+        String creatorComunity = "";
+        Long creatorId = null;
+
+        if (course.getCreator() != null) {
+            creatorId = course.getCreator().getId();
+
+            if (course.getCreator().getShortDescription() != null
+                    && !course.getCreator().getShortDescription().isBlank()) {
+                creatorShortDescription = course.getCreator().getShortDescription();
+            }
+            if (course.getCreator().getCurrentGoal() != null
+                    && !course.getCreator().getCurrentGoal().isBlank()) {
+                creatorCurrentGoal = course.getCreator().getCurrentGoal();
+            }
+            if (course.getCreator().getComunity() != null
+                    && !course.getCreator().getComunity().isBlank()) {
+                creatorComunity = course.getCreator().getComunity();
+            }
+        }
+
+        List<Map<String, Object>> creatorOtherCourses = new ArrayList<>();
+        if (creatorId != null) {
+            List<Course> creatorCourses = courseRepository.findByCreatorId(creatorId);
+            for (Course creatorCourse : creatorCourses) {
+                if (creatorCourse.getId() == null || creatorCourse.getId().equals(course.getId())) {
+                    continue;
+                }
+                if (creatorCourse.getStatus() != Status.PUBLISHED) {
+                    continue;
+                }
+
+                Map<String, Object> otherCourseData = new HashMap<>();
+                otherCourseData.put("id", creatorCourse.getId());
+                otherCourseData.put("title", creatorCourse.getTitle());
+                creatorOtherCourses.add(otherCourseData);
+            }
+        }
+
+        creatorData.put("id", creatorId);
         creatorData.put("username", creatorUsername);
+        creatorData.put("shortDescription", creatorShortDescription);
+        creatorData.put("currentGoal", creatorCurrentGoal);
+        creatorData.put("comunity", creatorComunity);
+        creatorData.put("otherCourses", creatorOtherCourses);
         courseData.put("creator", creatorData);
 
         Map<String, Object> imageData = new HashMap<>();

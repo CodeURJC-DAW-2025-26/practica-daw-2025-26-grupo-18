@@ -23,8 +23,8 @@
 				<i class="bi bi-exclamation-triangle-fill"></i> {{{errorMessage}}}
 			</div>
 			{{/errorMessage}}
-			<div class="row g-4">
-				<div class="col-lg-4">
+			<div class="row g-4" id="profile-overview-row">
+				<div class="col-lg-4" id="profile-main-container">
 					<div class="card border-0 shadow-sm bg-light h-100">
 						<div class="card-body p-4 text-center">
 							<!-- Vista normal -->
@@ -50,10 +50,15 @@
 								</div>
 							</div>
 
+							{{#isProfileOwner}}
 							<!-- Vista edición -->
 							<div id="profile-edit" style="display: none;">
-								<form action="/profile/{{user.id}}/edit" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+								<form action="/profile/{{user.id}}/edit" method="post" enctype="multipart/form-data" class="needs-validation profile-edit-form" novalidate>
 									<input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+									<div class="text-start mb-3">
+										<h4 class="h6 fw-bold mb-1">Editar perfil</h4>
+										<p class="text-muted small mb-0">Actualiza tus datos para que tu perfil destaque más.</p>
+									</div>
 
 									<!-- Imagen de perfil -->
 									<div class="mb-3">
@@ -116,11 +121,12 @@
 									</div>
 								</form>
 							</div>
+							{{/isProfileOwner}}
 						</div>
 					</div>
 				</div>
 
-				<div class="col-lg-8">
+				<div class="col-lg-8" id="profile-about-container">
 					<div class="card border-0 shadow-sm bg-light h-100">
 						<div class="card-body p-4">
 							<h3 class="h5 fw-bold mb-3">Sobre mi</h3>
@@ -163,10 +169,12 @@
 									</div>
 								</div>
 							</div>
+							{{#isProfileOwner}}
 							<div class="d-flex flex-wrap gap-2 mt-4">
 								<a href="#" class="btn btn-accent" onclick="toggleEdit(); return false;">Editar perfil</a>
 								<a href="#" class="btn btn-accent-outline">Gestionar suscripcion</a>
 							</div>
+							{{/isProfileOwner}}
 							</div>
 						</div>
 					</div>
@@ -175,8 +183,9 @@
 		</div>
 	</section>
 
+	{{#isProfileOwner}}
 	<!-- Progress Cards -->
-	<section id="features-cards" class="features-cards section">
+	<section id="features-cards" class="features-cards section profile-stats-section">
 		<div class="container" data-aos="fade-up" data-aos-delay="100">
 			<div class="row g-4">
 				<div class="col-lg-4" data-aos="flip-left" data-aos-delay="100">
@@ -199,11 +208,10 @@
 							<li><i class="bi bi-check-circle"></i> {{completedCourses}} cursos completados</li>
 							<li><i class="bi bi-hourglass-split"></i> {{inProgressCount}} cursos en progreso</li>
 						</ul>
-						<div class="text-center mt-3" style="height: 280px; overflow: hidden;">
+						<div class="text-center mt-3 profile-stats-chart-frame profile-stats-chart-frame--tall">
 							<iframe src="/statistics/course-progress?userId={{user.id}}"
 								width="100%" height="100%" style="border:none; overflow:hidden;" scrolling="no"></iframe>
 						</div>
-						<a href="#cursos-suscritos" class="read-more">Ver mis cursos <i class="bi bi-arrow-right"></i></a>
 					</div>
 				</div>
 
@@ -218,7 +226,7 @@
 						<h3>Lecciones aprendidas</h3>
 						<p>Has completado {{totalLessonsCompleted}} lecciones en total.</p>
 						<!-- Lessons Chart -->
-						<div class="text-center mt-3 mb-3" style="height: 200px; overflow: hidden;">
+						<div class="text-center mt-3 mb-3 profile-stats-chart-frame">
 							<iframe src="/statistics/lessons-learned?userId={{user.id}}"
 								width="100%" height="100%" style="border:none; overflow:hidden;" scrolling="no"></iframe>
 						</div>
@@ -227,7 +235,6 @@
 							<li><i class="bi bi-check-circle"></i> {{completedLessonsThisMonth}} lecciones este mes</li>
 							<li><i class="bi bi-check-circle"></i> {{averageLessonsPerMonth}} lecciones/mes (promedio)</li>
 						</ul>
-						<a href="#" class="read-more">Ver estadísticas <i class="bi bi-arrow-right"></i></a>
 					</div>
 				</div>
 
@@ -256,19 +263,8 @@
 	</section>
 
 	{{#isPublisher}}
-	<style>
-		#instructorCoursesCarousel .carousel-control-prev,
-		#instructorCoursesCarousel .carousel-control-next {
-			opacity: 0;
-			transition: opacity 0.3s ease-in-out;
-		}
-		#instructorCoursesCarousel:hover .carousel-control-prev,
-		#instructorCoursesCarousel:hover .carousel-control-next {
-			opacity: 1;
-		}
-	</style>
 	<!-- Instructor Panel (Role >= 2) -->
-	<section class="section bg-light">
+	<section class="section bg-light instructor-panel-section">
 		<div class="container" data-aos="fade-up">
 			<div class="section-title section-title-compact">
 				<h2>Panel de Instructor</h2>
@@ -278,14 +274,14 @@
 			<div class="row g-4">
 				<!-- Created Courses Carousel Area -->
 				<div class="col-lg-8">
-					<div id="instructorCoursesCarousel" class="carousel slide h-100" data-bs-ride="false">
+					<div id="instructorCoursesCarousel" class="carousel slide h-100 instructor-carousel" data-bs-ride="false">
 						<div class="carousel-inner h-100">
 							{{#createdCourses}}
 							<div class="carousel-item {{#-first}}active{{/-first}} h-100">
-								<div class="card border-0 shadow-sm h-100 instructor-course-card">
+								<div class="card border-0 shadow-sm h-100 instructor-course-card instructor-course-card-modern">
 									<div class="card-body p-4">
 										<div class="d-flex justify-content-between align-items-center mb-3">
-											<h4 class="h5 fw-bold mb-0 text-truncate" style="max-width: 70%;" title="{{title}}">{{title}}</h4>
+											<h4 class="h5 fw-bold mb-0 text-truncate instructor-course-title" title="{{title}}">{{title}}</h4>
 											{{#status}}
 											<span class="badge bg-success">{{status}}</span>
 											{{/status}}
@@ -302,9 +298,9 @@
 												<a href="/courses/{{id}}/manage" class="btn btn-sm btn-accent mt-2">Gestionar curso</a>
 											</div>
 											<div class="col-md-7 text-center">
-												<iframe src="/statistics/created-course-status?courseId={{id}}" 
-														style="border:none; width:100%; height:220px;" 
-														title="Estadísticas del curso"></iframe>
+												<div class="instructor-chart-frame">
+													<iframe src="/statistics/created-course-status?courseId={{id}}" title="Estadísticas del curso"></iframe>
+												</div>
 											</div>
 										</div>
 									</div>
@@ -326,11 +322,11 @@
 						</div>
 						
 						{{#hasMultipleCourses}}
-						<button class="carousel-control-prev" type="button" data-bs-target="#instructorCoursesCarousel" data-bs-slide="prev" style="width: 5%; background: rgba(0,0,0,0.1); border-radius: 10px 0 0 10px;">
+						<button class="carousel-control-prev instructor-carousel-control" type="button" data-bs-target="#instructorCoursesCarousel" data-bs-slide="prev">
 							<span class="carousel-control-prev-icon" aria-hidden="true"></span>
 							<span class="visually-hidden">Anterior</span>
 						</button>
-						<button class="carousel-control-next" type="button" data-bs-target="#instructorCoursesCarousel" data-bs-slide="next" style="width: 5%; background: rgba(0,0,0,0.1); border-radius: 0 10px 10px 0;">
+						<button class="carousel-control-next instructor-carousel-control" type="button" data-bs-target="#instructorCoursesCarousel" data-bs-slide="next">
 							<span class="carousel-control-next-icon" aria-hidden="true"></span>
 							<span class="visually-hidden">Siguiente</span>
 						</button>
@@ -340,8 +336,8 @@
 
 				<!-- Create New Course Button -->
 				<div class="col-lg-4">
-					<div class="card border-0 shadow-sm h-100">
-						<div class="card-body p-4 d-flex align-items-center justify-content-center border-dashed" style="min-height: 250px;">
+					<div class="card border-0 shadow-sm h-100 instructor-create-card">
+						<div class="card-body p-4 d-flex align-items-center justify-content-center border-dashed instructor-create-card-body">
 							<div class="text-center py-4">
 								<div class="icon-box mb-3 mx-auto text-muted">
 									<i class="bi bi-plus-lg fs-1"></i>
@@ -432,6 +428,7 @@
 			</div>
 		</div>
 	</section>
+	{{/isProfileOwner}}
 
 </main>
 
@@ -442,9 +439,16 @@
 document.addEventListener('DOMContentLoaded', function() {
 	var view = document.getElementById('profile-view');
 	var edit = document.getElementById('profile-edit');
+	var about = document.getElementById('profile-about-container');
+	var mainContainer = document.getElementById('profile-main-container');
 	if (view && edit) {
 		view.style.display = 'none';
 		edit.style.display = 'block';
+		if (about) about.style.display = 'none';
+		if (mainContainer) {
+			mainContainer.classList.remove('col-lg-4');
+			mainContainer.classList.add('col-12', 'is-editing');
+		}
 	}
 });
 {{/errorMessage}}
@@ -452,12 +456,24 @@ document.addEventListener('DOMContentLoaded', function() {
 function toggleEdit() {
 	var view = document.getElementById('profile-view');
 	var edit = document.getElementById('profile-edit');
+	var about = document.getElementById('profile-about-container');
+	var mainContainer = document.getElementById('profile-main-container');
 	if (view.style.display === 'none') {
 		view.style.display = 'block';
 		edit.style.display = 'none';
+		if (about) about.style.display = 'block';
+		if (mainContainer) {
+			mainContainer.classList.remove('col-12', 'is-editing');
+			mainContainer.classList.add('col-lg-4');
+		}
 	} else {
 		view.style.display = 'none';
 		edit.style.display = 'block';
+		if (about) about.style.display = 'none';
+		if (mainContainer) {
+			mainContainer.classList.remove('col-lg-4');
+			mainContainer.classList.add('col-12', 'is-editing');
+		}
 	}
 }
 

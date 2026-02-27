@@ -60,7 +60,12 @@
                                     {{/tags}}
                                 </div>
                             </div>
-                            <div class="course-card-price">{{priceInEuros}}€</div>
+                            <div class="d-flex flex-column align-items-end gap-1">
+                                {{#isSubscribed}}
+                                <span class="badge bg-success">Ya suscrito</span>
+                                {{/isSubscribed}}
+                                <div class="course-card-price">{{priceInEuros}}€</div>
+                            </div>
                         </div>
                         <p class="course-card-desc">{{description}}</p>
                         <div class="course-card-meta">

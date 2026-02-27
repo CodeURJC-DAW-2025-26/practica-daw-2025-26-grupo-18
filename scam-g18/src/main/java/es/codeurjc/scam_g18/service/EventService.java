@@ -92,7 +92,11 @@ public class EventService {
         List<Map<String, Object>> eventsData = new ArrayList<>();
 
         for (Event event : publishedEvents) {
-            eventsData.add(buildEventCardData(event));
+            Map<String, Object> eventData = buildEventCardData(event);
+            boolean isSubscribed = userId != null
+                    && eventRegistrationRepository.existsByUserIdAndEventId(userId, event.getId());
+            eventData.put("isSubscribed", isSubscribed);
+            eventsData.add(eventData);
         }
 
         return eventsData;

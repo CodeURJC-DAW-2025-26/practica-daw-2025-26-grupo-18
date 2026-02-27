@@ -30,9 +30,9 @@
                 {{/isUserLoggedIn}}
 
                 {{#isUserLoggedIn}}
-                <div class="row g-3 subscribed-courses-grid">
+                <div class="subscribed-courses-grid">
                     {{^hasSubscribedCourses}}
-                    <div class="col-12" data-aos="fade-up" data-aos-delay="100">
+                    <div class="subscribed-courses-grid-item subscribed-courses-grid-item-full" data-aos="fade-up" data-aos-delay="100">
                         <div class="feature-card text-center">
                             <div class="icon-badge justify-content-center">
                                 <div class="icon-box icon-box-compact">
@@ -48,7 +48,7 @@
 
                     {{#hasSubscribedCourses}}
                     {{#courses}}
-                    <div class="col-12 col-lg-6" data-aos="flip-left" data-aos-delay="100">
+                    <div class="subscribed-courses-grid-item" data-aos="flip-left" data-aos-delay="100">
                         <div class="feature-card subscribed-course-card h-100">
                             <div class="row g-3 align-items-start">
                                 <div class="col-md-4">

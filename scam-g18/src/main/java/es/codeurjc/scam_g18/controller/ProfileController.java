@@ -50,7 +50,12 @@ public class ProfileController {
         Optional<User> user = userService.findById(id);
         if (user.isEmpty())
             return "redirect:/";
+
+        var currentUserOpt = userService.getCurrentAuthenticatedUser();
+        boolean isProfileOwner = currentUserOpt.isPresent() && currentUserOpt.get().getId().equals(id);
+
         model.addAttribute("user", user.get());
+        model.addAttribute("isProfileOwner", isProfileOwner);
         model.addAttribute("profileImage", userService.getProfileImage(id));
         model.addAttribute("completedCourses", userService.getCompletedCoursesCount(id));
         model.addAttribute("completedCourseNames", enrollmentService.getCompletedCourseNames(id));
