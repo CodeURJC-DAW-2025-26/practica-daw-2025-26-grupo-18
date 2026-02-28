@@ -54,14 +54,7 @@ public class CartController {
         Order order = cartService.getOrCreatePendingOrder(currentUser);
 
         // Calcular subtotales y totales para la vista
-        int subtotalCents = cartService.calculateSubtotal(order);
-        int taxCents = cartService.calculateTax(order);
-        int totalCents = cartService.calculateTotal(order);
-
-        model.addAttribute("order", order);
-        model.addAttribute("subtotal", cartService.formatPriceInEuros(subtotalCents));
-        model.addAttribute("tax", cartService.formatPriceInEuros(taxCents));
-        model.addAttribute("total", cartService.formatPriceInEuros(totalCents));
+        model.addAllAttributes(cartService.getCartSummary(order, error));
         model.addAttribute("errorNoSeats", "eventFull".equals(error));
 
         return "cart";
@@ -169,18 +162,7 @@ public class CartController {
         // Reload user details and update Spring Security session to reflect new roles
         // immediately
         if (currentUser.getUsername() != null) {
-            try {
-                UserDetails updatedUserDetails = userDetailsService.loadUserByUsername(currentUser.getUsername());
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        updatedUserDetails,
-                        updatedUserDetails.getPassword(),
-                        updatedUserDetails.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                request.getSession().setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
-            } catch (Exception e) {
-                // Si falla el auto-login de sesión, el usuario tendrá que re-logear
-                e.printStackTrace();
-            }
+            userService.refreshUserSession(currentUser.getUsername(), request);
         }
 
         return "redirect:/";

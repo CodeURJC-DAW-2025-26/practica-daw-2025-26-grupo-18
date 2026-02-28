@@ -116,48 +116,7 @@ public class EventController {
 
                 var currentUserOpt = userService.getCurrentAuthenticatedUser();
                 if (currentUserOpt.isPresent() && eventService.canManageEvent(event, currentUserOpt.get())) {
-                    model.addAttribute("event", event);
-                    model.addAttribute("startDateStr",
-                            event.getStartDate() != null ? event.getStartDate().toLocalDate().toString() : "");
-                    model.addAttribute("startTimeStr",
-                            event.getStartDate() != null ? event.getStartDate().toLocalTime().toString() : "");
-                    model.addAttribute("endDateStr",
-                            event.getEndDate() != null ? event.getEndDate().toLocalDate().toString() : "");
-                    model.addAttribute("endTimeStr",
-                            event.getEndDate() != null ? event.getEndDate().toLocalTime().toString() : "");
-                    model.addAttribute("locationName",
-                            event.getLocation() != null && event.getLocation().getName() != null
-                                    ? event.getLocation().getName()
-                                    : "");
-                    model.addAttribute("priceValue",
-                            event.getPriceCents() != null
-                                    ? String.format(java.util.Locale.US, "%.2f", event.getPriceCents() / 100.0)
-                                    : "0.00");
-                    model.addAttribute("isConferencia", "Conferencia".equalsIgnoreCase(event.getCategory()));
-                    model.addAttribute("isWebinar", "Webinar".equalsIgnoreCase(event.getCategory()));
-                    model.addAttribute("isTaller", "Taller".equalsIgnoreCase(event.getCategory()));
-                    model.addAttribute("isNetworking", "Networking".equalsIgnoreCase(event.getCategory()));
-
-                    model.addAttribute("locationAddress",
-                            event.getLocation() != null ? event.getLocation().getAddress() : "");
-                    model.addAttribute("locationCity",
-                            event.getLocation() != null ? event.getLocation().getCity() : "");
-                    model.addAttribute("locationCountry",
-                            event.getLocation() != null ? event.getLocation().getCountry() : "");
-
-                    model.addAttribute("locationLat",
-                            event.getLocation() != null ? event.getLocation().getLatitude() : "");
-                    model.addAttribute("locationLon",
-                            event.getLocation() != null ? event.getLocation().getLongitude() : "");
-
-                    if (event.getLocation() != null) {
-                        event.setLocationLatitude(event.getLocation().getLatitude());
-                        event.setLocationLongitude(event.getLocation().getLongitude());
-                    }
-
-                    List<String> selectedTags = event.getTags().stream().map(es.codeurjc.scam_g18.model.Tag::getName)
-                            .toList();
-                    model.addAttribute("allTagsView", tagService.getTagsView(selectedTags));
+                    model.addAllAttributes(eventService.getEventEditViewData(event));
 
                     return "editEvent";
                 } else {

@@ -3,6 +3,8 @@ package es.codeurjc.scam_g18.service;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,6 +19,7 @@ import es.codeurjc.scam_g18.model.Order;
 import es.codeurjc.scam_g18.model.OrderItem;
 import es.codeurjc.scam_g18.model.OrderStatus;
 import es.codeurjc.scam_g18.model.User;
+import es.codeurjc.scam_g18.repository.CourseRepository;
 import es.codeurjc.scam_g18.repository.EnrollmentRepository;
 import es.codeurjc.scam_g18.repository.EventRegistrationRepository;
 import es.codeurjc.scam_g18.model.Subscription;
@@ -40,6 +43,8 @@ public class CartService {
     private EnrollmentRepository enrollmentRepository;
     @Autowired
     private EventRegistrationRepository eventRegistrationRepository;
+    @Autowired
+    private CourseRepository courseRepository;
     @Autowired
     private SubscriptionRepository subscriptionRepository;
     @Autowired
@@ -149,9 +154,26 @@ public class CartService {
         return (int) (calculateSubtotal(order) * 0.21);
     }
 
-    // Calcula el total final del pedido con impuestos.
+    // Devuelve el total a pagar incluyendo impuestos.
     public int calculateTotal(Order order) {
         return calculateSubtotal(order) + calculateTax(order);
+    }
+
+    // Devuelve un resumen formateado del carrito para la vista
+    public Map<String, Object> getCartSummary(Order order, String error) {
+        Map<String, Object> summary = new HashMap<>();
+
+        int subtotalCents = calculateSubtotal(order);
+        int taxCents = calculateTax(order);
+        int totalCents = calculateTotal(order);
+
+        summary.put("order", order);
+        summary.put("subtotal", formatPriceInEuros(subtotalCents));
+        summary.put("tax", formatPriceInEuros(taxCents));
+        summary.put("total", formatPriceInEuros(totalCents));
+        summary.put("errorNoSeats", "eventFull".equals(error));
+
+        return summary;
     }
 
     // Formatea una cantidad en céntimos a euros con dos decimales.
@@ -323,8 +345,14 @@ public class CartService {
                 enrollmentRepository.save(existing);
             }
         } else {
-            Enrollment enrollment = new Enrollment(user, course);
-            enrollmentRepository.save(enrollment);
+            Course managedCourse = courseRepository.findById(course.getId()).orElse(null);
+            if (managedCourse != null) {
+                Enrollment enrollment = new Enrollment(user, managedCourse);
+                enrollmentRepository.save(enrollment);
+
+                managedCourse.setSubscribersNumber(managedCourse.getSubscribersNumber() + 1);
+                courseRepository.save(managedCourse);
+            }
         }
     }
 

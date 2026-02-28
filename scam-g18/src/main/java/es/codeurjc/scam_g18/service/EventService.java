@@ -42,6 +42,9 @@ public class EventService {
     @Autowired
     private es.codeurjc.scam_g18.repository.TagRepository tagRepository;
 
+    @Autowired
+    private TagService tagService;
+
     // Obtiene todos los eventos.
     public List<Event> getAllEvents() {
         return eventRepository.findAll();
@@ -381,6 +384,106 @@ public class EventService {
         if (source.getSpeakerNames() != null) {
             target.setSpeakers(source.getSpeakerNames());
         }
+    }
+
+    public Map<String, Object> getEventDetailViewData(long eventId) {
+        var eventOpt = getEventById(eventId);
+        if (eventOpt.isEmpty()) {
+            return null;
+        }
+
+        Event ev = eventOpt.get();
+        Map<String, Object> data = new HashMap<>();
+        data.put("id", ev.getId());
+        data.put("title", ev.getTitle());
+        data.put("description", ev.getDescription());
+        data.put("priceInEuros", getPriceInEuros(ev));
+        data.put("tags", ev.getTags());
+
+        data.put("capacity", ev.getCapacity() == null ? "Ilimitada" : ev.getCapacity());
+        data.put("attendeesCount", ev.getAttendeesCount());
+
+        if (ev.getCapacity() != null) {
+            data.put("remainingSeats", Math.max(0, ev.getCapacity() - ev.getAttendeesCount()));
+            data.put("isFull", ev.getAttendeesCount() >= ev.getCapacity());
+        }
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        if (ev.getStartDate() != null) {
+            data.put("startDateFormatted", ev.getStartDate().format(dateFormatter));
+            data.put("startTimeFormatted", ev.getStartDate().format(timeFormatter));
+        }
+
+        if (ev.getEndDate() != null) {
+            data.put("endDateFormatted", ev.getEndDate().format(dateFormatter));
+            data.put("endTimeFormatted", ev.getEndDate().format(timeFormatter));
+            data.put("durationDays", java.time.temporal.ChronoUnit.DAYS.between(ev.getStartDate().toLocalDate(),
+                    ev.getEndDate().toLocalDate()) + 1);
+        }
+
+        if (ev.getLocation() != null) {
+            data.put("locationName", ev.getLocation().getName());
+            data.put("locationAddress", ev.getLocation().getAddress());
+            data.put("locationCity", ev.getLocation().getCity());
+            data.put("locationCountry", ev.getLocation().getCountry());
+            data.put("locationLatitude", ev.getLocation().getLatitude());
+            data.put("locationLongitude", ev.getLocation().getLongitude());
+        }
+
+        data.put("creatorUsername", ev.getCreator() != null ? ev.getCreator().getUsername() : "Desconocido");
+        data.put("category", ev.getCategory() == null ? "Sin Categoría" : ev.getCategory());
+        data.put("sessions", ev.getSessions() == null ? new ArrayList<>() : ev.getSessions());
+
+        List<Map<String, Object>> speakersList = new ArrayList<>();
+        if (ev.getSpeakers() != null) {
+            for (String speaker : ev.getSpeakers()) {
+                Map<String, Object> s = new HashMap<>();
+                s.put("name", speaker);
+                s.put("role", "Ponente");
+                speakersList.add(s);
+            }
+        }
+        data.put("speakers", speakersList);
+
+        return data;
+    }
+
+    // Prepara los datos necesarios para la vista de edición de evento.
+    public Map<String, Object> getEventEditViewData(Event event) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("event", event);
+        data.put("startDateStr", event.getStartDate() != null ? event.getStartDate().toLocalDate().toString() : "");
+        data.put("startTimeStr", event.getStartDate() != null ? event.getStartDate().toLocalTime().toString() : "");
+        data.put("endDateStr", event.getEndDate() != null ? event.getEndDate().toLocalDate().toString() : "");
+        data.put("endTimeStr", event.getEndDate() != null ? event.getEndDate().toLocalTime().toString() : "");
+        data.put("locationName",
+                event.getLocation() != null && event.getLocation().getName() != null ? event.getLocation().getName()
+                        : "");
+        data.put("priceValue",
+                event.getPriceCents() != null
+                        ? String.format(java.util.Locale.US, "%.2f", event.getPriceCents() / 100.0)
+                        : "0.00");
+        data.put("isConferencia", "Conferencia".equalsIgnoreCase(event.getCategory()));
+        data.put("isWebinar", "Webinar".equalsIgnoreCase(event.getCategory()));
+        data.put("isTaller", "Taller".equalsIgnoreCase(event.getCategory()));
+        data.put("isNetworking", "Networking".equalsIgnoreCase(event.getCategory()));
+        data.put("locationAddress", event.getLocation() != null ? event.getLocation().getAddress() : "");
+        data.put("locationCity", event.getLocation() != null ? event.getLocation().getCity() : "");
+        data.put("locationCountry", event.getLocation() != null ? event.getLocation().getCountry() : "");
+        data.put("locationLat", event.getLocation() != null ? event.getLocation().getLatitude() : "");
+        data.put("locationLon", event.getLocation() != null ? event.getLocation().getLongitude() : "");
+
+        if (event.getLocation() != null) {
+            event.setLocationLatitude(event.getLocation().getLatitude());
+            event.setLocationLongitude(event.getLocation().getLongitude());
+        }
+
+        List<String> selectedTags = event.getTags().stream().map(es.codeurjc.scam_g18.model.Tag::getName).toList();
+        data.put("allTagsView", tagService.getTagsView(selectedTags));
+
+        return data;
     }
 
     // Construye el mapa de datos reutilizable para tarjetas y detalle de evento.

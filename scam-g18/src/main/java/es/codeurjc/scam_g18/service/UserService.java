@@ -43,6 +43,9 @@ public class UserService {
     private EnrollmentRepository enrollmentRepository;
 
     @Autowired
+    private es.codeurjc.scam_g18.security.RepositoryUserDetailsService userDetailsService;
+
+    @Autowired
     private SubscriptionRepository subscriptionRepository;
 
     // Indica si hay un usuario autenticado en la sesión actual.
@@ -342,5 +345,31 @@ public class UserService {
         newUser.getRoles().add(userRole);
         save(newUser);
         return true;
+    }
+
+    // Refresca la sesión de Spring Security del usuario actual, útil tras cambios
+    // en perfil o roles (ej. compra de suscripción).
+    public void refreshUserSession(String newUsername, jakarta.servlet.http.HttpServletRequest request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            String targetUsername = (newUsername != null && !newUsername.isBlank()) ? newUsername : auth.getName();
+
+            try {
+                org.springframework.security.core.userdetails.UserDetails updatedUserDetails = userDetailsService
+                        .loadUserByUsername(targetUsername);
+                org.springframework.security.authentication.UsernamePasswordAuthenticationToken newAuth = new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
+                        updatedUserDetails,
+                        updatedUserDetails.getPassword(),
+                        updatedUserDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(newAuth);
+
+                jakarta.servlet.http.HttpSession session = request.getSession(false);
+                if (session != null) {
+                    session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+                }
+            } catch (Exception e) {
+                System.err.println("Error refrescando sesión de usuario: " + e.getMessage());
+            }
+        }
     }
 }

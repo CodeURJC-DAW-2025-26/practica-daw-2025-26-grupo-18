@@ -114,14 +114,7 @@ public class ProfileController {
         // Actualizar la sesión de Spring Security si el username cambió
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && username != null && !username.isBlank() && !auth.getName().equals(username)) {
-            Authentication newAuth = new UsernamePasswordAuthenticationToken(
-                    username, auth.getCredentials(), auth.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(newAuth);
-
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
-            }
+            userService.refreshUserSession(username, request);
         }
 
         return "redirect:/profile/" + id;
