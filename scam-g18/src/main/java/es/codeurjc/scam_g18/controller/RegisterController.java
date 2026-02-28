@@ -1,19 +1,19 @@
 package es.codeurjc.scam_g18.controller;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import es.codeurjc.scam_g18.service.EmailService;
 import es.codeurjc.scam_g18.service.UserService;
-
-import java.io.IOException;
 
 @Controller
 public class RegisterController {
@@ -49,6 +49,7 @@ public class RegisterController {
             @RequestParam(required = false) String birthDate,
             @RequestParam(required = false) String country,
             @RequestParam(value = "image", required = false) MultipartFile imageFile,
+            jakarta.servlet.http.HttpServletRequest request,
             org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes)
             throws IOException, java.sql.SQLException {
 
@@ -75,6 +76,12 @@ public class RegisterController {
 
         emailService.newAccountMessage(email, username);
 
-        return "redirect:/login";
+        try {
+            request.login(username, password);
+        } catch (jakarta.servlet.ServletException e) {
+            return "redirect:/login";
+        }
+
+        return "redirect:/profile/me";
     }
 }

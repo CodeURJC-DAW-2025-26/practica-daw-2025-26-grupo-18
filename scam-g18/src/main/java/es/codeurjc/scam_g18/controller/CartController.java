@@ -10,6 +10,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import es.codeurjc.scam_g18.security.RepositoryUserDetailsService;
 
 import es.codeurjc.scam_g18.model.Course;
 import es.codeurjc.scam_g18.model.Event;
@@ -34,6 +39,9 @@ public class CartController {
 
     @Autowired
     private EventService eventService;
+
+    @Autowired
+    private RepositoryUserDetailsService userDetailsService;
 
     // Muestra el carrito del usuario autenticado con subtotal, impuestos y total.
     @GetMapping("/cart")
@@ -129,7 +137,8 @@ public class CartController {
         return "redirect:/cart";
     }
 
-    // Procesa el pago del pedido pendiente y finaliza la compra con validación de datos.
+    // Procesa el pago del pedido pendiente y finaliza la compra con validación de
+    // datos.
     @PostMapping("/cart/checkout")
     public String checkout(
             @RequestParam(required = false) String cardName,
@@ -137,6 +146,7 @@ public class CartController {
             @RequestParam(required = false) String cardNumber,
             @RequestParam(required = false) String cardExpiry,
             @RequestParam(required = false) String cardCvv,
+            HttpServletRequest request,
             RedirectAttributes redirectAttributes) {
 
         User currentUser = getCurrentUser();
@@ -154,6 +164,23 @@ public class CartController {
             return "redirect:/cart";
         } catch (IllegalStateException e) {
             return "redirect:/cart?error=eventFull";
+        }
+
+        // Reload user details and update Spring Security session to reflect new roles
+        // immediately
+        if (currentUser.getUsername() != null) {
+            try {
+                UserDetails updatedUserDetails = userDetailsService.loadUserByUsername(currentUser.getUsername());
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        updatedUserDetails,
+                        updatedUserDetails.getPassword(),
+                        updatedUserDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                request.getSession().setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+            } catch (Exception e) {
+                // Si falla el auto-login de sesión, el usuario tendrá que re-logear
+                e.printStackTrace();
+            }
         }
 
         return "redirect:/";

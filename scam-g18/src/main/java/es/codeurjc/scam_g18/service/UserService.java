@@ -127,7 +127,8 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    // Comprueba si ya existe un usuario con ese username (sin distinguir mayúsculas).
+    // Comprueba si ya existe un usuario con ese username (sin distinguir
+    // mayúsculas).
     public boolean usernameExists(String username) {
         if (username == null || username.isBlank()) {
             return false;
@@ -200,6 +201,18 @@ public class UserService {
             return "Suscrito";
         }
         return "Sin suscripción";
+    }
+
+    // Devuelve la lista de todos los países formateada y ordenada alfabéticamente.
+    public java.util.List<String> getAllCountries() {
+        String[] countryCodes = java.util.Locale.getISOCountries();
+        java.util.List<String> paises = new java.util.ArrayList<>();
+        for (String code : countryCodes) {
+            java.util.Locale locale = new java.util.Locale.Builder().setLanguage("es").setRegion(code).build();
+            paises.add(locale.getDisplayCountry());
+        }
+        java.util.Collections.sort(paises);
+        return paises;
     }
 
     // Actualiza el nombre de usuario en memoria.

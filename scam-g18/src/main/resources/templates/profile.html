@@ -88,7 +88,12 @@
 									<!-- País -->
 									<div class="mb-3 text-start">
 										<label for="country" class="form-label fw-semibold"><i class="bi bi-geo-alt me-2"></i>País</label>
-										<input type="text" class="form-control" id="country" name="country" value="{{user.country}}">
+										<select class="form-select" id="country" name="country" data-current-country="{{user.country}}">
+											<option value="">Selecciona tu país</option>
+											{{#listaPaises}}
+											<option value="{{.}}">{{.}}</option>
+											{{/listaPaises}}
+										</select>
 									</div>
 
 									<!-- Descripción -->
@@ -512,6 +517,19 @@ document.querySelectorAll('.course-progress-fill[data-progress]').forEach(functi
 				form.classList.add('was-validated')
 			}, false)
 		})
+
+	var countrySelect = document.getElementById('country');
+	if (countrySelect) {
+		var currentCountry = countrySelect.getAttribute('data-current-country');
+		if (currentCountry) {
+			for (var i = 0; i < countrySelect.options.length; i++) {
+				if (countrySelect.options[i].value === currentCountry) {
+					countrySelect.selectedIndex = i;
+					break;
+				}
+			}
+		}
+	}
 })()
 </script>
 

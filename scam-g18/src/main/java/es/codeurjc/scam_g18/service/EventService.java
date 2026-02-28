@@ -39,6 +39,9 @@ public class EventService {
     @Autowired
     private EventRegistrationRepository eventRegistrationRepository;
 
+    @Autowired
+    private es.codeurjc.scam_g18.repository.TagRepository tagRepository;
+
     // Obtiene todos los eventos.
     public List<Event> getAllEvents() {
         return eventRepository.findAll();
@@ -211,7 +214,7 @@ public class EventService {
 
     // Actualiza un evento solo si el usuario está autorizado.
     public boolean updateEventIfAuthorized(long id, Event eventUpdate, User user,
-            org.springframework.web.multipart.MultipartFile imageFile)
+            org.springframework.web.multipart.MultipartFile imageFile, List<String> tagNames)
             throws java.io.IOException, java.sql.SQLException {
         var eventOpt = getEventById(id);
         if (eventOpt.isEmpty()) {
@@ -224,13 +227,22 @@ public class EventService {
         }
 
         applyEventFormData(event, eventUpdate);
+
+        event.getTags().clear();
+        if (tagNames != null && !tagNames.isEmpty()) {
+            for (String tagName : tagNames) {
+                Tag tag = tagRepository.findByName(tagName).orElseGet(() -> tagRepository.save(new Tag(tagName)));
+                event.getTags().add(tag);
+            }
+        }
+
         createEvent(event, imageFile);
         return true;
     }
 
     // Crea un evento desde datos de formulario.
     public void createEventFromForm(Event event, User creator,
-            org.springframework.web.multipart.MultipartFile imageFile)
+            org.springframework.web.multipart.MultipartFile imageFile, List<String> tagNames)
             throws java.io.IOException, java.sql.SQLException {
         if (event.getPrice() != null) {
             event.setPriceCents((int) (event.getPrice() * 100));
@@ -278,6 +290,14 @@ public class EventService {
 
         if (event.getSpeakerNames() != null) {
             event.setSpeakers(event.getSpeakerNames());
+        }
+
+        event.getTags().clear();
+        if (tagNames != null && !tagNames.isEmpty()) {
+            for (String tagName : tagNames) {
+                Tag tag = tagRepository.findByName(tagName).orElseGet(() -> tagRepository.save(new Tag(tagName)));
+                event.getTags().add(tag);
+            }
         }
 
         createEvent(event, imageFile);

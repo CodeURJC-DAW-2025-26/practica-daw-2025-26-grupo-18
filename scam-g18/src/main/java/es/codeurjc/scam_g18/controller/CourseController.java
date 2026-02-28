@@ -1,5 +1,7 @@
 package es.codeurjc.scam_g18.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -187,6 +189,10 @@ public class CourseController {
             course.setPrice(course.getPriceCents() / 100.0);
         }
 
+        java.util.List<String> selectedTags = course.getTags().stream().map(es.codeurjc.scam_g18.model.Tag::getName)
+                .toList();
+        model.addAttribute("allTagsView", tagService.getTagsView(selectedTags));
+
         model.addAttribute("course", course);
         return "editCourse";
     }
@@ -239,6 +245,7 @@ public class CourseController {
     @GetMapping("/courses/new")
     public String newCourseForm(Model model) {
         model.addAttribute("course", new Course());
+        model.addAttribute("allTagsView", tagService.getTagsView(null));
         return "createCourse";
     }
 

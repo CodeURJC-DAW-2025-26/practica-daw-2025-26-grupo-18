@@ -1,5 +1,8 @@
 {{>header}}
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
 <main class="main">
 
     <div class="page-title light-background">
@@ -113,28 +116,16 @@
                         <div class="card shadow-sm mb-4">
                             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">Temas Relacionados (Etiquetas)</h5>
-                                <button type="button" class="btn btn-sm btn-add"
-                                    onclick="addDynamicItem('topics-container', 'Nuevo tema relacionado', 'bi-tag')">+
-                                    Añadir</button>
                             </div>
                             <div class="card-body">
-                                <div id="topics-container">
-                                    {{#course.tags}}
-                                    <div class="input-group mb-2">
-                                        <span class="input-group-text"><i class="bi bi-tag"></i></span>
-                                        <input type="text" class="form-control" name="tagNames" value="{{name}}" required>
-                                        <button class="btn btn-delete" type="button" onclick="this.parentElement.remove()">×</button>
-                                        <div class="invalid-feedback">Etiqueta de curso no válida.</div>
-                                    </div>
-                                    {{/course.tags}}
-                                    {{^course.tags}}
-                                    <div class="input-group mb-2">
-                                        <span class="input-group-text"><i class="bi bi-tag"></i></span>
-                                        <input type="text" class="form-control" name="tagNames" placeholder="Ej: Desarrollo Web" required>
-                                        <button class="btn btn-delete" type="button" onclick="this.parentElement.remove()">×</button>
-                                        <div class="invalid-feedback">Etiqueta de curso no válida.</div>
-                                    </div>
-                                    {{/course.tags}}
+                                <div class="mb-3">
+                                    <label for="tagNames" class="form-label">Selecciona las etiquetas (puedes buscar)</label>
+                                    <select class="form-select" id="tagNames" name="tagNames" multiple required>
+                                        {{#allTagsView}}
+                                            <option value="{{name}}" {{#active}}selected{{/active}}>{{name}}</option>
+                                        {{/allTagsView}}
+                                    </select>
+                                    <div class="invalid-feedback">Selecciona al menos una etiqueta.</div>
                                 </div>
                             </div>
                         </div>
@@ -352,6 +343,20 @@
 </script>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tagSelect = document.getElementById('tagNames');
+        if (tagSelect) {
+            new Choices(tagSelect, {
+                removeItemButton: true,
+                searchEnabled: true,
+                searchPlaceholderValue: 'Buscar etiquetas...',
+                placeholderValue: 'Selecciona etiquetas',
+                noResultsText: 'No se encontraron etiquetas',
+                itemSelectText: 'Presiona para seleccionar'
+            });
+        }
+    });
+
     document.addEventListener('DOMContentLoaded', function () {
         const languageSelect = document.getElementById('language');
         if (languageSelect) {

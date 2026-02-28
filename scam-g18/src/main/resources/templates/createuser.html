@@ -137,8 +137,12 @@
                                 <label for="regCountry" class="form-label small fw-bold">País</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-globe"></i></span>
-                                    <input type="text" class="form-control" id="regCountry" name="country"
-                                        placeholder="Ej: España" required />
+                                    <select class="form-select" id="regCountry" name="country" required>
+                                        <option value="" selected disabled>Selecciona tu país</option>
+                                        {{#listaPaises}}
+                                        <option value="{{.}}">{{.}}</option>
+                                        {{/listaPaises}}
+                                    </select>
                                     <div class="invalid-feedback">El país es obligatorio.</div>
                                 </div>
                             </div>

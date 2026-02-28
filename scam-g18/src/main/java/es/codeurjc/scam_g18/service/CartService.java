@@ -289,24 +289,24 @@ public class CartService {
         Subscription subscription;
         if (existingSubscription.isPresent()) {
             subscription = existingSubscription.get();
-            if (subscription.getEndDate().isAfter(java.time.LocalDateTime.now())) {
-                subscription.setEndDate(subscription.getEndDate().plusDays(SUBSCRIPTION_DURATION_DAYS));
-            } else {
-                subscription.setEndDate(java.time.LocalDateTime.now().plusDays(SUBSCRIPTION_DURATION_DAYS));
-            }
+            subscription.setStartDate(java.time.LocalDateTime.now());
+            subscription.setEndDate(java.time.LocalDateTime.now().plusDays(SUBSCRIPTION_DURATION_DAYS));
         } else {
             subscription = new Subscription(user, java.time.LocalDateTime.now(),
                     java.time.LocalDateTime.now().plusDays(SUBSCRIPTION_DURATION_DAYS), SubscriptionStatus.ACTIVE);
         }
 
         // Actualizar rol de usuario a SUBSCRIBED si no lo tiene
-        Role subscribedRole = roleRepository.findByName("SUBSCRIBED").orElse(null);
-        if (subscribedRole != null) {
-            boolean hasRole = user.getRoles().stream().anyMatch(r -> r.getName().equals("SUBSCRIBED"));
-            if (!hasRole) {
-                user.getRoles().add(subscribedRole);
-                userService.save(user);
-            }
+        Role subscribedRole = roleRepository.findByName("SUBSCRIBED").orElseGet(() -> {
+            Role newRole = new Role("SUBSCRIBED");
+            roleRepository.save(newRole);
+            return newRole;
+        });
+
+        boolean hasRole = user.getRoles().stream().anyMatch(r -> r.getName().equals("SUBSCRIBED"));
+        if (!hasRole) {
+            user.getRoles().add(subscribedRole);
+            userService.save(user);
         }
 
         subscriptionRepository.save(subscription);

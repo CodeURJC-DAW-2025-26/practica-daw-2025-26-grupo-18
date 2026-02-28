@@ -230,9 +230,33 @@ public class DatabaseInitializer {
     // Crea y devuelve el catálogo de etiquetas de ejemplo.
     private Map<String, Tag> initializeTags() {
         String[] tagNames = {
-                "Desarrollo Personal", "Emprendimiento", "Finanzas", "Liderazgo", "Productividad",
-                "Libertad Financiera", "Ventas", "Marketing Digital", "IA", "Programación",
-                "Comunicación", "Negociación", "Gestión del Tiempo", "Startups", "Networking", "Inversión"
+                // Desarrollo Personal / Motivación
+                "Desarrollo Personal", "Liderazgo", "Productividad", "Gestión del Tiempo", "Comunicación",
+                "Negociación", "Networking", "Motivación", "Mentalidad de Éxito", "Hábitos Saludables",
+                "Inteligencia Emocional", "Oratoria", "ser tu propio jefe", "Resiliencia", "Mindfulness",
+                "Gestión del Estrés", "Coaching", "Toma de Decisiones", "Resolución de Conflictos",
+                "Creatividad", "Pensamiento Crítico", "Autodisciplina",
+
+                // Economía y Negocios
+                "Emprendimiento", "Finanzas", "Libertad Financiera", "Ventas", "Marketing Digital",
+                "Startups", "Inversión", "Economía", "Criptomonedas", "Blockchain", "Bolsa de Valores",
+                "Finanzas Personales", "Educación Financiera", "Gestión Empresarial", "Estrategia de Negocios",
+                "Comercio Electrónico", "Dropshipping", "Inmobiliaria", "Bienes Raíces", "Contabilidad",
+                "Macroeconomía", "Microeconomía", "Análisis Financiero", "Ventas B2B", "Neuromarketing",
+                "Growth Hacking", "Consultoría", "Recursos Humanos",
+
+                // Programación y Tecnología
+                "IA", "Programación", "Desarrollo Web", "Frontend", "Backend", "Full Stack",
+                "Java", "Python", "JavaScript", "TypeScript", "C++", "C#", "Go", "Rust", "Swift", "Kotlin",
+                "Spring Boot", "React", "Angular", "Vue", "Node.js", "Django", "Flask",
+                "Bases de Datos", "SQL", "NoSQL", "MongoDB", "PostgreSQL", "MySQL",
+                "DevOps", "Docker", "Kubernetes", "AWS", "Azure", "Google Cloud",
+                "Ciberseguridad", "Ethical Hacking", "Machine Learning", "Deep Learning",
+                "Data Science", "Big Data", "Análisis de Datos", "Estructuras de Datos", "Algoritmos",
+                "Desarrollo Móvil", "Android", "iOS", "Flutter", "React Native", "Diseño UI/UX",
+                "Arquitectura de Software", "Microservicios", "Testing", "QA", "Sistemas Operativos",
+                "Linux", "Redes", "Git", "GitHub", "Metodologías Ágiles", "Scrum", "Desarrollo de Videojuegos",
+                "Unity", "Unreal Engine"
         };
 
         Map<String, Tag> tags = new HashMap<>();
@@ -297,7 +321,8 @@ public class DatabaseInitializer {
                 "Inversión Inteligente en Mercados Globales", "Storytelling para Vender Ideas",
                 "Marketing Digital 360", "Negociación Estratégica en Negocios", "Creación de Startups Rentables",
                 "Automatización de Procesos con IA", "Finanzas Personales para Autónomos",
-                "Comunicación Persuasiva para Líderes", "Escala tu Negocio de Servicios", "Gestión del Tiempo sin Estrés",
+                "Comunicación Persuasiva para Líderes", "Escala tu Negocio de Servicios",
+                "Gestión del Tiempo sin Estrés",
                 "Diseño de Ofertas Irresistibles", "Networking Profesional Efectivo", "Roadmap de Carrera Tech"
         };
 
@@ -571,7 +596,8 @@ public class DatabaseInitializer {
                 review.setCourse(course);
                 review.setUser(reviewer);
                 review.setRating(3 + ((c + r) % 3));
-                review.setContent("Valoración de prueba para " + course.getTitle() + " con feedback detallado #" + (r + 1));
+                review.setContent(
+                        "Valoración de prueba para " + course.getTitle() + " con feedback detallado #" + (r + 1));
                 reviews.add(review);
                 reviewKeys.add(key);
             }
@@ -692,7 +718,7 @@ public class DatabaseInitializer {
                     secondStatus,
                     (secondStatus == OrderStatus.PENDING) ? "PENDING" : "CARD",
                     (secondStatus == OrderStatus.PENDING) ? "PAY-PENDING-" + String.format("%04d", i + 1)
-                        : "PAY-ERR-" + String.format("%04d", i + 1),
+                            : "PAY-ERR-" + String.format("%04d", i + 1),
                     (secondStatus == OrderStatus.PENDING) ? null : nowMinusDays(i + 2),
                     List.of(orderItemData(secondCourse, null, secondCourse.getPriceCents(), false)));
 
@@ -739,7 +765,9 @@ public class DatabaseInitializer {
         order.setPaymentReference(paymentReference);
         order.setBillingFullName(user.getUsername() + " Test");
         order.setBillingEmail(user.getEmail());
-        order.setCardLast4((status == OrderStatus.PAID || status == OrderStatus.REFUNDED) ? "42" + String.format("%02d", user.getId() % 100) : null);
+        order.setCardLast4((status == OrderStatus.PAID || status == OrderStatus.REFUNDED)
+                ? "42" + String.format("%02d", user.getId() % 100)
+                : null);
         order.setInvoicePending(status == OrderStatus.PAID && user.getId() % 3 == 0);
 
         Order savedOrder = orderRepository.save(order);

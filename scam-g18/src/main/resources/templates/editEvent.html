@@ -3,6 +3,9 @@
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
 <style>
     .search-results {
         position: absolute;
@@ -168,6 +171,24 @@
                                     <div class="h-100 d-flex align-items-center justify-content-center text-muted">
                                         <span>Cargando mapa...</span>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tags -->
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-white py-3">
+                                <h5 class="mb-0">Etiquetas</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="tagNames" class="form-label">Selecciona las etiquetas (puedes buscar)</label>
+                                    <select class="form-select tags-select" id="tagNames" name="tagNames" multiple required>
+                                        {{#allTagsView}}
+                                            <option value="{{name}}" {{#active}}selected{{/active}}>{{name}}</option>
+                                        {{/allTagsView}}
+                                    </select>
+                                    <div class="invalid-feedback">Selecciona al menos una etiqueta.</div>
                                 </div>
                             </div>
                         </div>
@@ -446,6 +467,22 @@
                 resultsContainer.classList.add('d-none');
             }
         });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tagSelect = document.getElementById('tagNames');
+        if (tagSelect) {
+            new Choices(tagSelect, {
+                removeItemButton: true,
+                searchEnabled: true,
+                searchPlaceholderValue: 'Buscar etiquetas...',
+                placeholderValue: 'Selecciona etiquetas',
+                noResultsText: 'No se encontraron etiquetas',
+                itemSelectText: 'Presiona para seleccionar'
+            });
+        }
     });
 </script>
 

@@ -1,5 +1,7 @@
 package es.codeurjc.scam_g18.controller;
 
+import java.util.List;
+
 import es.codeurjc.scam_g18.service.EventService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,6 +155,10 @@ public class EventController {
                         event.setLocationLongitude(event.getLocation().getLongitude());
                     }
 
+                    List<String> selectedTags = event.getTags().stream().map(es.codeurjc.scam_g18.model.Tag::getName)
+                            .toList();
+                    model.addAttribute("allTagsView", tagService.getTagsView(selectedTags));
+
                     return "editEvent";
                 } else {
                     System.out.println("User not authorized or current user is null for event: " + id);
@@ -173,6 +179,7 @@ public class EventController {
             @PathVariable long id,
             Event eventUpdate,
             org.springframework.validation.BindingResult bindingResult,
+            @RequestParam(required = false) List<String> tagNames,
             @RequestParam(required = false) org.springframework.web.multipart.MultipartFile imageFile,
             org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes)
             throws java.io.IOException, java.sql.SQLException {
@@ -186,7 +193,8 @@ public class EventController {
 
         var currentUserOpt = userService.getCurrentAuthenticatedUser();
         if (currentUserOpt.isPresent()) {
-            boolean updated = eventService.updateEventIfAuthorized(id, eventUpdate, currentUserOpt.get(), imageFile);
+            boolean updated = eventService.updateEventIfAuthorized(id, eventUpdate, currentUserOpt.get(), imageFile,
+                    tagNames);
             if (updated) {
                 return "redirect:/event/" + id;
             }
@@ -197,6 +205,7 @@ public class EventController {
     // Muestra el formulario para crear un nuevo evento.
     @GetMapping("/events/new")
     public String newEventForm(Model model) {
+        model.addAttribute("allTagsView", tagService.getTagsView(null));
         return "createEvent";
     }
 
@@ -205,6 +214,7 @@ public class EventController {
     public String createEvent(
             Event event,
             org.springframework.validation.BindingResult bindingResult,
+            @RequestParam(required = false) List<String> tagNames,
             @RequestParam(required = false) org.springframework.web.multipart.MultipartFile imageFile,
             org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes)
             throws java.io.IOException, java.sql.SQLException {
@@ -220,7 +230,7 @@ public class EventController {
             return "redirect:/login";
         }
 
-        eventService.createEventFromForm(event, currentUserOpt.get(), imageFile);
+        eventService.createEventFromForm(event, currentUserOpt.get(), imageFile, tagNames);
 
         return "redirect:/events";
     }

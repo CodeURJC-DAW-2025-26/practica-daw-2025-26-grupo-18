@@ -199,6 +199,14 @@
                                         {{/course.learningPoints}}
                                     </ul>
                                 </div>
+                                <div class="col-md-6 mt-4 mt-md-0">
+                                    <h4 class="h6 fw-bold mb-3 text-muted">Etiquetas del curso</h4>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        {{#course.tags}}
+                                        <span class="badge bg-white text-dark border px-3 py-2 rounded-pill shadow-sm"><i class="bi bi-tag me-1" style="color: var(--accent-color)"></i>{{name}}</span>
+                                        {{/course.tags}}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

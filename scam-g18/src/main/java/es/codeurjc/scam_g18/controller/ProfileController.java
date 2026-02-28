@@ -76,6 +76,8 @@ public class ProfileController {
         model.addAttribute("createdCourses", createdCourses);
         model.addAttribute("hasMultipleCourses", createdCourses.size() > 1);
 
+        model.addAttribute("listaPaises", userService.getAllCountries());
+
         return "profile";
     }
 
