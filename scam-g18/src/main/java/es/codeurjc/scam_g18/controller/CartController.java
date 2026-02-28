@@ -11,10 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import es.codeurjc.scam_g18.security.RepositoryUserDetailsService;
 
 import es.codeurjc.scam_g18.model.Course;
 import es.codeurjc.scam_g18.model.Event;
@@ -39,9 +35,6 @@ public class CartController {
 
     @Autowired
     private EventService eventService;
-
-    @Autowired
-    private RepositoryUserDetailsService userDetailsService;
 
     // Muestra el carrito del usuario autenticado con subtotal, impuestos y total.
     @GetMapping("/cart")

@@ -153,29 +153,6 @@ public class EventService {
         return purchasedEvents;
     }
 
-    // Construye el detalle de un evento para la vista.
-    public Map<String, Object> getEventDetailViewData(long id) {
-        Optional<Event> eventOpt = getEventById(id);
-        if (eventOpt.isEmpty()) {
-            return null;
-        }
-
-        Event event = eventOpt.get();
-        Map<String, Object> eventData = buildEventCardData(event);
-        eventData.put("capacity", event.getCapacity());
-        eventData.put("attendeesCount", event.getAttendeesCount());
-        eventData.put("remainingSeats", event.getRemainingSeats());
-        eventData.put("soldOut", !event.hasAvailableSeats());
-
-        String imageUrl = "/img/default_img.png";
-        if (event.getId() != null) {
-            imageUrl = "/images/events/" + event.getId();
-        }
-        eventData.put("image", imageUrl);
-
-        return eventData;
-    }
-
     // Guarda un evento.
     public void saveEvent(Event event) {
         eventRepository.save(event);
@@ -393,59 +370,22 @@ public class EventService {
         }
 
         Event ev = eventOpt.get();
-        Map<String, Object> data = new HashMap<>();
-        data.put("id", ev.getId());
-        data.put("title", ev.getTitle());
-        data.put("description", ev.getDescription());
-        data.put("priceInEuros", getPriceInEuros(ev));
-        data.put("tags", ev.getTags());
+        Map<String, Object> data = buildEventCardData(ev);
 
-        data.put("capacity", ev.getCapacity() == null ? "Ilimitada" : ev.getCapacity());
-        data.put("attendeesCount", ev.getAttendeesCount());
+        int attendeesCount = ev.getAttendeesCount() == null ? 0 : ev.getAttendeesCount();
+        Integer capacity = ev.getCapacity();
 
-        if (ev.getCapacity() != null) {
-            data.put("remainingSeats", Math.max(0, ev.getCapacity() - ev.getAttendeesCount()));
-            data.put("isFull", ev.getAttendeesCount() >= ev.getCapacity());
+        data.put("attendeesCount", attendeesCount);
+        data.put("capacity", capacity == null ? "Ilimitada" : capacity);
+
+        if (capacity != null) {
+            int remainingSeats = Math.max(0, capacity - attendeesCount);
+            data.put("remainingSeats", remainingSeats);
+            data.put("soldOut", remainingSeats <= 0);
+        } else {
+            data.put("remainingSeats", "Ilimitadas");
+            data.put("soldOut", false);
         }
-
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-
-        if (ev.getStartDate() != null) {
-            data.put("startDateFormatted", ev.getStartDate().format(dateFormatter));
-            data.put("startTimeFormatted", ev.getStartDate().format(timeFormatter));
-        }
-
-        if (ev.getEndDate() != null) {
-            data.put("endDateFormatted", ev.getEndDate().format(dateFormatter));
-            data.put("endTimeFormatted", ev.getEndDate().format(timeFormatter));
-            data.put("durationDays", java.time.temporal.ChronoUnit.DAYS.between(ev.getStartDate().toLocalDate(),
-                    ev.getEndDate().toLocalDate()) + 1);
-        }
-
-        if (ev.getLocation() != null) {
-            data.put("locationName", ev.getLocation().getName());
-            data.put("locationAddress", ev.getLocation().getAddress());
-            data.put("locationCity", ev.getLocation().getCity());
-            data.put("locationCountry", ev.getLocation().getCountry());
-            data.put("locationLatitude", ev.getLocation().getLatitude());
-            data.put("locationLongitude", ev.getLocation().getLongitude());
-        }
-
-        data.put("creatorUsername", ev.getCreator() != null ? ev.getCreator().getUsername() : "Desconocido");
-        data.put("category", ev.getCategory() == null ? "Sin Categoría" : ev.getCategory());
-        data.put("sessions", ev.getSessions() == null ? new ArrayList<>() : ev.getSessions());
-
-        List<Map<String, Object>> speakersList = new ArrayList<>();
-        if (ev.getSpeakers() != null) {
-            for (String speaker : ev.getSpeakers()) {
-                Map<String, Object> s = new HashMap<>();
-                s.put("name", speaker);
-                s.put("role", "Ponente");
-                speakersList.add(s);
-            }
-        }
-        data.put("speakers", speakersList);
 
         return data;
     }

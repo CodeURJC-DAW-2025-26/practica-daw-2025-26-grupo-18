@@ -61,7 +61,7 @@ public class StatisticsController {
         for (int i = 5; i >= 0; i--) {
             LocalDateTime monthDate = now.minusMonths(i);
             String monthLabel = monthDate.getMonth().getDisplayName(java.time.format.TextStyle.SHORT,
-                    new java.util.Locale("es", "ES"));
+                    java.util.Locale.of("es", "ES"));
             labels.add(monthLabel);
 
             long count = completedLessons.stream()

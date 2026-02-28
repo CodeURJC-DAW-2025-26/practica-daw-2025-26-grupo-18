@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -239,7 +240,6 @@ public class CourseService {
                 lessonData.put("id", lesson.getId());
                 lessonData.put("courseId", course.getId());
                 lessonData.put("title", lesson.getTitle());
-                lessonData.put("videoUrl", lesson.getVideoUrl());
                 lessonData.put("completed", completedLessonIds.contains(lesson.getId()));
                 lessonsData.add(lessonData);
             }
@@ -287,6 +287,45 @@ public class CourseService {
         detailData.put("courseProgressPercentage", courseProgressPercentage);
 
         return detailData;
+    }
+
+    // Devuelve la URL del vídeo de una lección si pertenece al curso indicado.
+    public Optional<String> getLessonVideoUrl(Long courseId, Long lessonId) {
+        if (courseId == null || lessonId == null) {
+            return Optional.empty();
+        }
+
+        var lessonOpt = lessonRepository.findById(lessonId);
+        if (lessonOpt.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Lesson lesson = lessonOpt.get();
+        if (lesson.getModule() == null || lesson.getModule().getCourse() == null
+                || !courseId.equals(lesson.getModule().getCourse().getId())) {
+            return Optional.empty();
+        }
+
+        String videoUrl = lesson.getVideoUrl();
+        if (videoUrl == null || videoUrl.isBlank()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(videoUrl);
+    }
+
+    // Devuelve la URL del vídeo de una lección solo si el usuario tiene suscripción activa al curso.
+    public Optional<String> getLessonVideoUrlIfSubscribed(Long courseId, Long lessonId, Long userId) {
+        if (courseId == null || lessonId == null || userId == null) {
+            return Optional.empty();
+        }
+
+        var enrollmentOpt = enrollmentRepository.findByUserIdAndCourseId(userId, courseId);
+        if (enrollmentOpt.isEmpty() || !enrollmentOpt.get().isActive()) {
+            return Optional.empty();
+        }
+
+        return getLessonVideoUrl(courseId, lessonId);
     }
 
     @Transactional

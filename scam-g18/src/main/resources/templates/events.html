@@ -14,6 +14,26 @@
         </div>
     </div><!-- End Page Title -->
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+    <style>
+        .choices { margin-bottom: 0; min-width: 250px; }
+        .choices__inner {
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 4px 8px;
+            min-height: 44px;
+        }
+        .choices[data-type*="select-multiple"] .choices__list--multiple .choices__item {
+            background-color: var(--accent-color, #d96d3c);
+            border: 1px solid var(--accent-color, #d96d3c);
+            border-radius: 6px;
+            padding: 4px 10px;
+        }
+    </style>
+
     <!-- Events Catalog -->
     <section class="courses-catalog section">
         <div class="container" data-aos="fade-up">
@@ -37,16 +57,16 @@
                         </div>
                         {{/canCreateEvent}}
                     </div>
-                    <div class="course-filters">
-                        <a href="/events{{#search}}?search={{search}}{{/search}}"
-                            class="filter-chip {{^selectedTags}}active{{/selectedTags}}">Todos</a>
-                        {{#tagsView}}
-                        <label class="filter-chip {{#active}}active{{/active}}" style="cursor: pointer;">
-                            <input type="checkbox" name="tags" value="{{name}}" {{#active}}checked{{/active}}
-                                onchange="this.form.submit()" style="display:none;">
-                            {{name}}
-                        </label>
-                        {{/tagsView}}
+                    <div class="course-filters mt-3 d-flex align-items-center gap-3">
+                        <span class="fw-bold text-muted">Filtrar por etiquetas:</span>
+                        <div class="flex-grow-1" style="max-width: 600px;">
+                            <select class="form-select tags-select" id="tagFilters" name="tags" multiple>
+                                {{#tagsView}}
+                                <option value="{{name}}" {{#active}}selected{{/active}}>{{name}}</option>
+                                {{/tagsView}}
+                            </select>
+                        </div>
+                        <a href="/events{{#search}}?search={{search}}{{/search}}" class="btn btn-outline-secondary btn-sm">Limpiar filtros</a>
                     </div>
                 </div>
             </form>
@@ -96,6 +116,26 @@
 </main>
 
 {{>footer}}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tagFilters = document.getElementById('tagFilters');
+        if (tagFilters) {
+            const choices = new Choices(tagFilters, {
+                removeItemButton: true,
+                searchEnabled: true,
+                searchPlaceholderValue: 'Buscar etiquetas...',
+                placeholderValue: 'Selecciona etiquetas para buscar',
+                noResultsText: 'No se encontraron etiquetas',
+                itemSelectText: 'Presiona para seleccionar'
+            });
+
+            tagFilters.addEventListener('change', function() {
+                this.form.submit();
+            });
+        }
+    });
+</script>
 
 
 </body>

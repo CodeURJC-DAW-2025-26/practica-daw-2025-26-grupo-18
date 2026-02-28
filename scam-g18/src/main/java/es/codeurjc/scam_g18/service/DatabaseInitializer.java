@@ -152,27 +152,27 @@ public class DatabaseInitializer {
 
         users.put("admin", createUser("admin", "admin@scam.com", "adminpass", "MALE",
                 LocalDate.of(1990, 1, 1), "Spain",
-                Set.of(userRole, adminRole),
+                Set.of(userRole, subscribedRole, adminRole),
                 "Administrador principal de la plataforma", "Supervisar calidad de contenido"));
 
         users.put("content_lead", createUser("content_lead", "lead@scam.com", "leadpass", "FEMALE",
                 LocalDate.of(1992, 4, 17), "Spain",
-                Set.of(userRole, adminRole),
+                Set.of(userRole, subscribedRole, adminRole),
                 "Responsable de contenido premium", "Escalar catálogo educativo"));
 
         users.put("mentor_ai", createUser("mentor_ai", "mentor.ai@scam.com", "mentorpass", "MALE",
                 LocalDate.of(1988, 9, 3), "Mexico",
-                Set.of(userRole),
+                Set.of(userRole, subscribedRole),
                 "Creador experto en IA aplicada", "Ayudar a lanzar productos IA"));
 
         users.put("coach_growth", createUser("coach_growth", "coach.growth@scam.com", "coachpass", "FEMALE",
                 LocalDate.of(1991, 11, 20), "Colombia",
-                Set.of(userRole),
+                Set.of(userRole, subscribedRole),
                 "Coach de crecimiento profesional", "Optimizar hábitos de alto rendimiento"));
 
         users.put("finance_master", createUser("finance_master", "finance.master@scam.com", "financepass", "MALE",
                 LocalDate.of(1987, 6, 9), "Argentina",
-                Set.of(userRole),
+                Set.of(userRole, subscribedRole),
                 "Analista financiero y formador", "Impulsar alfabetización financiera"));
 
         for (int i = 1; i <= 18; i++) {
@@ -181,9 +181,6 @@ public class DatabaseInitializer {
             String gender = (i % 3 == 0) ? "PREFER_NOT_TO_SAY" : (i % 2 == 0 ? "FEMALE" : "MALE");
             Set<Role> roles = new HashSet<>();
             roles.add(userRole);
-            if (i <= 10) {
-                roles.add(subscribedRole);
-            }
 
             users.put(username, createUser(
                     username,

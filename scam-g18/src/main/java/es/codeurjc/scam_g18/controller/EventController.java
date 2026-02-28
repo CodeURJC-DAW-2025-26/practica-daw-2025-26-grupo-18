@@ -10,8 +10,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.List;
-
 import es.codeurjc.scam_g18.service.TagService;
 import es.codeurjc.scam_g18.model.Event;
 import org.springframework.web.bind.annotation.RequestParam;

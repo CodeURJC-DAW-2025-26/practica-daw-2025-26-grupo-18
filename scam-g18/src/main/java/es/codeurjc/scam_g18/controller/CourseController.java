@@ -14,9 +14,7 @@ import es.codeurjc.scam_g18.model.User;
 
 import java.security.Principal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import org.springframework.web.bind.annotation.RequestParam;
@@ -92,11 +90,45 @@ public class CourseController {
         model.addAllAttributes(detailData);
         model.addAttribute("canEdit", canManage);
         model.addAttribute("isSuscribedToCourse", isSuscribed);
+        model.addAttribute("canAccessLessonVideos", isSuscribed || canManage);
         model.addAttribute("hasReviewed", hasReviewed);
         model.addAttribute("userId", currentUserId);
 
         return "course";
 
+    }
+
+    // Permite abrir el vídeo de una lección a suscritos, administradores y creador del curso.
+    @GetMapping("/course/{courseId}/lesson/{lessonId}/video")
+    public String openLessonVideo(@PathVariable long courseId, @PathVariable long lessonId, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        var currentUserOpt = userService.getCurrentAuthenticatedUser();
+        if (currentUserOpt.isEmpty()) {
+            return "redirect:/login";
+        }
+
+        User currentUser = currentUserOpt.get();
+
+        Course course;
+        try {
+            course = courseService.getCourseById(courseId);
+        } catch (RuntimeException e) {
+            return "redirect:/courses";
+        }
+
+        boolean canManage = courseService.canManageCourse(course, currentUser);
+
+        var videoUrlOpt = canManage
+                ? courseService.getLessonVideoUrl(courseId, lessonId)
+                : courseService.getLessonVideoUrlIfSubscribed(courseId, lessonId, currentUser.getId());
+        if (videoUrlOpt.isEmpty()) {
+            return "redirect:/course/" + courseId;
+        }
+
+        return "redirect:" + videoUrlOpt.get();
     }
 
     // Marca una lección como completada y redirige al detalle del curso.

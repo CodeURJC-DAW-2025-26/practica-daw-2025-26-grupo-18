@@ -28,7 +28,6 @@ import es.codeurjc.scam_g18.model.User;
 import es.codeurjc.scam_g18.service.EmailService;
 import es.codeurjc.scam_g18.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
