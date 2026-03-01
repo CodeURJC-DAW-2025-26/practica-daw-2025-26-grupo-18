@@ -2,6 +2,7 @@ package es.codeurjc.scam_g18.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import es.codeurjc.scam_g18.service.CourseService;
 import es.codeurjc.scam_g18.service.EnrollmentService;
-import es.codeurjc.scam_g18.model.Tag;
-
 @Controller
 public class StatisticsController {
 
@@ -79,13 +78,13 @@ public class StatisticsController {
     }
 
     @GetMapping("/statistics/course-tags")
-    public String courseTags(Model model, @RequestParam Long userId) {
-        List<Tag> tags = courseService.getCommonTags(userId);
+    public String courseTags(Model model, @RequestParam Long userId, @RequestParam Long courseId) {
+        List<Entry<String, Integer>> tags = courseService.getCommonTags(userId, courseId);
         List<String> labels = new ArrayList<>();
         List<Double> values = new ArrayList<>();
-        for (int i = 0; i < tags.size(); i++) {
-            labels.add(tags.get(i).getName());
-            values.add((double) (3 - i));
+        for (Entry<String, Integer> tag : tags) {
+            labels.add(tag.getKey());
+            values.add(tag.getValue().doubleValue());
         }
         return createChart(model, "Tags en común contigo", "bar", labels, values);
     }
