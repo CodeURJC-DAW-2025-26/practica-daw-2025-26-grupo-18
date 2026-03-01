@@ -202,11 +202,13 @@ Mostrará el contenido del carrito y saltará un pop-up para rellenar la informa
 
 #### **Diagrama de Navegación**
 
-Solo si ha cambiado.
+Diagrama de Navegación actualizado
+<img width="1739" height="729" alt="Diagrama de navegación actualizado" src="https://github.com/user-attachments/assets/39c846f5-182a-43e5-b5d7-4e62cea90af5" />
 
 #### **Capturas de Pantalla Actualizadas**
 
-Solo si han cambiado.
+Pantalla admindashboard modificada
+<img width="1899" height="912" alt="admindashobard" src="https://github.com/user-attachments/assets/baf01dc4-7d01-4154-9841-1ca6d564452e" />
 
 ### **Instrucciones de Ejecución**
 
@@ -216,19 +218,68 @@ Solo si han cambiado.
 - **MySQL**: versión 8.0 o superior
 - **Git**: para clonar el repositorio
 
-#### **Pasos para ejecutar la aplicación**
-
 1. **Clonar el repositorio**
    ```bash
    git clone https://github.com/[usuario]/[nombre-repositorio].git
-   cd [nombre-repositorio]
+   cd [nombre-repositorio]/scam-g18
    ```
 
-2. **AQUÍ INDICAR LO SIGUIENTES PASOS**
+2. **Crear la base de datos MySQL**
+   - Asegúrate de tener MySQL arrancado en local.
+   - Desde la carpeta raíz del repositorio, ejecuta:
+   ```bash
+   mysql -u root -p < daw_g18.sql
+   ```
+
+3. **Configurar credenciales y variables de entorno**
+   - Revisa `scam-g18/src/main/resources/application.properties` y ajusta si es necesario:
+     - `spring.datasource.username`
+     - `spring.datasource.password`
+   - Configura OAuth de Google (si vas a usar login con Google):
+     - `GOOGLE_CLIENT_ID`
+     - `GOOGLE_CLIENT_SECRET`
+
+4. **Ejecutar la aplicación**
+   - En Windows:
+   ```bash
+   .\\mvnw.cmd spring-boot:run
+   ```
+   - En Linux/Mac:
+   ```bash
+   ./mvnw spring-boot:run
+   ```
+
+5. **Abrir en el navegador**
+   ```
+   https://localhost:8443
+   ```
+   > La aplicación usa HTTPS con certificado autofirmado, por lo que el navegador puede mostrar un aviso de seguridad.
 
 #### **Credenciales de prueba**
-- **Usuario Admin**: usuario: `admin`, contraseña: `admin`
-- **Usuario Registrado**: usuario: `user`, contraseña: `user`
+
+- **Usuario Admin**: usuario: `admin`, contraseña: `adminpass`
+- **Usuario Creador**: usuario: `content_lead`, contraseña: `leadpass`
+- **Usuario Creador**: usuario: `mentor_ai`, contraseña: `mentorpass`
+- **Usuario Creador**: usuario: `coach_growth`, contraseña: `coachpass`
+- **Usuario Creador**: usuario: `finance_master`, contraseña: `financepass`
+- **Usuario Registrado**: usuario: `learner1`, contraseña: `pass1`
+- **Usuario Registrado**: usuario: `learner2`, contraseña: `pass2`
+- **Usuario Registrado**: usuario: `learner3`, contraseña: `pass3`
+- **Usuario Registrado**: usuario: `learner4`, contraseña: `pass4`
+- **Usuario Registrado**: usuario: `learner5`, contraseña: `pass5`
+- **Usuario Registrado**: usuario: `learner6`, contraseña: `pass6`
+- **Usuario Registrado**: usuario: `learner7`, contraseña: `pass7`
+- **Usuario Registrado**: usuario: `learner8`, contraseña: `pass8`
+- **Usuario Registrado**: usuario: `learner9`, contraseña: `pass9`
+- **Usuario Registrado**: usuario: `learner10`, contraseña: `pass10`
+- **Usuario Registrado**: usuario: `learner11`, contraseña: `pass11`
+- **Usuario Registrado**: usuario: `learner12`, contraseña: `pass12`
+- **Usuario Registrado**: usuario: `learner13`, contraseña: `pass13`
+- **Usuario Registrado**: usuario: `learner14`, contraseña: `pass14`
+- **Usuario Registrado**: usuario: `learner15`, contraseña: `pass15`
+- **Usuario Registrado**: usuario: `learner16`, contraseña: `pass16`
+- **Usuario Registrado**: usuario: `learner17`, contraseña: `pass17`
+- **Usuario Registrado**: usuario: `learner18`, contraseña: `pass18`
 
 ### **Diagrama de Entidades de Base de Datos**
 
