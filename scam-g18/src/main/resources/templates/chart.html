@@ -24,12 +24,12 @@
     </head>
     <body>
         <canvas id="genericChart" data-chart-type="{{chartType}}" data-chart-title="{{chartTitle}}"></canvas>
-        <ul id="chartLabelsData" class="d-none">
+        <ul id="chartLabelsData" hidden>
             {{#chartLabels}}
             <li>{{.}}</li>
             {{/chartLabels}}
         </ul>
-        <ul id="chartValuesData" class="d-none">
+        <ul id="chartValuesData" hidden>
             {{#chartValues}}
             <li>{{.}}</li>
             {{/chartValues}}
