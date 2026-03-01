@@ -85,6 +85,11 @@ public class CourseService {
 
     // Construye los datos de listado de cursos publicados para la vista.
     public List<Map<String, Object>> getCoursesViewData(String keyword, List<String> tags, Long userId) {
+        return getCoursesViewData(keyword, tags, userId, 0, Integer.MAX_VALUE);
+    }
+
+    public List<Map<String, Object>> getCoursesViewData(String keyword, List<String> tags, Long userId, int page,
+            int size) {
         List<Course> allCourses = searchCourses(keyword, tags);
         List<Course> publishedCourses = new ArrayList<>();
 
@@ -102,9 +107,18 @@ public class CourseService {
                             .thenComparing(Course::getTitle, String.CASE_INSENSITIVE_ORDER));
         }
 
+        int start = page * size;
+        int end = Math.min((start + size), publishedCourses.size());
+        List<Course> pagedCourses;
+        if (start >= publishedCourses.size()) {
+            pagedCourses = new ArrayList<>();
+        } else {
+            pagedCourses = publishedCourses.subList(start, end);
+        }
+
         List<Map<String, Object>> enrichedCourses = new ArrayList<>();
 
-        for (Course course : publishedCourses) {
+        for (Course course : pagedCourses) {
 
             Map<String, Object> courseData = new HashMap<>();
             courseData.put("id", course.getId());
@@ -120,16 +134,28 @@ public class CourseService {
             courseData.put("subscribersNumber", course.getSubscribersNumber());
             courseData.put("videoHours", course.getVideoHours());
             courseData.put("downloadableResources", course.getDownloadableResources());
-                boolean isSubscribed = userId != null
+            boolean isSubscribed = userId != null
                     && enrollmentRepository.existsByUserIdAndCourseIdAndExpiresAtAfter(
-                        userId,
-                        course.getId(),
-                        java.time.LocalDateTime.now());
-                courseData.put("isSubscribed", isSubscribed);
+                            userId,
+                            course.getId(),
+                            java.time.LocalDateTime.now());
+            courseData.put("isSubscribed", isSubscribed);
             enrichedCourses.add(courseData);
         }
 
         return enrichedCourses;
+    }
+
+    // Obtiene el número total de cursos publicados dados los filtros
+    public int getTotalPublishedCoursesCount(String keyword, List<String> tags) {
+        List<Course> allCourses = searchCourses(keyword, tags);
+        int count = 0;
+        for (Course course : allCourses) {
+            if (course.getStatus() == Status.PUBLISHED) {
+                count++;
+            }
+        }
+        return count;
     }
 
     // Construye el detalle completo de un curso para la vista.
@@ -314,7 +340,8 @@ public class CourseService {
         return Optional.of(videoUrl);
     }
 
-    // Devuelve la URL del vídeo de una lección solo si el usuario tiene suscripción activa al curso.
+    // Devuelve la URL del vídeo de una lección solo si el usuario tiene suscripción
+    // activa al curso.
     public Optional<String> getLessonVideoUrlIfSubscribed(Long courseId, Long lessonId, Long userId) {
         if (courseId == null || lessonId == null || userId == null) {
             return Optional.empty();

@@ -80,7 +80,7 @@
                                                 <th class="text-end">Acciones</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody id="usersList">
                                             {{#users}}
                                             <tr>
                                                 <td>
@@ -136,6 +136,11 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                {{#hasMoreUsers}}
+                                <div class="text-center p-3 border-top">
+                                    <button id="loadMoreUsersBtn" class="btn btn-accent btn-sm" data-page="1" data-query="{{userQuery}}">Cargar más usuarios</button>
+                                </div>
+                                {{/hasMoreUsers}}
                             </div>
                         </div>
                     </div><!-- end usersTab -->
@@ -170,7 +175,7 @@
                                                 <th class="text-end">Acciones</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody id="coursesList">
                                             {{#courses}}
                                             <tr {{#isPendingReview}}class="table-warning" {{/isPendingReview}}>
                                                 <td>
@@ -230,6 +235,11 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                {{#hasMoreCourses}}
+                                <div class="text-center p-3 border-top">
+                                    <button id="loadMoreCoursesBtn" class="btn btn-accent btn-sm" data-page="1" data-query="{{courseQuery}}">Cargar más cursos</button>
+                                </div>
+                                {{/hasMoreCourses}}
                             </div>
                         </div>
                     </div><!-- end coursesTab -->
@@ -264,7 +274,7 @@
                                                 <th class="text-end">Acciones</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody id="eventsList">
                                             {{#events}}
                                             <tr {{#isPendingReview}}class="table-warning" {{/isPendingReview}}>
                                                 <td>
@@ -324,6 +334,11 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                {{#hasMoreEvents}}
+                                <div class="text-center p-3 border-top">
+                                    <button id="loadMoreEventsBtn" class="btn btn-accent btn-sm" data-page="1" data-query="{{eventQuery}}">Cargar más eventos</button>
+                                </div>
+                                {{/hasMoreEvents}}
                             </div>
                         </div>
                     </div><!-- end eventsTab -->
@@ -345,7 +360,7 @@
                                                 <th class="text-end">Total</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody id="ordersList">
                                             {{#orders}}
                                             <tr>
                                                 <td class="fw-semibold">#{{id}}</td>
@@ -378,6 +393,11 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                {{#hasMoreOrders}}
+                                <div class="text-center p-3 border-top">
+                                    <button id="loadMoreOrdersBtn" class="btn btn-accent btn-sm" data-page="1">Cargar más pedidos</button>
+                                </div>
+                                {{/hasMoreOrders}}
                             </div>
                         </div>
                     </div><!-- end ordersTab -->
@@ -401,6 +421,319 @@
         } else {
             // default to users tab
             new bootstrap.Tab(document.getElementById('tab-users')).show();
+        }
+
+        // Paginación ajax usuarios
+        const loadMoreUsersBtn = document.getElementById('loadMoreUsersBtn');
+        if (loadMoreUsersBtn) {
+            loadMoreUsersBtn.addEventListener('click', function() {
+                const page = this.getAttribute('data-page');
+                const query = this.getAttribute('data-query');
+                const urlParams = new URLSearchParams();
+                urlParams.set('page', page);
+                if (query) urlParams.set('query', query);
+                
+                const csrfToken = '{{_csrf.token}}';
+                const csrfParam = '{{_csrf.parameterName}}';
+                
+                fetch('/admin/api/users?' + urlParams.toString())
+                .then(response => response.json())
+                .then(data => {
+                    const usersList = document.getElementById('usersList');
+                    
+                    if (data.length > 0) {
+                        data.forEach(user => {
+                            const tr = document.createElement('tr');
+                            
+                            let statusHtml = user.isActive 
+                                ? '<span class="badge bg-success">Activo</span>' 
+                                : '<span class="badge bg-danger">Baneado</span>';
+                                
+                            let actionHtml = '';
+                            if (user.isActive) {
+                                actionHtml = `
+                                <form action="/admin/users/${user.id}/ban" method="post" class="d-flex align-items-start">
+                                    <input type="hidden" name="${csrfParam}" value="${csrfToken}">
+                                    <button type="submit" class="btn btn-sm btn-accent-outline" onclick="return confirm('¿Banear a ${user.username}?')">
+                                        <i class="bi bi-slash-circle"></i> Banear
+                                    </button>
+                                </form>`;
+                            } else {
+                                actionHtml = `
+                                <form action="/admin/users/${user.id}/unban" method="post" class="d-flex align-items-start">
+                                    <input type="hidden" name="${csrfParam}" value="${csrfToken}">
+                                    <button type="submit" class="btn btn-sm btn-accent">
+                                        <i class="bi bi-check-circle"></i> Desbanear
+                                    </button>
+                                </form>`;
+                            }
+                            
+                            tr.innerHTML = `
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-person-circle fs-4 text-muted"></i>
+                                        <span class="fw-semibold">${user.username}</span>
+                                    </div>
+                                </td>
+                                <td class="text-muted">${user.email}</td>
+                                <td>${statusHtml}</td>
+                                <td class="text-end">
+                                    <div class="d-flex justify-content-end align-items-start gap-2 flex-nowrap">
+                                        <a href="/profile/${user.id}" class="btn btn-sm btn-accent-outline">Ver perfil</a>
+                                        ${actionHtml}
+                                    </div>
+                                </td>
+                            `;
+                            usersList.appendChild(tr);
+                        });
+                        
+                        this.setAttribute('data-page', parseInt(page) + 1);
+                        
+                        if (data.length < 5) {
+                            this.style.display = 'none';
+                        }
+                    } else {
+                        this.style.display = 'none';
+                    }
+                })
+                .catch(error => console.error('Error loading more users:', error));
+            });
+        }
+
+        // Paginación ajax eventos
+        const loadMoreEventsBtn = document.getElementById('loadMoreEventsBtn');
+        if (loadMoreEventsBtn) {
+            loadMoreEventsBtn.addEventListener('click', function() {
+                const page = this.getAttribute('data-page');
+                const query = this.getAttribute('data-query');
+                const urlParams = new URLSearchParams();
+                urlParams.set('page', page);
+                if (query) urlParams.set('query', query);
+                
+                const csrfToken = '{{_csrf.token}}';
+                const csrfParam = '{{_csrf.parameterName}}';
+                
+                fetch('/admin/api/events?' + urlParams.toString())
+                .then(response => response.json())
+                .then(data => {
+                    const eventsList = document.getElementById('eventsList');
+                    
+                    if (data.length > 0) {
+                        data.forEach(event => {
+                            const tr = document.createElement('tr');
+                            if (event.isPendingReview) {
+                                tr.classList.add('table-warning');
+                            }
+                            
+                            let titleHtml = `
+                                <div>
+                                    <span class="fw-semibold">${event.title}</span>
+                                    ${event.isPendingReview ? '<span class="badge bg-light text-accent ms-2">En revisión</span>' : ''}
+                                    <p class="text-muted small mb-0">${event.category}</p>
+                                </div>
+                            `;
+                            
+                            let statusHtml = event.isPendingReview 
+                                ? '<span class="badge bg-light text-accent">Pendiente</span>' 
+                                : `<span class="badge bg-secondary">${event.status}</span>`;
+                                
+                            let actionHtml = `
+                                <a href="/event/${event.id}" class="btn btn-sm btn-accent-outline">
+                                    <i class="bi bi-eye"></i> Ver
+                                </a>
+                                <a href="/event/${event.id}/edit" class="btn btn-sm btn-accent-outline">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </a>
+                            `;
+                            
+                            if (event.isPendingReview) {
+                                actionHtml += `
+                                <form action="/admin/events/${event.id}/approve" method="post" class="d-inline">
+                                    <input type="hidden" name="${csrfParam}" value="${csrfToken}">
+                                    <button type="submit" class="btn btn-sm btn-accent">
+                                        <i class="bi bi-check-lg"></i> Aprobar
+                                    </button>
+                                </form>
+                                <form action="/admin/events/${event.id}/reject" method="post" class="d-inline">
+                                    <input type="hidden" name="${csrfParam}" value="${csrfToken}">
+                                    <button type="submit" class="btn btn-sm btn-accent-outline" onclick="return confirm('¿Rechazar este evento?')">
+                                        <i class="bi bi-x-lg"></i> Rechazar
+                                    </button>
+                                </form>
+                                `;
+                            }
+                                
+                            tr.innerHTML = `
+                                <td>${titleHtml}</td>
+                                <td class="text-muted">${event.creatorUsername}</td>
+                                <td>${statusHtml}</td>
+                                <td class="text-end">
+                                    <div class="d-flex justify-content-end align-items-start gap-2 flex-wrap">
+                                        ${actionHtml}
+                                    </div>
+                                </td>
+                            `;
+                            
+                            eventsList.appendChild(tr);
+                        });
+                        
+                        this.setAttribute('data-page', parseInt(page) + 1);
+                        
+                        if (data.length < 5) {
+                            this.parentElement.style.display = 'none';
+                        }
+                    } else {
+                        this.parentElement.style.display = 'none';
+                    }
+                })
+                .catch(error => console.error('Error cargando más eventos:', error));
+            });
+        }
+
+        // Paginación ajax cursos
+        const loadMoreCoursesBtn = document.getElementById('loadMoreCoursesBtn');
+        if (loadMoreCoursesBtn) {
+            loadMoreCoursesBtn.addEventListener('click', function() {
+                const page = this.getAttribute('data-page');
+                const query = this.getAttribute('data-query');
+                const urlParams = new URLSearchParams();
+                urlParams.set('page', page);
+                if (query) urlParams.set('query', query);
+                
+                const csrfToken = '{{_csrf.token}}';
+                const csrfParam = '{{_csrf.parameterName}}';
+                
+                fetch('/admin/api/courses?' + urlParams.toString())
+                .then(response => response.json())
+                .then(data => {
+                    const coursesList = document.getElementById('coursesList');
+                    
+                    if (data.length > 0) {
+                        data.forEach(course => {
+                            const tr = document.createElement('tr');
+                            if (course.isPendingReview) {
+                                tr.classList.add('table-warning');
+                            }
+                            
+                            let titleHtml = `
+                                <div>
+                                    <span class="fw-semibold">${course.title}</span>
+                                    ${course.isPendingReview ? '<span class="badge bg-light text-accent ms-2">En revisión</span>' : ''}
+                                    <p class="text-muted small mb-0">${course.shortDescription}</p>
+                                </div>
+                            `;
+                            
+                            let statusHtml = course.isPendingReview 
+                                ? '<span class="badge bg-light text-accent">Pendiente</span>' 
+                                : `<span class="badge bg-secondary">${course.status}</span>`;
+                                
+                            let actionHtml = `
+                                <a href="/course/${course.id}" class="btn btn-sm btn-accent-outline">
+                                    <i class="bi bi-eye"></i> Ver
+                                </a>
+                                <a href="/course/${course.id}/edit" class="btn btn-sm btn-accent-outline">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </a>
+                            `;
+                            
+                            if (course.isPendingReview) {
+                                actionHtml += `
+                                <form action="/admin/courses/${course.id}/approve" method="post" class="d-inline">
+                                    <input type="hidden" name="${csrfParam}" value="${csrfToken}">
+                                    <button type="submit" class="btn btn-sm btn-accent">
+                                        <i class="bi bi-check-lg"></i> Aprobar
+                                    </button>
+                                </form>
+                                <form action="/admin/courses/${course.id}/reject" method="post" class="d-inline">
+                                    <input type="hidden" name="${csrfParam}" value="${csrfToken}">
+                                    <button type="submit" class="btn btn-sm btn-accent-outline" onclick="return confirm('¿Rechazar este curso?')">
+                                        <i class="bi bi-x-lg"></i> Rechazar
+                                    </button>
+                                </form>
+                                `;
+                            }
+                                
+                            tr.innerHTML = `
+                                <td>${titleHtml}</td>
+                                <td class="text-muted">${course.creatorUsername}</td>
+                                <td>${statusHtml}</td>
+                                <td class="text-end">
+                                    <div class="d-flex justify-content-end align-items-start gap-2 flex-wrap">
+                                        ${actionHtml}
+                                    </div>
+                                </td>
+                            `;
+                            
+                            coursesList.appendChild(tr);
+                        });
+                        
+                        this.setAttribute('data-page', parseInt(page) + 1);
+                        
+                        if (data.length < 5) {
+                            this.parentElement.style.display = 'none';
+                        }
+                    } else {
+                        this.parentElement.style.display = 'none';
+                    }
+                })
+                .catch(error => console.error('Error cargando más cursos:', error));
+            });
+        }
+
+        // Paginación ajax pedidos
+        const loadMoreOrdersBtn = document.getElementById('loadMoreOrdersBtn');
+        if (loadMoreOrdersBtn) {
+            loadMoreOrdersBtn.addEventListener('click', function() {
+                const page = this.getAttribute('data-page');
+                const urlParams = new URLSearchParams();
+                urlParams.set('page', page);
+                
+                fetch('/admin/api/orders?' + urlParams.toString())
+                .then(response => response.json())
+                .then(data => {
+                    const ordersList = document.getElementById('ordersList');
+                    
+                    if (data.length > 0) {
+                        data.forEach(order => {
+                            const tr = document.createElement('tr');
+                            
+                            let userHtml = order.username ? order.username : '-';
+                            let clientHtml = `
+                                <div>${order.billingFullName}</div>
+                                <small class="text-muted">${order.billingEmail}</small>
+                            `;
+                            
+                            let dateHtml = order.paidAt ? order.paidAt : (order.createdAt ? order.createdAt : '');
+                            
+                            let paymentHtml = `
+                                <div>${order.paymentMethod}</div>
+                                <small class="text-muted">${order.paymentReference}</small>
+                            `;
+                            
+                            tr.innerHTML = `
+                                <td class="fw-semibold">#${order.id}</td>
+                                <td>${userHtml}</td>
+                                <td>${clientHtml}</td>
+                                <td><span class="badge bg-secondary">${order.status}</span></td>
+                                <td>${dateHtml}</td>
+                                <td>${paymentHtml}</td>
+                                <td class="text-end fw-semibold">${order.totalAmountEuros} €</td>
+                            `;
+                            
+                            ordersList.appendChild(tr);
+                        });
+                        
+                        this.setAttribute('data-page', parseInt(page) + 1);
+                        
+                        if (data.length < 5) {
+                            this.parentElement.style.display = 'none';
+                        }
+                    } else {
+                        this.parentElement.style.display = 'none';
+                    }
+                })
+                .catch(error => console.error('Error cargando más pedidos:', error));
+            });
         }
     });
 </script>

@@ -78,6 +78,11 @@ public class EventService {
 
     // Construye los datos de listado de eventos publicados para la vista.
     public List<Map<String, Object>> getEventsViewData(String keyword, List<String> tags, Long userId) {
+        return getEventsViewData(keyword, tags, userId, 0, Integer.MAX_VALUE);
+    }
+
+    public List<Map<String, Object>> getEventsViewData(String keyword, List<String> tags, Long userId, int page,
+            int size) {
         List<Event> allEvents = searchEvents(keyword, tags);
         List<Event> publishedEvents = new ArrayList<>();
 
@@ -95,9 +100,18 @@ public class EventService {
                             .thenComparing(Event::getTitle, String.CASE_INSENSITIVE_ORDER));
         }
 
+        int start = page * size;
+        int end = Math.min((start + size), publishedEvents.size());
+        List<Event> pagedEvents;
+        if (start >= publishedEvents.size()) {
+            pagedEvents = new ArrayList<>();
+        } else {
+            pagedEvents = publishedEvents.subList(start, end);
+        }
+
         List<Map<String, Object>> eventsData = new ArrayList<>();
 
-        for (Event event : publishedEvents) {
+        for (Event event : pagedEvents) {
             Map<String, Object> eventData = buildEventCardData(event);
             boolean isSubscribed = userId != null
                     && eventRegistrationRepository.existsByUserIdAndEventId(userId, event.getId());
@@ -106,6 +120,17 @@ public class EventService {
         }
 
         return eventsData;
+    }
+
+    public int getTotalPublishedEventsCount(String keyword, List<String> tags) {
+        List<Event> allEvents = searchEvents(keyword, tags);
+        int count = 0;
+        for (Event event : allEvents) {
+            if (event.getStatus() == Status.PUBLISHED) {
+                count++;
+            }
+        }
+        return count;
     }
 
     // Construye los datos de eventos comprados por un usuario.

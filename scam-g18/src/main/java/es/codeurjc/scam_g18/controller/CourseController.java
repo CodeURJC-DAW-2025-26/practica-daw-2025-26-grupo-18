@@ -50,10 +50,23 @@ public class CourseController {
     public String courses(Model model, @RequestParam(required = false) String search,
             @RequestParam(required = false) List<String> tags) {
         Long currentUserId = userService.getCurrentAuthenticatedUser().map(User::getId).orElse(null);
-        model.addAttribute("courses", courseService.getCoursesViewData(search, tags, currentUserId));
+        model.addAttribute("courses", courseService.getCoursesViewData(search, tags, currentUserId, 0, 5));
         model.addAttribute("search", search);
         model.addAttribute("tagsView", tagService.getTagsView(tags));
+        model.addAttribute("hasMore", courseService.getTotalPublishedCoursesCount(search, tags) > 5);
         return "courses";
+    }
+
+    // Endpoint AJAX para paginación de cursos
+    @GetMapping("/api/courses")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> getCoursesApi(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) List<String> tags,
+            @RequestParam(defaultValue = "0") int page) {
+        Long currentUserId = userService.getCurrentAuthenticatedUser().map(User::getId).orElse(null);
+        List<Map<String, Object>> courses = courseService.getCoursesViewData(search, tags, currentUserId, page, 5);
+        return ResponseEntity.ok(courses);
     }
 
     // Muestra el detalle de un curso y los datos de progreso/reseñas del usuario.
@@ -98,7 +111,8 @@ public class CourseController {
 
     }
 
-    // Permite abrir el vídeo de una lección a suscritos, administradores y creador del curso.
+    // Permite abrir el vídeo de una lección a suscritos, administradores y creador
+    // del curso.
     @GetMapping("/course/{courseId}/lesson/{lessonId}/video")
     public String openLessonVideo(@PathVariable long courseId, @PathVariable long lessonId, Principal principal) {
         if (principal == null) {

@@ -276,10 +276,10 @@
 				<p>Gestiona tus cursos creados y visualiza el progreso de tus estudiantes.</p>
 			</div>
 
-			<div class="row g-4">
+			<div class="row g-4 align-items-stretch">
 				<!-- Created Courses Carousel Area -->
-				<div class="col-lg-8">
-					<div id="instructorCoursesCarousel" class="carousel slide h-100 instructor-carousel" data-bs-ride="false">
+				<div class="col-lg-8 d-flex flex-column">
+					<div id="instructorCoursesCarousel" class="carousel slide flex-grow-1 instructor-carousel w-100" data-bs-ride="false">
 						<div class="carousel-inner h-100">
 							{{#createdCourses}}
 							<div class="carousel-item {{#-first}}active{{/-first}} h-100">
@@ -340,10 +340,10 @@
 				</div>
 
 				<!-- Create New Course Button -->
-				<div class="col-lg-4">
-					<div class="card border-0 shadow-sm h-100 instructor-create-card">
+				<div class="col-lg-4 d-flex flex-column">
+					<div class="card border-0 shadow-sm flex-grow-1 w-100 instructor-create-card">
 						<div class="card-body p-4 d-flex align-items-center justify-content-center border-dashed instructor-create-card-body">
-							<div class="text-center py-4">
+							<div class="text-center py-4" style="margin-top: -35px;">
 								<div class="icon-box mb-3 mx-auto text-muted">
 									<i class="bi bi-plus-lg fs-1"></i>
 								</div>

@@ -18,28 +18,39 @@ public class AdminController {
     private void populateModel(Model model, String userQuery, String courseQuery, String eventQuery, String activeTab) {
         // Users
         if (userQuery != null && !userQuery.isBlank()) {
-            model.addAttribute("users", adminService.searchUsers(userQuery));
+            model.addAttribute("users", adminService.searchUsers(userQuery, 0, 5));
+            model.addAttribute("hasMoreUsers", adminService.getTotalSearchUsersCount(userQuery) > 5);
         } else {
-            model.addAttribute("users", adminService.getAllUsers());
+            model.addAttribute("users", adminService.getAllUsers(0, 5));
+            model.addAttribute("hasMoreUsers", adminService.getTotalUsersCount() > 5);
         }
 
         // Courses (pending first)
         if (courseQuery != null && !courseQuery.isBlank()) {
-            model.addAttribute("courses", adminService.searchCourses(courseQuery));
+            model.addAttribute("courses", adminService.searchCourses(courseQuery, 0, 5));
+            model.addAttribute("hasMoreCourses", adminService.getTotalSearchCoursesCount(courseQuery) > 5);
         } else {
-            model.addAttribute("courses", adminService.getAllCoursesSortedByStatus());
+            model.addAttribute("courses", adminService.getAllCoursesSortedByStatus(0, 5));
+            model.addAttribute("hasMoreCourses", adminService.getTotalCoursesCount() > 5);
         }
 
         // Events (pending first)
         if (eventQuery != null && !eventQuery.isBlank()) {
-            model.addAttribute("events", adminService.searchEvents(eventQuery));
+            model.addAttribute("events", adminService.searchEvents(eventQuery, 0, 5));
+            model.addAttribute("hasMoreEvents", adminService.getTotalSearchEventsCount(eventQuery) > 5);
         } else {
-            model.addAttribute("events", adminService.getAllEventsSortedByStatus());
+            model.addAttribute("events", adminService.getAllEventsSortedByStatus(0, 5));
+            model.addAttribute("hasMoreEvents", adminService.getTotalEventsCount() > 5);
         }
 
         model.addAttribute("userQuery", userQuery != null ? userQuery : "");
         model.addAttribute("courseQuery", courseQuery != null ? courseQuery : "");
         model.addAttribute("eventQuery", eventQuery != null ? eventQuery : "");
+
+        // Orders
+        model.addAttribute("orders", adminService.getAllOrdersSortedByDate(0, 5));
+        model.addAttribute("hasMoreOrders", adminService.getTotalOrdersCount() > 5);
+
         model.addAttribute("activeTab", activeTab != null ? activeTab : "users");
         model.addAttribute("reviews", adminService.getAllReviews());
         model.addAttribute("orders", adminService.getAllOrdersSortedByDate());
@@ -62,6 +73,123 @@ public class AdminController {
     public String searchUser(@RequestParam String name, Model model) {
         populateModel(model, name, null, null, "users");
         return "adminDashboard";
+    }
+
+    // Endpoint AJAX para paginación de usuarios
+    @GetMapping("/api/users")
+    @ResponseBody
+    public org.springframework.http.ResponseEntity<java.util.List<java.util.Map<String, Object>>> getUsersApi(
+            @RequestParam(required = false) String query,
+            @RequestParam(defaultValue = "0") int page) {
+
+        java.util.List<es.codeurjc.scam_g18.model.User> users;
+        if (query != null && !query.isBlank()) {
+            users = adminService.searchUsers(query, page, 5);
+        } else {
+            users = adminService.getAllUsers(page, 5);
+        }
+
+        java.util.List<java.util.Map<String, Object>> userList = new java.util.ArrayList<>();
+        for (es.codeurjc.scam_g18.model.User u : users) {
+            java.util.Map<String, Object> map = new java.util.HashMap<>();
+            map.put("id", u.getId());
+            map.put("username", u.getUsername());
+            map.put("email", u.getEmail());
+            map.put("isActive", u.getIsActive());
+            userList.add(map);
+        }
+
+        return org.springframework.http.ResponseEntity.ok(userList);
+    }
+
+    // Endpoint AJAX para paginación de eventos
+    @GetMapping("/api/events")
+    @ResponseBody
+    public org.springframework.http.ResponseEntity<java.util.List<java.util.Map<String, Object>>> getAdminEventsApi(
+            @RequestParam(required = false) String query,
+            @RequestParam(defaultValue = "0") int page) {
+
+        java.util.List<es.codeurjc.scam_g18.model.Event> events;
+        if (query != null && !query.isBlank()) {
+            events = adminService.searchEvents(query, page, 5);
+        } else {
+            events = adminService.getAllEventsSortedByStatus(page, 5);
+        }
+
+        java.util.List<java.util.Map<String, Object>> eventList = new java.util.ArrayList<>();
+        for (es.codeurjc.scam_g18.model.Event e : events) {
+            java.util.Map<String, Object> map = new java.util.HashMap<>();
+            map.put("id", e.getId());
+            map.put("title", e.getTitle());
+            map.put("category", e.getCategory());
+            map.put("isPendingReview", e.getStatus() == es.codeurjc.scam_g18.model.Status.PENDING_REVIEW);
+            map.put("status", e.getStatus() != null ? e.getStatus().toString() : "");
+            map.put("creatorUsername", e.getCreator() != null ? e.getCreator().getUsername() : "");
+            eventList.add(map);
+        }
+
+        return org.springframework.http.ResponseEntity.ok(eventList);
+    }
+
+    // Endpoint AJAX para paginación de cursos
+    @GetMapping("/api/courses")
+    @ResponseBody
+    public org.springframework.http.ResponseEntity<java.util.List<java.util.Map<String, Object>>> getAdminCoursesApi(
+            @RequestParam(required = false) String query,
+            @RequestParam(defaultValue = "0") int page) {
+
+        java.util.List<es.codeurjc.scam_g18.model.Course> courses;
+        if (query != null && !query.isBlank()) {
+            courses = adminService.searchCourses(query, page, 5);
+        } else {
+            courses = adminService.getAllCoursesSortedByStatus(page, 5);
+        }
+
+        java.util.List<java.util.Map<String, Object>> courseList = new java.util.ArrayList<>();
+        for (es.codeurjc.scam_g18.model.Course c : courses) {
+            java.util.Map<String, Object> map = new java.util.HashMap<>();
+            map.put("id", c.getId());
+            map.put("title", c.getTitle());
+            map.put("shortDescription", c.getShortDescription());
+            map.put("isPendingReview", c.getStatus() == es.codeurjc.scam_g18.model.Status.PENDING_REVIEW);
+            map.put("status", c.getStatus() != null ? c.getStatus().toString() : "");
+            map.put("creatorUsername", c.getCreator() != null ? c.getCreator().getUsername() : "");
+            courseList.add(map);
+        }
+        return org.springframework.http.ResponseEntity.ok(courseList);
+    }
+
+    // Endpoint AJAX para paginación de pedidos
+    @GetMapping("/api/orders")
+    @ResponseBody
+    public org.springframework.http.ResponseEntity<java.util.List<java.util.Map<String, Object>>> getAdminOrdersApi(
+            @RequestParam(defaultValue = "0") int page) {
+
+        java.util.List<es.codeurjc.scam_g18.model.Order> orders = adminService.getAllOrdersSortedByDate(page, 5);
+
+        java.util.List<java.util.Map<String, Object>> orderList = new java.util.ArrayList<>();
+        for (es.codeurjc.scam_g18.model.Order o : orders) {
+            java.util.Map<String, Object> map = new java.util.HashMap<>();
+            map.put("id", o.getId());
+            if (o.getUser() != null)
+                map.put("username", o.getUser().getUsername());
+            map.put("billingFullName", o.getBillingFullName());
+            map.put("billingEmail", o.getBillingEmail());
+            map.put("status", o.getStatus() != null ? o.getStatus().toString() : "");
+
+            java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter
+                    .ofPattern("dd/MM/yyyy HH:mm");
+            if (o.getPaidAt() != null) {
+                map.put("paidAt", o.getPaidAt().format(formatter));
+            } else if (o.getCreatedAt() != null) {
+                map.put("createdAt", o.getCreatedAt().format(formatter));
+            }
+            map.put("paymentMethod", o.getPaymentMethod());
+            map.put("paymentReference", o.getPaymentReference());
+            map.put("totalAmountEuros", o.getTotalAmountEuros());
+            orderList.add(map);
+        }
+        return org.springframework.http.ResponseEntity.ok(orderList);
     }
 
     // Bloquea a un usuario por su identificador.

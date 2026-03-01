@@ -47,9 +47,37 @@ public class AdminService {
         return userRepository.findAll();
     }
 
+    public List<User> getAllUsers(int page, int size) {
+        List<User> users = userRepository.findAll();
+        int start = page * size;
+        int end = Math.min((start + size), users.size());
+        if (start >= users.size()) {
+            return new ArrayList<>();
+        }
+        return users.subList(start, end);
+    }
+
+    public int getTotalUsersCount() {
+        return userRepository.findAll().size();
+    }
+
     // Busca usuarios por coincidencia parcial de username.
     public List<User> searchUsers(String query) {
         return userRepository.findByUsernameContainingIgnoreCase(query);
+    }
+
+    public List<User> searchUsers(String query, int page, int size) {
+        List<User> users = userRepository.findByUsernameContainingIgnoreCase(query);
+        int start = page * size;
+        int end = Math.min((start + size), users.size());
+        if (start >= users.size()) {
+            return new ArrayList<>();
+        }
+        return users.subList(start, end);
+    }
+
+    public int getTotalSearchUsersCount(String query) {
+        return userRepository.findByUsernameContainingIgnoreCase(query).size();
     }
 
     // Busca un usuario por id.
@@ -110,6 +138,34 @@ public class AdminService {
         return result;
     }
 
+    public List<Course> getAllCoursesSortedByStatus(int page, int size) {
+        List<Course> result = getAllCoursesSortedByStatus();
+        int start = page * size;
+        int end = Math.min((start + size), result.size());
+        if (start >= result.size()) {
+            return new ArrayList<>();
+        }
+        return result.subList(start, end);
+    }
+
+    public int getTotalCoursesCount() {
+        return courseRepository.findAll().size();
+    }
+
+    public List<Course> searchCourses(String query, int page, int size) {
+        List<Course> result = searchCourses(query);
+        int start = page * size;
+        int end = Math.min((start + size), result.size());
+        if (start >= result.size()) {
+            return new ArrayList<>();
+        }
+        return result.subList(start, end);
+    }
+
+    public int getTotalSearchCoursesCount(String query) {
+        return courseRepository.findByTitleContainingIgnoreCase(query).size();
+    }
+
     // Obtiene cursos pendientes de revisión.
     public List<Course> getPendingCourses() {
         return courseRepository.findByStatus(Status.PENDING_REVIEW);
@@ -163,6 +219,20 @@ public class AdminService {
         return result;
     }
 
+    public List<Event> getAllEventsSortedByStatus(int page, int size) {
+        List<Event> result = getAllEventsSortedByStatus();
+        int start = page * size;
+        int end = Math.min((start + size), result.size());
+        if (start >= result.size()) {
+            return new ArrayList<>();
+        }
+        return result.subList(start, end);
+    }
+
+    public int getTotalEventsCount() {
+        return eventRepository.findAll().size();
+    }
+
     // Busca eventos por título priorizando los pendientes.
     public List<Event> searchEvents(String query) {
         List<Event> found = eventRepository.findByTitleContainingIgnoreCase(query);
@@ -173,6 +243,20 @@ public class AdminService {
         List<Event> result = new ArrayList<>(pending);
         result.addAll(others);
         return result;
+    }
+
+    public List<Event> searchEvents(String query, int page, int size) {
+        List<Event> result = searchEvents(query);
+        int start = page * size;
+        int end = Math.min((start + size), result.size());
+        if (start >= result.size()) {
+            return new ArrayList<>();
+        }
+        return result.subList(start, end);
+    }
+
+    public int getTotalSearchEventsCount(String query) {
+        return eventRepository.findByTitleContainingIgnoreCase(query).size();
     }
 
     // Publica un evento pendiente y notifica al creador.
@@ -225,6 +309,20 @@ public class AdminService {
                     return o2.getCreatedAt().compareTo(o1.getCreatedAt());
                 })
                 .collect(Collectors.toList());
+    }
+
+    public List<Order> getAllOrdersSortedByDate(int page, int size) {
+        List<Order> result = getAllOrdersSortedByDate();
+        int start = page * size;
+        int end = Math.min((start + size), result.size());
+        if (start >= result.size()) {
+            return new ArrayList<>();
+        }
+        return result.subList(start, end);
+    }
+
+    public int getTotalOrdersCount() {
+        return orderRepository.findAll().size();
     }
 
     // Elimina una reseña por su id.

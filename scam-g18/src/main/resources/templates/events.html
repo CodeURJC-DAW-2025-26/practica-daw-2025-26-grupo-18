@@ -71,7 +71,7 @@
                 </div>
             </form>
 
-            <div class="course-list">
+            <div class="course-list" id="eventsList">
                 {{#events}}
                 <article class="course-card-full" data-aos="fade-up" data-aos-delay="50">
                     <div class="course-card-header">
@@ -111,6 +111,15 @@
                 <p>No hay eventos disponibles en este momento.</p>
                 {{/events}}
             </div>
+
+            {{#hasMoreEvents}}
+            <div class="text-center mt-5">
+                <button id="loadMoreEventsBtn" class="btn btn-primary btn-accent" data-page="1">
+                    Cargar más eventos
+                </button>
+            </div>
+            {{/hasMoreEvents}}
+
         </div>
     </section><!-- End Events Catalog -->
 </main>
@@ -132,6 +141,76 @@
 
             tagFilters.addEventListener('change', function() {
                 this.form.submit();
+            });
+        }
+
+        const loadMoreBtn = document.getElementById('loadMoreEventsBtn');
+        if(loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', function() {
+                const page = this.getAttribute('data-page');
+                const urlParams = new URLSearchParams(window.location.search);
+                urlParams.set('page', page);
+                
+                fetch('/api/events?' + urlParams.toString())
+                .then(response => response.json())
+                .then(data => {
+                    const eventsList = document.getElementById('eventsList');
+                    if(data.length > 0) {
+                        data.forEach(event => {
+                            const article = document.createElement('article');
+                            article.className = 'course-card-full';
+                            article.setAttribute('data-aos', 'fade-up');
+                            article.setAttribute('data-aos-delay', '50');
+                            
+                            let tagsHtml = '';
+                            if(event.tags && event.tags.length > 0) {
+                                event.tags.forEach(t => {
+                                    tagsHtml += `<span class="course-tag">${t.name}</span>`;
+                                });
+                            }
+                            
+                            let isSubscribedHtml = event.isSubscribed ? '<span class="badge bg-success">Entrada comprada</span>' : '';
+                            
+                            let locationHtml = event.isLocation 
+                                ? `<div><i class="bi bi-geo-alt"></i> ${event.locationName}</div>`
+                                : `<div><i class="bi bi-geo-alt"></i> Online</div>`;
+                            
+                            article.innerHTML = `
+                                <div class="course-card-header">
+                                    <div>
+                                        <h3 class="course-card-title">${event.title}</h3>
+                                        <div class="course-tags">
+                                            ${tagsHtml}
+                                        </div>
+                                    </div>
+                                    <div class="d-flex flex-column align-items-end gap-1">
+                                        ${isSubscribedHtml}
+                                        <div class="course-card-price">${event.priceEuros}€</div>
+                                    </div>
+                                </div>
+                                <p class="course-card-desc">${event.description}</p>
+                                <div class="course-card-meta">
+                                    <div><i class="bi bi-calendar-event"></i> ${event.formattedDate}</div>
+                                    <div><i class="bi bi-clock"></i> ${event.formattedTime}</div>
+                                    ${locationHtml}
+                                </div>
+                                <div class="course-card-actions">
+                                    <a href="/event/${event.id}" class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver detalles</a>
+                                </div>
+                            `;
+                            
+                            eventsList.appendChild(article);
+                        });
+                        
+                        this.setAttribute('data-page', parseInt(page) + 1);
+                        if(data.length < 5) {
+                            this.style.display = 'none';
+                        }
+                    } else {
+                        this.style.display = 'none';
+                    }
+                })
+                .catch(error => console.error('Error loading more events:', error));
             });
         }
     });

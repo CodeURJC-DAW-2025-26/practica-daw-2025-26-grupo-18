@@ -39,11 +39,25 @@ public class EventController {
     public String events(Model model, @RequestParam(required = false) String search,
             @RequestParam(required = false) List<String> tags) {
         Long currentUserId = userService.getCurrentAuthenticatedUser().map(user -> user.getId()).orElse(null);
-        model.addAttribute("events", eventService.getEventsViewData(search, tags, currentUserId));
+        model.addAttribute("events", eventService.getEventsViewData(search, tags, currentUserId, 0, 5));
+        model.addAttribute("hasMoreEvents", eventService.getTotalPublishedEventsCount(search, tags) > 5);
         model.addAttribute("search", search);
         model.addAttribute("tagsView", tagService.getTagsView(tags));
 
         return "events";
+    }
+
+    // Endpoint AJAX para paginación de eventos
+    @GetMapping("/api/events")
+    @org.springframework.web.bind.annotation.ResponseBody
+    public org.springframework.http.ResponseEntity<List<java.util.Map<String, Object>>> getEventsApi(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) List<String> tags,
+            @RequestParam(defaultValue = "0") int page) {
+        Long currentUserId = userService.getCurrentAuthenticatedUser().map(user -> user.getId()).orElse(null);
+        List<java.util.Map<String, Object>> events = eventService.getEventsViewData(search, tags, currentUserId, page,
+                5);
+        return org.springframework.http.ResponseEntity.ok(events);
     }
 
     // Muestra los eventos comprados por el usuario autenticado.
