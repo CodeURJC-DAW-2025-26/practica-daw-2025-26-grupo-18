@@ -65,7 +65,7 @@ public class EmailService {
         }
     }
 
-    // Envía el mensaje de bienvenida al crear una cuenta nueva.
+    // Sends the welcome message when a new account is created.
     public void newAccountMessage(String newUserMail, String newUsername) {
                 String safeUsername = (newUsername == null || newUsername.isBlank()) ? "usuario" : newUsername;
 
@@ -107,7 +107,7 @@ public class EmailService {
                 sendHtmlMail(newUserMail, "Bienvenido a SCAM", messageHtml);
     }
 
-    // Notifica al creador cuando su curso ha sido publicado.
+    // Notifies the creator when their course has been published.
     public void cursePublished(String userMail, String courseName, String creatorName) {
         String message = """
                 ¡Enhorabuena, %s! 🎉
@@ -124,7 +124,7 @@ public class EmailService {
         sendMail(userMail, "SE HA PUBLICADO TU CURSO", message);
     }
 
-    // Informa al usuario de que su cuenta ha sido suspendida.
+    // Informs the user that their account has been suspended.
     public void accountBannedMessage(String userEmail, String userName) {
         String message = """
                 Hola %s,
@@ -141,7 +141,7 @@ public class EmailService {
         sendMail(userEmail, "⚠️ Notificación de suspensión de cuenta", message);
     }
 
-    // Notifica al creador cuando su evento ha sido publicado.
+    // Notifies the creator when their event has been published.
     public void eventPublished(String userMail, String eventName, String creatorName) {
         String message = """
                 ¡Enhorabuena, %s! 🎉

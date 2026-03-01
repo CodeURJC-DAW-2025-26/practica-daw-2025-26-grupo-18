@@ -194,7 +194,7 @@
     document.addEventListener("scroll", navmenuScrollspy);
 })();
 
-// ── Campos simples (aprendizajes, etiquetas, requisitos) ──────────────────
+// ── Simple fields (learning, tags, prerequisites) ─────────────────────────
 function addDynamicItem(containerId, placeholder, icon) {
     const container = document.getElementById(containerId);
     const nameMap = {
@@ -213,7 +213,7 @@ function addDynamicItem(containerId, placeholder, icon) {
     container.appendChild(div);
 }
 
-// ── Módulos ───────────────────────────────────────────────────────────────
+// ── Modules ───────────────────────────────────────────────────────────────
 function updateModuleCount() {
     const count = document.querySelectorAll("#modules-container .module-item").length;
     const el = document.getElementById("moduleCount");
@@ -370,7 +370,7 @@ function setupRegisterAvailabilityValidation() {
             setFieldState(usernameInput, usernameFeedback, data.usernameTaken, "Ese nombre de usuario ya está en uso");
             setFieldState(emailInput, emailFeedback, data.emailTaken, "Ese correo electrónico ya está registrado");
         } catch (_error) {
-            // En caso de error de red dejamos que valide el backend al enviar
+            // On network error, let backend validation handle it on submit
         } finally {
             checkInProgress = false;
         }
@@ -393,7 +393,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setupRegisterAvailabilityValidation();
 });
 
-// ── Sesiones de agenda ────────────────────────────────────────────────────
+// ── Agenda sessions ───────────────────────────────────────────────────────
 function addAgendaItem() {
     const container = document.getElementById("agenda-container");
     const count = container.querySelectorAll(".agenda-item").length + 1;
@@ -422,7 +422,7 @@ function addAgendaItem() {
     container.appendChild(div);
 }
 
-// ── Ponentes ──────────────────────────────────────────────────────────────
+// ── Speakers ──────────────────────────────────────────────────────────────
 function addSpeaker() {
     const container = document.getElementById("speakers-container");
     const count = container.querySelectorAll(".speaker-item").length + 1;
@@ -443,3 +443,372 @@ function addSpeaker() {
         </div>`;
     container.appendChild(div);
 }
+
+function escapeHtml(value) {
+    return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+}
+
+function initAdminDashboard() {
+    const adminSection = document.getElementById("admin-dashboard-section");
+    if (!adminSection) {
+        return;
+    }
+
+    const activeTabKey = adminSection.dataset.activeTab;
+    const csrfToken = adminSection.dataset.csrfToken;
+    const csrfParam = adminSection.dataset.csrfParam;
+
+    const tabBtn = document.querySelector('#adminTabs [data-tab-key="' + activeTabKey + '"]');
+    if (tabBtn) {
+        new bootstrap.Tab(tabBtn).show();
+    } else {
+        const usersTab = document.getElementById("tab-users");
+        if (usersTab) {
+            new bootstrap.Tab(usersTab).show();
+        }
+    }
+
+    const banConfirmModalEl = document.getElementById("banConfirmModal");
+    const banConfirmModal = banConfirmModalEl ? new bootstrap.Modal(banConfirmModalEl) : null;
+    const banConfirmUsername = document.getElementById("banConfirmUsername");
+    const confirmBanBtn = document.getElementById("confirmBanBtn");
+    let pendingBanForm = null;
+
+    function openBanConfirmation(form, username) {
+        if (!banConfirmModal || !form) {
+            return true;
+        }
+        pendingBanForm = form;
+        if (banConfirmUsername) {
+            banConfirmUsername.textContent = username || "Usuario";
+        }
+        banConfirmModal.show();
+        return false;
+    }
+
+    document.addEventListener("click", function (event) {
+        const banButton = event.target.closest(".js-ban-confirm");
+        if (!banButton) {
+            return;
+        }
+        event.preventDefault();
+        openBanConfirmation(banButton.form, banButton.dataset.username);
+    });
+
+    if (confirmBanBtn) {
+        confirmBanBtn.addEventListener("click", function () {
+            if (pendingBanForm) {
+                pendingBanForm.submit();
+            }
+        });
+    }
+
+    if (banConfirmModalEl) {
+        banConfirmModalEl.addEventListener("hidden.bs.modal", function () {
+            pendingBanForm = null;
+        });
+    }
+
+    const loadMoreUsersBtn = document.getElementById("loadMoreUsersBtn");
+    if (loadMoreUsersBtn) {
+        loadMoreUsersBtn.addEventListener("click", function () {
+            const page = this.getAttribute("data-page");
+            const query = this.getAttribute("data-query");
+            const urlParams = new URLSearchParams();
+            urlParams.set("page", page);
+            if (query) urlParams.set("query", query);
+
+            fetch("/admin/api/users?" + urlParams.toString())
+                .then((response) => response.json())
+                .then((data) => {
+                    const usersList = document.getElementById("usersList");
+
+                    if (data.length > 0) {
+                        data.forEach((user) => {
+                            const tr = document.createElement("tr");
+
+                            const statusHtml = user.isActive ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-danger">Baneado</span>';
+
+                            let actionHtml = "";
+                            if (user.isActive) {
+                                const safeUsername = escapeHtml(user.username);
+                                actionHtml = `
+                                <form action="/admin/users/${user.id}/ban" method="post" class="d-flex align-items-start">
+                                    <input type="hidden" name="${csrfParam}" value="${csrfToken}">
+                                    <button type="submit" class="btn btn-sm btn-accent-outline js-ban-confirm" data-username="${safeUsername}">
+                                        <i class="bi bi-slash-circle"></i> Banear
+                                    </button>
+                                </form>`;
+                            } else {
+                                actionHtml = `
+                                <form action="/admin/users/${user.id}/unban" method="post" class="d-flex align-items-start">
+                                    <input type="hidden" name="${csrfParam}" value="${csrfToken}">
+                                    <button type="submit" class="btn btn-sm btn-accent">
+                                        <i class="bi bi-check-circle"></i> Desbanear
+                                    </button>
+                                </form>`;
+                            }
+
+                            tr.innerHTML = `
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-person-circle fs-4 text-muted"></i>
+                                        <span class="fw-semibold">${escapeHtml(user.username)}</span>
+                                    </div>
+                                </td>
+                                <td class="text-muted">${escapeHtml(user.email)}</td>
+                                <td>${statusHtml}</td>
+                                <td class="text-end">
+                                    <div class="d-flex justify-content-end align-items-start gap-2 flex-nowrap">
+                                        <a href="/profile/${user.id}" class="btn btn-sm btn-accent-outline">Ver perfil</a>
+                                        ${actionHtml}
+                                    </div>
+                                </td>
+                            `;
+                            usersList.appendChild(tr);
+                        });
+
+                        this.setAttribute("data-page", parseInt(page, 10) + 1);
+
+                        if (data.length < 5) {
+                            this.style.display = "none";
+                        }
+                    } else {
+                        this.style.display = "none";
+                    }
+                })
+                .catch((error) => console.error("Error loading more users:", error));
+        });
+    }
+
+    const loadMoreEventsBtn = document.getElementById("loadMoreEventsBtn");
+    if (loadMoreEventsBtn) {
+        loadMoreEventsBtn.addEventListener("click", function () {
+            const page = this.getAttribute("data-page");
+            const query = this.getAttribute("data-query");
+            const urlParams = new URLSearchParams();
+            urlParams.set("page", page);
+            if (query) urlParams.set("query", query);
+
+            fetch("/admin/api/events?" + urlParams.toString())
+                .then((response) => response.json())
+                .then((data) => {
+                    const eventsList = document.getElementById("eventsList");
+
+                    if (data.length > 0) {
+                        data.forEach((event) => {
+                            const tr = document.createElement("tr");
+                            if (event.isPendingReview) {
+                                tr.classList.add("table-warning");
+                            }
+
+                            const titleHtml = `
+                                <div>
+                                    <span class="fw-semibold">${escapeHtml(event.title)}</span>
+                                    ${event.isPendingReview ? '<span class="badge bg-light text-accent ms-2">En revisión</span>' : ""}
+                                    <p class="text-muted small mb-0">${escapeHtml(event.category)}</p>
+                                </div>
+                            `;
+
+                            const statusHtml = event.isPendingReview ? '<span class="badge bg-light text-accent">Pendiente</span>' : `<span class="badge bg-secondary">${escapeHtml(event.status)}</span>`;
+
+                            let actionHtml = `
+                                <a href="/event/${event.id}" class="btn btn-sm btn-accent-outline">
+                                    <i class="bi bi-eye"></i> Ver
+                                </a>
+                                <a href="/event/${event.id}/edit" class="btn btn-sm btn-accent-outline">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </a>
+                            `;
+
+                            if (event.isPendingReview) {
+                                actionHtml += `
+                                <form action="/admin/events/${event.id}/approve" method="post" class="d-inline">
+                                    <input type="hidden" name="${csrfParam}" value="${csrfToken}">
+                                    <button type="submit" class="btn btn-sm btn-accent">
+                                        <i class="bi bi-check-lg"></i> Aprobar
+                                    </button>
+                                </form>
+                                <form action="/admin/events/${event.id}/reject" method="post" class="d-inline">
+                                    <input type="hidden" name="${csrfParam}" value="${csrfToken}">
+                                    <button type="submit" class="btn btn-sm btn-accent-outline" onclick="return confirm('¿Rechazar este evento?')">
+                                        <i class="bi bi-x-lg"></i> Rechazar
+                                    </button>
+                                </form>
+                                `;
+                            }
+
+                            tr.innerHTML = `
+                                <td>${titleHtml}</td>
+                                <td class="text-muted">${escapeHtml(event.creatorUsername)}</td>
+                                <td>${statusHtml}</td>
+                                <td class="text-end">
+                                    <div class="d-flex justify-content-end align-items-start gap-2 flex-wrap">
+                                        ${actionHtml}
+                                    </div>
+                                </td>
+                            `;
+
+                            eventsList.appendChild(tr);
+                        });
+
+                        this.setAttribute("data-page", parseInt(page, 10) + 1);
+
+                        if (data.length < 5) {
+                            this.parentElement.style.display = "none";
+                        }
+                    } else {
+                        this.parentElement.style.display = "none";
+                    }
+                })
+                .catch((error) => console.error("Error cargando más eventos:", error));
+        });
+    }
+
+    const loadMoreCoursesBtn = document.getElementById("loadMoreCoursesBtn");
+    if (loadMoreCoursesBtn) {
+        loadMoreCoursesBtn.addEventListener("click", function () {
+            const page = this.getAttribute("data-page");
+            const query = this.getAttribute("data-query");
+            const urlParams = new URLSearchParams();
+            urlParams.set("page", page);
+            if (query) urlParams.set("query", query);
+
+            fetch("/admin/api/courses?" + urlParams.toString())
+                .then((response) => response.json())
+                .then((data) => {
+                    const coursesList = document.getElementById("coursesList");
+
+                    if (data.length > 0) {
+                        data.forEach((course) => {
+                            const tr = document.createElement("tr");
+                            if (course.isPendingReview) {
+                                tr.classList.add("table-warning");
+                            }
+
+                            const titleHtml = `
+                                <div>
+                                    <span class="fw-semibold">${escapeHtml(course.title)}</span>
+                                    ${course.isPendingReview ? '<span class="badge bg-light text-accent ms-2">En revisión</span>' : ""}
+                                    <p class="text-muted small mb-0">${escapeHtml(course.shortDescription)}</p>
+                                </div>
+                            `;
+
+                            const statusHtml = course.isPendingReview ? '<span class="badge bg-light text-accent">Pendiente</span>' : `<span class="badge bg-secondary">${escapeHtml(course.status)}</span>`;
+
+                            let actionHtml = `
+                                <a href="/course/${course.id}" class="btn btn-sm btn-accent-outline">
+                                    <i class="bi bi-eye"></i> Ver
+                                </a>
+                                <a href="/course/${course.id}/edit" class="btn btn-sm btn-accent-outline">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </a>
+                            `;
+
+                            if (course.isPendingReview) {
+                                actionHtml += `
+                                <form action="/admin/courses/${course.id}/approve" method="post" class="d-inline">
+                                    <input type="hidden" name="${csrfParam}" value="${csrfToken}">
+                                    <button type="submit" class="btn btn-sm btn-accent">
+                                        <i class="bi bi-check-lg"></i> Aprobar
+                                    </button>
+                                </form>
+                                <form action="/admin/courses/${course.id}/reject" method="post" class="d-inline">
+                                    <input type="hidden" name="${csrfParam}" value="${csrfToken}">
+                                    <button type="submit" class="btn btn-sm btn-accent-outline" onclick="return confirm('¿Rechazar este curso?')">
+                                        <i class="bi bi-x-lg"></i> Rechazar
+                                    </button>
+                                </form>
+                                `;
+                            }
+
+                            tr.innerHTML = `
+                                <td>${titleHtml}</td>
+                                <td class="text-muted">${escapeHtml(course.creatorUsername)}</td>
+                                <td>${statusHtml}</td>
+                                <td class="text-end">
+                                    <div class="d-flex justify-content-end align-items-start gap-2 flex-wrap">
+                                        ${actionHtml}
+                                    </div>
+                                </td>
+                            `;
+
+                            coursesList.appendChild(tr);
+                        });
+
+                        this.setAttribute("data-page", parseInt(page, 10) + 1);
+
+                        if (data.length < 5) {
+                            this.parentElement.style.display = "none";
+                        }
+                    } else {
+                        this.parentElement.style.display = "none";
+                    }
+                })
+                .catch((error) => console.error("Error cargando más cursos:", error));
+        });
+    }
+
+    const loadMoreOrdersBtn = document.getElementById("loadMoreOrdersBtn");
+    if (loadMoreOrdersBtn) {
+        loadMoreOrdersBtn.addEventListener("click", function () {
+            const page = this.getAttribute("data-page");
+            const urlParams = new URLSearchParams();
+            urlParams.set("page", page);
+
+            fetch("/admin/api/orders?" + urlParams.toString())
+                .then((response) => response.json())
+                .then((data) => {
+                    const ordersList = document.getElementById("ordersList");
+
+                    if (data.length > 0) {
+                        data.forEach((order) => {
+                            const tr = document.createElement("tr");
+
+                            const userHtml = order.username ? escapeHtml(order.username) : "-";
+                            const clientHtml = `
+                                <div>${escapeHtml(order.billingFullName)}</div>
+                                <small class="text-muted">${escapeHtml(order.billingEmail)}</small>
+                            `;
+
+                            const dateHtml = order.paidAt ? escapeHtml(order.paidAt) : order.createdAt ? escapeHtml(order.createdAt) : "";
+
+                            const paymentHtml = `
+                                <div>${escapeHtml(order.paymentMethod)}</div>
+                                <small class="text-muted">${escapeHtml(order.paymentReference)}</small>
+                            `;
+
+                            tr.innerHTML = `
+                                <td class="fw-semibold">#${order.id}</td>
+                                <td>${userHtml}</td>
+                                <td>${clientHtml}</td>
+                                <td><span class="badge bg-secondary">${escapeHtml(order.status)}</span></td>
+                                <td>${dateHtml}</td>
+                                <td>${paymentHtml}</td>
+                                <td class="text-end fw-semibold">${escapeHtml(order.totalAmountEuros)} €</td>
+                            `;
+
+                            ordersList.appendChild(tr);
+                        });
+
+                        this.setAttribute("data-page", parseInt(page, 10) + 1);
+
+                        if (data.length < 5) {
+                            this.parentElement.style.display = "none";
+                        }
+                    } else {
+                        this.parentElement.style.display = "none";
+                    }
+                })
+                .catch((error) => console.error("Error cargando más pedidos:", error));
+        });
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    initAdminDashboard();
+});

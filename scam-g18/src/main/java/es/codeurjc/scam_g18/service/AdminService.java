@@ -42,7 +42,7 @@ public class AdminService {
     @Autowired
     private EmailService emailService;
 
-    // Obtiene todos los usuarios registrados.
+    // Retrieves all registered users.
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -61,7 +61,7 @@ public class AdminService {
         return userRepository.findAll().size();
     }
 
-    // Busca usuarios por coincidencia parcial de username.
+    // Searches users by partial username match.
     public List<User> searchUsers(String query) {
         return userRepository.findByUsernameContainingIgnoreCase(query);
     }
@@ -80,29 +80,29 @@ public class AdminService {
         return userRepository.findByUsernameContainingIgnoreCase(query).size();
     }
 
-    // Busca un usuario por id.
+    // Looks up a user by id.
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
 
-    // Busca un usuario por nombre de usuario exacto.
+    // Looks up a user by exact username.
     public Optional<User> findUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
-    // Desactiva un usuario y le envía notificación por correo.
+    // Deactivates a user and sends them an email notification.
     public void banUser(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             user.setIsActive(false);
             userRepository.save(user);
-            // Enviar email de notificación al usuario baneado
+            // Send notification email to the banned user
             emailService.accountBannedMessage(user.getEmail(), user.getUsername());
         }
     }
 
-    // Reactiva una cuenta de usuario bloqueada.
+    // Reactivates a blocked user account.
     public void unbanUser(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
@@ -114,7 +114,7 @@ public class AdminService {
 
     // ---- Courses ----
 
-    // Obtiene cursos priorizando los pendientes de revisión.
+    // Retrieves courses prioritizing those pending review.
     public List<Course> getAllCoursesSortedByStatus() {
         List<Course> pending = courseRepository.findByStatus(Status.PENDING_REVIEW);
         List<Course> others = courseRepository.findAll().stream()
@@ -125,7 +125,7 @@ public class AdminService {
         return result;
     }
 
-    // Busca cursos por título priorizando los pendientes.
+    // Searches courses by title while prioritizing pending ones.
     public List<Course> searchCourses(String query) {
         List<Course> found = courseRepository.findByTitleContainingIgnoreCase(query);
         // pending first
@@ -166,19 +166,19 @@ public class AdminService {
         return courseRepository.findByTitleContainingIgnoreCase(query).size();
     }
 
-    // Obtiene cursos pendientes de revisión.
+    // Retrieves courses pending review.
     public List<Course> getPendingCourses() {
         return courseRepository.findByStatus(Status.PENDING_REVIEW);
     }
 
-    // Publica un curso pendiente y notifica a su creador.
+    // Publishes a pending course and notifies its creator.
     public void approveCourse(Long courseId) {
         Optional<Course> courseOptional = courseRepository.findById(courseId);
         if (courseOptional.isPresent()) {
             Course course = courseOptional.get();
             course.setStatus(Status.PUBLISHED);
             courseRepository.save(course);
-            // Notificar al creador del curso
+            // Notify the course creator
             User creator = course.getCreator();
             if (creator != null) {
                 emailService.cursePublished(creator.getEmail(), course.getTitle(), creator.getUsername());
@@ -186,7 +186,7 @@ public class AdminService {
         }
     }
 
-    // Rechaza un curso devolviéndolo a borrador.
+    // Rejects a course and moves it back to draft.
     public void rejectCourse(Long courseId) {
         Optional<Course> courseOptional = courseRepository.findById(courseId);
         if (courseOptional.isPresent()) {
@@ -196,7 +196,7 @@ public class AdminService {
         }
     }
 
-    // Archiva un curso.
+    // Archives a course.
     public void archiveCourse(Long courseId) {
         Optional<Course> courseOptional = courseRepository.findById(courseId);
         if (courseOptional.isPresent()) {
@@ -208,7 +208,7 @@ public class AdminService {
 
     // ---- Events ----
 
-    // Obtiene eventos priorizando los pendientes de revisión.
+    // Retrieves events prioritizing those pending review.
     public List<Event> getAllEventsSortedByStatus() {
         List<Event> pending = eventRepository.findByStatus(Status.PENDING_REVIEW);
         List<Event> others = eventRepository.findAll().stream()
@@ -233,7 +233,7 @@ public class AdminService {
         return eventRepository.findAll().size();
     }
 
-    // Busca eventos por título priorizando los pendientes.
+    // Searches events by title while prioritizing pending ones.
     public List<Event> searchEvents(String query) {
         List<Event> found = eventRepository.findByTitleContainingIgnoreCase(query);
         List<Event> pending = found.stream().filter(e -> e.getStatus() == Status.PENDING_REVIEW)
@@ -259,14 +259,14 @@ public class AdminService {
         return eventRepository.findByTitleContainingIgnoreCase(query).size();
     }
 
-    // Publica un evento pendiente y notifica al creador.
+    // Publishes a pending event and notifies the creator.
     public void approveEvent(Long eventId) {
         Optional<Event> opt = eventRepository.findById(eventId);
         if (opt.isPresent()) {
             Event event = opt.get();
             event.setStatus(Status.PUBLISHED);
             eventRepository.save(event);
-            // Notificar al creador del evento
+            // Notify the event creator
             User creator = event.getCreator();
             if (creator != null) {
                 emailService.eventPublished(creator.getEmail(), event.getTitle(), creator.getUsername());
@@ -274,7 +274,7 @@ public class AdminService {
         }
     }
 
-    // Rechaza un evento devolviéndolo a borrador.
+    // Rejects an event and moves it back to draft.
     public void rejectEvent(Long eventId) {
         Optional<Event> opt = eventRepository.findById(eventId);
         if (opt.isPresent()) {
@@ -286,14 +286,14 @@ public class AdminService {
 
     // ---- Reviews ----
 
-    // Obtiene todas las reseñas del sistema.
+    // Retrieves all reviews in the system.
     public List<Review> getAllReviews() {
         return reviewRepository.findAll();
     }
 
     // ---- Orders ----
 
-    // Obtiene todos los pedidos ordenados por fecha de creación descendente.
+    // Retrieves all orders sorted by creation date descending.
     public List<Order> getAllOrdersSortedByDate() {
         return orderRepository.findAll().stream()
                 .sorted((o1, o2) -> {
@@ -325,7 +325,7 @@ public class AdminService {
         return orderRepository.findAll().size();
     }
 
-    // Elimina una reseña por su id.
+    // Deletes a review by id.
     public void deleteReview(Long reviewId) {
         reviewRepository.deleteById(reviewId);
     }

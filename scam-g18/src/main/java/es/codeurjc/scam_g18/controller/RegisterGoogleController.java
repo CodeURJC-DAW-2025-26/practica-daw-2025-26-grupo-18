@@ -147,7 +147,7 @@ public class RegisterGoogleController {
 
         emailService.newAccountMessage(email, username);
 
-        // Registro exitoso: cargamos el usuario recién creado para obtener sus roles
+        // Successful registration: load the newly created user to get roles
         // reales
         User newUser = userService.findByEmail(email).orElseThrow();
 
@@ -158,7 +158,7 @@ public class RegisterGoogleController {
         // Construimos el OAuth2User con los roles reales
         DefaultOAuth2User authenticatedUser = new DefaultOAuth2User(authorities, oAuth2User.getAttributes(), "email");
 
-        // Creamos el token de autenticación OAuth2 (registrationId = "google")
+        // Create OAuth2 authentication token (registrationId = "google")
         OAuth2AuthenticationToken authToken = new OAuth2AuthenticationToken(authenticatedUser, authorities, "google");
 
         // Establecemos la autenticación en el SecurityContext y la guardamos en sesión

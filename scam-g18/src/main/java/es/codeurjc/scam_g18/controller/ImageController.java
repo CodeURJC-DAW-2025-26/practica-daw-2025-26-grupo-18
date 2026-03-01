@@ -40,7 +40,7 @@ public class ImageController {
     @Autowired
     private EventRepository eventRepository;
 
-    // Sirve la imagen de perfil de un usuario o redirige a una imagen por defecto.
+    // Serves a user's profile image or redirects to a default image.
     @GetMapping("/users/{userId}/profile")
     @Transactional
     public ResponseEntity<byte[]> getUserProfileImage(@PathVariable Long userId) {
@@ -51,7 +51,7 @@ public class ImageController {
         return buildImageResponse(userOpt.get().getImage(), "/img/default_avatar.png");
     }
 
-    // Sirve la imagen de un curso o redirige a una imagen por defecto.
+    // Serves a course image or redirects to a default image.
     @GetMapping("/courses/{courseId}")
     @Transactional
     public ResponseEntity<byte[]> getCourseImage(@PathVariable Long courseId) {
@@ -62,7 +62,7 @@ public class ImageController {
         return buildImageResponse(courseOpt.get().getImage(), "/img/default_img.png");
     }
 
-    // Sirve la imagen de un evento o redirige a una imagen por defecto.
+    // Serves an event image or redirects to a default image.
     @GetMapping("/events/{eventId}")
     @Transactional
     public ResponseEntity<byte[]> getEventImage(@PathVariable Long eventId) {
@@ -73,7 +73,7 @@ public class ImageController {
         return buildImageResponse(eventOpt.get().getImage(), "/img/default_img.png");
     }
 
-    // Construye la respuesta HTTP con los bytes de imagen y su tipo MIME.
+    // Builds the HTTP response with image bytes and MIME type.
     private ResponseEntity<byte[]> buildImageResponse(Image image, String fallbackPath) {
         if (image == null || image.getData() == null) {
             return redirectToDefault(fallbackPath);
@@ -93,7 +93,7 @@ public class ImageController {
         }
     }
 
-    // Redirige al recurso estático de imagen por defecto indicado.
+    // Redirects to the specified default static image resource.
     private ResponseEntity<byte[]> redirectToDefault(String path) {
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create(path));

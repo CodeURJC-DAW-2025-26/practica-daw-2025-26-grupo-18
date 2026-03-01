@@ -26,7 +26,7 @@ public class EventController {
 
     private final es.codeurjc.scam_g18.service.UserService userService;
 
-    // Construye el controlador con los servicios necesarios para gestionar eventos.
+    // Builds the controller with required services to manage events.
     public EventController(EventService eventService, TagService tagService,
             es.codeurjc.scam_g18.service.UserService userService) {
         this.eventService = eventService;
@@ -34,7 +34,7 @@ public class EventController {
         this.userService = userService;
     }
 
-    // Muestra el listado de eventos con búsqueda y filtros por etiquetas.
+    // Displays the event listing with search and tag filters.
     @GetMapping("/events")
     public String events(Model model, @RequestParam(required = false) String search,
             @RequestParam(required = false) List<String> tags) {
@@ -47,7 +47,7 @@ public class EventController {
         return "events";
     }
 
-    // Endpoint AJAX para paginación de eventos
+    // AJAX endpoint for event pagination
     @GetMapping("/api/events")
     @org.springframework.web.bind.annotation.ResponseBody
     public org.springframework.http.ResponseEntity<List<java.util.Map<String, Object>>> getEventsApi(
@@ -60,7 +60,7 @@ public class EventController {
         return org.springframework.http.ResponseEntity.ok(events);
     }
 
-    // Muestra los eventos comprados por el usuario autenticado.
+    // Displays events purchased by the authenticated user.
     @GetMapping("/events/purchased")
     public String purchasedEvents(Model model, java.security.Principal principal) {
         if (principal == null) {
@@ -79,8 +79,7 @@ public class EventController {
         return "purchasedEvents";
     }
 
-    // Muestra el detalle de un evento y permisos de gestión/compra del usuario
-    // actual.
+    // Displays event detail and current user's management/purchase permissions.
     @GetMapping("/event/{id}")
     public String showEvent(Model model, @PathVariable long id, @RequestParam(required = false) String error) {
         var eventOpt = eventService.getEventById(id);
@@ -109,7 +108,7 @@ public class EventController {
         return "event";
     }
 
-    // Elimina un evento cuando el usuario actual está autorizado.
+    // Deletes an event when the current user is authorized.
     @PostMapping("/event/{id}/delete")
     public String deleteEvent(@PathVariable long id) {
         userService.getCurrentAuthenticatedUser()
@@ -117,8 +116,7 @@ public class EventController {
         return "redirect:/events";
     }
 
-    // Muestra el formulario de edición de un evento si el usuario puede
-    // gestionarlo.
+    // Displays the event edit form if the user can manage it.
     @GetMapping("/event/{id}/edit")
     public String editEventForm(Model model, @PathVariable long id) {
         try {
@@ -144,7 +142,7 @@ public class EventController {
         return "redirect:/events";
     }
 
-    // Actualiza un evento existente cuando los datos son válidos y hay permisos.
+    // Updates an existing event when data is valid and permissions are granted.
     @PostMapping("/event/{id}/edit")
     public String updateEvent(
             @PathVariable long id,
@@ -173,14 +171,14 @@ public class EventController {
         return "redirect:/events";
     }
 
-    // Muestra el formulario para crear un nuevo evento.
+    // Displays the form to create a new event.
     @GetMapping("/events/new")
     public String newEventForm(Model model) {
         model.addAttribute("allTagsView", tagService.getTagsView(null));
         return "createEvent";
     }
 
-    // Crea un nuevo evento con sus datos e imagen opcional.
+    // Creates a new event with its data and optional image.
     @PostMapping("/event/new")
     public String createEvent(
             Event event,

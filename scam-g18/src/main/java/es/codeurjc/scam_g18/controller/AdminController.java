@@ -14,7 +14,7 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-    // Rellena el modelo del panel con usuarios, cursos, eventos, reseñas y pedidos.
+    // Populates dashboard model with users, courses, events, reviews, and orders.
     private void populateModel(Model model, String userQuery, String courseQuery, String eventQuery, String activeTab) {
         // Users
         if (userQuery != null && !userQuery.isBlank()) {
@@ -56,7 +56,7 @@ public class AdminController {
         model.addAttribute("orders", adminService.getAllOrdersSortedByDate());
     }
 
-    // Muestra el dashboard de administración con filtros opcionales.
+    // Displays the admin dashboard with optional filters.
     @GetMapping
     public String adminDashboard(
             @RequestParam(required = false) String userQuery,
@@ -68,14 +68,14 @@ public class AdminController {
         return "adminDashboard";
     }
 
-    // Busca usuarios por nombre y mantiene activa la pestaña de usuarios.
+    // Searches users by name and keeps the users tab active.
     @GetMapping("/users/search")
     public String searchUser(@RequestParam String name, Model model) {
         populateModel(model, name, null, null, "users");
         return "adminDashboard";
     }
 
-    // Endpoint AJAX para paginación de usuarios
+    // AJAX endpoint for user pagination
     @GetMapping("/api/users")
     @ResponseBody
     public org.springframework.http.ResponseEntity<java.util.List<java.util.Map<String, Object>>> getUsersApi(
@@ -102,7 +102,7 @@ public class AdminController {
         return org.springframework.http.ResponseEntity.ok(userList);
     }
 
-    // Endpoint AJAX para paginación de eventos
+    // AJAX endpoint for event pagination
     @GetMapping("/api/events")
     @ResponseBody
     public org.springframework.http.ResponseEntity<java.util.List<java.util.Map<String, Object>>> getAdminEventsApi(
@@ -131,7 +131,7 @@ public class AdminController {
         return org.springframework.http.ResponseEntity.ok(eventList);
     }
 
-    // Endpoint AJAX para paginación de cursos
+    // AJAX endpoint for course pagination
     @GetMapping("/api/courses")
     @ResponseBody
     public org.springframework.http.ResponseEntity<java.util.List<java.util.Map<String, Object>>> getAdminCoursesApi(
@@ -159,7 +159,7 @@ public class AdminController {
         return org.springframework.http.ResponseEntity.ok(courseList);
     }
 
-    // Endpoint AJAX para paginación de pedidos
+    // AJAX endpoint for order pagination
     @GetMapping("/api/orders")
     @ResponseBody
     public org.springframework.http.ResponseEntity<java.util.List<java.util.Map<String, Object>>> getAdminOrdersApi(
@@ -192,14 +192,14 @@ public class AdminController {
         return org.springframework.http.ResponseEntity.ok(orderList);
     }
 
-    // Bloquea a un usuario por su identificador.
+    // Bans a user by identifier.
     @PostMapping("/users/{id}/ban")
     public String banUser(@PathVariable Long id) {
         adminService.banUser(id);
         return "redirect:/admin?activeTab=users";
     }
 
-    // Desbloquea a un usuario por su identificador.
+    // Unbans a user by identifier.
     @PostMapping("/users/{id}/unban")
     public String unbanUser(@PathVariable Long id) {
         adminService.unbanUser(id);
@@ -208,14 +208,14 @@ public class AdminController {
 
     // ---- Course actions ----
 
-    // Aprueba un curso pendiente.
+    // Approves a pending course.
     @PostMapping("/courses/{id}/approve")
     public String approveCourse(@PathVariable Long id) {
         adminService.approveCourse(id);
         return "redirect:/admin?activeTab=courses";
     }
 
-    // Rechaza un curso pendiente.
+    // Rejects a pending course.
     @PostMapping("/courses/{id}/reject")
     public String rejectCourse(@PathVariable Long id) {
         adminService.rejectCourse(id);
@@ -224,14 +224,14 @@ public class AdminController {
 
     // ---- Event actions ----
 
-    // Aprueba un evento pendiente.
+    // Approves a pending event.
     @PostMapping("/events/{id}/approve")
     public String approveEvent(@PathVariable Long id) {
         adminService.approveEvent(id);
         return "redirect:/admin?activeTab=events";
     }
 
-    // Rechaza un evento pendiente.
+    // Rejects a pending event.
     @PostMapping("/events/{id}/reject")
     public String rejectEvent(@PathVariable Long id) {
         adminService.rejectEvent(id);
@@ -240,7 +240,7 @@ public class AdminController {
 
     // ---- Review actions ----
 
-    // Elimina una reseña por su identificador.
+    // Deletes a review by identifier.
     @PostMapping("/reviews/{id}/delete")
     public String deleteReview(@PathVariable Long id) {
         adminService.deleteReview(id);

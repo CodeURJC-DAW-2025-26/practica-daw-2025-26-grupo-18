@@ -34,12 +34,12 @@ public class EnrollmentService {
     @Autowired
     private LessonProgressRepository lessonProgressRepository;
 
-    // Obtiene las matrículas de cursos de un usuario.
+    // Retrieves a user's course enrollments.
     public List<Enrollment> findByUserId(Long userId) {
         return enrollmentRepository.findByUserId(userId);
     }
 
-    // Devuelve el conjunto de nombres de etiquetas de los cursos del usuario.
+    // Returns the set of tag names from the user's courses.
     public Set<String> getTagNamesByUserId(Long userId) {
         List<Enrollment> enrollments = enrollmentRepository.findByUserId(userId);
         return enrollments.stream()
@@ -48,7 +48,7 @@ public class EnrollmentService {
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 
-    // Construye los datos de cursos suscritos para la vista de perfil.
+    // Builds subscribed-course data for the profile view.
     public List<Map<String, Object>> getSubscribedCoursesData(Long userId) {
         List<Enrollment> enrollments = enrollmentRepository.findByUserId(userId);
         List<Map<String, Object>> courses = new ArrayList<>();
@@ -73,7 +73,7 @@ public class EnrollmentService {
         return courses;
     }
 
-    // Construye los datos de eventos del usuario para la vista de perfil.
+    // Builds user-event data for the profile view.
     public List<Map<String, Object>> getUserEvents(Long userId) {
         List<EventRegistration> registrations = eventRegistrationRepository.findByUserId(userId);
         List<Map<String, Object>> events = new ArrayList<>();
@@ -111,7 +111,7 @@ public class EnrollmentService {
         return events;
     }
 
-    // Obtiene los nombres de cursos completados por el usuario.
+    // Retrieves names of courses completed by the user.
     public List<String> getCompletedCourseNames(Long userId) {
         List<Enrollment> completed = enrollmentRepository.findByUserIdAndProgressPercentage(userId, 100);
         return completed.stream()
@@ -119,7 +119,7 @@ public class EnrollmentService {
                 .collect(Collectors.toList());
     }
 
-    // Cuenta los cursos que el usuario tiene en progreso.
+    // Counts courses currently in progress for the user.
     public int getInProgressCount(Long userId) {
         return enrollmentRepository.countByUserIdAndProgressPercentageGreaterThanAndProgressPercentageLessThan(userId,
                 0, 100);

@@ -76,7 +76,7 @@ public class SecurityConfiguration {
                                                                 "/statistics/course-genders", "/statistics/course-tags")
                                                 .permitAll()
 
-                                                // Registro completar datos via Google (solo usuarios PENDING)
+                                                // Complete registration data via Google (PENDING users only)
                                                 .requestMatchers("/register/google", "/register/google/cancel")
                                                 .hasAnyRole("PENDING")
 
@@ -84,7 +84,7 @@ public class SecurityConfiguration {
                                                 .requestMatchers("/course/{id}/enroll", "/events/{id}/register")
                                                 .hasAnyRole("USER", "SUBSCRIBED", "ADMIN")
 
-                                                // NIVEL 2: SUBSCRIBED (Crear contenido)
+                                                // LEVEL 2: SUBSCRIBED (Create content)
                                                 .requestMatchers("/courses/new", "/events/new")
                                                 .hasAnyRole("SUBSCRIBED", "ADMIN")
 
@@ -104,7 +104,7 @@ public class SecurityConfiguration {
                                                 // Cualquier otra cosa requiere login
                                                 .anyRequest().authenticated())
 
-                                // 1. SISTEMA DE LOGIN TRADICIONAL (Usuario y Contraseña)
+                                // 1. TRADITIONAL LOGIN SYSTEM (Username and Password)
                                 .formLogin(formLogin -> formLogin
                                                 .loginPage("/login")
                                                 .failureUrl("/loginerror")

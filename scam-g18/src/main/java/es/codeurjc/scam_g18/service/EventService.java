@@ -45,12 +45,12 @@ public class EventService {
     @Autowired
     private TagService tagService;
 
-    // Obtiene todos los eventos.
+    // Retrieves all events.
     public List<Event> getAllEvents() {
         return eventRepository.findAll();
     }
 
-    // Busca eventos por palabra clave y etiquetas.
+    // Searches events by keyword and tags.
     public List<Event> searchEvents(String keyword, List<String> tags) {
         if ((keyword == null || keyword.trim().isEmpty()) && (tags == null || tags.isEmpty())) {
             return getAllEvents();
@@ -64,19 +64,19 @@ public class EventService {
         return eventRepository.findByKeywordAndTags(keyword, tags);
     }
 
-    // Formatea el precio de un evento en euros.
+    // Formats an event price in euros.
     public String getPriceInEuros(Event event) {
         if (event.getPriceCents() == null)
             return "0.00";
         return String.format("%.2f", event.getPriceCents() / 100.0);
     }
 
-    // Busca un evento por id.
+    // Looks up an event by id.
     public Optional<Event> getEventById(long id) {
         return eventRepository.findById(id);
     }
 
-    // Construye los datos de listado de eventos publicados para la vista.
+    // Builds published-event listing data for the view.
     public List<Map<String, Object>> getEventsViewData(String keyword, List<String> tags, Long userId) {
         return getEventsViewData(keyword, tags, userId, 0, Integer.MAX_VALUE);
     }
@@ -133,7 +133,7 @@ public class EventService {
         return count;
     }
 
-    // Construye los datos de eventos comprados por un usuario.
+    // Builds purchased-event data for a user.
     public List<Map<String, Object>> getPurchasedEventsViewData(Long userId) {
         List<EventRegistration> registrations = eventRegistrationRepository.findByUserId(userId);
         List<Map<String, Object>> purchasedEvents = new ArrayList<>();
@@ -178,17 +178,17 @@ public class EventService {
         return purchasedEvents;
     }
 
-    // Guarda un evento.
+    // Saves an event.
     public void saveEvent(Event event) {
         eventRepository.save(event);
     }
 
-    // Elimina un evento por id.
+    // Deletes an event by id.
     public void deleteEvent(long id) {
         eventRepository.deleteById(id);
     }
 
-    // Comprueba si un usuario puede gestionar un evento.
+    // Checks whether a user can manage an event.
     public boolean canManageEvent(Event event, User user) {
         if (event == null || user == null) {
             return false;
@@ -199,7 +199,7 @@ public class EventService {
         return isAdmin || isCreator;
     }
 
-    // Comprueba si un usuario ya compró un evento.
+    // Checks whether a user has already purchased an event.
     public boolean hasUserPurchasedEvent(Long userId, Long eventId) {
         if (userId == null || eventId == null) {
             return false;
@@ -207,7 +207,7 @@ public class EventService {
         return eventRegistrationRepository.existsByUserIdAndEventId(userId, eventId);
     }
 
-    // Elimina un evento solo si el usuario está autorizado.
+    // Deletes an event only if the user is authorized.
     public boolean deleteEventIfAuthorized(long id, User user) {
         var eventOpt = getEventById(id);
         if (eventOpt.isPresent() && canManageEvent(eventOpt.get(), user)) {
@@ -217,7 +217,7 @@ public class EventService {
         return false;
     }
 
-    // Actualiza un evento solo si el usuario está autorizado.
+    // Updates an event only if the user is authorized.
     public boolean updateEventIfAuthorized(long id, Event eventUpdate, User user,
             org.springframework.web.multipart.MultipartFile imageFile, List<String> tagNames)
             throws java.io.IOException, java.sql.SQLException {
@@ -245,7 +245,7 @@ public class EventService {
         return true;
     }
 
-    // Crea un evento desde datos de formulario.
+    // Creates an event from form data.
     public void createEventFromForm(Event event, User creator,
             org.springframework.web.multipart.MultipartFile imageFile, List<String> tagNames)
             throws java.io.IOException, java.sql.SQLException {
@@ -308,7 +308,7 @@ public class EventService {
         createEvent(event, imageFile);
     }
 
-    // Persiste un evento y su imagen/ubicación.
+    // Persists an event and its image/location.
     public void createEvent(Event event, org.springframework.web.multipart.MultipartFile imageFile)
             throws java.io.IOException, java.sql.SQLException {
         if (imageFile != null && !imageFile.isEmpty()) {
@@ -322,7 +322,7 @@ public class EventService {
         eventRepository.save(event);
     }
 
-    // Aplica los datos editables del formulario sobre un evento existente.
+    // Applies editable form data to an existing event.
     private void applyEventFormData(Event target, Event source) {
         target.setTitle(source.getTitle());
         target.setDescription(source.getDescription());
@@ -415,7 +415,7 @@ public class EventService {
         return data;
     }
 
-    // Prepara los datos necesarios para la vista de edición de evento.
+    // Prepares required data for the event edit view.
     public Map<String, Object> getEventEditViewData(Event event) {
         Map<String, Object> data = new HashMap<>();
         data.put("event", event);
@@ -451,7 +451,7 @@ public class EventService {
         return data;
     }
 
-    // Construye el mapa de datos reutilizable para tarjetas y detalle de evento.
+    // Builds the reusable data map for event cards and detail view.
     private Map<String, Object> buildEventCardData(Event event) {
         Map<String, Object> eventData = new HashMap<>();
         eventData.put("id", event.getId());
@@ -504,7 +504,7 @@ public class EventService {
         return eventData;
     }
 
-    // Obtiene etiquetas de eventos previamente comprados por el usuario.
+    // Retrieves tags from events previously purchased by the user.
     private Set<String> getSubscribedEventTagNames(Long userId) {
         Set<String> subscribedTagNames = new HashSet<>();
         if (userId == null) {
@@ -528,7 +528,7 @@ public class EventService {
         return subscribedTagNames;
     }
 
-    // Cuenta coincidencias de etiquetas entre candidato y preferencias del usuario.
+    // Counts tag matches between candidate event and user preferences.
     private int countMatchingTags(Set<Tag> candidateTags, Set<String> subscribedTagNames) {
         if (candidateTags == null || candidateTags.isEmpty() || subscribedTagNames.isEmpty()) {
             return 0;

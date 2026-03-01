@@ -61,14 +61,14 @@ public class CartService {
     private static final int SUBSCRIPTION_PRICE_CENTS = 1000;
     private static final int SUBSCRIPTION_DURATION_DAYS = 30;
 
-    // Crea un pedido pendiente vacío para el usuario.
+    // Creates an empty pending order for the user.
     public Order createOrder(User user) {
         Order order = new Order(user, 0, OrderStatus.PENDING);
         order.setItems(new ArrayList<>());
         return orderRepository.save(order);
     }
 
-    // Añade un curso al pedido y recalcula el subtotal.
+    // Adds a course to the order and recalculates subtotal.
     public void addCourseToOrder(Order order, Course course) {
         OrderItem item = new OrderItem(order, course, null, course.getPriceCents());
         order.getItems().add(item);
@@ -76,7 +76,7 @@ public class CartService {
         orderRepository.save(order);
     }
 
-    // Añade un evento al pedido validando disponibilidad de plazas.
+    // Adds an event to the order after validating seat availability.
     public void addEventToOrder(Order order, Event event) {
         Event currentEvent = eventRepository.findById(event.getId()).orElse(event);
         if (!currentEvent.hasAvailableSeats()) {
@@ -89,7 +89,7 @@ public class CartService {
         orderRepository.save(order);
     }
 
-    // Añade la suscripción al pedido si todavía no existe.
+    // Adds the subscription to the order if it does not exist yet.
     public void addSubscriptionToOrder(Order order) {
         boolean hasSubscription = false;
         if (order.getItems() != null) {
@@ -113,7 +113,7 @@ public class CartService {
     }
 
     @Transactional
-    // Elimina un ítem del pedido y actualiza su total.
+    // Removes an order item and updates the order total.
     public void removeItemFromOrder(Order order, Long itemId) {
         if (order.getItems() == null || itemId == null) {
             return;
@@ -135,7 +135,7 @@ public class CartService {
         orderRepository.save(order);
     }
 
-    // Calcula el subtotal de un pedido sin impuestos.
+    // Calculates an order subtotal excluding taxes.
     public int calculateSubtotal(Order order) {
         if (order.getItems() == null) {
             return 0;
@@ -149,17 +149,17 @@ public class CartService {
         return total;
     }
 
-    // Calcula el impuesto aplicado al pedido.
+    // Calculates the tax applied to an order.
     public int calculateTax(Order order) {
         return (int) (calculateSubtotal(order) * 0.21);
     }
 
-    // Devuelve el total a pagar incluyendo impuestos.
+    // Returns the total amount including taxes.
     public int calculateTotal(Order order) {
         return calculateSubtotal(order) + calculateTax(order);
     }
 
-    // Devuelve un resumen formateado del carrito para la vista
+    // Returns a formatted cart summary for the view
     public Map<String, Object> getCartSummary(Order order, String error) {
         Map<String, Object> summary = new HashMap<>();
 
@@ -176,13 +176,13 @@ public class CartService {
         return summary;
     }
 
-    // Formatea una cantidad en céntimos a euros con dos decimales.
+    // Formats an amount in cents to euros with two decimals.
     public String formatPriceInEuros(int cents) {
         return String.format("%.2f", cents / 100.0);
     }
 
     @Transactional
-    // Procesa el pago, activa compras y genera/manda factura.
+    // Processes payment, activates purchases, and generates/sends invoice.
     public void processPayment(Order order, String cardName, String billingEmail, String cardNumber,
             String cardExpiry, String cardCvv) {
 
@@ -284,12 +284,12 @@ public class CartService {
         orderRepository.save(order);
     }
 
-    // Genera una referencia única para el pago simulado.
+    // Generates a unique reference for simulated payment.
     private String generatePaymentReference() {
         return "SIM-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 
-    // Extrae los 4 últimos dígitos de la tarjeta.
+    // Extracts the last 4 digits of the card.
     private String extractLast4Digits(String cardNumber) {
         if (cardNumber == null) {
             return "0000";
@@ -303,7 +303,7 @@ public class CartService {
         return onlyDigits.substring(onlyDigits.length() - 4);
     }
 
-    // Activa o amplía la suscripción premium del usuario.
+    // Activates or extends the user's premium subscription.
     private void activateSubscription(User user) {
         Optional<Subscription> existingSubscription = subscriptionRepository.findByUserIdAndStatus(user.getId(),
                 SubscriptionStatus.ACTIVE);
@@ -318,7 +318,7 @@ public class CartService {
                     java.time.LocalDateTime.now().plusDays(SUBSCRIPTION_DURATION_DAYS), SubscriptionStatus.ACTIVE);
         }
 
-        // Actualizar rol de usuario a SUBSCRIBED si no lo tiene
+        // Update user role to SUBSCRIBED if not already present
         Role subscribedRole = roleRepository.findByName("SUBSCRIBED").orElseGet(() -> {
             Role newRole = new Role("SUBSCRIBED");
             roleRepository.save(newRole);
@@ -334,7 +334,7 @@ public class CartService {
         subscriptionRepository.save(subscription);
     }
 
-    // Matricula al usuario en un curso tras la compra.
+    // Enrolls the user in a course after purchase.
     private void enrollInCourse(User user, Course course) {
         Optional<Enrollment> existingOpt = enrollmentRepository.findByUserIdAndCourseId(user.getId(), course.getId());
         if (existingOpt.isPresent()) {
@@ -356,7 +356,7 @@ public class CartService {
         }
     }
 
-    // Registra al usuario en un evento tras la compra.
+    // Registers the user in an event after purchase.
     private void registerForEvent(User user, Event event) {
         if (!eventRegistrationRepository.existsByUserIdAndEventId(user.getId(), event.getId())) {
             Event managedEvent = eventRepository.findById(event.getId()).orElse(null);
@@ -372,13 +372,13 @@ public class CartService {
         }
     }
 
-    // Obtiene el pedido pendiente de un usuario, si existe.
+    // Retrieves the user's pending order, if it exists.
     public Optional<Order> getPendingOrder(User user) {
         List<Order> pendingOrders = orderRepository.findByUserIdAndStatus(user.getId(), OrderStatus.PENDING);
         return pendingOrders.isEmpty() ? Optional.empty() : Optional.of(pendingOrders.get(0));
     }
 
-    // Recupera el pedido pendiente o crea uno nuevo.
+    // Retrieves the pending order or creates a new one.
     public Order getOrCreatePendingOrder(User user) {
         Optional<Order> orderOptional = getPendingOrder(user);
         if (orderOptional.isPresent()) {
@@ -388,7 +388,7 @@ public class CartService {
         }
     }
 
-    // Obtiene todos los pedidos de un usuario.
+    // Retrieves all orders for a user.
     public List<Order> getUserOrders(Long userId) {
         return orderRepository.findByUserId(userId);
     }

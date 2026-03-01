@@ -159,7 +159,7 @@ h6 {
     color: var(--heading-color);
 }
 
-/* Estilos para el menú desplegable del perfil */
+/* Profile dropdown menu styles */
 .header .profile-dropdown {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     border: none;
@@ -4346,6 +4346,77 @@ section,
     width: 100px;
     height: 100px;
     object-fit: cover;
+}
+
+.scam-ban-modal .modal-content {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--accent-color), transparent 75%);
+    border-radius: 14px;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--surface-color), white 35%) 0%, #ffffff 100%);
+    box-shadow: 0 18px 42px color-mix(in srgb, #000000, transparent 86%);
+}
+
+.scam-ban-modal .modal-header,
+.scam-ban-modal .modal-body,
+.scam-ban-modal .modal-footer {
+    padding-left: 1.35rem;
+    padding-right: 1.35rem;
+}
+
+.scam-ban-modal .modal-title {
+    color: var(--heading-color);
+    font-family: var(--heading-font);
+    font-weight: 700;
+}
+
+.scam-ban-modal .modal-title i {
+    color: var(--accent-color);
+}
+
+.scam-ban-modal .modal-body p {
+    color: color-mix(in srgb, var(--default-color), transparent 10%);
+}
+
+.scam-ban-modal #banConfirmUsername {
+    color: var(--accent-color);
+    font-size: 1.05rem;
+}
+
+.scam-ban-modal .ban-user-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--accent-color), transparent 90%);
+    border: 1px solid color-mix(in srgb, var(--accent-color), transparent 65%);
+}
+
+.scam-ban-modal .ban-user-chip i {
+    color: var(--heading-color);
+    font-size: 0.95rem;
+}
+
+.scam-ban-modal .modal-help {
+    font-size: 0.92rem;
+    line-height: 1.45;
+    color: color-mix(in srgb, var(--default-color), transparent 22%);
+}
+
+.scam-ban-modal .modal-footer {
+    gap: 10px;
+}
+
+.scam-ban-modal .btn-accent,
+.scam-ban-modal .btn-accent-outline {
+    border-radius: 10px;
+    font-weight: 600;
+    min-width: 150px;
+}
+
+.scam-ban-modal .btn-close:focus {
+    box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--accent-color), transparent 70%);
 }
 
 .header-profile {

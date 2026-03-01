@@ -14,7 +14,7 @@ public class RolerService {
     @Autowired
     private RoleRepository roleRepository;
 
-    // Busca un rol por nombre.
+    // Finds a role by name.
     public Optional<Role> findByName(String name) {
         return roleRepository.findByName(name);
     }

@@ -29,7 +29,7 @@ public class ImageService {
     }
 
     @Transactional
-    // Devuelve la imagen en formato data URI o una imagen por defecto.
+    // Returns the image in data URI format or a default image.
     public String getConnectionImage(Image image) {
         if (image != null && image.getData() != null) {
             try {

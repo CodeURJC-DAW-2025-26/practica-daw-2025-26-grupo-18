@@ -20,7 +20,7 @@ public class LoginController {
             model.addAttribute("error", "Error en el inicio de sesión con Google. Su cuenta podría estar bloqueada.");
         }
         model.addAttribute("isRegister", false);
-        return "createuser"; // Usamos createuser.html como página unificada de login/registro
+        return "createuser"; // Use createuser.html as unified login/register page
     }
 
     @GetMapping("/loginerror")
