@@ -281,13 +281,6 @@ Pantalla admindashboard modificada
 - **Usuario Registrado**: usuario: `learner17`, contraseña: `pass17`
 - **Usuario Registrado**: usuario: `learner18`, contraseña: `pass18`
 
-### **Diagrama de Entidades de Base de Datos**
-
-Diagrama mostrando las entidades, sus campos y relaciones:
-
-![Diagrama Entidad-Relación](images/database-diagram.png)
-
-> [Descripción opcional: Ej: "El diagrama muestra las 4 entidades principales: Usuario, Producto, Pedido y Categoría, con sus respectivos atributos y relaciones 1:N y N:M."]
 
 ### **Diagrama de Clases y Templates**
 
@@ -295,63 +288,62 @@ Diagrama de clases de la aplicación con diferenciación por colores o secciones
 
 <img width="1730" height="1372" alt="pauCALVO" src="https://github.com/user-attachments/assets/2bd8bfd1-4dc0-471b-b04b-f41617a1a759" />
 
-> [Descripción opcional del diagrama y relaciones principales]
 
 ### **Participación de Miembros en la Práctica 1**
 
 #### **Alumno 1 - Pau Calvo Jiménez**
 
-Implementación completa del sistema de gestión de eventos, incluyendo creación, edición con mapa interactivo (Leaflet), geocodificación de direcciones y gestión de agenda/ponentes dinámicos. Responsable de la integración de seguridad CSRF y validación de compras de eventos.
+Responsable de la arquitectura de gestión de eventos, integración de mapas interactivos y geocodificación. Lideró el desarrollo del sistema de autenticación, perfiles de usuario y las funcionalidades de seguridad como el baneo de usuarios.
 
 | Nº    | Commits      | Files      |
 |:------------: |:------------:| :------------:|
-|1| Implementación funcional de gestión de eventos (c4a5348) | EventController.java |
-|2| Gestión de capacidad y errores en vistas (0df93e6) | EventService.java |
-|3| Estado de compra y validación de usuarios (9cc3b8c) | editEvent.html |
-|4| Manejo de tokens CSRF y atributos de modelo (c0d28c5) | event.html |
-|5| Redirección post-carrito y flujo de compra (b3d695c) | Event.java |
+|1| Gestión completa de eventos y motor de formularios ([c4a5348](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/c4a5348)) | [EventController.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/controller/EventController.java) |
+|2| Implementación de registro, login y perfiles ([6a3925a](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/6a3925a)) | [UserService.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/service/UserService.java) |
+|3| Sistema de baneo de usuarios y seguridad ([4a8f6ca](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/4a8f6ca)) | [AdminController.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/controller/AdminController.java) |
+|4| Desarrollo de plantillas base y gráficos ([4684a44](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/4684a44)) | [header.html](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/resources/templates/header.html) |
+|5| Modelado de eventos, sesiones y detalle ([20dfcc7](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/20dfcc7)) | [Event.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/model/Event.java) |
 
 ---
 
 #### **Alumno 2 - Alberto Hontanilla Villanueva**
 
-Diseño y maquetación responsiva del header y footer, implementación de la lógica de servicios para cursos, mejora estética de las plantillas y rediseño del sistema de correos electrónicos de la plataforma.
+Especializado en la gestión y refactorización del sistema de cursos, incluyendo la edición avanzada con validaciones, el seguimiento de progreso de lecciones y la integración de autenticación OAuth2 con Google.
 
 | Nº    | Commits      | Files      |
 |:------------: |:------------:| :------------:|
-|1| Mejora de layout responsivo en header/footer (2d2677a) | CourseService.java |
-|2| Implementación modo edición de perfil (ce4e2a5) | CourseController.java |
-|3| Estilo moderno y indicadores de suscripción (fd8142c) | EventController.java |
-|4| Rediseño estético de emails de registro (165bf7b) | header.html |
-|5| Documentación de métodos de servicio (5e8f889) | course.html |
+|1| Refactorización profunda de gestión de cursos ([a502e77](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/a502e77)) | [CourseService.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/service/CourseService.java) |
+|2| Edición de cursos y lógica de validación ([b9500ea](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/b9500ea)) | [CourseController.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/controller/CourseController.java) |
+|3| Integración de registro vía Google OAuth2 ([fc0f08c](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/fc0f08c)) | [LoginController.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/controller/LoginController.java) |
+|4| Consolidación de modelos de Imagen y Tags ([812fc75](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/812fc75)) | [Tag.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/model/Tag.java) |
+|5| Seguimiento de progreso en lecciones ([bdb6858](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/bdb6858)) | [course.html](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/resources/templates/course.html) |
 
 ---
 
 #### **Alumno 3 - Gonzalo Andrés Zurdo Patino**
 
-Desarrollo del sistema de perfiles de usuario, implementación del carrito de la compra y pasarela de pago, gestión de estadísticas de cursos y uso de AJAX para mejorar la interactividad del perfil.
+Arquitecto fundamental de los cimientos del proyecto, responsable de los modelos iniciales de cursos, eventos y perfiles. Implementó el sistema central de carrito de la compra y el panel de administración inicial.
 
 | Nº    | Commits      | Files      |
 |:------------: |:------------:| :------------:|
-|1| Creación de CourseService y gestión de datos (6f9db1b) | ProfileController.java |
-|2| Implementación AJAX y estética de perfil (c313294) | UserService.java |
-|3| Gestión de carrito y perfiles de usuario (6302720) | profile.html |
-|4| Integración de autenticación y flujos web (38ee6b5) | CartService.java |
-|5| Estadísticas de creador en el perfil (53fd21b) | RegisterController.java |
+|1| Cimientos del proyecto y modelos base ([0f3ad3d](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/0f3ad3d)) | [ProfileController.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/controller/ProfileController.java) |
+|2| Perfiles de usuario y seguridad base ([ca0d5c1](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/ca0d5c1)) | [profile.html](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/resources/templates/profile.html) |
+|3| Integración de carrito y pedidos ([a47fc46](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/a47fc46)) | [CartService.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/service/CartService.java) |
+|4| Implementación del Admin Dashboard inicial ([d59c2ec](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/d59c2ec)) | [admin.html](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/resources/templates/admin.html) |
+|5| Unificación de servicios y controladores ([38ee6b5](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/38ee6b5)) | [CartController.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/controller/CartController.java) |
 
 ---
 
 #### **Alumno 4 - Jaime Sánchez Vázquez**
 
-Refactorización general del código para mejorar la mantenibilidad, implementación del sistema de suscripciones Premium, filtros de seguridad para gestión de sesiones y desarrollo del panel de administración.
+Lideró el desarrollo avanzado del panel de administración, motores de búsqueda con filtrado por etiquetas, gestión completa de facturación y el sistema de suscripciones Premium.
 
 | Nº    | Commits      | Files      |
 |:------------: |:------------:| :------------:|
-|1| Refactorización para estructura limpia (659f1ab) | header.html |
-|2| Sistema de suscripciones Premium y precios (518d800) | EventService.java |
-|3| Filtro de seguridad ActiveUserSession (0329fed) | EventController.java |
-|4| Filtrado avanzado por etiquetas en Admin (e1c717e) | CourseService.java |
-|5| Gestión de pedidos y facturación (2d8b2de) | DatabaseInitializer.java |
+|1| Filtrado avanzado y mejoras de Admin ([e1c717e](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/e1c717e)) | [AdminService.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/service/AdminService.java) |
+|2| Motor de búsqueda y filtrado por etiquetas ([268005e](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/268005e)) | [TagService.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/service/TagService.java) |
+|3| Refactorización del núcleo administrativo ([0800ca5](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/0800ca5)) | [AdminController.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/controller/AdminController.java) |
+|4| Gestión de facturas y procesos de compra ([2d8b2de](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/2d8b2de)) | [DatabaseInitializer.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/service/DatabaseInitializer.java) |
+|5| Implementación de suscripciones Premium ([518d800](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/518d800)) | [Subscription.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/model/Subscription.java) |
 
 ---
 
