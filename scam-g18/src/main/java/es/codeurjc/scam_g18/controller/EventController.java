@@ -2,6 +2,7 @@ package es.codeurjc.scam_g18.controller;
 
 import java.util.List;
 import java.util.Map;
+import jakarta.servlet.http.HttpServletResponse;
 
 import es.codeurjc.scam_g18.model.Event;
 import es.codeurjc.scam_g18.service.EventService;
@@ -11,6 +12,7 @@ import es.codeurjc.scam_g18.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -85,10 +87,15 @@ public class EventController {
 
     // Displays event detail and current user's management/purchase permissions.
     @GetMapping("/event/{id}")
-    public String showEvent(Model model, @PathVariable long id, @RequestParam(required = false) String error) {
+    public String showEvent(Model model, @PathVariable long id, @RequestParam(required = false) String error,
+            HttpServletResponse response) {
         var eventOpt = eventService.getEventById(id);
         if (eventOpt.isEmpty()) {
-            return "redirect:/events";
+            response.setStatus(HttpStatus.NOT_FOUND.value());
+            model.addAttribute("status", HttpStatus.NOT_FOUND.value());
+            model.addAttribute("error", "Not Found");
+            model.addAttribute("message", "El evento con id " + id + " no existe.");
+            return "error";
         }
 
         Event event = eventOpt.get();

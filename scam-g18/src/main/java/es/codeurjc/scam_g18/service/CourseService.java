@@ -609,9 +609,6 @@ public class CourseService {
         }
 
         if (isNewCourse) {
-            if (imageFile == null || imageFile.isEmpty()) {
-                errors.add("Debe proporcionar una imagen para el curso.");
-            }
             if (tagNames == null || tagNames.isEmpty()) {
                 errors.add("Debe añadir al menos una etiqueta (tema relacionado).");
             }

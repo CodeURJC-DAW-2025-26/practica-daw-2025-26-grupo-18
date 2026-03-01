@@ -115,6 +115,12 @@ public class SecurityConfiguration {
                                                 .userInfoEndpoint(userInfo -> userInfo
                                                                 .userService(customOAuth2UserService)))
 
+                                // 2.1 ACCESS DENIED (Logged user without required role)
+                                .exceptionHandling(exceptionHandling -> exceptionHandling
+                                                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                                                        response.sendRedirect("/error/forbidden");
+                                                }))
+
                                 // 3. LOGOUT SYSTEM
                                 .logout(logout -> logout
                                                 .logoutUrl("/logout")

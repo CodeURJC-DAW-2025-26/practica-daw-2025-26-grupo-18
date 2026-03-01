@@ -601,10 +601,6 @@ public class EventService {
             }
         }
 
-        if (isNew && (imageFile == null || imageFile.isEmpty())) {
-            errors.add("Debe proporcionar una imagen para el evento.");
-        }
-
         if (errors.isEmpty())
             return null;
         return String.join("<br>", errors);

@@ -198,9 +198,23 @@
 
                     <div class="card border-0 shadow-sm mb-5 bg-light">
                         <div class="card-body p-4">
+                            <h3 class="h5 fw-bold mb-4">Temas relacionados</h3>
+                            <p class="small text-muted mb-3">Haz clic en una etiqueta para descubrir cursos relacionados.</p>
+                            <div class="d-flex flex-wrap gap-2 mb-4">
+                                {{#course.tags}}
+                                <a href="/courses?tags={{name}}"
+                                    class="badge bg-white text-dark border rounded-pill text-decoration-none px-3 py-2">
+                                    <i class="bi bi-tag me-1" style="color: var(--accent-color)"></i>{{name}}
+                                </a>
+                                {{/course.tags}}
+                                {{^course.tags}}
+                                <span class="badge text-bg-light border rounded-pill px-3 py-2">Sin etiquetas disponibles</span>
+                                {{/course.tags}}
+                            </div>
+
                             <h3 class="h5 fw-bold mb-4">Lo que aprenderás</h3>
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-12">
                                     <ul class="feature-list list-unstyled">
                                         {{#course.learningPoints}}
                                         <li class="mb-2">
@@ -209,14 +223,6 @@
                                         </li>
                                         {{/course.learningPoints}}
                                     </ul>
-                                </div>
-                                <div class="col-md-6 mt-4 mt-md-0">
-                                    <h4 class="h6 fw-bold mb-3 text-muted">Etiquetas del curso</h4>
-                                    <div class="d-flex flex-wrap gap-2">
-                                        {{#course.tags}}
-                                        <span class="badge bg-white text-dark border px-3 py-2 rounded-pill shadow-sm"><i class="bi bi-tag me-1" style="color: var(--accent-color)"></i>{{name}}</span>
-                                        {{/course.tags}}
-                                    </div>
                                 </div>
                             </div>
                         </div>
