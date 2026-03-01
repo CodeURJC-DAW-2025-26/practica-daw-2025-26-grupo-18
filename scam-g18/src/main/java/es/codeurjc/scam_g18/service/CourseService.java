@@ -1065,50 +1065,57 @@ public class CourseService {
         return java.util.Arrays.asList(count18_25, count26_35, count36_50, count50plus);
     }
 
-    public List<Tag> getCommonTags(long userId) {
-        Set<Tag> userTags = new HashSet<>();
-        List<Enrollment> userEnrollments = enrollmentRepository.findByUserId(userId);
-        for (Enrollment e : userEnrollments) {
-            Course c = e.getCourse();
-            if (c != null && c.getTags() != null) {
-                userTags.addAll(c.getTags());
+    public List<Map.Entry<String, Integer>> getCommonTags(long userId, long courseId) {
+        Map<String, Integer> commonTagCount = new HashMap<>();
+
+        List<Enrollment> loggedUserEnrollments = enrollmentRepository.findByUserId(userId);
+        for (Enrollment enrollment : loggedUserEnrollments) {
+            Course enrolledCourse = enrollment.getCourse();
+            if (enrolledCourse == null || enrolledCourse.getTags() == null) {
+                continue;
+            }
+            for (Tag tag : enrolledCourse.getTags()) {
+                if (tag != null && tag.getName() != null && !tag.getName().isBlank()) {
+                    commonTagCount.put(tag.getName(), 0);
+                }
             }
         }
 
-        Map<Tag, Set<Long>> tagUsers = new HashMap<>();
-        for (Tag t : userTags) {
-            tagUsers.put(t, new HashSet<>());
+        if (commonTagCount.isEmpty()) {
+            return new ArrayList<>();
         }
 
-        List<Enrollment> allEnrollments = enrollmentRepository.findAll();
-        for (Enrollment e : allEnrollments) {
-            Course c = e.getCourse();
-            User u = e.getUser();
-            if (c != null && c.getTags() != null && u != null) {
-                for (Tag t : c.getTags()) {
-                    if (tagUsers.containsKey(t)) {
-                        if (!u.getId().equals(userId)) {
-                            tagUsers.get(t).add(u.getId());
-                        }
+        List<Enrollment> courseEnrollments = enrollmentRepository.findByCourseId(courseId);
+        for (Enrollment enrollment : courseEnrollments) {
+            User enrolledUser = enrollment.getUser();
+            if (enrolledUser == null || enrolledUser.getId() == null || enrolledUser.getId().equals(userId)) {
+                continue;
+            }
+
+            List<Enrollment> enrolledUserEnrollments = enrollmentRepository.findByUserId(enrolledUser.getId());
+            for (Enrollment userEnrollment : enrolledUserEnrollments) {
+                Course userCourse = userEnrollment.getCourse();
+                if (userCourse == null || userCourse.getTags() == null) {
+                    continue;
+                }
+
+                for (Tag tag : userCourse.getTags()) {
+                    if (tag == null || tag.getName() == null || tag.getName().isBlank()) {
+                        continue;
+                    }
+                    if (commonTagCount.containsKey(tag.getName())) {
+                        commonTagCount.put(tag.getName(), commonTagCount.get(tag.getName()) + 1);
                     }
                 }
             }
         }
 
-        List<Tag> sortedTags = new ArrayList<>();
-        for (Map.Entry<Tag, Set<Long>> entry : tagUsers.entrySet()) {
-            if (entry.getValue().size() > 0) {
-                sortedTags.add(entry.getKey());
-            }
-        }
-
-        sortedTags.sort((t1, t2) -> {
-            int count1 = tagUsers.get(t1).size();
-            int count2 = tagUsers.get(t2).size();
-            return Integer.compare(count2, count1);
-        });
-
-        return sortedTags.size() > 3 ? sortedTags.subList(0, 3) : sortedTags;
+        return commonTagCount.entrySet().stream()
+                .filter(entry -> entry.getValue() > 0)
+                .sorted(Map.Entry.<String, Integer>comparingByValue(Comparator.reverseOrder())
+                        .thenComparing(Map.Entry.comparingByKey(String.CASE_INSENSITIVE_ORDER)))
+                .limit(3)
+                .toList();
     }
 
     public long getTotalLessons(Long courseId) {
