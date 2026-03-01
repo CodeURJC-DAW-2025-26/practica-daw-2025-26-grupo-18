@@ -336,6 +336,7 @@ public class CourseService {
         detailData.put("ratingCount", getRatingCount(course));
         detailData.put("reviewsNumber", getReviewsNumber(course));
         detailData.put("averageRatingStars", getStarsFromAverage(course));
+        detailData.put("hasSubscribers", course.getSubscribersNumber() != null && course.getSubscribersNumber() > 0);
         int courseProgressPercentage = 0;
         if (currentUserId != null) {
             courseProgressPercentage = getProgressPercentageForUserCourse(id, currentUserId).orElse(0);
@@ -682,6 +683,7 @@ public class CourseService {
 
             List<Enrollment> enrollments = enrollmentRepository.findByCourseId(c.getId());
             data.put("totalSubscribers", enrollments.size());
+            data.put("hasSubscribers", !enrollments.isEmpty());
 
             long monthly = enrollments.stream()
                     .filter(e -> e.getEnrolledAt() != null &&

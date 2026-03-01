@@ -5290,7 +5290,7 @@ section,
 .instructor-create-card {
     border-radius: 14px;
     box-shadow: 0 14px 30px rgba(16, 24, 40, 0.09) !important;
-    margin-top: 28px;
+    margin-top: 0;
 }
 
 .instructor-create-card-body {
