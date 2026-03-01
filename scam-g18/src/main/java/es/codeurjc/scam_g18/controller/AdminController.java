@@ -55,7 +55,6 @@ public class AdminController {
 
         model.addAttribute("activeTab", activeTab != null ? activeTab : "users");
         model.addAttribute("reviews", adminService.getAllReviews());
-        model.addAttribute("orders", adminService.getAllOrdersSortedByDate());
     }
 
     // Displays the admin dashboard with optional filters.

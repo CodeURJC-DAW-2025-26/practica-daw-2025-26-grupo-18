@@ -307,11 +307,6 @@ function addModule() {
     refreshModuleBindings();
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    refreshModuleBindings();
-    updateModuleCount();
-});
-
 function setupRegisterAvailabilityValidation() {
     const form = document.getElementById("registerForm") || document.getElementById("googleRegisterForm");
     if (!form) {
@@ -388,10 +383,6 @@ function setupRegisterAvailabilityValidation() {
         }
     });
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-    setupRegisterAvailabilityValidation();
-});
 
 // ── Agenda sessions ───────────────────────────────────────────────────────
 function addAgendaItem() {
@@ -811,6 +802,732 @@ function initAdminDashboard() {
     }
 }
 
+function loadExternalScriptOnce(src, scriptId, integrity, crossOrigin) {
+    return new Promise((resolve, reject) => {
+        const existingById = scriptId ? document.getElementById(scriptId) : null;
+        const existingBySrc = Array.from(document.querySelectorAll("script[src]")).find((script) => script.src === src);
+        const existing = existingById || existingBySrc;
+
+        if (existing) {
+            if (existing.dataset.loaded === "true") {
+                resolve();
+                return;
+            }
+            existing.addEventListener("load", () => resolve(), { once: true });
+            existing.addEventListener("error", () => reject(new Error(`No se pudo cargar ${src}`)), { once: true });
+            return;
+        }
+
+        const script = document.createElement("script");
+        script.src = src;
+        if (scriptId) {
+            script.id = scriptId;
+        }
+        if (integrity) {
+            script.integrity = integrity;
+        }
+        if (crossOrigin) {
+            script.crossOrigin = crossOrigin;
+        }
+
+        script.async = true;
+        script.addEventListener(
+            "load",
+            () => {
+                script.dataset.loaded = "true";
+                resolve();
+            },
+            { once: true },
+        );
+        script.addEventListener("error", () => reject(new Error(`No se pudo cargar ${src}`)), { once: true });
+        document.head.appendChild(script);
+    });
+}
+
+function initBootstrapValidationForms() {
+    const forms = document.querySelectorAll(".needs-validation");
+    Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener(
+            "submit",
+            function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    const alert = document.getElementById("clientValidationAlert");
+                    if (alert) {
+                        alert.classList.remove("d-none");
+                        alert.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }
+                }
+                form.classList.add("was-validated");
+            },
+            false,
+        );
+    });
+}
+
+function initProgressBars() {
+    document.querySelectorAll(".course-progress-fill[data-progress]").forEach(function (bar) {
+        var value = parseInt(bar.getAttribute("data-progress"), 10);
+        if (isNaN(value)) value = 0;
+        value = Math.max(0, Math.min(100, value));
+        bar.style.width = value + "%";
+    });
+}
+
+function setProfileEditMode(isEditing) {
+    var main = document.getElementById("profile-page-main");
+    var view = document.getElementById("profile-view");
+    var edit = document.getElementById("profile-edit");
+    var about = document.getElementById("profile-about-container");
+    var mainContainer = document.getElementById("profile-main-container");
+
+    if (!view || !edit) return;
+
+    if (isEditing) {
+        view.style.display = "none";
+        edit.style.display = "block";
+        if (about) about.style.display = "none";
+        if (mainContainer) {
+            mainContainer.classList.remove("col-lg-4");
+            mainContainer.classList.add("col-12", "is-editing");
+        }
+        if (main) {
+            main.classList.add("profile-edit-mode");
+        }
+    } else {
+        view.style.display = "block";
+        edit.style.display = "none";
+        if (about) about.style.display = "block";
+        if (mainContainer) {
+            mainContainer.classList.remove("col-12", "is-editing");
+            mainContainer.classList.add("col-lg-4");
+        }
+        if (main) {
+            main.classList.remove("profile-edit-mode");
+        }
+    }
+}
+
+function toggleEdit() {
+    var view = document.getElementById("profile-view");
+    if (!view) return;
+    if (view.style.display === "none") {
+        setProfileEditMode(false);
+    } else {
+        setProfileEditMode(true);
+    }
+}
+
+function previewImage(event) {
+    var reader = new FileReader();
+    reader.onload = function () {
+        var preview = document.getElementById("preview-img");
+        if (preview) {
+            preview.src = reader.result;
+        }
+    };
+    if (event.target.files && event.target.files[0]) {
+        reader.readAsDataURL(event.target.files[0]);
+    }
+}
+
+function initProfilePage() {
+    if (!document.getElementById("profile-page-main")) {
+        return;
+    }
+    if (document.querySelector(".alert.alert-warning")) {
+        setProfileEditMode(true);
+    }
+
+    var countrySelect = document.getElementById("country");
+    if (countrySelect) {
+        var currentCountry = countrySelect.getAttribute("data-current-country");
+        if (currentCountry) {
+            for (var i = 0; i < countrySelect.options.length; i++) {
+                if (countrySelect.options[i].value === currentCountry) {
+                    countrySelect.selectedIndex = i;
+                    break;
+                }
+            }
+        }
+    }
+}
+
+function initCourseDetailsPage() {
+    var progressBar = document.getElementById("courseProgressBar");
+    var progressLabel = document.getElementById("courseProgressLabel");
+
+    if (progressBar) {
+        var initialValue = parseInt(progressBar.getAttribute("data-progress"), 10);
+        if (isNaN(initialValue)) initialValue = 0;
+        initialValue = Math.max(0, Math.min(100, initialValue));
+        progressBar.style.width = initialValue + "%";
+        if (progressLabel) {
+            progressLabel.textContent = initialValue + "%";
+        }
+    }
+
+    document.querySelectorAll(".complete-lesson-form").forEach(function (form) {
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            var submitButton = form.querySelector('button[type="submit"]');
+            if (!submitButton) return;
+
+            var originalText = submitButton.textContent;
+            submitButton.disabled = true;
+            submitButton.textContent = "Guardando...";
+
+            try {
+                var csrfInput = form.querySelector('input[name="_csrf"]');
+                var headers = {
+                    "X-Requested-With": "XMLHttpRequest",
+                };
+
+                if (csrfInput && csrfInput.value) {
+                    headers["X-CSRF-TOKEN"] = csrfInput.value;
+                }
+
+                var response = await fetch(form.action, {
+                    method: "POST",
+                    headers: headers,
+                });
+
+                if (!response.ok) {
+                    throw new Error("No se pudo completar la lección");
+                }
+
+                var data = await response.json();
+
+                var completedBadge = document.createElement("span");
+                completedBadge.className = "badge bg-success";
+                completedBadge.textContent = "Completada";
+
+                form.replaceWith(completedBadge);
+
+                if (progressBar && progressLabel && typeof data.progressPercentage === "number") {
+                    var nextValue = Math.max(0, Math.min(100, data.progressPercentage));
+                    progressBar.style.width = nextValue + "%";
+                    progressBar.setAttribute("data-progress", String(nextValue));
+                    progressLabel.textContent = nextValue + "%";
+                }
+            } catch (_error) {
+                submitButton.disabled = false;
+                submitButton.textContent = originalText;
+                alert("No se pudo guardar el progreso. Inténtalo de nuevo.");
+            }
+        });
+    });
+}
+
+async function initChoicesOnElement(element) {
+    if (!element || typeof Choices !== "undefined") {
+        if (element && typeof Choices !== "undefined") {
+            new Choices(element, {
+                removeItemButton: true,
+                searchEnabled: true,
+                searchPlaceholderValue: "Buscar etiquetas...",
+                placeholderValue: "Selecciona etiquetas para buscar",
+                noResultsText: "No se encontraron etiquetas",
+                itemSelectText: "Presiona para seleccionar",
+            });
+        }
+        return;
+    }
+
+    await loadExternalScriptOnce("https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js", "choices-js-cdn");
+
+    if (typeof Choices !== "undefined") {
+        new Choices(element, {
+            removeItemButton: true,
+            searchEnabled: true,
+            searchPlaceholderValue: "Buscar etiquetas...",
+            placeholderValue: "Selecciona etiquetas para buscar",
+            noResultsText: "No se encontraron etiquetas",
+            itemSelectText: "Presiona para seleccionar",
+        });
+    }
+}
+
+function initLoadMoreCoursesCatalog() {
+    const loadMoreBtn = document.getElementById("loadMoreBtn");
+    if (!loadMoreBtn) {
+        return;
+    }
+
+    loadMoreBtn.addEventListener("click", function () {
+        const page = this.getAttribute("data-page");
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set("page", page);
+
+        fetch("/api/courses?" + urlParams.toString())
+            .then((response) => response.json())
+            .then((data) => {
+                const courseList = document.getElementById("courseList");
+
+                if (data.length > 0) {
+                    data.forEach((course) => {
+                        const article = document.createElement("article");
+                        article.className = "course-card-full";
+
+                        let tagsHtml = "";
+                        if (course.tags) {
+                            course.tags.forEach((tag) => {
+                                tagsHtml += `<span class="course-tag">${tag.name}</span>`;
+                            });
+                        }
+
+                        let subscribedHtml = "";
+                        if (course.isSubscribed) {
+                            subscribedHtml = '<span class="badge bg-success">Ya suscrito</span>';
+                        }
+
+                        article.innerHTML = `
+                                    <div class="course-card-header">
+                                        <div>
+                                            <h3 class="course-card-title">${course.title}</h3>
+                                            <div class="course-tags">
+                                                ${tagsHtml}
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-end gap-1">
+                                            ${subscribedHtml}
+                                            <div class="course-card-price">${course.priceInEuros}€</div>
+                                        </div>
+                                    </div>
+                                    <p class="course-card-desc">${course.description}</p>
+                                    <div class="course-card-meta">
+                                        <div class="course-rating">
+                                            <i class="bi bi-star-fill course-rating-star"></i>
+                                            <span class="course-rating-value">${course.averageRating}</span>
+                                            <span class="course-rating-count">(${course.ratingCount})</span>
+                                        </div>
+                                        <div class="course-card-students"><i class="bi bi-people"></i>${course.subscribersNumber} suscritos</div>
+                                        <div class="course-card-students"><i class="bi bi-person-circle"></i> Por ${course.creatorUsername}</div>
+                                    </div>
+                                    <div class="course-card-actions">
+                                        <a href="/course/${course.id}" class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver curso</a>
+                                    </div>
+                                `;
+                        courseList.appendChild(article);
+                    });
+
+                    this.setAttribute("data-page", parseInt(page, 10) + 1);
+
+                    if (data.length < 10) {
+                        this.style.display = "none";
+                    }
+                } else {
+                    this.style.display = "none";
+                }
+            })
+            .catch((error) => console.error("Error loading more courses:", error));
+    });
+}
+
+function initLoadMoreEventsCatalog() {
+    const loadMoreBtn = document.getElementById("loadMoreEventsBtn");
+    const eventsList = document.getElementById("eventsList");
+
+    if (!loadMoreBtn || !eventsList || document.getElementById("admin-dashboard-section")) {
+        return;
+    }
+
+    loadMoreBtn.addEventListener("click", function () {
+        const page = this.getAttribute("data-page");
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set("page", page);
+
+        fetch("/api/events?" + urlParams.toString())
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.length > 0) {
+                    data.forEach((event) => {
+                        const article = document.createElement("article");
+                        article.className = "course-card-full";
+                        article.setAttribute("data-aos", "fade-up");
+                        article.setAttribute("data-aos-delay", "50");
+
+                        let tagsHtml = "";
+                        if (event.tags && event.tags.length > 0) {
+                            event.tags.forEach((t) => {
+                                tagsHtml += `<span class="course-tag">${t.name}</span>`;
+                            });
+                        }
+
+                        let isSubscribedHtml = event.isSubscribed ? '<span class="badge bg-success">Entrada comprada</span>' : "";
+
+                        let locationHtml = event.isLocation ? `<div><i class="bi bi-geo-alt"></i> ${event.locationName}</div>` : `<div><i class="bi bi-geo-alt"></i> Online</div>`;
+
+                        article.innerHTML = `
+                                <div class="course-card-header">
+                                    <div>
+                                        <h3 class="course-card-title">${event.title}</h3>
+                                        <div class="course-tags">
+                                            ${tagsHtml}
+                                        </div>
+                                    </div>
+                                    <div class="d-flex flex-column align-items-end gap-1">
+                                        ${isSubscribedHtml}
+                                        <div class="course-card-price">${event.priceEuros}€</div>
+                                    </div>
+                                </div>
+                                <p class="course-card-desc">${event.description}</p>
+                                <div class="course-card-meta">
+                                    <div><i class="bi bi-calendar-event"></i> ${event.formattedDate}</div>
+                                    <div><i class="bi bi-clock"></i> ${event.formattedTime}</div>
+                                    ${locationHtml}
+                                </div>
+                                <div class="course-card-actions">
+                                    <a href="/event/${event.id}" class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver detalles</a>
+                                </div>
+                            `;
+
+                        eventsList.appendChild(article);
+                    });
+
+                    this.setAttribute("data-page", parseInt(page, 10) + 1);
+                    if (data.length < 10) {
+                        this.style.display = "none";
+                    }
+                } else {
+                    this.style.display = "none";
+                }
+            })
+            .catch((error) => console.error("Error loading more events:", error));
+    });
+}
+
+function initLanguageSelectPrefill() {
+    const languageSelect = document.getElementById("language");
+    if (!languageSelect) {
+        return;
+    }
+
+    const selectedLanguage = languageSelect.getAttribute("data-selected-language");
+    if (selectedLanguage) {
+        languageSelect.value = selectedLanguage;
+    }
+}
+
+async function ensureLeafletLoaded() {
+    if (typeof L !== "undefined") {
+        return;
+    }
+
+    await loadExternalScriptOnce("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js", "leaflet-js-cdn", "sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=", "");
+}
+
+function initEventLocationSearch() {
+    const locationInput = document.getElementById("eventLocation");
+    const addressInput = document.getElementById("locationAddress");
+    const cityInput = document.getElementById("locationCity");
+    const countryInput = document.getElementById("locationCountry");
+    const latInput = document.getElementById("locationLat");
+    const lonInput = document.getElementById("locationLon");
+    const resultsContainer = document.getElementById("search-results-name");
+    const mapPreview = document.getElementById("map-preview");
+
+    if (!locationInput || !addressInput || !cityInput || !countryInput || !latInput || !lonInput || !resultsContainer || !mapPreview || typeof L === "undefined") {
+        return;
+    }
+
+    var map = null;
+    var marker = null;
+    var searchTimeout = null;
+
+    function initMap(lat, lon) {
+        if (!map) {
+            mapPreview.innerHTML = "";
+            map = L.map("map-preview").setView([lat, lon], 15);
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                attribution: "&copy; OpenStreetMap contributors",
+            }).addTo(map);
+            marker = L.marker([lat, lon]).addTo(map);
+        } else {
+            const pos = [lat, lon];
+            map.setView(pos, 15);
+            marker.setLatLng(pos);
+        }
+    }
+
+    const initialLat = parseFloat(latInput.value);
+    const initialLon = parseFloat(lonInput.value);
+    if (!isNaN(initialLat) && !isNaN(initialLon)) {
+        initMap(initialLat, initialLon);
+    }
+
+    function handleSelection(result) {
+        locationInput.value = result.display_name.split(",")[0];
+        addressInput.value = result.address.road || result.address.pedestrian || result.display_name;
+        cityInput.value = result.address.city || result.address.town || result.address.village || "";
+        countryInput.value = result.address.country || "";
+        latInput.value = result.lat;
+        lonInput.value = result.lon;
+
+        resultsContainer.classList.add("d-none");
+        initMap(result.lat, result.lon);
+    }
+
+    locationInput.addEventListener("input", function () {
+        clearTimeout(searchTimeout);
+        const query = this.value;
+        if (query.length < 3) {
+            resultsContainer.classList.add("d-none");
+            return;
+        }
+
+        searchTimeout = setTimeout(() => {
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=5`)
+                .then((response) => response.json())
+                .then((data) => {
+                    resultsContainer.innerHTML = "";
+                    if (data.length > 0) {
+                        data.forEach((item) => {
+                            const div = document.createElement("div");
+                            div.className = "search-result-item";
+                            div.textContent = item.display_name;
+                            div.addEventListener("click", () => handleSelection(item));
+                            resultsContainer.appendChild(div);
+                        });
+                        resultsContainer.classList.remove("d-none");
+                    } else {
+                        resultsContainer.classList.add("d-none");
+                    }
+                });
+        }, 500);
+    });
+
+    document.addEventListener("click", function (e) {
+        if (e.target !== locationInput) {
+            resultsContainer.classList.add("d-none");
+        }
+    });
+}
+
+async function initEventDetailsMap() {
+    const mapElement = document.getElementById("map");
+    if (!mapElement) {
+        return;
+    }
+
+    await ensureLeafletLoaded();
+
+    if (typeof L === "undefined") {
+        return;
+    }
+
+    var lat = parseFloat(mapElement.dataset.lat);
+    var lon = parseFloat(mapElement.dataset.lon);
+    var locationName = mapElement.dataset.name || "";
+
+    if (Number.isNaN(lat) || Number.isNaN(lon)) {
+        return;
+    }
+
+    var map = L.map("map").setView([lat, lon], 13);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap contributors",
+    }).addTo(map);
+
+    L.marker([lat, lon]).addTo(map).bindPopup(locationName).openPopup();
+}
+
+function initCartCheckoutValidation() {
+    const form = document.getElementById("checkoutForm");
+    const cardNumber = document.getElementById("cardNumber");
+    const cardExpiry = document.getElementById("cardExpiry");
+    const cardCvv = document.getElementById("cardCvv");
+
+    if (!form || !cardNumber || !cardExpiry || !cardCvv) {
+        return;
+    }
+
+    cardNumber.addEventListener("input", function () {
+        let v = this.value.replace(/\D/g, "").substring(0, 16);
+        this.value = v.replace(/(.{4})/g, "$1 ").trim();
+    });
+
+    cardExpiry.addEventListener("input", function () {
+        let v = this.value.replace(/\D/g, "").substring(0, 4);
+        if (v.length >= 3) {
+            v = v.substring(0, 2) + "/" + v.substring(2);
+        }
+        this.value = v;
+    });
+
+    cardCvv.addEventListener("input", function () {
+        this.value = this.value.replace(/\D/g, "").substring(0, 3);
+    });
+
+    form.addEventListener("submit", function (e) {
+        let valid = true;
+
+        form.querySelectorAll(".form-control").forEach(function (el) {
+            el.classList.remove("is-invalid");
+        });
+
+        const cardName = document.getElementById("cardName");
+        if (!cardName || !cardName.value.trim()) {
+            if (cardName) cardName.classList.add("is-invalid");
+            valid = false;
+        }
+
+        var email = document.getElementById("billingEmail");
+        if (!email || !email.value.trim() || !email.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+            if (email) email.classList.add("is-invalid");
+            valid = false;
+        }
+
+        var digits = cardNumber.value.replace(/\D/g, "");
+        if (digits.length !== 16) {
+            cardNumber.classList.add("is-invalid");
+            valid = false;
+        }
+
+        var expiryMatch = cardExpiry.value.match(/^(0[1-9]|1[0-2])\/(\d{2})$/);
+        if (!expiryMatch) {
+            cardExpiry.classList.add("is-invalid");
+            valid = false;
+        } else {
+            var expMonth = parseInt(expiryMatch[1], 10);
+            var expYear = 2000 + parseInt(expiryMatch[2], 10);
+            var now = new Date();
+            var currentMonth = now.getMonth() + 1;
+            var currentYear = now.getFullYear();
+            if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
+                cardExpiry.classList.add("is-invalid");
+                valid = false;
+            }
+        }
+
+        if (!/^\d{3}$/.test(cardCvv.value)) {
+            cardCvv.classList.add("is-invalid");
+            valid = false;
+        }
+
+        if (!valid) {
+            e.preventDefault();
+        }
+
+        if (valid) {
+            cardNumber.value = digits;
+        }
+    });
+}
+
+async function initGenericChartPage() {
+    const canvas = document.getElementById("genericChart");
+    const labelsContainer = document.getElementById("chartLabelsData");
+    const valuesContainer = document.getElementById("chartValuesData");
+
+    if (!canvas || !labelsContainer || !valuesContainer) {
+        return;
+    }
+
+    if (typeof Chart === "undefined") {
+        await loadExternalScriptOnce("https://cdn.jsdelivr.net/npm/chart.js", "chart-js-cdn");
+    }
+
+    if (typeof Chart === "undefined") {
+        return;
+    }
+
+    var labels = Array.from(labelsContainer.querySelectorAll("li")).map((li) => li.textContent || "");
+    var values = Array.from(valuesContainer.querySelectorAll("li")).map((li) => parseFloat(li.textContent || "0") || 0);
+    var chartType = canvas.dataset.chartType || "bar";
+    var chartTitle = canvas.dataset.chartTitle || "";
+
+    var colors = [
+        "rgba(217, 109, 60, 0.8)",
+        "rgba(133, 97, 61, 0.8)",
+        "rgba(66, 40, 35, 0.8)",
+        "rgba(199, 167, 119, 0.8)",
+        "rgba(243, 228, 201, 0.8)",
+        "rgba(180, 90, 50, 0.8)",
+        "rgba(160, 118, 75, 0.8)",
+        "rgba(100, 60, 50, 0.8)",
+        "rgba(235, 175, 125, 0.8)",
+        "rgba(255, 240, 215, 0.8)",
+    ];
+    var borderColors = colors.map(function (c) {
+        return c.replace("0.8", "1");
+    });
+
+    new Chart(canvas, {
+        type: chartType,
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: chartTitle,
+                    data: values,
+                    backgroundColor: colors.slice(0, values.length),
+                    borderColor: borderColors.slice(0, values.length),
+                    borderWidth: 2,
+                },
+            ],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: "bottom", labels: { boxWidth: 12, padding: 10, font: { size: 11 } } },
+                title: { display: false },
+            },
+            layout: { padding: 5 },
+        },
+    });
+}
+
+function initCatalogTagFilters() {
+    const tagFilters = document.getElementById("tagFilters");
+    const tagNames = document.getElementById("tagNames");
+
+    if (tagFilters) {
+        initChoicesOnElement(tagFilters).then(() => {
+            tagFilters.addEventListener("change", function () {
+                if (this.form) {
+                    this.form.submit();
+                }
+            });
+        });
+    }
+
+    if (tagNames) {
+        initChoicesOnElement(tagNames);
+    }
+}
+
+async function initEventCreationEditionPage() {
+    if (!document.getElementById("eventLocation") && !document.getElementById("map")) {
+        return;
+    }
+
+    await ensureLeafletLoaded();
+    initEventLocationSearch();
+}
+
+window.toggleEdit = toggleEdit;
+window.previewImage = previewImage;
+
 document.addEventListener("DOMContentLoaded", () => {
+    refreshModuleBindings();
+    updateModuleCount();
+    setupRegisterAvailabilityValidation();
+    initBootstrapValidationForms();
+    initProgressBars();
+    initProfilePage();
+    initCourseDetailsPage();
+    initCatalogTagFilters();
+    initLoadMoreCoursesCatalog();
+    initLoadMoreEventsCatalog();
+    initLanguageSelectPrefill();
+    initEventCreationEditionPage();
+    initEventDetailsMap();
+    initCartCheckoutValidation();
+    initGenericChartPage();
     initAdminDashboard();
 });

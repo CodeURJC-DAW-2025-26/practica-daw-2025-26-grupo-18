@@ -85,17 +85,6 @@
     </main>
 
     {{>footer}}
-
-    <script>
-        document.querySelectorAll('.course-progress-fill[data-progress]').forEach(function (bar) {
-            var value = parseInt(bar.getAttribute('data-progress'), 10);
-            if (isNaN(value)) value = 0;
-            value = Math.max(0, Math.min(100, value));
-            bar.style.width = value + '%';
-        });
-    </script>
-
-    <script src="/main.js"></script>
 </body>
 
 </html>

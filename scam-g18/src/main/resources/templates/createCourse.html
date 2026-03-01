@@ -1,7 +1,6 @@
 {{>header}}
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
-<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
 <main class="main">
 
@@ -242,46 +241,7 @@
 
 </main>
 
-<script>
-    // Example starter JavaScript for disabling form submissions if there are invalid fields
-    (function () {
-        'use strict'
-
-        // Fetch all the forms we want to apply custom Bootstrap validation styles to
-        var forms = document.querySelectorAll('.needs-validation')
-
-        // Loop over them and prevent submission
-        Array.prototype.slice.call(forms)
-            .forEach(function (form) {
-                form.addEventListener('submit', function (event) {
-                    if (!form.checkValidity()) {
-                        event.preventDefault()
-                        event.stopPropagation()
-                    }
-
-                    form.classList.add('was-validated')
-                }, false)
-            })
-    })()
-</script>
-
 {{>footer}}
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const tagSelect = document.getElementById('tagNames');
-        if (tagSelect) {
-            new Choices(tagSelect, {
-                removeItemButton: true,
-                searchEnabled: true,
-                searchPlaceholderValue: 'Buscar etiquetas...',
-                placeholderValue: 'Selecciona etiquetas',
-                noResultsText: 'No se encontraron etiquetas',
-                itemSelectText: 'Presiona para seleccionar'
-            });
-        }
-    });
-</script>
 
 </body>
 

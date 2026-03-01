@@ -1,7 +1,6 @@
 {{>header}}
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
-<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
 <main class="main">
 
@@ -71,7 +70,7 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="language" class="form-label">Idioma</label>
-                                        <select class="form-select" id="language" name="language" required>
+                                        <select class="form-select" id="language" name="language" data-selected-language="{{course.language}}" required>
                                             <option value="Español">Español</option>
                                             <option value="Inglés">Inglés</option>
                                             <option value="Francés">Francés</option>
@@ -313,57 +312,6 @@
 </main>
 
 {{>footer}}
-
-<script>
-    // Example starter JavaScript for disabling form submissions if there are invalid fields
-    (function () {
-        'use strict'
-
-        // Fetch all the forms we want to apply custom Bootstrap validation styles to
-        var forms = document.querySelectorAll('.needs-validation')
-
-        // Loop over them and prevent submission
-        Array.prototype.slice.call(forms)
-            .forEach(function (form) {
-                form.addEventListener('submit', function (event) {
-                    if (!form.checkValidity()) {
-                        event.preventDefault()
-                        event.stopPropagation()
-                        const alert = document.getElementById('clientValidationAlert')
-                        if (alert) {
-                            alert.classList.remove('d-none')
-                            alert.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                        }
-                    }
-
-                    form.classList.add('was-validated')
-                }, false)
-            })
-    })()
-</script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const tagSelect = document.getElementById('tagNames');
-        if (tagSelect) {
-            new Choices(tagSelect, {
-                removeItemButton: true,
-                searchEnabled: true,
-                searchPlaceholderValue: 'Buscar etiquetas...',
-                placeholderValue: 'Selecciona etiquetas',
-                noResultsText: 'No se encontraron etiquetas',
-                itemSelectText: 'Presiona para seleccionar'
-            });
-        }
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const languageSelect = document.getElementById('language');
-        if (languageSelect) {
-            languageSelect.value = '{{course.language}}';
-        }
-    });
-</script>
 
 </body>
 

@@ -104,7 +104,7 @@ public class SecurityConfiguration {
                                 .formLogin(formLogin -> formLogin
                                                 .loginPage("/login")
                                                 .failureUrl("/loginerror")
-                                                .defaultSuccessUrl("/")
+                                                .defaultSuccessUrl("/", true)
                                                 .permitAll())
 
                                 // 2. SOCIAL LOGIN SYSTEM (OAuth2 with Google)
