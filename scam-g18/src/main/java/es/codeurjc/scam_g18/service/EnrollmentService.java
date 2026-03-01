@@ -137,13 +137,12 @@ public class EnrollmentService {
     }
 
     public long getTotalCompletedLessons(Long userId) {
-        return lessonProgressRepository.findByUserIdAndIsCompletedTrue(userId).size();
+        return getCompletedLessons(userId).size();
     }
 
     public long getLessonsCompletedThisMonth(Long userId) {
-        List<LessonProgress> completed = lessonProgressRepository.findByUserIdAndIsCompletedTrue(userId);
         LocalDateTime now = LocalDateTime.now();
-        return completed.stream()
+        return getCompletedLessons(userId).stream()
                 .filter(lp -> lp.getCompletedAt() != null &&
                         lp.getCompletedAt().getMonth() == now.getMonth() &&
                         lp.getCompletedAt().getYear() == now.getYear())
@@ -151,7 +150,7 @@ public class EnrollmentService {
     }
 
     public double getAverageLessonsPerMonth(Long userId) {
-        List<LessonProgress> completed = lessonProgressRepository.findByUserIdAndIsCompletedTrue(userId);
+        List<LessonProgress> completed = getCompletedLessons(userId);
         if (completed.isEmpty())
             return 0;
         long minMonth = completed.stream()
@@ -165,6 +164,75 @@ public class EnrollmentService {
     }
 
     public int getTotalEnrollments(Long userId) {
-        return enrollmentRepository.findByUserId(userId).size();
+        return (int) enrollmentRepository.countByUserId(userId);
+    }
+
+    // Returns {total, completed, remaining} enrollment counts for a user — used by
+    // StatisticsController.
+    public Map<String, Integer> getCourseProgressStats(Long userId) {
+        int total = enrollmentRepository.findByUserId(userId).size();
+        int completed = enrollmentRepository.countByUserIdAndProgressPercentage(userId, 100);
+        int remaining = total - completed;
+        Map<String, Integer> stats = new HashMap<>();
+        stats.put("total", total);
+        stats.put("completed", completed);
+        stats.put("remaining", remaining);
+        return stats;
+    }
+
+    // Returns the number of lessons completed per month for the last 6 months —
+    // used by StatisticsController.
+    public Map<String, Object> getLessonsPerMonth(Long userId) {
+        List<LessonProgress> completedLessons = lessonProgressRepository.findByUserIdAndIsCompletedTrue(userId);
+        List<String> labels = new ArrayList<>();
+        List<Double> values = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
+
+        for (int i = 5; i >= 0; i--) {
+            LocalDateTime monthDate = now.minusMonths(i);
+            String monthLabel = monthDate.getMonth().getDisplayName(
+                    java.time.format.TextStyle.SHORT, java.util.Locale.of("es", "ES"));
+            labels.add(monthLabel);
+
+            long count = completedLessons.stream()
+                    .filter(lp -> lp.getCompletedAt() != null &&
+                            lp.getCompletedAt().getMonth() == monthDate.getMonth() &&
+                            lp.getCompletedAt().getYear() == monthDate.getYear())
+                    .count();
+            values.add((double) count);
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("labels", labels);
+        result.put("values", values);
+        return result;
+    }
+
+    // Returns {completedLessons, remaining} for a specific user+course — used by
+    // StatisticsController.
+    public Map<String, Long> getUserLessonProgressForCourse(Long userId, Long courseId, long totalLessons) {
+        long completedCount = getCompletedLessons(userId).stream()
+                .filter(lp -> lp.getLesson() != null
+                        && lp.getLesson().getModule() != null
+                        && lp.getLesson().getModule().getCourse() != null
+                        && lp.getLesson().getModule().getCourse().getId().equals(courseId))
+                .count();
+        long remaining = Math.max(totalLessons - completedCount, 0);
+        Map<String, Long> result = new HashMap<>();
+        result.put("completedLessons", completedCount);
+        result.put("remaining", remaining);
+        return result;
+    }
+
+    // Returns the average lessons per month formatted with one decimal digit.
+    // Moves String.format("%.1f", ...) out of ProfileController.
+    public String getAverageLessonsPerMonthFormatted(Long userId) {
+        return String.format("%.1f", getAverageLessonsPerMonth(userId));
+    }
+
+    // Returns all completed lesson progress entries for a user — shared by multiple
+    // methods.
+    private List<LessonProgress> getCompletedLessons(Long userId) {
+        return lessonProgressRepository.findByUserIdAndIsCompletedTrue(userId);
     }
 }

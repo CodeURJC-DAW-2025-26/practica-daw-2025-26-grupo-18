@@ -2,20 +2,11 @@ package es.codeurjc.scam_g18.controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Locale;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,8 +38,8 @@ public class RegisterGoogleController {
 
         String email = oAuth2User.getAttribute("email");
         model.addAttribute("googleEmail", email);
-        model.addAttribute("googleSuggestedUsername", buildSuggestedUsername(oAuth2User, email));
-        model.addAttribute("googleSuggestedCountry", buildSuggestedCountry(oAuth2User));
+        model.addAttribute("googleSuggestedUsername", userService.buildSuggestedUsername(oAuth2User, email));
+        model.addAttribute("googleSuggestedCountry", userService.buildSuggestedCountry(oAuth2User));
 
         if ("usernameExists".equals(error)) {
             model.addAttribute("errorMsg",
@@ -62,39 +53,6 @@ public class RegisterGoogleController {
         }
 
         return "registerGoogle";
-    }
-
-    private String buildSuggestedUsername(OAuth2User oAuth2User, String email) {
-        String suggestedUsername = oAuth2User.getAttribute("given_name");
-
-        if (suggestedUsername == null || suggestedUsername.isBlank()) {
-            suggestedUsername = oAuth2User.getAttribute("name");
-        }
-
-        if ((suggestedUsername == null || suggestedUsername.isBlank()) && email != null && email.contains("@")) {
-            suggestedUsername = email.substring(0, email.indexOf('@'));
-        }
-
-        if (suggestedUsername == null) {
-            return "";
-        }
-
-        return suggestedUsername.trim().replaceAll("\\s+", "");
-    }
-
-    private String buildSuggestedCountry(OAuth2User oAuth2User) {
-        String localeAttribute = oAuth2User.getAttribute("locale");
-
-        if (localeAttribute == null || localeAttribute.isBlank()) {
-            return "";
-        }
-
-        Locale googleLocale = Locale.forLanguageTag(localeAttribute.replace('_', '-'));
-        if (googleLocale.getCountry() == null || googleLocale.getCountry().isBlank()) {
-            return "";
-        }
-
-        return googleLocale.getDisplayCountry(Locale.of("es", "ES"));
     }
 
     @PostMapping
@@ -136,34 +94,15 @@ public class RegisterGoogleController {
 
         emailService.newAccountMessage(email, username);
 
-        // Successful registration: load the newly created user to get real
-        // roles
         User newUser = userService.findByEmail(email).orElseThrow();
-
-        List<GrantedAuthority> authorities = newUser.getRoles().stream()
-                .map(role -> (GrantedAuthority) new SimpleGrantedAuthority("ROLE_" + role.getName()))
-                .collect(Collectors.toList());
-
-        // Build the OAuth2User with the real roles
-        DefaultOAuth2User authenticatedUser = new DefaultOAuth2User(authorities, oAuth2User.getAttributes(), "email");
-
-        // Create OAuth2 authentication token (registrationId = "google")
-        OAuth2AuthenticationToken authToken = new OAuth2AuthenticationToken(authenticatedUser, authorities, "google");
-
-        // Set authentication in SecurityContext and store it in session
-        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-        securityContext.setAuthentication(authToken);
-        SecurityContextHolder.setContext(securityContext);
-
-        HttpSession session = request.getSession(true);
-        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+        userService.authenticateOAuth2User(newUser, oAuth2User, request);
 
         return "redirect:/";
     }
 
     /**
-        * Cancels registration: clears the PENDING session and redirects to home
-        * without signing in.
+     * Cancels registration: clears the PENDING session and redirects to home
+     * without signing in.
      */
     @GetMapping("/cancel")
     public String cancelGoogleRegistration(HttpServletRequest request) {

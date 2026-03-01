@@ -9,8 +9,12 @@ import es.codeurjc.scam_g18.model.User;
 import es.codeurjc.scam_g18.repository.EventRepository;
 import es.codeurjc.scam_g18.repository.EventRegistrationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -26,6 +30,11 @@ import java.util.Set;
 
 @Service
 public class EventService {
+
+    private final RestClient nominatimClient = RestClient.builder()
+            .defaultHeader(HttpHeaders.USER_AGENT, "SCAM-G18/1.0 (academic project)")
+            .defaultHeader(HttpHeaders.ACCEPT_LANGUAGE, "es")
+            .build();
 
     @Autowired
     private EventRepository eventRepository;
@@ -599,5 +608,23 @@ public class EventService {
         if (errors.isEmpty())
             return null;
         return String.join("<br>", errors);
+    }
+
+    // Calls the Nominatim geocoding API and returns JSON results — moved from
+    // EventController.
+    public String searchLocations(String query) {
+        String normalizedQuery = query == null ? "" : query.trim();
+        if (normalizedQuery.length() < 3) {
+            return "[]";
+        }
+        String encodedQuery = URLEncoder.encode(normalizedQuery, StandardCharsets.UTF_8);
+        String url = "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&q="
+                + encodedQuery;
+        try {
+            String body = nominatimClient.get().uri(url).retrieve().body(String.class);
+            return body != null ? body : "[]";
+        } catch (Exception e) {
+            return "[]";
+        }
     }
 }

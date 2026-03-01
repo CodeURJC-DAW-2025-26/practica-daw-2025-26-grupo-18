@@ -19,11 +19,11 @@ import es.codeurjc.scam_g18.model.Order;
 import es.codeurjc.scam_g18.model.OrderItem;
 import es.codeurjc.scam_g18.model.OrderStatus;
 import es.codeurjc.scam_g18.model.User;
+import es.codeurjc.scam_g18.model.Subscription;
+import es.codeurjc.scam_g18.model.SubscriptionStatus;
 import es.codeurjc.scam_g18.repository.CourseRepository;
 import es.codeurjc.scam_g18.repository.EnrollmentRepository;
 import es.codeurjc.scam_g18.repository.EventRegistrationRepository;
-import es.codeurjc.scam_g18.model.Subscription;
-import es.codeurjc.scam_g18.model.SubscriptionStatus;
 import es.codeurjc.scam_g18.repository.SubscriptionRepository;
 import es.codeurjc.scam_g18.repository.OrderRepository;
 import es.codeurjc.scam_g18.repository.OrderItemRepository;
@@ -91,15 +91,8 @@ public class CartService {
 
     // Adds the subscription to the order if it does not exist yet.
     public void addSubscriptionToOrder(Order order) {
-        boolean hasSubscription = false;
-        if (order.getItems() != null) {
-            for (OrderItem item : order.getItems()) {
-                if (item.isSubscription()) {
-                    hasSubscription = true;
-                    break;
-                }
-            }
-        }
+        boolean hasSubscription = order.getItems() != null &&
+                order.getItems().stream().anyMatch(OrderItem::isSubscription);
 
         if (!hasSubscription) {
             OrderItem item = new OrderItem(order, null, null, SUBSCRIPTION_PRICE_CENTS, true);
@@ -265,14 +258,16 @@ public class CartService {
             }
         }
 
+        orderRepository.save(order);
+
         try {
             byte[] invoicePdf = invoicePdfService.generateInvoicePdf(order);
-            String recipient = order.getUser() != null ? order.getBillingEmail() : order.getUser().getEmail();
+            String recipient = order.getUser() != null ? order.getUser().getEmail() : order.getBillingEmail();
             String username = order.getUser() != null ? order.getUser().getUsername() : order.getBillingFullName();
 
             if (recipient != null && !recipient.isBlank()) {
-                emailService.orderInvoiceMessage(recipient, username != null ? username : "cliente", order.getId(),
-                        invoicePdf);
+                emailService.orderInvoiceMessage(recipient, username != null ? username : "cliente",
+                        order.getId(), invoicePdf);
                 order.setInvoicePending(false);
             } else {
                 order.setInvoicePending(true);

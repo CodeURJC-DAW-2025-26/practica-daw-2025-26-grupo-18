@@ -82,26 +82,7 @@ public class AdminController {
     public org.springframework.http.ResponseEntity<java.util.List<java.util.Map<String, Object>>> getUsersApi(
             @RequestParam(required = false) String query,
             @RequestParam(defaultValue = "0") int page) {
-
-        java.util.List<es.codeurjc.scam_g18.model.User> users;
-        if (query != null && !query.isBlank()) {
-            users = adminService.searchUsers(query, page, PAGE_SIZE);
-        } else {
-            users = adminService.getAllUsers(page, PAGE_SIZE);
-        }
-
-        java.util.List<java.util.Map<String, Object>> userList = new java.util.ArrayList<>();
-        for (es.codeurjc.scam_g18.model.User u : users) {
-            java.util.Map<String, Object> map = new java.util.HashMap<>();
-            map.put("id", u.getId());
-            map.put("username", u.getUsername());
-            map.put("email", u.getEmail());
-            map.put("isActive", u.getIsActive());
-            map.put("isSubscribed", u.getIsSubscribed());
-            userList.add(map);
-        }
-
-        return org.springframework.http.ResponseEntity.ok(userList);
+        return org.springframework.http.ResponseEntity.ok(adminService.getUsersApiData(query, page, PAGE_SIZE));
     }
 
     // AJAX endpoint for event pagination
@@ -110,27 +91,7 @@ public class AdminController {
     public org.springframework.http.ResponseEntity<java.util.List<java.util.Map<String, Object>>> getAdminEventsApi(
             @RequestParam(required = false) String query,
             @RequestParam(defaultValue = "0") int page) {
-
-        java.util.List<es.codeurjc.scam_g18.model.Event> events;
-        if (query != null && !query.isBlank()) {
-            events = adminService.searchEvents(query, page, PAGE_SIZE);
-        } else {
-            events = adminService.getAllEventsSortedByStatus(page, PAGE_SIZE);
-        }
-
-        java.util.List<java.util.Map<String, Object>> eventList = new java.util.ArrayList<>();
-        for (es.codeurjc.scam_g18.model.Event e : events) {
-            java.util.Map<String, Object> map = new java.util.HashMap<>();
-            map.put("id", e.getId());
-            map.put("title", e.getTitle());
-            map.put("category", e.getCategory());
-            map.put("isPendingReview", e.getStatus() == es.codeurjc.scam_g18.model.Status.PENDING_REVIEW);
-            map.put("status", e.getStatus() != null ? e.getStatus().toString() : "");
-            map.put("creatorUsername", e.getCreator() != null ? e.getCreator().getUsername() : "");
-            eventList.add(map);
-        }
-
-        return org.springframework.http.ResponseEntity.ok(eventList);
+        return org.springframework.http.ResponseEntity.ok(adminService.getEventsApiData(query, page, PAGE_SIZE));
     }
 
     // AJAX endpoint for course pagination
@@ -139,26 +100,7 @@ public class AdminController {
     public org.springframework.http.ResponseEntity<java.util.List<java.util.Map<String, Object>>> getAdminCoursesApi(
             @RequestParam(required = false) String query,
             @RequestParam(defaultValue = "0") int page) {
-
-        java.util.List<es.codeurjc.scam_g18.model.Course> courses;
-        if (query != null && !query.isBlank()) {
-            courses = adminService.searchCourses(query, page, PAGE_SIZE);
-        } else {
-            courses = adminService.getAllCoursesSortedByStatus(page, PAGE_SIZE);
-        }
-
-        java.util.List<java.util.Map<String, Object>> courseList = new java.util.ArrayList<>();
-        for (es.codeurjc.scam_g18.model.Course c : courses) {
-            java.util.Map<String, Object> map = new java.util.HashMap<>();
-            map.put("id", c.getId());
-            map.put("title", c.getTitle());
-            map.put("shortDescription", c.getShortDescription());
-            map.put("isPendingReview", c.getStatus() == es.codeurjc.scam_g18.model.Status.PENDING_REVIEW);
-            map.put("status", c.getStatus() != null ? c.getStatus().toString() : "");
-            map.put("creatorUsername", c.getCreator() != null ? c.getCreator().getUsername() : "");
-            courseList.add(map);
-        }
-        return org.springframework.http.ResponseEntity.ok(courseList);
+        return org.springframework.http.ResponseEntity.ok(adminService.getCoursesApiData(query, page, PAGE_SIZE));
     }
 
     // AJAX endpoint for order pagination
@@ -166,33 +108,7 @@ public class AdminController {
     @ResponseBody
     public org.springframework.http.ResponseEntity<java.util.List<java.util.Map<String, Object>>> getAdminOrdersApi(
             @RequestParam(defaultValue = "0") int page) {
-
-        java.util.List<es.codeurjc.scam_g18.model.Order> orders = adminService.getAllOrdersSortedByDate(page,
-            PAGE_SIZE);
-
-        java.util.List<java.util.Map<String, Object>> orderList = new java.util.ArrayList<>();
-        for (es.codeurjc.scam_g18.model.Order o : orders) {
-            java.util.Map<String, Object> map = new java.util.HashMap<>();
-            map.put("id", o.getId());
-            if (o.getUser() != null)
-                map.put("username", o.getUser().getUsername());
-            map.put("billingFullName", o.getBillingFullName());
-            map.put("billingEmail", o.getBillingEmail());
-            map.put("status", o.getStatus() != null ? o.getStatus().toString() : "");
-
-            java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter
-                    .ofPattern("dd/MM/yyyy HH:mm");
-            if (o.getPaidAt() != null) {
-                map.put("paidAt", o.getPaidAt().format(formatter));
-            } else if (o.getCreatedAt() != null) {
-                map.put("createdAt", o.getCreatedAt().format(formatter));
-            }
-            map.put("paymentMethod", o.getPaymentMethod());
-            map.put("paymentReference", o.getPaymentReference());
-            map.put("totalAmountEuros", o.getTotalAmountEuros());
-            orderList.add(map);
-        }
-        return org.springframework.http.ResponseEntity.ok(orderList);
+        return org.springframework.http.ResponseEntity.ok(adminService.getOrdersApiData(page, PAGE_SIZE));
     }
 
     // Bans a user by identifier.

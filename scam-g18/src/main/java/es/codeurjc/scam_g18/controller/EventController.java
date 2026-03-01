@@ -1,7 +1,5 @@
 package es.codeurjc.scam_g18.controller;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +8,7 @@ import es.codeurjc.scam_g18.service.EventService;
 import es.codeurjc.scam_g18.service.TagService;
 import es.codeurjc.scam_g18.service.UserService;
 
-import org.springframework.http.HttpHeaders;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -20,29 +18,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.client.RestClient;
 
 @Controller
 public class EventController {
 
     private static final int PAGE_SIZE = 10;
 
-    private final EventService eventService;
-    private final TagService tagService;
-    private final UserService userService;
-    private final RestClient nominatimClient;
-
-    // Builds the controller with required services to manage events.
-    public EventController(EventService eventService, TagService tagService,
-            UserService userService) {
-        this.eventService = eventService;
-        this.tagService = tagService;
-        this.userService = userService;
-        this.nominatimClient = RestClient.builder()
-                .defaultHeader(HttpHeaders.USER_AGENT, "SCAM-G18/1.0 (academic project)")
-                .defaultHeader(HttpHeaders.ACCEPT_LANGUAGE, "es")
-                .build();
-    }
+    @Autowired
+    private EventService eventService;
+    @Autowired
+    private TagService tagService;
+    @Autowired
+    private UserService userService;
 
     // Displays the event listing with search and tag filters.
     @GetMapping("/events")
@@ -70,29 +57,11 @@ public class EventController {
         return ResponseEntity.ok(events);
     }
 
+    // Delegates Nominatim geocoding to EventService.
     @GetMapping(value = "/api/location-search", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<String> searchLocations(@RequestParam("q") String query) {
-        String normalizedQuery = query == null ? "" : query.trim();
-        if (normalizedQuery.length() < 3) {
-            return ResponseEntity.ok("[]");
-        }
-
-        String encodedQuery = URLEncoder.encode(normalizedQuery, StandardCharsets.UTF_8);
-        String url = "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&q="
-                + encodedQuery;
-
-        try {
-            String body = nominatimClient
-                    .get()
-                    .uri(url)
-                    .retrieve()
-                    .body(String.class);
-
-            return ResponseEntity.ok(body != null ? body : "[]");
-        } catch (Exception _error) {
-            return ResponseEntity.ok("[]");
-        }
+        return ResponseEntity.ok(eventService.searchLocations(query));
     }
 
     // Displays events purchased by the authenticated user.

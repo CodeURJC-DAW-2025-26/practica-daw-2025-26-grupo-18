@@ -68,7 +68,7 @@ public class CourseController {
             @RequestParam(defaultValue = "0") int page) {
         Long currentUserId = userService.getCurrentAuthenticatedUser().map(User::getId).orElse(null);
         List<Map<String, Object>> courses = courseService.getCoursesViewData(search, tags, currentUserId, page,
-            PAGE_SIZE);
+                PAGE_SIZE);
         return ResponseEntity.ok(courses);
     }
 
@@ -232,14 +232,8 @@ public class CourseController {
             return "redirect:/courses";
         }
 
-        if (course.getPriceCents() != null) {
-            course.setPrice(course.getPriceCents() / 100.0);
-        }
-
-        java.util.List<String> selectedTags = course.getTags().stream().map(es.codeurjc.scam_g18.model.Tag::getName)
-                .toList();
+        java.util.List<String> selectedTags = courseService.prepareEditData(course);
         model.addAttribute("allTagsView", tagService.getTagsView(selectedTags));
-
         model.addAttribute("course", course);
         return "editCourse";
     }

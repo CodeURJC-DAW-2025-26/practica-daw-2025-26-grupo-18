@@ -51,14 +51,13 @@ public class UserService {
     // Indicates whether there is an authenticated user in the current session.
     public boolean isUserLoggedIn() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return auth != null && auth.isAuthenticated() &&
-                !"anonymousUser".equals(auth.getPrincipal());
+        return isActiveAuthentication(auth);
     }
 
     // Returns the current authenticated user's name.
     public String getCurrentUserName() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+        if (isActiveAuthentication(auth)) {
             return auth.getName();
         }
         return "";
@@ -67,7 +66,7 @@ public class UserService {
     // Returns the current authenticated user's id.
     public Long getCurrentUserId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+        if (isActiveAuthentication(auth)) {
             Optional<User> user;
             if (auth instanceof OAuth2AuthenticationToken) {
                 user = userRepository.findByEmail(auth.getName());
@@ -84,7 +83,7 @@ public class UserService {
     // Returns the User entity of the current authenticated user.
     public Optional<User> getCurrentAuthenticatedUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+        if (isActiveAuthentication(auth)) {
             // For OAuth2 login (Google), auth.getName() returns the email
             if (auth instanceof OAuth2AuthenticationToken) {
                 return findByEmail(auth.getName());
@@ -93,6 +92,11 @@ public class UserService {
             return findByUsername(auth.getName());
         }
         return Optional.empty();
+    }
+
+    // Returns true when the Authentication represents a real, non-anonymous user.
+    private boolean isActiveAuthentication(Authentication auth) {
+        return auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal());
     }
 
     @Transactional
@@ -266,7 +270,8 @@ public class UserService {
             return "El nombre de usuario y el correo electrónico son obligatorios.";
         }
 
-        // If remaining fields are provided (normal registration), require non-empty values
+        // If remaining fields are provided (normal registration), require non-empty
+        // values
         if (password != null && password.isBlank()) {
             return "Por favor, introduzca una contraseña.";
         }
@@ -368,5 +373,59 @@ public class UserService {
                 System.err.println("Error refrescando sesión de usuario: " + e.getMessage());
             }
         }
+    }
+
+    // Derives a username suggestion from Google OAuth2 attributes.
+    public String buildSuggestedUsername(org.springframework.security.oauth2.core.user.OAuth2User oAuth2User,
+            String email) {
+        String suggested = oAuth2User.getAttribute("given_name");
+        if (suggested == null || suggested.isBlank()) {
+            suggested = oAuth2User.getAttribute("name");
+        }
+        if ((suggested == null || suggested.isBlank()) && email != null && email.contains("@")) {
+            suggested = email.substring(0, email.indexOf('@'));
+        }
+        if (suggested == null)
+            return "";
+        return suggested.trim().replaceAll("\\s+", "");
+    }
+
+    // Derives a country suggestion from the Google locale attribute.
+    public String buildSuggestedCountry(org.springframework.security.oauth2.core.user.OAuth2User oAuth2User) {
+        String localeAttribute = oAuth2User.getAttribute("locale");
+        if (localeAttribute == null || localeAttribute.isBlank())
+            return "";
+        java.util.Locale googleLocale = java.util.Locale.forLanguageTag(localeAttribute.replace('_', '-'));
+        if (googleLocale.getCountry() == null || googleLocale.getCountry().isBlank())
+            return "";
+        return googleLocale.getDisplayCountry(java.util.Locale.of("es", "ES"));
+    }
+
+    // Builds an OAuth2 authentication token for a freshly registered user and
+    // stores it in the SecurityContext and HTTP session — moved from
+    // RegisterGoogleController.
+    public void authenticateOAuth2User(User newUser,
+            org.springframework.security.oauth2.core.user.OAuth2User oAuth2User,
+            jakarta.servlet.http.HttpServletRequest request) {
+
+        java.util.List<org.springframework.security.core.GrantedAuthority> authorities = newUser.getRoles().stream()
+                .map(role -> (org.springframework.security.core.GrantedAuthority) new org.springframework.security.core.authority.SimpleGrantedAuthority(
+                        "ROLE_" + role.getName()))
+                .collect(java.util.stream.Collectors.toList());
+
+        org.springframework.security.oauth2.core.user.DefaultOAuth2User authenticatedUser = new org.springframework.security.oauth2.core.user.DefaultOAuth2User(
+                authorities, oAuth2User.getAttributes(), "email");
+
+        OAuth2AuthenticationToken authToken = new OAuth2AuthenticationToken(authenticatedUser, authorities, "google");
+
+        org.springframework.security.core.context.SecurityContext securityContext = SecurityContextHolder
+                .createEmptyContext();
+        securityContext.setAuthentication(authToken);
+        SecurityContextHolder.setContext(securityContext);
+
+        jakarta.servlet.http.HttpSession session = request.getSession(true);
+        session.setAttribute(
+                org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                securityContext);
     }
 }

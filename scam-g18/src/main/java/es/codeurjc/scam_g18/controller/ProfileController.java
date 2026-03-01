@@ -66,8 +66,7 @@ public class ProfileController {
         model.addAttribute("totalEnrollments", enrollmentService.getTotalEnrollments(id));
         model.addAttribute("totalLessonsCompleted", enrollmentService.getTotalCompletedLessons(id));
         model.addAttribute("completedLessonsThisMonth", enrollmentService.getLessonsCompletedThisMonth(id));
-        model.addAttribute("averageLessonsPerMonth",
-                String.format("%.1f", enrollmentService.getAverageLessonsPerMonth(id)));
+        model.addAttribute("averageLessonsPerMonth", enrollmentService.getAverageLessonsPerMonthFormatted(id));
 
         // Retrieve created courses explicitly for publisher panel stats
         java.util.List<java.util.Map<String, Object>> createdCourses = courseService.getCreatedCoursesWithStats(id);

@@ -697,6 +697,17 @@ public class CourseService {
         return result;
     }
 
+    // Prepares a course entity for the edit form: converts priceCents to the
+    // double price field and extracts tag names. Moved from CourseController.
+    public java.util.List<String> prepareEditData(Course course) {
+        if (course.getPriceCents() != null) {
+            course.setPrice(course.getPriceCents() / 100.0);
+        }
+        return course.getTags().stream()
+                .map(Tag::getName)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
     // Retrieves the number of subscribed users and those who completed a course
     public java.util.Map<String, Integer> getCourseCompletionStats(Long courseId) {
         List<Enrollment> enrollments = enrollmentRepository.findByCourseId(courseId);
@@ -1013,16 +1024,16 @@ public class CourseService {
         genreCount.put("MALE", 0L);
         genreCount.put("FEMALE", 0L);
 
-        List<Enrollment> enrollments = enrollmentRepository.findAll();
+        List<Enrollment> enrollments = (courseId != null)
+                ? enrollmentRepository.findByCourseId(courseId)
+                : enrollmentRepository.findAll();
+
         for (Enrollment e : enrollments) {
-            Course c = e.getCourse();
-            if (c != null && (courseId == null || c.getId().equals(courseId))) {
-                User u = e.getUser();
-                if (u != null && u.getGender() != null) {
-                    String g = u.getGender().toUpperCase();
-                    if (g.equals("MALE") || g.equals("FEMALE")) {
-                        genreCount.put(g, genreCount.getOrDefault(g, 0L) + 1);
-                    }
+            User u = e.getUser();
+            if (u != null && u.getGender() != null) {
+                String g = u.getGender().toUpperCase();
+                if (g.equals("MALE") || g.equals("FEMALE")) {
+                    genreCount.put(g, genreCount.getOrDefault(g, 0L) + 1);
                 }
             }
         }
@@ -1035,22 +1046,22 @@ public class CourseService {
         long count36_50 = 0;
         long count50plus = 0;
 
-        List<Enrollment> enrollments = enrollmentRepository.findAll();
+        List<Enrollment> enrollments = (courseId != null)
+                ? enrollmentRepository.findByCourseId(courseId)
+                : enrollmentRepository.findAll();
+
         for (Enrollment e : enrollments) {
-            Course c = e.getCourse();
-            if (c != null && (courseId == null || c.getId().equals(courseId))) {
-                User u = e.getUser();
-                if (u != null && u.getBirthDate() != null) {
-                    int age = java.time.Period.between(u.getBirthDate(), java.time.LocalDate.now()).getYears();
-                    if (age >= 18 && age <= 25) {
-                        count18_25++;
-                    } else if (age > 25 && age <= 35) {
-                        count26_35++;
-                    } else if (age > 35 && age <= 50) {
-                        count36_50++;
-                    } else if (age > 50) {
-                        count50plus++;
-                    }
+            User u = e.getUser();
+            if (u != null && u.getBirthDate() != null) {
+                int age = java.time.Period.between(u.getBirthDate(), java.time.LocalDate.now()).getYears();
+                if (age >= 18 && age <= 25) {
+                    count18_25++;
+                } else if (age > 25 && age <= 35) {
+                    count26_35++;
+                } else if (age > 35 && age <= 50) {
+                    count36_50++;
+                } else if (age > 50) {
+                    count50plus++;
                 }
             }
         }
