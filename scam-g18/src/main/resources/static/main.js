@@ -1229,7 +1229,7 @@ async function ensureLeafletLoaded() {
         return;
     }
 
-    await loadExternalScriptOnce("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js", "leaflet-js-cdn", "sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=", "");
+    await loadExternalScriptOnce("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js", "leaflet-js-cdn", "sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=", "anonymous");
 }
 
 function initEventLocationSearch() {
@@ -1242,15 +1242,20 @@ function initEventLocationSearch() {
     const resultsContainer = document.getElementById("search-results-name");
     const mapPreview = document.getElementById("map-preview");
 
-    if (!locationInput || !addressInput || !cityInput || !countryInput || !latInput || !lonInput || !resultsContainer || !mapPreview || typeof L === "undefined") {
+    if (!locationInput || !addressInput || !cityInput || !countryInput || !latInput || !lonInput || !resultsContainer || !mapPreview) {
         return;
     }
 
     var map = null;
     var marker = null;
     var searchTimeout = null;
+    var locationSearchEndpoint = "/api/location-search";
 
     function initMap(lat, lon) {
+        if (typeof L === "undefined") {
+            return;
+        }
+
         if (!map) {
             mapPreview.innerHTML = "";
             map = L.map("map-preview").setView([lat, lon], 15);
@@ -1272,10 +1277,11 @@ function initEventLocationSearch() {
     }
 
     function handleSelection(result) {
+        const address = result.address || {};
         locationInput.value = result.display_name.split(",")[0];
-        addressInput.value = result.address.road || result.address.pedestrian || result.display_name;
-        cityInput.value = result.address.city || result.address.town || result.address.village || "";
-        countryInput.value = result.address.country || "";
+        addressInput.value = address.road || address.pedestrian || result.display_name;
+        cityInput.value = address.city || address.town || address.village || "";
+        countryInput.value = address.country || "";
         latInput.value = result.lat;
         lonInput.value = result.lon;
 
@@ -1285,15 +1291,20 @@ function initEventLocationSearch() {
 
     locationInput.addEventListener("input", function () {
         clearTimeout(searchTimeout);
-        const query = this.value;
+        const query = this.value.trim();
         if (query.length < 3) {
             resultsContainer.classList.add("d-none");
             return;
         }
 
         searchTimeout = setTimeout(() => {
-            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=5`)
-                .then((response) => response.json())
+            fetch(`${locationSearchEndpoint}?q=${encodeURIComponent(query)}`)
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error(`Location API respondió con estado ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then((data) => {
                     resultsContainer.innerHTML = "";
                     if (data.length > 0) {
@@ -1308,6 +1319,9 @@ function initEventLocationSearch() {
                     } else {
                         resultsContainer.classList.add("d-none");
                     }
+                })
+                .catch((_error) => {
+                    resultsContainer.classList.add("d-none");
                 });
         }, 500);
     });
@@ -1519,7 +1533,12 @@ async function initEventCreationEditionPage() {
         return;
     }
 
-    await ensureLeafletLoaded();
+    try {
+        await ensureLeafletLoaded();
+    } catch (_error) {
+        console.warn("No se pudo cargar Leaflet; se mantiene el autocompletado sin mapa.");
+    }
+
     initEventLocationSearch();
 }
 

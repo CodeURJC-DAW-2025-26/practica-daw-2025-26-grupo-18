@@ -150,8 +150,8 @@ public class DatabaseInitializer {
         Role adminRole = ensureRoleExists("ADMIN");
         Role subscribedRole = ensureRoleExists("SUBSCRIBED");
 
-        users.put("admin", createUser("admin", "admin@scam.com", "adminpass", "MALE",
-                LocalDate.of(1990, 1, 1), "Spain",
+        users.put("admin", createUser("admin", "admin@scam.com", "adminpass", "FEMALE",
+            LocalDate.of(1984, 1, 1), "Spain",
                 Set.of(userRole, subscribedRole, adminRole),
                 "Administrador principal de la plataforma", "Supervisar calidad de contenido"));
 
@@ -160,8 +160,8 @@ public class DatabaseInitializer {
                 Set.of(userRole, subscribedRole, adminRole),
                 "Responsable de contenido premium", "Escalar catálogo educativo"));
 
-        users.put("mentor_ai", createUser("mentor_ai", "mentor.ai@scam.com", "mentorpass", "MALE",
-                LocalDate.of(1988, 9, 3), "Mexico",
+        users.put("mentor_ai", createUser("mentor_ai", "mentor.ai@scam.com", "mentorpass", "FEMALE",
+            LocalDate.of(1996, 9, 3), "Mexico",
                 Set.of(userRole, subscribedRole),
                 "Creador experto en IA aplicada", "Ayudar a lanzar productos IA"));
 
@@ -170,8 +170,8 @@ public class DatabaseInitializer {
                 Set.of(userRole, subscribedRole),
                 "Coach de crecimiento profesional", "Optimizar hábitos de alto rendimiento"));
 
-        users.put("finance_master", createUser("finance_master", "finance.master@scam.com", "financepass", "MALE",
-                LocalDate.of(1987, 6, 9), "Argentina",
+        users.put("finance_master", createUser("finance_master", "finance.master@scam.com", "financepass", "FEMALE",
+            LocalDate.of(1978, 6, 9), "Argentina",
                 Set.of(userRole, subscribedRole),
                 "Analista financiero y formador", "Impulsar alfabetización financiera"));
 
@@ -407,7 +407,7 @@ public class DatabaseInitializer {
                 Lesson lesson = new Lesson();
                 lesson.setTitle("Lección " + m + "." + l + " - Caso práctico");
                 lesson.setDescription("Demostración y ejercicios aplicados para reforzar conceptos clave.");
-                lesson.setVideoUrl("https://www.youtube.com/embed/demo_" + courseIndex + "_" + m + "_" + l);
+                lesson.setVideoUrl("https://www.youtube.com/watch?v=gp72VcKJBBo");
                 lesson.setOrderIndex(l);
                 module.addLesson(lesson);
             }

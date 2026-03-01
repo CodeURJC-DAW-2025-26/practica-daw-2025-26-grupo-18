@@ -107,7 +107,6 @@ public class StatisticsController {
         List<String> labels = new ArrayList<>();
         List<Double> values = new ArrayList<>();
 
-        // Simular relevancia decreciente ya que solo devolvemos los 3 tags ordenados
         for (int i = 0; i < tags.size(); i++) {
             labels.add(tags.get(i).getName());
             values.add((double) (3 - i));

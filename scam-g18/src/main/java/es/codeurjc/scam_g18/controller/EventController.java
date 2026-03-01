@@ -1,39 +1,47 @@
 package es.codeurjc.scam_g18.controller;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
+import es.codeurjc.scam_g18.model.Event;
 import es.codeurjc.scam_g18.service.EventService;
+import es.codeurjc.scam_g18.service.TagService;
+import es.codeurjc.scam_g18.service.UserService;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
-import es.codeurjc.scam_g18.service.TagService;
-import es.codeurjc.scam_g18.model.Event;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestClient;
 
 @Controller
 public class EventController {
 
     private static final int PAGE_SIZE = 10;
 
-    @Autowired
-    private EventService eventService;
-
-    @Autowired
-    private TagService tagService;
-
-    private final es.codeurjc.scam_g18.service.UserService userService;
+    private final EventService eventService;
+    private final TagService tagService;
+    private final UserService userService;
+    private final RestClient nominatimClient;
 
     // Builds the controller with required services to manage events.
     public EventController(EventService eventService, TagService tagService,
-            es.codeurjc.scam_g18.service.UserService userService) {
+            UserService userService) {
         this.eventService = eventService;
         this.tagService = tagService;
         this.userService = userService;
+        this.nominatimClient = RestClient.builder()
+                .defaultHeader(HttpHeaders.USER_AGENT, "SCAM-G18/1.0 (academic project)")
+                .defaultHeader(HttpHeaders.ACCEPT_LANGUAGE, "es")
+                .build();
     }
 
     // Displays the event listing with search and tag filters.
@@ -51,15 +59,40 @@ public class EventController {
 
     // AJAX endpoint for event pagination
     @GetMapping("/api/events")
-    @org.springframework.web.bind.annotation.ResponseBody
-    public org.springframework.http.ResponseEntity<List<java.util.Map<String, Object>>> getEventsApi(
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> getEventsApi(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) List<String> tags,
             @RequestParam(defaultValue = "0") int page) {
         Long currentUserId = userService.getCurrentAuthenticatedUser().map(user -> user.getId()).orElse(null);
-        List<java.util.Map<String, Object>> events = eventService.getEventsViewData(search, tags, currentUserId, page,
-            PAGE_SIZE);
-        return org.springframework.http.ResponseEntity.ok(events);
+        List<Map<String, Object>> events = eventService.getEventsViewData(search, tags, currentUserId, page,
+                PAGE_SIZE);
+        return ResponseEntity.ok(events);
+    }
+
+    @GetMapping(value = "/api/location-search", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<String> searchLocations(@RequestParam("q") String query) {
+        String normalizedQuery = query == null ? "" : query.trim();
+        if (normalizedQuery.length() < 3) {
+            return ResponseEntity.ok("[]");
+        }
+
+        String encodedQuery = URLEncoder.encode(normalizedQuery, StandardCharsets.UTF_8);
+        String url = "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&q="
+                + encodedQuery;
+
+        try {
+            String body = nominatimClient
+                    .get()
+                    .uri(url)
+                    .retrieve()
+                    .body(String.class);
+
+            return ResponseEntity.ok(body != null ? body : "[]");
+        } catch (Exception _error) {
+            return ResponseEntity.ok("[]");
+        }
     }
 
     // Displays events purchased by the authenticated user.
