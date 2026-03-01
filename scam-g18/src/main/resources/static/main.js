@@ -532,6 +532,7 @@ function initAdminDashboard() {
                             const tr = document.createElement("tr");
 
                             const statusHtml = user.isActive ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-danger">Baneado</span>';
+                            const subscriptionHtml = user.isSubscribed ? '<span class="badge bg-success">Sí</span>' : '<span class="badge bg-secondary">No</span>';
 
                             let actionHtml = "";
                             if (user.isActive) {
@@ -561,6 +562,7 @@ function initAdminDashboard() {
                                     </div>
                                 </td>
                                 <td class="text-muted">${escapeHtml(user.email)}</td>
+                                <td>${subscriptionHtml}</td>
                                 <td>${statusHtml}</td>
                                 <td class="text-end">
                                     <div class="d-flex justify-content-end align-items-start gap-2 flex-nowrap">
@@ -574,7 +576,7 @@ function initAdminDashboard() {
 
                         this.setAttribute("data-page", parseInt(page, 10) + 1);
 
-                        if (data.length < 5) {
+                        if (data.length < 10) {
                             this.style.display = "none";
                         }
                     } else {
@@ -658,7 +660,7 @@ function initAdminDashboard() {
 
                         this.setAttribute("data-page", parseInt(page, 10) + 1);
 
-                        if (data.length < 5) {
+                        if (data.length < 10) {
                             this.parentElement.style.display = "none";
                         }
                     } else {
@@ -742,7 +744,7 @@ function initAdminDashboard() {
 
                         this.setAttribute("data-page", parseInt(page, 10) + 1);
 
-                        if (data.length < 5) {
+                        if (data.length < 10) {
                             this.parentElement.style.display = "none";
                         }
                     } else {
@@ -797,7 +799,7 @@ function initAdminDashboard() {
 
                         this.setAttribute("data-page", parseInt(page, 10) + 1);
 
-                        if (data.length < 5) {
+                        if (data.length < 10) {
                             this.parentElement.style.display = "none";
                         }
                     } else {

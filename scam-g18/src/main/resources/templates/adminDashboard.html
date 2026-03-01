@@ -77,6 +77,7 @@
                                             <tr>
                                                 <th>Usuario</th>
                                                 <th>Email</th>
+                                                <th>Suscripción</th>
                                                 <th>Estado</th>
                                                 <th class="text-end">Acciones</th>
                                             </tr>
@@ -91,6 +92,12 @@
                                                     </div>
                                                 </td>
                                                 <td class="text-muted">{{email}}</td>
+                                                <td>
+                                                    {{#isSubscribed}}<span
+                                                        class="badge bg-success">Sí</span>{{/isSubscribed}}
+                                                    {{^isSubscribed}}<span
+                                                        class="badge bg-secondary">No</span>{{/isSubscribed}}
+                                                </td>
                                                 <td>
                                                     {{#isActive}}<span
                                                         class="badge bg-success">Activo</span>{{/isActive}}
@@ -131,7 +138,7 @@
                                             {{/users}}
                                             {{^users}}
                                             <tr>
-                                                <td colspan="4" class="text-center text-muted py-4">No se encontraron
+                                                <td colspan="5" class="text-center text-muted py-4">No se encontraron
                                                     usuarios.</td>
                                             </tr>
                                             {{/users}}

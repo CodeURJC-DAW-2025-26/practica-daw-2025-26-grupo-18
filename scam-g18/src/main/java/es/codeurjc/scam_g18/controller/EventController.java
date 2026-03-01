@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class EventController {
 
+    private static final int PAGE_SIZE = 10;
+
     @Autowired
     private EventService eventService;
 
@@ -39,8 +41,8 @@ public class EventController {
     public String events(Model model, @RequestParam(required = false) String search,
             @RequestParam(required = false) List<String> tags) {
         Long currentUserId = userService.getCurrentAuthenticatedUser().map(user -> user.getId()).orElse(null);
-        model.addAttribute("events", eventService.getEventsViewData(search, tags, currentUserId, 0, 5));
-        model.addAttribute("hasMoreEvents", eventService.getTotalPublishedEventsCount(search, tags) > 5);
+        model.addAttribute("events", eventService.getEventsViewData(search, tags, currentUserId, 0, PAGE_SIZE));
+        model.addAttribute("hasMoreEvents", eventService.getTotalPublishedEventsCount(search, tags) > PAGE_SIZE);
         model.addAttribute("search", search);
         model.addAttribute("tagsView", tagService.getTagsView(tags));
 
@@ -56,7 +58,7 @@ public class EventController {
             @RequestParam(defaultValue = "0") int page) {
         Long currentUserId = userService.getCurrentAuthenticatedUser().map(user -> user.getId()).orElse(null);
         List<java.util.Map<String, Object>> events = eventService.getEventsViewData(search, tags, currentUserId, page,
-                5);
+            PAGE_SIZE);
         return org.springframework.http.ResponseEntity.ok(events);
     }
 
