@@ -5,7 +5,7 @@
         <div class="container">
             <div class="row g-0 shadow-lg rounded-4 overflow-hidden" style="min-height: 600px">
 
-                <!-- Imagen Izquierda -->
+                <!-- Left image -->
                 <div class="col-lg-6 d-none d-lg-block position-relative">
                     <img src="/img/services/services-3.webp" alt="Completa tu perfil" class="img-fluid w-100 h-100"
                         style="object-fit: cover; object-position: center" />
@@ -17,11 +17,11 @@
                     </div>
                 </div>
 
-                <!-- Formulario Derecha -->
+                <!-- Right form -->
                 <div class="col-lg-6 bg-white d-flex align-items-center">
                     <div class="p-5 w-100">
 
-                        <!-- Cabecera con logo de Google -->
+                        <!-- Header with Google logo -->
                         <div class="text-center mb-4">
                             <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
                                 <i class="bi bi-google text-danger fs-4"></i>
@@ -30,7 +30,7 @@
                             <p class="text-muted">Rellena los datos adicionales para crear tu cuenta</p>
                         </div>
 
-                        <!-- Mensaje de error si el username ya existe -->
+                        <!-- Error message when username already exists -->
                         {{#errorMsg}}
                         <div class="alert alert-danger" role="alert">
                             {{errorMsg}}
@@ -40,7 +40,7 @@
                         <form id="googleRegisterForm" action="/register/google" method="post" enctype="multipart/form-data">
                             <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
 
-                            <!-- Correo de Google (solo lectura) -->
+                            <!-- Google email (read-only) -->
                             <div class="mb-3">
                                 <label for="googleEmailField" class="form-label small fw-bold">Correo electrónico</label>
                                 <div class="input-group">
@@ -55,7 +55,7 @@
                                 </div>
                             </div>
 
-                            <!-- Nombre de usuario -->
+                            <!-- Username -->
                             <div class="mb-3">
                                 <label for="regUsername" class="form-label small fw-bold">Nombre de usuario</label>
                                 <div class="input-group">
@@ -65,7 +65,7 @@
                                 </div>
                             </div>
 
-                            <!-- Contraseña (para poder iniciar sesión también con usuario/contraseña) -->
+                            <!-- Password (to also allow username/password login) -->
                             <div class="mb-3">
                                 <label for="regPassword" class="form-label small fw-bold">Contraseña</label>
                                 <div class="input-group">
@@ -76,7 +76,7 @@
                                 <div class="form-text text-muted">Necesaria también para acceso tradicional</div>
                             </div>
 
-                            <!-- Género -->
+                            <!-- Gender -->
                             <div class="mb-3">
                                 <label for="regGender" class="form-label small fw-bold">Género</label>
                                 <div class="input-group">
@@ -90,7 +90,7 @@
                                 </div>
                             </div>
 
-                            <!-- Fecha de nacimiento -->
+                            <!-- Birth date -->
                             <div class="mb-3">
                                 <label for="regBirthDate" class="form-label small fw-bold">Fecha de nacimiento</label>
                                 <div class="input-group">
@@ -99,7 +99,7 @@
                                 </div>
                             </div>
 
-                            <!-- País -->
+                            <!-- Country -->
                             <div class="mb-3">
                                 <label for="regCountry" class="form-label small fw-bold">País</label>
                                 <div class="input-group">
@@ -109,7 +109,7 @@
                                 </div>
                             </div>
 
-                            <!-- Foto de perfil -->
+                            <!-- Profile picture -->
                             <div class="mb-4">
                                 <label for="regImage" class="form-label small fw-bold">Foto de perfil <span class="text-muted fw-normal">(opcional)</span></label>
                                 <div class="input-group">
@@ -120,7 +120,7 @@
                                 <div class="form-text text-muted">Si no subes ninguna, se usará una imagen por defecto.</div>
                             </div>
 
-                            <!-- Botones: Completar registro y Cancelar -->
+                            <!-- Buttons: Complete registration and Cancel -->
                             <div class="d-grid gap-2">
                                 <button type="submit" class="btn btn-primary py-2 fw-bold"
                                     style="background-color: var(--accent-color); border-color: var(--accent-color)">

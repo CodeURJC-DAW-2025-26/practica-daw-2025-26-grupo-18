@@ -21,12 +21,12 @@ public class GlobalControllerAdvice {
             this.token = token == null ? "" : token;
         }
 
-        // Devuelve el nombre del parámetro que debe enviarse en formularios CSRF.
+        // Returns the parameter name that must be sent in CSRF forms.
         public String getParameterName() {
             return parameterName;
         }
 
-        // Devuelve el valor del token CSRF para formularios y peticiones protegidas.
+        // Returns the CSRF token value for forms and protected requests.
         public String getToken() {
             return token;
         }
@@ -65,8 +65,8 @@ public class GlobalControllerAdvice {
         }
         model.addAttribute("_csrf", new CsrfViewModel(csrfParameterName, csrfTokenValue));
 
-        // Valores por defecto siempre presentes para el header (Mustache falla si no
-        // existen)
+        // Default values always present for header rendering (Mustache fails if
+        // they do not exist)
         model.addAttribute("isUserLoggedIn", false);
         model.addAttribute("userId", "");
         model.addAttribute("userName", "");

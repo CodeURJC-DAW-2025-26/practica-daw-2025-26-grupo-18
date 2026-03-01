@@ -40,12 +40,6 @@ public class RegisterGoogleController {
     @Autowired
     private EmailService emailService;
 
-    /**
-     * Muestra el formulario para completar los datos del usuario registrado con
-     * Google.
-     * Solo accesible para usuarios con ROLE_PENDING (autenticados con Google pero
-     * sin cuenta).
-     */
     @GetMapping
     public String showGoogleRegisterForm(Model model,
             @AuthenticationPrincipal OAuth2User oAuth2User,
@@ -103,11 +97,6 @@ public class RegisterGoogleController {
         return googleLocale.getDisplayCountry(Locale.of("es", "ES"));
     }
 
-    /**
-     * Procesa el formulario de registro completado.
-     * Crea el usuario en la BD, autentica la sesión con sus roles reales y redirige
-     * a "/".
-     */
     @PostMapping
     public String completeGoogleRegistration(
             @RequestParam String username,
@@ -147,21 +136,21 @@ public class RegisterGoogleController {
 
         emailService.newAccountMessage(email, username);
 
-        // Successful registration: load the newly created user to get roles
-        // reales
+        // Successful registration: load the newly created user to get real
+        // roles
         User newUser = userService.findByEmail(email).orElseThrow();
 
         List<GrantedAuthority> authorities = newUser.getRoles().stream()
                 .map(role -> (GrantedAuthority) new SimpleGrantedAuthority("ROLE_" + role.getName()))
                 .collect(Collectors.toList());
 
-        // Construimos el OAuth2User con los roles reales
+        // Build the OAuth2User with the real roles
         DefaultOAuth2User authenticatedUser = new DefaultOAuth2User(authorities, oAuth2User.getAttributes(), "email");
 
         // Create OAuth2 authentication token (registrationId = "google")
         OAuth2AuthenticationToken authToken = new OAuth2AuthenticationToken(authenticatedUser, authorities, "google");
 
-        // Establecemos la autenticación en el SecurityContext y la guardamos en sesión
+        // Set authentication in SecurityContext and store it in session
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         securityContext.setAuthentication(authToken);
         SecurityContextHolder.setContext(securityContext);
@@ -173,8 +162,8 @@ public class RegisterGoogleController {
     }
 
     /**
-     * Cancela el registro: limpia la sesión PENDING y redirige al inicio sin
-     * iniciar sesión.
+        * Cancels registration: clears the PENDING session and redirects to home
+        * without signing in.
      */
     @GetMapping("/cancel")
     public String cancelGoogleRegistration(HttpServletRequest request) {

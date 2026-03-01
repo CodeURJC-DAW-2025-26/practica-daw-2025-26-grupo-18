@@ -223,7 +223,7 @@
                     </div>
 
                     {{#isSuscribedToCourse}}
-                    <!-- Progreso del Estudiante -->
+                    <!-- Student progress -->
                     <div class="mt-4 mb-5 mx-auto stats-modern-wrap">
                         <h6 class="mb-2 stats-modern-title"><i class="bi bi-pie-chart-fill me-1"></i> Mi Progreso</h6>
                         <div class="card stats-modern-card">
@@ -276,7 +276,7 @@
                                     <div class="list-group list-group-flush">
 
                                         {{#lessons}}
-                                        <!--Hay que hacer que solo los que han comprado el curso puedan pinchar-->
+                                        <!-- TODO: Only users who purchased the course should be able to click -->
                                         <div class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
                                             <div>
                                                 {{#canAccessLessonVideos}}
@@ -364,7 +364,7 @@
                         </div>
                     </div>
                     
-                    <!--Hay que hacer este campo todavia-->
+                    <!-- TODO: This field is still pending -->
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h3 class="h4 mb-0 fw-bold" id="reviews">Reseñas de estudiantes</h3>
                     </div>
@@ -493,7 +493,7 @@
 
                                 <p class="fw-bold text-dark mb-2 small text-uppercase">Este curso incluye:</p>
                                 <ul class="feature-list list-unstyled small text-secondary mb-4">
-                                    <!--Falta incluir el numero de lessons-->
+                                    <!-- TODO: Include the number of lessons -->
                                     <li class="mb-2 d-flex align-items-center gap-2"><i class="bi bi-camera-video"
                                             style="color: var(--accent-color)"></i> {{course.videoHours}} horas de video</li>
                                     <li class="mb-2 d-flex align-items-center gap-2"><i class="bi bi-file-earmark-arrow-down"

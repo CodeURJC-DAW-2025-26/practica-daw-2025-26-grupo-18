@@ -109,7 +109,7 @@ public class ProfileController {
         userService.updateProfile(id, username, email, country, shortDescription, currentGoal, weeklyRoutine,
                 comunity, imageFile);
 
-        // Actualizar la sesión de Spring Security si el username cambió
+        // Refresh the Spring Security session if the username changed
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && username != null && !username.isBlank() && !auth.getName().equals(username)) {
             userService.refreshUserSession(username, request);

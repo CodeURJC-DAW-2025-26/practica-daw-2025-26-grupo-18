@@ -15,7 +15,7 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    // Envía un correo de texto simple.
+    // Sends a plain-text email.
     private void sendMail(String destinatario, String asunto, String cuerpo) {
         SimpleMailMessage mensaje = new SimpleMailMessage();
         mensaje.setFrom("scam.noreply67@gmail.com");
@@ -27,7 +27,7 @@ public class EmailService {
         System.out.println("¡Correo enviado con éxito!");
     }
 
-    // Envía un correo con un archivo adjunto.
+    // Sends an email with an attachment.
     private void sendMailWithAttachment(String destinatario, String asunto, String cuerpo, byte[] attachment,
             String attachmentName) {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -47,7 +47,7 @@ public class EmailService {
         }
     }
 
-    // Envía un correo en formato HTML.
+    // Sends an email in HTML format.
     private void sendHtmlMail(String destinatario, String asunto, String cuerpoHtml) {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
 
@@ -119,7 +119,7 @@ public class EmailService {
                 Saludos,
                 El equipo de SCAM
                 """
-                .formatted(creatorName, courseName); // Esto inyecta el nombre donde pusimos %s
+                .formatted(creatorName, courseName); // This injects the name where %s was placed
 
         sendMail(userMail, "SE HA PUBLICADO TU CURSO", message);
     }
@@ -159,7 +159,7 @@ public class EmailService {
 
     }
 
-    // Envía por correo la factura PDF de un pedido.
+    // Sends the PDF invoice of an order by email.
     public void orderInvoiceMessage(String userMail, String userName, Long orderId, byte[] invoicePdf) {
         String message = """
                 Hola %s,

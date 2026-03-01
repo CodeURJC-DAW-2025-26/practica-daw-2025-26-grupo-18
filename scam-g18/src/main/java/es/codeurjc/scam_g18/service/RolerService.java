@@ -19,7 +19,7 @@ public class RolerService {
         return roleRepository.findByName(name);
     }
 
-    // Guarda un rol en base de datos.
+    // Saves a role in the database.
     public void save(Role role) {
         roleRepository.save(role);
     }

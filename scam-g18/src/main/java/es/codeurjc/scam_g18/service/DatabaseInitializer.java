@@ -93,7 +93,7 @@ public class DatabaseInitializer {
     private PasswordEncoder passwordEncoder;
 
     @PostConstruct
-    // Inicializa datos de demo en la base de datos al arrancar la aplicación.
+    // Initializes demo data in the database when the application starts.
     public void init() {
         if (!shouldSeed()) {
             return;
@@ -120,7 +120,7 @@ public class DatabaseInitializer {
         refreshEventAttendees(events);
     }
 
-    // Determina si procede ejecutar la carga inicial de datos.
+    // Determines whether the initial data seed should run.
     private boolean shouldSeed() {
         return userRepository.count() == 0
                 && courseRepository.count() == 0
@@ -129,7 +129,7 @@ public class DatabaseInitializer {
                 && subscriptionRepository.count() == 0;
     }
 
-    // Garantiza que existan los roles base del sistema.
+    // Ensures the base system roles exist.
     private void initializeRoles() {
         ensureRoleExists("USER");
         ensureRoleExists("ADMIN");
@@ -227,14 +227,14 @@ public class DatabaseInitializer {
     // Creates and returns the sample tag catalog.
     private Map<String, Tag> initializeTags() {
         String[] tagNames = {
-                // Desarrollo Personal / Motivación
+            // Personal Development / Motivation
                 "Desarrollo Personal", "Liderazgo", "Productividad", "Gestión del Tiempo", "Comunicación",
                 "Negociación", "Networking", "Motivación", "Mentalidad de Éxito", "Hábitos Saludables",
                 "Inteligencia Emocional", "Oratoria", "ser tu propio jefe", "Resiliencia", "Mindfulness",
                 "Gestión del Estrés", "Coaching", "Toma de Decisiones", "Resolución de Conflictos",
                 "Creatividad", "Pensamiento Crítico", "Autodisciplina",
 
-                // Economía y Negocios
+            // Economy and Business
                 "Emprendimiento", "Finanzas", "Libertad Financiera", "Ventas", "Marketing Digital",
                 "Startups", "Inversión", "Economía", "Criptomonedas", "Blockchain", "Bolsa de Valores",
                 "Finanzas Personales", "Educación Financiera", "Gestión Empresarial", "Estrategia de Negocios",
@@ -242,7 +242,7 @@ public class DatabaseInitializer {
                 "Macroeconomía", "Microeconomía", "Análisis Financiero", "Ventas B2B", "Neuromarketing",
                 "Growth Hacking", "Consultoría", "Recursos Humanos",
 
-                // Programación y Tecnología
+            // Programming and Technology
                 "IA", "Programación", "Desarrollo Web", "Frontend", "Backend", "Full Stack",
                 "Java", "Python", "JavaScript", "TypeScript", "C++", "C#", "Go", "Rust", "Swift", "Kotlin",
                 "Spring Boot", "React", "Angular", "Vue", "Node.js", "Django", "Flask",
@@ -641,7 +641,16 @@ public class DatabaseInitializer {
 
     // Creates sample subscriptions with different statuses.
     private void initializeSubscriptions(SeedContext context) {
-        List<User> users = context.users.values().stream()
+        List<User> creators = context.users.values().stream()
+                .filter(user -> user.getUsername().equals("mentor_ai")
+                        || user.getUsername().equals("coach_growth")
+                        || user.getUsername().equals("finance_master")
+                        || user.getUsername().equals("content_lead")
+                        || user.getUsername().equals("admin"))
+                .sorted((a, b) -> a.getUsername().compareToIgnoreCase(b.getUsername()))
+                .toList();
+
+        List<User> learners = context.users.values().stream()
                 .filter(user -> user.getUsername().startsWith("learner"))
                 .sorted((a, b) -> a.getUsername().compareToIgnoreCase(b.getUsername()))
                 .toList();
@@ -649,17 +658,25 @@ public class DatabaseInitializer {
         List<Subscription> subscriptions = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
 
-        for (int i = 0; i < users.size(); i++) {
-            User user = users.get(i);
+        for (int i = 0; i < creators.size(); i++) {
+            User creator = creators.get(i);
 
             Subscription subscription = new Subscription();
-            subscription.setUser(user);
+            subscription.setUser(creator);
+            subscription.setStatus(SubscriptionStatus.ACTIVE);
+            subscription.setStartDate(now.minusDays(15 + i));
+            subscription.setEndDate(now.plusDays(45 + i));
 
-            if (i < 10) {
-                subscription.setStatus(SubscriptionStatus.ACTIVE);
-                subscription.setStartDate(now.minusDays(10 + i));
-                subscription.setEndDate(now.plusDays(20 + i));
-            } else if (i < 14) {
+            subscriptions.add(subscription);
+        }
+
+        for (int i = 0; i < learners.size(); i++) {
+            User learner = learners.get(i);
+
+            Subscription subscription = new Subscription();
+            subscription.setUser(learner);
+
+            if (i < 8) {
                 subscription.setStatus(SubscriptionStatus.EXPIRED);
                 subscription.setStartDate(now.minusDays(80 + i));
                 subscription.setEndDate(now.minusDays(10 + i));
@@ -732,7 +749,7 @@ public class DatabaseInitializer {
         }
     }
 
-    // Devuelve la fecha/hora actual menos los días indicados.
+    // Returns the current date/time minus the given number of days.
     private LocalDateTime nowMinusDays(int days) {
         return LocalDateTime.now().minusDays(days);
     }
@@ -827,7 +844,7 @@ public class DatabaseInitializer {
         eventRepository.saveAll(events);
     }
 
-    // Convierte nombres de etiquetas en un conjunto de entidades Tag.
+    // Converts tag names into a set of Tag entities.
     private Set<Tag> toTagSet(Map<String, Tag> tags, String[] tagNames) {
         Set<Tag> result = new HashSet<>();
         for (String tagName : tagNames) {
