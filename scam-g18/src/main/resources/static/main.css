@@ -547,19 +547,60 @@ body.chart-embed-body canvas {
 .footer {
     color: var(--default-color);
     background-color: var(--background-color);
+    background-image: linear-gradient(180deg, color-mix(in srgb, var(--background-color), var(--surface-color) 12%) 0%, var(--background-color) 100%);
     font-size: 14px;
-    padding-bottom: 50px;
+    padding-bottom: 36px;
     position: relative;
+    overflow: hidden;
+}
+
+.footer::before {
+    content: "";
+    position: absolute;
+    top: -120px;
+    right: -120px;
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(circle, color-mix(in srgb, var(--accent-color), transparent 82%) 0%, transparent 72%);
+}
+
+.footer::after {
+    content: "";
+    position: absolute;
+    bottom: -160px;
+    left: -160px;
+    width: 340px;
+    height: 340px;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(circle, color-mix(in srgb, var(--heading-color), transparent 84%) 0%, transparent 70%);
 }
 
 .footer .footer-top {
-    padding-top: 50px;
+    padding-top: 56px;
+    padding-bottom: 24px;
     border-top: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
+    border-bottom: 1px solid color-mix(in srgb, var(--default-color), transparent 92%);
+    position: relative;
+    z-index: 1;
 }
 
-.footer .footer-about .logo {
+.footer .footer-main-row {
+    align-items: start;
+    justify-content: center;
+    gap: 24px;
+}
+
+.footer .footer-intro {
+    max-width: 860px;
+    margin: 0 auto;
+}
+
+.footer .footer-intro .logo {
     line-height: 1;
-    margin-bottom: 25px;
+    margin-bottom: 18px;
 }
 
 .footer .footer-about .logo img {
@@ -567,17 +608,21 @@ body.chart-embed-body canvas {
     margin-right: 6px;
 }
 
-.footer .footer-about .logo span {
+.footer .footer-intro .logo span {
     color: var(--heading-color);
-    font-size: 30px;
-    font-weight: 500;
-    letter-spacing: 1px;
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
     font-family: var(--heading-font);
 }
 
-.footer .footer-about p {
-    font-size: 14px;
+.footer .footer-lead {
+    font-size: 15px;
     font-family: var(--heading-font);
+    line-height: 1.75;
+    color: color-mix(in srgb, var(--default-color), transparent 8%);
+    max-width: 66ch;
+    margin: 0 auto;
 }
 
 .footer .social-links a {
@@ -600,56 +645,60 @@ body.chart-embed-body canvas {
 }
 
 .footer h4 {
-    font-size: 16px;
-    font-weight: bold;
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     position: relative;
-    padding-bottom: 12px;
+    padding-bottom: 0;
+    margin-bottom: 12px;
 }
 
-.footer .footer-links {
-    margin-bottom: 30px;
+.footer h4::after {
+    content: none;
 }
 
-.footer .footer-links ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+.footer .footer-info-grid {
+    margin-top: 8px;
 }
 
-.footer .footer-links ul i {
-    padding-right: 2px;
-    font-size: 12px;
-    line-height: 0;
+.footer .footer-info-card {
+    height: 100%;
+    padding: 20px 20px 18px;
+    border-radius: 14px;
+    border: 1px solid color-mix(in srgb, var(--default-color), transparent 82%);
+    background-color: color-mix(in srgb, var(--surface-color), transparent 88%);
+    box-shadow: 0 8px 24px color-mix(in srgb, #000000, transparent 92%);
+    backdrop-filter: blur(2px);
 }
 
-.footer .footer-links ul li {
-    padding: 10px 0;
-    display: flex;
-    align-items: center;
+.footer .footer-info-card p {
+    margin-bottom: 4px;
+    line-height: 1.55;
+    color: color-mix(in srgb, var(--default-color), transparent 12%);
 }
 
-.footer .footer-links ul li:first-child {
-    padding-top: 0;
+.footer .footer-info-card a {
+    color: color-mix(in srgb, var(--default-color), transparent 6%);
 }
 
-.footer .footer-links ul a {
-    color: color-mix(in srgb, var(--default-color), transparent 20%);
-    display: inline-block;
-    line-height: 1;
-}
-
-.footer .footer-links ul a:hover {
+.footer .footer-info-card a:hover {
     color: var(--accent-color);
 }
 
-.footer .footer-contact p {
-    margin-bottom: 5px;
+.footer .footer-email-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 4px;
 }
 
 .footer .copyright {
-    padding-top: 25px;
-    padding-bottom: 25px;
-    background-color: color-mix(in srgb, var(--default-color), transparent 95%);
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-top: 1px solid color-mix(in srgb, var(--default-color), transparent 88%);
+    background-color: color-mix(in srgb, var(--default-color), transparent 96%);
 }
 
 .footer .copyright p {
@@ -659,6 +708,27 @@ body.chart-embed-body canvas {
 .footer .credits {
     margin-top: 6px;
     font-size: 13px;
+    letter-spacing: 0.02em;
+}
+
+.footer .credits a {
+    color: color-mix(in srgb, var(--default-color), transparent 10%);
+}
+
+.footer .credits a:hover {
+    color: var(--accent-color);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+@media (max-width: 991px) {
+    .footer .footer-lead {
+        max-width: none;
+    }
+
+    .footer .footer-info-card {
+        padding: 18px 16px;
+    }
 }
 
 /*--------------------------------------------------------------
