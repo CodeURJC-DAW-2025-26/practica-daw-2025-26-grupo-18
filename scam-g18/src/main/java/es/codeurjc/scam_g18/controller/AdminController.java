@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin")
 public class AdminController {
 
+    private static final int PAGE_SIZE = 10;
+
     @Autowired
     private AdminService adminService;
 
@@ -18,29 +20,29 @@ public class AdminController {
     private void populateModel(Model model, String userQuery, String courseQuery, String eventQuery, String activeTab) {
         // Users
         if (userQuery != null && !userQuery.isBlank()) {
-            model.addAttribute("users", adminService.searchUsers(userQuery, 0, 5));
-            model.addAttribute("hasMoreUsers", adminService.getTotalSearchUsersCount(userQuery) > 5);
+            model.addAttribute("users", adminService.searchUsers(userQuery, 0, PAGE_SIZE));
+            model.addAttribute("hasMoreUsers", adminService.getTotalSearchUsersCount(userQuery) > PAGE_SIZE);
         } else {
-            model.addAttribute("users", adminService.getAllUsers(0, 5));
-            model.addAttribute("hasMoreUsers", adminService.getTotalUsersCount() > 5);
+            model.addAttribute("users", adminService.getAllUsers(0, PAGE_SIZE));
+            model.addAttribute("hasMoreUsers", adminService.getTotalUsersCount() > PAGE_SIZE);
         }
 
         // Courses (pending first)
         if (courseQuery != null && !courseQuery.isBlank()) {
-            model.addAttribute("courses", adminService.searchCourses(courseQuery, 0, 5));
-            model.addAttribute("hasMoreCourses", adminService.getTotalSearchCoursesCount(courseQuery) > 5);
+            model.addAttribute("courses", adminService.searchCourses(courseQuery, 0, PAGE_SIZE));
+            model.addAttribute("hasMoreCourses", adminService.getTotalSearchCoursesCount(courseQuery) > PAGE_SIZE);
         } else {
-            model.addAttribute("courses", adminService.getAllCoursesSortedByStatus(0, 5));
-            model.addAttribute("hasMoreCourses", adminService.getTotalCoursesCount() > 5);
+            model.addAttribute("courses", adminService.getAllCoursesSortedByStatus(0, PAGE_SIZE));
+            model.addAttribute("hasMoreCourses", adminService.getTotalCoursesCount() > PAGE_SIZE);
         }
 
         // Events (pending first)
         if (eventQuery != null && !eventQuery.isBlank()) {
-            model.addAttribute("events", adminService.searchEvents(eventQuery, 0, 5));
-            model.addAttribute("hasMoreEvents", adminService.getTotalSearchEventsCount(eventQuery) > 5);
+            model.addAttribute("events", adminService.searchEvents(eventQuery, 0, PAGE_SIZE));
+            model.addAttribute("hasMoreEvents", adminService.getTotalSearchEventsCount(eventQuery) > PAGE_SIZE);
         } else {
-            model.addAttribute("events", adminService.getAllEventsSortedByStatus(0, 5));
-            model.addAttribute("hasMoreEvents", adminService.getTotalEventsCount() > 5);
+            model.addAttribute("events", adminService.getAllEventsSortedByStatus(0, PAGE_SIZE));
+            model.addAttribute("hasMoreEvents", adminService.getTotalEventsCount() > PAGE_SIZE);
         }
 
         model.addAttribute("userQuery", userQuery != null ? userQuery : "");
@@ -48,8 +50,8 @@ public class AdminController {
         model.addAttribute("eventQuery", eventQuery != null ? eventQuery : "");
 
         // Orders
-        model.addAttribute("orders", adminService.getAllOrdersSortedByDate(0, 5));
-        model.addAttribute("hasMoreOrders", adminService.getTotalOrdersCount() > 5);
+        model.addAttribute("orders", adminService.getAllOrdersSortedByDate(0, PAGE_SIZE));
+        model.addAttribute("hasMoreOrders", adminService.getTotalOrdersCount() > PAGE_SIZE);
 
         model.addAttribute("activeTab", activeTab != null ? activeTab : "users");
         model.addAttribute("reviews", adminService.getAllReviews());
@@ -84,9 +86,9 @@ public class AdminController {
 
         java.util.List<es.codeurjc.scam_g18.model.User> users;
         if (query != null && !query.isBlank()) {
-            users = adminService.searchUsers(query, page, 5);
+            users = adminService.searchUsers(query, page, PAGE_SIZE);
         } else {
-            users = adminService.getAllUsers(page, 5);
+            users = adminService.getAllUsers(page, PAGE_SIZE);
         }
 
         java.util.List<java.util.Map<String, Object>> userList = new java.util.ArrayList<>();
@@ -96,6 +98,7 @@ public class AdminController {
             map.put("username", u.getUsername());
             map.put("email", u.getEmail());
             map.put("isActive", u.getIsActive());
+            map.put("isSubscribed", u.getIsSubscribed());
             userList.add(map);
         }
 
@@ -111,9 +114,9 @@ public class AdminController {
 
         java.util.List<es.codeurjc.scam_g18.model.Event> events;
         if (query != null && !query.isBlank()) {
-            events = adminService.searchEvents(query, page, 5);
+            events = adminService.searchEvents(query, page, PAGE_SIZE);
         } else {
-            events = adminService.getAllEventsSortedByStatus(page, 5);
+            events = adminService.getAllEventsSortedByStatus(page, PAGE_SIZE);
         }
 
         java.util.List<java.util.Map<String, Object>> eventList = new java.util.ArrayList<>();
@@ -140,9 +143,9 @@ public class AdminController {
 
         java.util.List<es.codeurjc.scam_g18.model.Course> courses;
         if (query != null && !query.isBlank()) {
-            courses = adminService.searchCourses(query, page, 5);
+            courses = adminService.searchCourses(query, page, PAGE_SIZE);
         } else {
-            courses = adminService.getAllCoursesSortedByStatus(page, 5);
+            courses = adminService.getAllCoursesSortedByStatus(page, PAGE_SIZE);
         }
 
         java.util.List<java.util.Map<String, Object>> courseList = new java.util.ArrayList<>();
@@ -165,7 +168,8 @@ public class AdminController {
     public org.springframework.http.ResponseEntity<java.util.List<java.util.Map<String, Object>>> getAdminOrdersApi(
             @RequestParam(defaultValue = "0") int page) {
 
-        java.util.List<es.codeurjc.scam_g18.model.Order> orders = adminService.getAllOrdersSortedByDate(page, 5);
+        java.util.List<es.codeurjc.scam_g18.model.Order> orders = adminService.getAllOrdersSortedByDate(page,
+            PAGE_SIZE);
 
         java.util.List<java.util.Map<String, Object>> orderList = new java.util.ArrayList<>();
         for (es.codeurjc.scam_g18.model.Order o : orders) {

@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class CourseController {
 
+    private static final int PAGE_SIZE = 10;
+
     @Autowired
     private CourseService courseService;
 
@@ -50,10 +52,10 @@ public class CourseController {
     public String courses(Model model, @RequestParam(required = false) String search,
             @RequestParam(required = false) List<String> tags) {
         Long currentUserId = userService.getCurrentAuthenticatedUser().map(User::getId).orElse(null);
-        model.addAttribute("courses", courseService.getCoursesViewData(search, tags, currentUserId, 0, 5));
+        model.addAttribute("courses", courseService.getCoursesViewData(search, tags, currentUserId, 0, PAGE_SIZE));
         model.addAttribute("search", search);
         model.addAttribute("tagsView", tagService.getTagsView(tags));
-        model.addAttribute("hasMore", courseService.getTotalPublishedCoursesCount(search, tags) > 5);
+        model.addAttribute("hasMore", courseService.getTotalPublishedCoursesCount(search, tags) > PAGE_SIZE);
         return "courses";
     }
 
@@ -65,7 +67,8 @@ public class CourseController {
             @RequestParam(required = false) List<String> tags,
             @RequestParam(defaultValue = "0") int page) {
         Long currentUserId = userService.getCurrentAuthenticatedUser().map(User::getId).orElse(null);
-        List<Map<String, Object>> courses = courseService.getCoursesViewData(search, tags, currentUserId, page, 5);
+        List<Map<String, Object>> courses = courseService.getCoursesViewData(search, tags, currentUserId, page,
+            PAGE_SIZE);
         return ResponseEntity.ok(courses);
     }
 
