@@ -4887,6 +4887,7 @@ section,
 .subscribed-courses-grid .subscribed-course-desc {
     margin-bottom: 0.5rem;
     display: -webkit-box;
+    line-clamp: 2;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
@@ -4928,6 +4929,7 @@ section,
 .purchased-events-grid .purchased-event-desc {
     margin-bottom: 0.5rem;
     display: -webkit-box;
+    line-clamp: 2;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
