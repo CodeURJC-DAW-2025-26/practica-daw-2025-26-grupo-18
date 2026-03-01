@@ -248,59 +248,59 @@ Diagrama de clases de la aplicación con diferenciación por colores o secciones
 
 ### **Participación de Miembros en la Práctica 1**
 
-#### **Alumno 1 - [Nombre Completo]**
+#### **Alumno 1 - Pau Calvo Jiménez**
 
-[Descripción de las tareas y responsabilidades principales del alumno en el proyecto]
+Implementación completa del sistema de gestión de eventos, incluyendo creación, edición con mapa interactivo (Leaflet), geocodificación de direcciones y gestión de agenda/ponentes dinámicos. Responsable de la integración de seguridad CSRF y validación de compras de eventos.
 
 | Nº    | Commits      | Files      |
 |:------------: |:------------:| :------------:|
-|1| [Descripción commit 1](URL_commit_1)  | [Archivo1](URL_archivo_1)   |
-|2| [Descripción commit 2](URL_commit_2)  | [Archivo2](URL_archivo_2)   |
-|3| [Descripción commit 3](URL_commit_3)  | [Archivo3](URL_archivo_3)   |
-|4| [Descripción commit 4](URL_commit_4)  | [Archivo4](URL_archivo_4)   |
-|5| [Descripción commit 5](URL_commit_5)  | [Archivo5](URL_archivo_5)   |
+|1| Implementación funcional de gestión de eventos (c4a5348) | EventController.java |
+|2| Gestión de capacidad y errores en vistas (0df93e6) | EventService.java |
+|3| Estado de compra y validación de usuarios (9cc3b8c) | editEvent.html |
+|4| Manejo de tokens CSRF y atributos de modelo (c0d28c5) | event.html |
+|5| Redirección post-carrito y flujo de compra (b3d695c) | Event.java |
 
 ---
 
-#### **Alumno 2 - [Nombre Completo]**
+#### **Alumno 2 - Alberto Hontanilla Villanueva**
 
-[Descripción de las tareas y responsabilidades principales del alumno en el proyecto]
+Diseño y maquetación responsiva del header y footer, implementación de la lógica de servicios para cursos, mejora estética de las plantillas y rediseño del sistema de correos electrónicos de la plataforma.
 
 | Nº    | Commits      | Files      |
 |:------------: |:------------:| :------------:|
-|1| [Descripción commit 1](URL_commit_1)  | [Archivo1](URL_archivo_1)   |
-|2| [Descripción commit 2](URL_commit_2)  | [Archivo2](URL_archivo_2)   |
-|3| [Descripción commit 3](URL_commit_3)  | [Archivo3](URL_archivo_3)   |
-|4| [Descripción commit 4](URL_commit_4)  | [Archivo4](URL_archivo_4)   |
-|5| [Descripción commit 5](URL_commit_5)  | [Archivo5](URL_archivo_5)   |
+|1| Mejora de layout responsivo en header/footer (2d2677a) | CourseService.java |
+|2| Implementación modo edición de perfil (ce4e2a5) | CourseController.java |
+|3| Estilo moderno y indicadores de suscripción (fd8142c) | EventController.java |
+|4| Rediseño estético de emails de registro (165bf7b) | header.html |
+|5| Documentación de métodos de servicio (5e8f889) | course.html |
 
 ---
 
-#### **Alumno 3 - [Nombre Completo]**
+#### **Alumno 3 - Gonzalo Andrés Zurdo Patino**
 
-[Descripción de las tareas y responsabilidades principales del alumno en el proyecto]
+Desarrollo del sistema de perfiles de usuario, implementación del carrito de la compra y pasarela de pago, gestión de estadísticas de cursos y uso de AJAX para mejorar la interactividad del perfil.
 
 | Nº    | Commits      | Files      |
 |:------------: |:------------:| :------------:|
-|1| [Descripción commit 1](URL_commit_1)  | [Archivo1](URL_archivo_1)   |
-|2| [Descripción commit 2](URL_commit_2)  | [Archivo2](URL_archivo_2)   |
-|3| [Descripción commit 3](URL_commit_3)  | [Archivo3](URL_archivo_3)   |
-|4| [Descripción commit 4](URL_commit_4)  | [Archivo4](URL_archivo_4)   |
-|5| [Descripción commit 5](URL_commit_5)  | [Archivo5](URL_archivo_5)   |
+|1| Creación de CourseService y gestión de datos (6f9db1b) | ProfileController.java |
+|2| Implementación AJAX y estética de perfil (c313294) | UserService.java |
+|3| Gestión de carrito y perfiles de usuario (6302720) | profile.html |
+|4| Integración de autenticación y flujos web (38ee6b5) | CartService.java |
+|5| Estadísticas de creador en el perfil (53fd21b) | RegisterController.java |
 
 ---
 
-#### **Alumno 4 - [Nombre Completo]**
+#### **Alumno 4 - Jaime Sánchez Vázquez**
 
-[Descripción de las tareas y responsabilidades principales del alumno en el proyecto]
+Refactorización general del código para mejorar la mantenibilidad, implementación del sistema de suscripciones Premium, filtros de seguridad para gestión de sesiones y desarrollo del panel de administración.
 
 | Nº    | Commits      | Files      |
 |:------------: |:------------:| :------------:|
-|1| [Descripción commit 1](URL_commit_1)  | [Archivo1](URL_archivo_1)   |
-|2| [Descripción commit 2](URL_commit_2)  | [Archivo2](URL_archivo_2)   |
-|3| [Descripción commit 3](URL_commit_3)  | [Archivo3](URL_archivo_3)   |
-|4| [Descripción commit 4](URL_commit_4)  | [Archivo4](URL_archivo_4)   |
-|5| [Descripción commit 5](URL_commit_5)  | [Archivo5](URL_archivo_5)   |
+|1| Refactorización para estructura limpia (659f1ab) | header.html |
+|2| Sistema de suscripciones Premium y precios (518d800) | EventService.java |
+|3| Filtro de seguridad ActiveUserSession (0329fed) | EventController.java |
+|4| Filtrado avanzado por etiquetas en Admin (e1c717e) | CourseService.java |
+|5| Gestión de pedidos y facturación (2d8b2de) | DatabaseInitializer.java |
 
 ---
 
