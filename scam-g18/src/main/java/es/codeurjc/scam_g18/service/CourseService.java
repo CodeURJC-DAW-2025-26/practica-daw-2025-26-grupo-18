@@ -15,6 +15,7 @@ import es.codeurjc.scam_g18.repository.EnrollmentRepository;
 import es.codeurjc.scam_g18.repository.LessonProgressRepository;
 import es.codeurjc.scam_g18.repository.LessonRepository;
 import es.codeurjc.scam_g18.repository.OrderItemRepository;
+import es.codeurjc.scam_g18.repository.SubscriptionRepository;
 import es.codeurjc.scam_g18.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,6 +54,28 @@ public class CourseService {
 
     @Autowired
     private TagRepository tagRepository;
+
+    @Autowired
+    private SubscriptionRepository subscriptionRepository;
+
+    // Helper method to check if a creator is valid (active and has active
+    // subscription or is admin)
+    private boolean isCreatorValid(User creator) {
+        if (creator == null)
+            return false;
+        if (creator.getIsActive() != null && !creator.getIsActive())
+            return false;
+
+        boolean isAdmin = creator.getRoles().stream()
+                .map(es.codeurjc.scam_g18.model.Role::getName)
+                .anyMatch(name -> name.equalsIgnoreCase("ADMIN"));
+        if (isAdmin)
+            return true;
+
+        return subscriptionRepository
+                .findByUserIdAndStatus(creator.getId(), es.codeurjc.scam_g18.model.SubscriptionStatus.ACTIVE)
+                .isPresent();
+    }
 
     // Obtiene cursos destacados para la portada.
     public List<Course> getFeaturedCourses() {
@@ -94,7 +117,7 @@ public class CourseService {
         List<Course> publishedCourses = new ArrayList<>();
 
         for (Course course : allCourses) {
-            if (course.getStatus() == Status.PUBLISHED) {
+            if (course.getStatus() == Status.PUBLISHED && isCreatorValid(course.getCreator())) {
                 publishedCourses.add(course);
             }
         }
@@ -151,7 +174,7 @@ public class CourseService {
         List<Course> allCourses = searchCourses(keyword, tags);
         int count = 0;
         for (Course course : allCourses) {
-            if (course.getStatus() == Status.PUBLISHED) {
+            if (course.getStatus() == Status.PUBLISHED && isCreatorValid(course.getCreator())) {
                 count++;
             }
         }
@@ -164,6 +187,10 @@ public class CourseService {
         try {
             course = getCourseById(id);
         } catch (RuntimeException e) {
+            return null;
+        }
+
+        if (!isCreatorValid(course.getCreator())) {
             return null;
         }
 
@@ -277,12 +304,15 @@ public class CourseService {
         List<Map<String, Object>> reviewsData = new ArrayList<>();
         List<Review> reviews = course.getReviews() != null ? course.getReviews() : new ArrayList<>();
         for (Review review : reviews) {
+            User user = review.getUser();
+            if (user != null && Boolean.FALSE.equals(user.getIsActive())) {
+                continue;
+            }
             Map<String, Object> reviewData = new HashMap<>();
             reviewData.put("content", review.getContent());
             reviewData.put("stars", review.getStars());
 
             Map<String, Object> userData = new HashMap<>();
-            User user = review.getUser();
             String username = user != null && user.getUsername() != null ? user.getUsername() : "Anónimo";
             userData.put("username", username);
             userData.put("id", user != null ? user.getId() : null);
@@ -498,7 +528,8 @@ public class CourseService {
         if (course.getReviews() == null || course.getReviews().isEmpty())
             return 0.0;
         return course.getReviews().stream()
-                .filter(r -> r.getRating() != null)
+                .filter(r -> r.getRating() != null
+                        && (r.getUser() == null || !Boolean.FALSE.equals(r.getUser().getIsActive())))
                 .mapToInt(r -> r.getRating())
                 .average()
                 .orElse(0.0);
@@ -509,7 +540,8 @@ public class CourseService {
         if (course.getReviews() == null)
             return 0;
         return (int) course.getReviews().stream()
-                .filter(r -> r.getRating() != null)
+                .filter(r -> r.getRating() != null
+                        && (r.getUser() == null || !Boolean.FALSE.equals(r.getUser().getIsActive())))
                 .count();
     }
 
@@ -524,7 +556,9 @@ public class CourseService {
     public int getReviewsNumber(Course course) {
         if (course.getReviews() == null)
             return 0;
-        return course.getReviews().size();
+        return (int) course.getReviews().stream()
+                .filter(r -> r.getUser() == null || !Boolean.FALSE.equals(r.getUser().getIsActive()))
+                .count();
     }
 
     // Incrementa en uno el número de suscriptores de un curso.
