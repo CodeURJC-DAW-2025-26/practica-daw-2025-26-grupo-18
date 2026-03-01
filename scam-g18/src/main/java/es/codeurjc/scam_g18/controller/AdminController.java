@@ -11,36 +11,38 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin")
 public class AdminController {
 
+    private static final int PAGE_SIZE = 10;
+
     @Autowired
     private AdminService adminService;
 
-    // Rellena el modelo del panel con usuarios, cursos, eventos, reseñas y pedidos.
+    // Populates dashboard model with users, courses, events, reviews, and orders.
     private void populateModel(Model model, String userQuery, String courseQuery, String eventQuery, String activeTab) {
         // Users
         if (userQuery != null && !userQuery.isBlank()) {
-            model.addAttribute("users", adminService.searchUsers(userQuery, 0, 5));
-            model.addAttribute("hasMoreUsers", adminService.getTotalSearchUsersCount(userQuery) > 5);
+            model.addAttribute("users", adminService.searchUsers(userQuery, 0, PAGE_SIZE));
+            model.addAttribute("hasMoreUsers", adminService.getTotalSearchUsersCount(userQuery) > PAGE_SIZE);
         } else {
-            model.addAttribute("users", adminService.getAllUsers(0, 5));
-            model.addAttribute("hasMoreUsers", adminService.getTotalUsersCount() > 5);
+            model.addAttribute("users", adminService.getAllUsers(0, PAGE_SIZE));
+            model.addAttribute("hasMoreUsers", adminService.getTotalUsersCount() > PAGE_SIZE);
         }
 
         // Courses (pending first)
         if (courseQuery != null && !courseQuery.isBlank()) {
-            model.addAttribute("courses", adminService.searchCourses(courseQuery, 0, 5));
-            model.addAttribute("hasMoreCourses", adminService.getTotalSearchCoursesCount(courseQuery) > 5);
+            model.addAttribute("courses", adminService.searchCourses(courseQuery, 0, PAGE_SIZE));
+            model.addAttribute("hasMoreCourses", adminService.getTotalSearchCoursesCount(courseQuery) > PAGE_SIZE);
         } else {
-            model.addAttribute("courses", adminService.getAllCoursesSortedByStatus(0, 5));
-            model.addAttribute("hasMoreCourses", adminService.getTotalCoursesCount() > 5);
+            model.addAttribute("courses", adminService.getAllCoursesSortedByStatus(0, PAGE_SIZE));
+            model.addAttribute("hasMoreCourses", adminService.getTotalCoursesCount() > PAGE_SIZE);
         }
 
         // Events (pending first)
         if (eventQuery != null && !eventQuery.isBlank()) {
-            model.addAttribute("events", adminService.searchEvents(eventQuery, 0, 5));
-            model.addAttribute("hasMoreEvents", adminService.getTotalSearchEventsCount(eventQuery) > 5);
+            model.addAttribute("events", adminService.searchEvents(eventQuery, 0, PAGE_SIZE));
+            model.addAttribute("hasMoreEvents", adminService.getTotalSearchEventsCount(eventQuery) > PAGE_SIZE);
         } else {
-            model.addAttribute("events", adminService.getAllEventsSortedByStatus(0, 5));
-            model.addAttribute("hasMoreEvents", adminService.getTotalEventsCount() > 5);
+            model.addAttribute("events", adminService.getAllEventsSortedByStatus(0, PAGE_SIZE));
+            model.addAttribute("hasMoreEvents", adminService.getTotalEventsCount() > PAGE_SIZE);
         }
 
         model.addAttribute("userQuery", userQuery != null ? userQuery : "");
@@ -48,15 +50,14 @@ public class AdminController {
         model.addAttribute("eventQuery", eventQuery != null ? eventQuery : "");
 
         // Orders
-        model.addAttribute("orders", adminService.getAllOrdersSortedByDate(0, 5));
-        model.addAttribute("hasMoreOrders", adminService.getTotalOrdersCount() > 5);
+        model.addAttribute("orders", adminService.getAllOrdersSortedByDate(0, PAGE_SIZE));
+        model.addAttribute("hasMoreOrders", adminService.getTotalOrdersCount() > PAGE_SIZE);
 
         model.addAttribute("activeTab", activeTab != null ? activeTab : "users");
         model.addAttribute("reviews", adminService.getAllReviews());
-        model.addAttribute("orders", adminService.getAllOrdersSortedByDate());
     }
 
-    // Muestra el dashboard de administración con filtros opcionales.
+    // Displays the admin dashboard with optional filters.
     @GetMapping
     public String adminDashboard(
             @RequestParam(required = false) String userQuery,
@@ -68,138 +69,56 @@ public class AdminController {
         return "adminDashboard";
     }
 
-    // Busca usuarios por nombre y mantiene activa la pestaña de usuarios.
+    // Searches users by name and keeps the users tab active.
     @GetMapping("/users/search")
     public String searchUser(@RequestParam String name, Model model) {
         populateModel(model, name, null, null, "users");
         return "adminDashboard";
     }
 
-    // Endpoint AJAX para paginación de usuarios
+    // AJAX endpoint for user pagination
     @GetMapping("/api/users")
     @ResponseBody
     public org.springframework.http.ResponseEntity<java.util.List<java.util.Map<String, Object>>> getUsersApi(
             @RequestParam(required = false) String query,
             @RequestParam(defaultValue = "0") int page) {
-
-        java.util.List<es.codeurjc.scam_g18.model.User> users;
-        if (query != null && !query.isBlank()) {
-            users = adminService.searchUsers(query, page, 5);
-        } else {
-            users = adminService.getAllUsers(page, 5);
-        }
-
-        java.util.List<java.util.Map<String, Object>> userList = new java.util.ArrayList<>();
-        for (es.codeurjc.scam_g18.model.User u : users) {
-            java.util.Map<String, Object> map = new java.util.HashMap<>();
-            map.put("id", u.getId());
-            map.put("username", u.getUsername());
-            map.put("email", u.getEmail());
-            map.put("isActive", u.getIsActive());
-            userList.add(map);
-        }
-
-        return org.springframework.http.ResponseEntity.ok(userList);
+        return org.springframework.http.ResponseEntity.ok(adminService.getUsersApiData(query, page, PAGE_SIZE));
     }
 
-    // Endpoint AJAX para paginación de eventos
+    // AJAX endpoint for event pagination
     @GetMapping("/api/events")
     @ResponseBody
     public org.springframework.http.ResponseEntity<java.util.List<java.util.Map<String, Object>>> getAdminEventsApi(
             @RequestParam(required = false) String query,
             @RequestParam(defaultValue = "0") int page) {
-
-        java.util.List<es.codeurjc.scam_g18.model.Event> events;
-        if (query != null && !query.isBlank()) {
-            events = adminService.searchEvents(query, page, 5);
-        } else {
-            events = adminService.getAllEventsSortedByStatus(page, 5);
-        }
-
-        java.util.List<java.util.Map<String, Object>> eventList = new java.util.ArrayList<>();
-        for (es.codeurjc.scam_g18.model.Event e : events) {
-            java.util.Map<String, Object> map = new java.util.HashMap<>();
-            map.put("id", e.getId());
-            map.put("title", e.getTitle());
-            map.put("category", e.getCategory());
-            map.put("isPendingReview", e.getStatus() == es.codeurjc.scam_g18.model.Status.PENDING_REVIEW);
-            map.put("status", e.getStatus() != null ? e.getStatus().toString() : "");
-            map.put("creatorUsername", e.getCreator() != null ? e.getCreator().getUsername() : "");
-            eventList.add(map);
-        }
-
-        return org.springframework.http.ResponseEntity.ok(eventList);
+        return org.springframework.http.ResponseEntity.ok(adminService.getEventsApiData(query, page, PAGE_SIZE));
     }
 
-    // Endpoint AJAX para paginación de cursos
+    // AJAX endpoint for course pagination
     @GetMapping("/api/courses")
     @ResponseBody
     public org.springframework.http.ResponseEntity<java.util.List<java.util.Map<String, Object>>> getAdminCoursesApi(
             @RequestParam(required = false) String query,
             @RequestParam(defaultValue = "0") int page) {
-
-        java.util.List<es.codeurjc.scam_g18.model.Course> courses;
-        if (query != null && !query.isBlank()) {
-            courses = adminService.searchCourses(query, page, 5);
-        } else {
-            courses = adminService.getAllCoursesSortedByStatus(page, 5);
-        }
-
-        java.util.List<java.util.Map<String, Object>> courseList = new java.util.ArrayList<>();
-        for (es.codeurjc.scam_g18.model.Course c : courses) {
-            java.util.Map<String, Object> map = new java.util.HashMap<>();
-            map.put("id", c.getId());
-            map.put("title", c.getTitle());
-            map.put("shortDescription", c.getShortDescription());
-            map.put("isPendingReview", c.getStatus() == es.codeurjc.scam_g18.model.Status.PENDING_REVIEW);
-            map.put("status", c.getStatus() != null ? c.getStatus().toString() : "");
-            map.put("creatorUsername", c.getCreator() != null ? c.getCreator().getUsername() : "");
-            courseList.add(map);
-        }
-        return org.springframework.http.ResponseEntity.ok(courseList);
+        return org.springframework.http.ResponseEntity.ok(adminService.getCoursesApiData(query, page, PAGE_SIZE));
     }
 
-    // Endpoint AJAX para paginación de pedidos
+    // AJAX endpoint for order pagination
     @GetMapping("/api/orders")
     @ResponseBody
     public org.springframework.http.ResponseEntity<java.util.List<java.util.Map<String, Object>>> getAdminOrdersApi(
             @RequestParam(defaultValue = "0") int page) {
-
-        java.util.List<es.codeurjc.scam_g18.model.Order> orders = adminService.getAllOrdersSortedByDate(page, 5);
-
-        java.util.List<java.util.Map<String, Object>> orderList = new java.util.ArrayList<>();
-        for (es.codeurjc.scam_g18.model.Order o : orders) {
-            java.util.Map<String, Object> map = new java.util.HashMap<>();
-            map.put("id", o.getId());
-            if (o.getUser() != null)
-                map.put("username", o.getUser().getUsername());
-            map.put("billingFullName", o.getBillingFullName());
-            map.put("billingEmail", o.getBillingEmail());
-            map.put("status", o.getStatus() != null ? o.getStatus().toString() : "");
-
-            java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter
-                    .ofPattern("dd/MM/yyyy HH:mm");
-            if (o.getPaidAt() != null) {
-                map.put("paidAt", o.getPaidAt().format(formatter));
-            } else if (o.getCreatedAt() != null) {
-                map.put("createdAt", o.getCreatedAt().format(formatter));
-            }
-            map.put("paymentMethod", o.getPaymentMethod());
-            map.put("paymentReference", o.getPaymentReference());
-            map.put("totalAmountEuros", o.getTotalAmountEuros());
-            orderList.add(map);
-        }
-        return org.springframework.http.ResponseEntity.ok(orderList);
+        return org.springframework.http.ResponseEntity.ok(adminService.getOrdersApiData(page, PAGE_SIZE));
     }
 
-    // Bloquea a un usuario por su identificador.
+    // Bans a user by identifier.
     @PostMapping("/users/{id}/ban")
     public String banUser(@PathVariable Long id) {
         adminService.banUser(id);
         return "redirect:/admin?activeTab=users";
     }
 
-    // Desbloquea a un usuario por su identificador.
+    // Unbans a user by identifier.
     @PostMapping("/users/{id}/unban")
     public String unbanUser(@PathVariable Long id) {
         adminService.unbanUser(id);
@@ -208,14 +127,14 @@ public class AdminController {
 
     // ---- Course actions ----
 
-    // Aprueba un curso pendiente.
+    // Approves a pending course.
     @PostMapping("/courses/{id}/approve")
     public String approveCourse(@PathVariable Long id) {
         adminService.approveCourse(id);
         return "redirect:/admin?activeTab=courses";
     }
 
-    // Rechaza un curso pendiente.
+    // Rejects a pending course.
     @PostMapping("/courses/{id}/reject")
     public String rejectCourse(@PathVariable Long id) {
         adminService.rejectCourse(id);
@@ -224,14 +143,14 @@ public class AdminController {
 
     // ---- Event actions ----
 
-    // Aprueba un evento pendiente.
+    // Approves a pending event.
     @PostMapping("/events/{id}/approve")
     public String approveEvent(@PathVariable Long id) {
         adminService.approveEvent(id);
         return "redirect:/admin?activeTab=events";
     }
 
-    // Rechaza un evento pendiente.
+    // Rejects a pending event.
     @PostMapping("/events/{id}/reject")
     public String rejectEvent(@PathVariable Long id) {
         adminService.rejectEvent(id);
@@ -240,7 +159,7 @@ public class AdminController {
 
     // ---- Review actions ----
 
-    // Elimina una reseña por su identificador.
+    // Deletes a review by identifier.
     @PostMapping("/reviews/{id}/delete")
     public String deleteReview(@PathVariable Long id) {
         adminService.deleteReview(id);

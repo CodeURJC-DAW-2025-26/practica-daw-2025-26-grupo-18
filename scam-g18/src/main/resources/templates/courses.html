@@ -16,24 +16,6 @@
         </div><!-- End Page Title -->
 
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
-        <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-        
-        <style>
-            .choices { margin-bottom: 0; min-width: 250px; }
-            .choices__inner { 
-                border-radius: 8px; 
-                background-color: #f8f9fa;
-                border: 1px solid #dee2e6;
-                padding: 4px 8px;
-                min-height: 44px;
-            }
-            .choices[data-type*="select-multiple"] .choices__list--multiple .choices__item {
-                background-color: var(--accent-color, #d96d3c);
-                border: 1px solid var(--accent-color, #d96d3c);
-                border-radius: 6px;
-                padding: 4px 10px;
-            }
-        </style>
 
         <!-- Courses Catalog -->
         <section class="courses-catalog section">
@@ -56,16 +38,16 @@
                         </div>
                         {{/isPublisher}}
                     </div>
-                    <div class="course-filters mt-3 d-flex align-items-center gap-3">
+                    <div class="course-filters d-flex align-items-center gap-3">
                         <span class="fw-bold text-muted">Filtrar por etiquetas:</span>
-                        <div class="flex-grow-1" style="max-width: 600px;">
+                        <div class="flex-grow-1 tag-filter-select-wrap">
                             <select class="form-select tags-select" id="tagFilters" name="tags" multiple>
                                 {{#tagsView}}
                                     <option value="{{name}}" {{#active}}selected{{/active}}>{{name}}</option>
                                 {{/tagsView}}
                             </select>
                         </div>
-                        <a href="/courses{{#search}}?search={{search}}{{/search}}" class="btn btn-outline-secondary btn-sm">Limpiar filtros</a>
+                        <a href="/courses{{#search}}?search={{search}}{{/search}}" class="btn btn-outline-secondary btn-sm tag-filter-clear-btn">Limpiar filtros</a>
                     </div>
                 </div>
                 </form>
@@ -110,7 +92,7 @@
                 </div>
                 
                 {{#hasMore}}
-                <div class="text-center mt-4">
+                <div class="text-center catalog-load-more">
                     <button id="loadMoreBtn" class="btn btn-accent btn-lg" data-page="1">Cargar más cursos</button>
                 </div>
                 {{/hasMore}}
@@ -124,99 +106,6 @@
     </main>
 
     {{>footer}}
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const tagFilters = document.getElementById('tagFilters');
-            if (tagFilters) {
-                const choices = new Choices(tagFilters, {
-                    removeItemButton: true,
-                    searchEnabled: true,
-                    searchPlaceholderValue: 'Buscar etiquetas...',
-                    placeholderValue: 'Selecciona etiquetas para buscar',
-                    noResultsText: 'No se encontraron etiquetas',
-                    itemSelectText: 'Presiona para seleccionar'
-                });
-
-                // Submit the form automatically when tags change
-                tagFilters.addEventListener('change', function() {
-                    this.form.submit();
-                });
-            }
-
-            const loadMoreBtn = document.getElementById('loadMoreBtn');
-            if (loadMoreBtn) {
-                loadMoreBtn.addEventListener('click', function() {
-                    const page = this.getAttribute('data-page');
-                    const urlParams = new URLSearchParams(window.location.search);
-                    urlParams.set('page', page);
-                    
-                    fetch('/api/courses?' + urlParams.toString())
-                    .then(response => response.json())
-                    .then(data => {
-                        const courseList = document.getElementById('courseList');
-                        
-                        if (data.length > 0) {
-                            data.forEach(course => {
-                                const article = document.createElement('article');
-                                article.className = 'course-card-full';
-                                
-                                let tagsHtml = '';
-                                if (course.tags) {
-                                    course.tags.forEach(tag => {
-                                        tagsHtml += `<span class="course-tag">${tag.name}</span>`;
-                                    });
-                                }
-                                
-                                let subscribedHtml = '';
-                                if (course.isSubscribed) {
-                                    subscribedHtml = '<span class="badge bg-success">Ya suscrito</span>';
-                                }
-                                
-                                article.innerHTML = `
-                                    <div class="course-card-header">
-                                        <div>
-                                            <h3 class="course-card-title">${course.title}</h3>
-                                            <div class="course-tags">
-                                                ${tagsHtml}
-                                            </div>
-                                        </div>
-                                        <div class="d-flex flex-column align-items-end gap-1">
-                                            ${subscribedHtml}
-                                            <div class="course-card-price">${course.priceInEuros}€</div>
-                                        </div>
-                                    </div>
-                                    <p class="course-card-desc">${course.description}</p>
-                                    <div class="course-card-meta">
-                                        <div class="course-rating">
-                                            <i class="bi bi-star-fill course-rating-star"></i>
-                                            <span class="course-rating-value">${course.averageRating}</span>
-                                            <span class="course-rating-count">(${course.ratingCount})</span>
-                                        </div>
-                                        <div class="course-card-students"><i class="bi bi-people"></i>${course.subscribersNumber} suscritos</div>
-                                        <div class="course-card-students"><i class="bi bi-person-circle"></i> Por ${course.creatorUsername}</div>
-                                    </div>
-                                    <div class="course-card-actions">
-                                        <a href="/course/${course.id}" class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver curso</a>
-                                    </div>
-                                `;
-                                courseList.appendChild(article);
-                            });
-                            
-                            this.setAttribute('data-page', parseInt(page) + 1);
-                            
-                            if (data.length < 5) {
-                                this.style.display = 'none';
-                            }
-                        } else {
-                            this.style.display = 'none';
-                        }
-                    })
-                    .catch(error => console.error('Error loading more courses:', error));
-                });
-            }
-        });
-    </script>
 
 </body>
 

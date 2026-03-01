@@ -15,18 +15,18 @@ public class GlobalControllerAdvice {
         private final String parameterName;
         private final String token;
 
-        // Crea un modelo seguro para exponer nombre de parámetro y token CSRF en vistas.
+        // Creates a safe model to expose CSRF parameter name and token in views.
         public CsrfViewModel(String parameterName, String token) {
             this.parameterName = (parameterName == null || parameterName.isBlank()) ? "_csrf" : parameterName;
             this.token = token == null ? "" : token;
         }
 
-        // Devuelve el nombre del parámetro que debe enviarse en formularios CSRF.
+        // Returns the parameter name that must be sent in CSRF forms.
         public String getParameterName() {
             return parameterName;
         }
 
-        // Devuelve el valor del token CSRF para formularios y peticiones protegidas.
+        // Returns the CSRF token value for forms and protected requests.
         public String getToken() {
             return token;
         }
@@ -35,7 +35,7 @@ public class GlobalControllerAdvice {
     @Autowired
     private UserService userService;
 
-    // Añade atributos globales de sesión, usuario y CSRF disponibles en todas las vistas.
+    // Adds global session, user, and CSRF attributes available in all views.
     @ModelAttribute
     public void addAttributes(Model model, HttpServletRequest request) {
         boolean hasPrincipal = (request.getUserPrincipal() != null);
@@ -65,8 +65,8 @@ public class GlobalControllerAdvice {
         }
         model.addAttribute("_csrf", new CsrfViewModel(csrfParameterName, csrfTokenValue));
 
-        // Valores por defecto siempre presentes para el header (Mustache falla si no
-        // existen)
+        // Default values always present for header rendering (Mustache fails if
+        // they do not exist)
         model.addAttribute("isUserLoggedIn", false);
         model.addAttribute("userId", "");
         model.addAttribute("userName", "");
@@ -78,8 +78,8 @@ public class GlobalControllerAdvice {
 
         if (hasPrincipal) {
             var currentUser = userService.getCurrentAuthenticatedUser().orElse(null);
-            // Solo se considera "logueado" si el usuario existe en nuestra BD
-            // (los usuarios PENDING con Google aún no están registrados)
+            // Consider the user "logged in" only if they exist in our DB
+            // (PENDING Google users are not registered yet)
             if (currentUser != null) {
                 userService.checkAndExpireSubscription(currentUser);
 

@@ -37,10 +37,6 @@ public class SecurityConfiguration {
                 return authProvider;
         }
 
-        /**
-         * Si el usuario logueado con Google aún no tiene cuenta (ROLE_PENDING),
-         * le lleva al formulario de completar datos. Si ya tiene cuenta, va al inicio.
-         */
         @Bean
         public AuthenticationSuccessHandler oauth2SuccessHandler() {
                 return (request, response, authentication) -> {
@@ -64,7 +60,7 @@ public class SecurityConfiguration {
                                 .headers(headers -> headers
                                                 .frameOptions(frameOptions -> frameOptions.sameOrigin()))
                                 .authorizeHttpRequests(authorize -> authorize
-                                                // NIVEL 0: ANONYMOUS (Público)
+                                                // LEVEL 0: ANONYMOUS (Public)
                                                 .requestMatchers("/css/**", "/js/**", "/img/**", "/images/**", "/*.css",
                                                                 "/*.js", "/webjars/**")
                                                 .permitAll()
@@ -76,42 +72,42 @@ public class SecurityConfiguration {
                                                                 "/statistics/course-genders", "/statistics/course-tags")
                                                 .permitAll()
 
-                                                // Registro completar datos via Google (solo usuarios PENDING)
+                                                // Complete registration data via Google (PENDING users only)
                                                 .requestMatchers("/register/google", "/register/google/cancel")
                                                 .hasAnyRole("PENDING")
 
-                                                // NIVEL 1: REGISTERED (Comprar)
+                                                // LEVEL 1: REGISTERED (Purchase)
                                                 .requestMatchers("/course/{id}/enroll", "/events/{id}/register")
                                                 .hasAnyRole("USER", "SUBSCRIBED", "ADMIN")
 
-                                                // NIVEL 2: SUBSCRIBED (Crear contenido)
+                                                // LEVEL 2: SUBSCRIBED (Create content)
                                                 .requestMatchers("/courses/new", "/events/new")
                                                 .hasAnyRole("SUBSCRIBED", "ADMIN")
 
                                                 .requestMatchers("/course/new", "/event/new")
                                                 .hasAnyRole("SUBSCRIBED", "ADMIN")
 
-                                                // Editar y borrar (la comprobación de "dueño" va en el controlador,
-                                                // pero aquí filtramos el rol mínimo)
+                                                // Edit and delete ("owner" validation is done in the controller,
+                                                // but here we enforce the minimum role)
                                                 .requestMatchers("/course/{id}/edit", "/course/{id}/delete")
                                                 .hasAnyRole("SUBSCRIBED", "ADMIN")
                                                 .requestMatchers("/event/{id}/edit", "/event/{id}/delete")
                                                 .hasAnyRole("SUBSCRIBED", "ADMIN")
 
-                                                // NIVEL 3: ADMIN (Todo)
+                                                // LEVEL 3: ADMIN (Everything)
                                                 .requestMatchers("/admin/**").hasRole("ADMIN")
 
-                                                // Cualquier otra cosa requiere login
+                                                // Any other request requires login
                                                 .anyRequest().authenticated())
 
-                                // 1. SISTEMA DE LOGIN TRADICIONAL (Usuario y Contraseña)
+                                // 1. TRADITIONAL LOGIN SYSTEM (Username and Password)
                                 .formLogin(formLogin -> formLogin
                                                 .loginPage("/login")
                                                 .failureUrl("/loginerror")
-                                                .defaultSuccessUrl("/")
+                                                .defaultSuccessUrl("/", true)
                                                 .permitAll())
 
-                                // 2. SISTEMA DE LOGIN SOCIAL (OAuth2 con Google)
+                                // 2. SOCIAL LOGIN SYSTEM (OAuth2 with Google)
                                 .oauth2Login(oauth2 -> oauth2
                                                 .loginPage("/login")
                                                 .successHandler(oauth2SuccessHandler())
@@ -119,7 +115,13 @@ public class SecurityConfiguration {
                                                 .userInfoEndpoint(userInfo -> userInfo
                                                                 .userService(customOAuth2UserService)))
 
-                                // 3. SISTEMA DE LOGOUT
+                                // 2.1 ACCESS DENIED (Logged user without required role)
+                                .exceptionHandling(exceptionHandling -> exceptionHandling
+                                                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                                                        response.sendRedirect("/error/forbidden");
+                                                }))
+
+                                // 3. LOGOUT SYSTEM
                                 .logout(logout -> logout
                                                 .logoutUrl("/logout")
                                                 .logoutSuccessUrl("/")

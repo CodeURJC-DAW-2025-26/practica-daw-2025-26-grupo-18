@@ -48,26 +48,25 @@ public class UserService {
     @Autowired
     private SubscriptionRepository subscriptionRepository;
 
-    // Indica si hay un usuario autenticado en la sesión actual.
+    // Indicates whether there is an authenticated user in the current session.
     public boolean isUserLoggedIn() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return auth != null && auth.isAuthenticated() &&
-                !"anonymousUser".equals(auth.getPrincipal());
+        return isActiveAuthentication(auth);
     }
 
-    // Devuelve el nombre del usuario autenticado actual.
+    // Returns the current authenticated user's name.
     public String getCurrentUserName() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+        if (isActiveAuthentication(auth)) {
             return auth.getName();
         }
         return "";
     }
 
-    // Devuelve el id del usuario autenticado actual.
+    // Returns the current authenticated user's id.
     public Long getCurrentUserId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+        if (isActiveAuthentication(auth)) {
             Optional<User> user;
             if (auth instanceof OAuth2AuthenticationToken) {
                 user = userRepository.findByEmail(auth.getName());
@@ -81,22 +80,27 @@ public class UserService {
         return null;
     }
 
-    // Devuelve la entidad User del usuario autenticado actual.
+    // Returns the User entity of the current authenticated user.
     public Optional<User> getCurrentAuthenticatedUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
-            // Para login OAuth2 (Google), auth.getName() devuelve el email
+        if (isActiveAuthentication(auth)) {
+            // For OAuth2 login (Google), auth.getName() returns the email
             if (auth instanceof OAuth2AuthenticationToken) {
                 return findByEmail(auth.getName());
             }
-            // Para login tradicional, auth.getName() devuelve el username
+            // For traditional login, auth.getName() returns the username
             return findByUsername(auth.getName());
         }
         return Optional.empty();
     }
 
+    // Returns true when the Authentication represents a real, non-anonymous user.
+    private boolean isActiveAuthentication(Authentication auth) {
+        return auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal());
+    }
+
     @Transactional
-    // Obtiene la imagen de perfil del usuario actual.
+    // Retrieves the current user's profile image.
     public String getCurrentUserProfileImage() {
         Long userId = getCurrentUserId();
         if (userId != null) {
@@ -106,7 +110,7 @@ public class UserService {
     }
 
     @Transactional
-    // Obtiene la URL de imagen de perfil de un usuario por id.
+    // Retrieves profile image URL for a user by id.
     public String getProfileImage(Long id) {
         Optional<User> user = findById(id);
         if (user.isPresent()) {
@@ -115,23 +119,22 @@ public class UserService {
         return "/img/default_avatar.png";
     }
 
-    // Busca un usuario por username.
+    // Finds a user by username.
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
-    // Busca un usuario por email.
+    // Finds a user by email.
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
-    // Busca un usuario por id.
+    // Finds a user by id.
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }
 
-    // Comprueba si ya existe un usuario con ese username (sin distinguir
-    // mayúsculas).
+    // Checks whether a user with that username already exists (case-insensitive).
     public boolean usernameExists(String username) {
         if (username == null || username.isBlank()) {
             return false;
@@ -139,7 +142,7 @@ public class UserService {
         return userRepository.existsByUsernameIgnoreCase(username.trim());
     }
 
-    // Comprueba si ya existe un usuario con ese email (sin distinguir mayúsculas).
+    // Checks whether a user with that email already exists (case-insensitive).
     public boolean emailExists(String email) {
         if (email == null || email.isBlank()) {
             return false;
@@ -147,13 +150,13 @@ public class UserService {
         return userRepository.existsByEmailIgnoreCase(email.trim());
     }
 
-    // Guarda los cambios de un usuario.
+    // Saves user changes.
     public void save(User user) {
         userRepository.save(user);
     }
 
     @Transactional
-    // Actualiza los datos editables del perfil de usuario.
+    // Updates editable user profile data.
     public boolean updateProfile(Long id, String username, String email, String country,
             String shortDescription, String currentGoal, String weeklyRoutine,
             String comunity, MultipartFile imageFile) throws IOException, SQLException {
@@ -171,7 +174,7 @@ public class UserService {
         if (country != null && !country.isBlank()) {
             user.setCountry(country);
         }
-        // Campos de texto libre — se permiten vacíos para borrar el valor
+        // Free-text fields — empty values are allowed to clear the value
         user.setShortDescription(shortDescription);
         user.setCurrentGoal(currentGoal);
         user.setWeeklyRoutine(weeklyRoutine);
@@ -182,13 +185,12 @@ public class UserService {
         return true;
     }
 
-    // Cuenta cursos completados por un usuario.
+    // Counts courses completed by a user.
     public int getCompletedCoursesCount(Long userId) {
         return enrollmentRepository.countByUserIdAndProgressPercentage(userId, 100);
     }
 
-    // Devuelve el tipo de cuenta visible del usuario (Admin/Suscrito/Sin
-    // suscripción).
+    // Returns the user's visible account type (Admin/Subscribed/No subscription).
     public String getUserType(Long userId) {
         Optional<User> optUser = findById(userId);
         if (optUser.isEmpty())
@@ -206,7 +208,7 @@ public class UserService {
         return "Sin suscripción";
     }
 
-    // Devuelve la lista de todos los países formateada y ordenada alfabéticamente.
+    // Returns the list of all countries, formatted and alphabetically sorted.
     public java.util.List<String> getAllCountries() {
         String[] countryCodes = java.util.Locale.getISOCountries();
         java.util.List<String> paises = new java.util.ArrayList<>();
@@ -218,29 +220,29 @@ public class UserService {
         return paises;
     }
 
-    // Actualiza el nombre de usuario en memoria.
+    // Updates the username in memory.
     public void updateName(String newName, User user) {
         user.setUsername(newName);
     }
 
-    // Actualiza el país de un usuario en memoria.
+    // Updates a user's country in memory.
     public void updateCountry(String country, User user) {
         user.setCountry(country);
     }
 
-    // Actualiza la imagen de usuario desde una ruta local.
+    // Updates user image from a local path.
     public void updateImage(String imgPath, User user) throws IOException, SQLException {
         Image img = imageService.saveImage(imgPath);
         user.setImage(img);
     }
 
-    // Comprueba si un usuario tiene suscripción activa a un curso.
+    // Checks whether a user has an active subscription to a course.
     public boolean isSuscribedToCourse(Long userId, Long courseId) {
         return enrollmentRepository.existsByUserIdAndCourseIdAndExpiresAtAfter(userId, courseId, LocalDateTime.now());
     }
 
     @Transactional
-    // Expira una suscripción vencida y retira su rol asociado.
+    // Expires an outdated subscription and removes its associated role.
     public void checkAndExpireSubscription(User user) {
         Optional<Subscription> subscriptionOpt = subscriptionRepository.findByUserIdAndStatus(user.getId(),
                 SubscriptionStatus.ACTIVE);
@@ -256,8 +258,8 @@ public class UserService {
         }
     }
 
-    // Valida que los datos provistos para registro/edición cumplan formatos lógicos
-    // y maneja restricciones de nulos/vacíos centrales.
+    // Validates that registration/edit data follows expected formats
+    // and handles core null/empty constraints.
     public String validateUserAttributes(String username, String email, String password, String birthDateStr,
             String gender, String country) {
 
@@ -268,8 +270,8 @@ public class UserService {
             return "El nombre de usuario y el correo electrónico son obligatorios.";
         }
 
-        // Si se proveen el resto de campos (Registro normal), exigimos que no estén
-        // vacíos
+        // If remaining fields are provided (normal registration), require non-empty
+        // values
         if (password != null && password.isBlank()) {
             return "Por favor, introduzca una contraseña.";
         }
@@ -311,7 +313,7 @@ public class UserService {
     }
 
     @Transactional
-    // Registra un nuevo usuario si username y email están disponibles.
+    // Registers a new user if username and email are available.
     public boolean registerUser(String username, String email, String rawPassword, String gender, String birthDate,
             String country, MultipartFile imageFile) throws IOException, SQLException {
         String normalizedUsername = username != null ? username.trim() : "";
@@ -347,8 +349,8 @@ public class UserService {
         return true;
     }
 
-    // Refresca la sesión de Spring Security del usuario actual, útil tras cambios
-    // en perfil o roles (ej. compra de suscripción).
+    // Refreshes the current user's Spring Security session, useful after profile
+    // or role changes (e.g., subscription purchase).
     public void refreshUserSession(String newUsername, jakarta.servlet.http.HttpServletRequest request) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null) {
@@ -371,5 +373,59 @@ public class UserService {
                 System.err.println("Error refrescando sesión de usuario: " + e.getMessage());
             }
         }
+    }
+
+    // Derives a username suggestion from Google OAuth2 attributes.
+    public String buildSuggestedUsername(org.springframework.security.oauth2.core.user.OAuth2User oAuth2User,
+            String email) {
+        String suggested = oAuth2User.getAttribute("given_name");
+        if (suggested == null || suggested.isBlank()) {
+            suggested = oAuth2User.getAttribute("name");
+        }
+        if ((suggested == null || suggested.isBlank()) && email != null && email.contains("@")) {
+            suggested = email.substring(0, email.indexOf('@'));
+        }
+        if (suggested == null)
+            return "";
+        return suggested.trim().replaceAll("\\s+", "");
+    }
+
+    // Derives a country suggestion from the Google locale attribute.
+    public String buildSuggestedCountry(org.springframework.security.oauth2.core.user.OAuth2User oAuth2User) {
+        String localeAttribute = oAuth2User.getAttribute("locale");
+        if (localeAttribute == null || localeAttribute.isBlank())
+            return "";
+        java.util.Locale googleLocale = java.util.Locale.forLanguageTag(localeAttribute.replace('_', '-'));
+        if (googleLocale.getCountry() == null || googleLocale.getCountry().isBlank())
+            return "";
+        return googleLocale.getDisplayCountry(java.util.Locale.of("es", "ES"));
+    }
+
+    // Builds an OAuth2 authentication token for a freshly registered user and
+    // stores it in the SecurityContext and HTTP session — moved from
+    // RegisterGoogleController.
+    public void authenticateOAuth2User(User newUser,
+            org.springframework.security.oauth2.core.user.OAuth2User oAuth2User,
+            jakarta.servlet.http.HttpServletRequest request) {
+
+        java.util.List<org.springframework.security.core.GrantedAuthority> authorities = newUser.getRoles().stream()
+                .map(role -> (org.springframework.security.core.GrantedAuthority) new org.springframework.security.core.authority.SimpleGrantedAuthority(
+                        "ROLE_" + role.getName()))
+                .collect(java.util.stream.Collectors.toList());
+
+        org.springframework.security.oauth2.core.user.DefaultOAuth2User authenticatedUser = new org.springframework.security.oauth2.core.user.DefaultOAuth2User(
+                authorities, oAuth2User.getAttributes(), "email");
+
+        OAuth2AuthenticationToken authToken = new OAuth2AuthenticationToken(authenticatedUser, authorities, "google");
+
+        org.springframework.security.core.context.SecurityContext securityContext = SecurityContextHolder
+                .createEmptyContext();
+        securityContext.setAuthentication(authToken);
+        SecurityContextHolder.setContext(securityContext);
+
+        jakarta.servlet.http.HttpSession session = request.getSession(true);
+        session.setAttribute(
+                org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                securityContext);
     }
 }

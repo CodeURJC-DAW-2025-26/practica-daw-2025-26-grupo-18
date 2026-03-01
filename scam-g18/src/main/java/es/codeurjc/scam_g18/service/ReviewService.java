@@ -14,7 +14,7 @@ public class ReviewService {
     @Autowired
     private ReviewRepository reviewRepository;
 
-    // Crea una reseña si el usuario aún no ha valorado ese curso.
+    // Creates a review if the user has not rated that course yet.
     public boolean addReview(User user, Course course, int rating, String content) {
         if (reviewRepository.existsByUserIdAndCourseId(user.getId(), course.getId())) {
             return false;
@@ -24,7 +24,7 @@ public class ReviewService {
         return true;
     }
 
-    // Comprueba si un usuario ya ha publicado una reseña para un curso.
+    // Checks whether a user has already posted a review for a course.
     public boolean hasUserReviewed(Long userId, Long courseId) {
         return reviewRepository.existsByUserIdAndCourseId(userId, courseId);
     }

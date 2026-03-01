@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class CourseController {
 
+    private static final int PAGE_SIZE = 10;
+
     @Autowired
     private CourseService courseService;
 
@@ -39,25 +41,25 @@ public class CourseController {
     @Autowired
     private ReviewService reviewService;
 
-    // Construye el controlador con los servicios principales de cursos y etiquetas.
+    // Builds the controller with main course and tag services.
     public CourseController(CourseService courseService, TagService tagService) {
         this.courseService = courseService;
         this.tagService = tagService;
     }
 
-    // Muestra el listado de cursos con búsqueda y filtro por etiquetas.
+    // Displays the course listing with search and tag filtering.
     @GetMapping("/courses")
     public String courses(Model model, @RequestParam(required = false) String search,
             @RequestParam(required = false) List<String> tags) {
         Long currentUserId = userService.getCurrentAuthenticatedUser().map(User::getId).orElse(null);
-        model.addAttribute("courses", courseService.getCoursesViewData(search, tags, currentUserId, 0, 5));
+        model.addAttribute("courses", courseService.getCoursesViewData(search, tags, currentUserId, 0, PAGE_SIZE));
         model.addAttribute("search", search);
         model.addAttribute("tagsView", tagService.getTagsView(tags));
-        model.addAttribute("hasMore", courseService.getTotalPublishedCoursesCount(search, tags) > 5);
+        model.addAttribute("hasMore", courseService.getTotalPublishedCoursesCount(search, tags) > PAGE_SIZE);
         return "courses";
     }
 
-    // Endpoint AJAX para paginación de cursos
+    // AJAX endpoint for course pagination
     @GetMapping("/api/courses")
     @ResponseBody
     public ResponseEntity<List<Map<String, Object>>> getCoursesApi(
@@ -65,11 +67,12 @@ public class CourseController {
             @RequestParam(required = false) List<String> tags,
             @RequestParam(defaultValue = "0") int page) {
         Long currentUserId = userService.getCurrentAuthenticatedUser().map(User::getId).orElse(null);
-        List<Map<String, Object>> courses = courseService.getCoursesViewData(search, tags, currentUserId, page, 5);
+        List<Map<String, Object>> courses = courseService.getCoursesViewData(search, tags, currentUserId, page,
+                PAGE_SIZE);
         return ResponseEntity.ok(courses);
     }
 
-    // Muestra el detalle de un curso y los datos de progreso/reseñas del usuario.
+    // Displays course detail plus user progress/review data.
     @GetMapping("/course/{id}")
     public String showCourse(Model model, @PathVariable long id, Principal principal) {
         Course course;
@@ -111,8 +114,7 @@ public class CourseController {
 
     }
 
-    // Permite abrir el vídeo de una lección a suscritos, administradores y creador
-    // del curso.
+    // Allows lesson video access to subscribers, admins, and the course creator.
     @GetMapping("/course/{courseId}/lesson/{lessonId}/video")
     public String openLessonVideo(@PathVariable long courseId, @PathVariable long lessonId, Principal principal) {
         if (principal == null) {
@@ -145,7 +147,7 @@ public class CourseController {
         return "redirect:" + videoUrlOpt.get();
     }
 
-    // Marca una lección como completada y redirige al detalle del curso.
+    // Marks a lesson as completed and redirects to course detail.
     @PostMapping("/course/{courseId}/lesson/{lessonId}/complete")
     public String markLessonAsCompleted(@PathVariable long courseId, @PathVariable long lessonId, Principal principal) {
         if (principal == null) {
@@ -161,8 +163,7 @@ public class CourseController {
         return "redirect:/course/" + courseId;
     }
 
-    // Marca una lección como completada vía AJAX y devuelve el progreso
-    // actualizado.
+    // Marks a lesson as completed via AJAX and returns updated progress.
     @PostMapping("/course/{courseId}/lesson/{lessonId}/complete-ajax")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> markLessonAsCompletedAjax(
@@ -196,7 +197,7 @@ public class CourseController {
         return ResponseEntity.ok(response);
     }
 
-    // Muestra los cursos a los que el usuario autenticado está suscrito.
+    // Displays courses to which the authenticated user is subscribed.
     @GetMapping("/courses/subscribed")
     public String subscribedCourses(Model model, Principal principal) {
         if (principal == null) {
@@ -216,7 +217,7 @@ public class CourseController {
         return "subscribedCourses";
     }
 
-    // Muestra el formulario de edición de un curso si el usuario tiene permisos.
+    // Displays the course edit form if the user has permissions.
     @GetMapping("/course/{id}/edit")
     public String editCourseForm(Model model, @PathVariable long id) {
         Course course;
@@ -231,19 +232,13 @@ public class CourseController {
             return "redirect:/courses";
         }
 
-        if (course.getPriceCents() != null) {
-            course.setPrice(course.getPriceCents() / 100.0);
-        }
-
-        java.util.List<String> selectedTags = course.getTags().stream().map(es.codeurjc.scam_g18.model.Tag::getName)
-                .toList();
+        java.util.List<String> selectedTags = courseService.prepareEditData(course);
         model.addAttribute("allTagsView", tagService.getTagsView(selectedTags));
-
         model.addAttribute("course", course);
         return "editCourse";
     }
 
-    // Actualiza un curso existente cuando el usuario está autorizado.
+    // Updates an existing course when the user is authorized.
     @PostMapping("/course/{id}/edit")
     public String updateCourse(
             @PathVariable long id,
@@ -274,7 +269,7 @@ public class CourseController {
         return "redirect:/courses";
     }
 
-    // Elimina un curso si el usuario actual tiene permisos de gestión.
+    // Deletes a course if the current user has management permissions.
     @PostMapping("/course/{id}/delete")
     public String deleteCourse(@PathVariable long id) {
         var currentUserOpt = userService.getCurrentAuthenticatedUser();
@@ -287,7 +282,7 @@ public class CourseController {
         return "redirect:/course/" + id;
     }
 
-    // Muestra el formulario para crear un nuevo curso.
+    // Displays the form to create a new course.
     @GetMapping("/courses/new")
     public String newCourseForm(Model model) {
         model.addAttribute("course", new Course());
@@ -295,7 +290,7 @@ public class CourseController {
         return "createCourse";
     }
 
-    // Crea un nuevo curso con sus etiquetas e imagen asociadas.
+    // Creates a new course with its tags and associated image.
     @PostMapping("/courses/new")
     public String createCourse(
             Course course,
@@ -323,7 +318,7 @@ public class CourseController {
         return "redirect:/courses";
     }
 
-    // Añade una reseña al curso desde el usuario autenticado.
+    // Adds a course review from the authenticated user.
     @PostMapping("/course/{id}/review")
     public String addReview(@PathVariable long id,
             @RequestParam int rating,

@@ -25,6 +25,8 @@ import jakarta.persistence.Transient;
 @Table(name = "users")
 public class User {
 
+    private static final String LEGACY_PROFILE_PLACEHOLDER = "Edita tu perfil para añadir contenido a este campo";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -45,13 +47,13 @@ public class User {
 
     private String country;
 
-    private String shortDescription = "Edita tu perfil para añadir contenido a este campo";
+    private String shortDescription = "";
 
-    private String currentGoal = "Edita tu perfil para añadir contenido a este campo";
+    private String currentGoal = "";
 
-    private String weeklyRoutine = "Edita tu perfil para añadir contenido a este campo";
+    private String weeklyRoutine = "";
 
-    private String comunity = "Edita tu perfil para añadir contenido a este campo";
+    private String comunity = "";
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id")
@@ -138,7 +140,7 @@ public class User {
     }
 
     public String getShortDescription() {
-        return shortDescription;
+        return sanitizeLegacyProfileField(shortDescription);
     }
 
     public void setShortDescription(String shortDescription) {
@@ -146,7 +148,7 @@ public class User {
     }
 
     public String getCurrentGoal() {
-        return currentGoal;
+        return sanitizeLegacyProfileField(currentGoal);
     }
 
     public void setCurrentGoal(String currentGoal) {
@@ -154,7 +156,7 @@ public class User {
     }
 
     public String getWeeklyRoutine() {
-        return weeklyRoutine;
+        return sanitizeLegacyProfileField(weeklyRoutine);
     }
 
     public void setWeeklyRoutine(String weeklyRoutine) {
@@ -162,7 +164,7 @@ public class User {
     }
 
     public String getComunity() {
-        return comunity;
+        return sanitizeLegacyProfileField(comunity);
     }
 
     public void setComunity(String comunity) {
@@ -199,6 +201,18 @@ public class User {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    @Transient
+    public Boolean getIsSubscribed() {
+        return roles != null && roles.stream().anyMatch(role -> "SUBSCRIBED".equals(role.getName()));
+    }
+
+    private String sanitizeLegacyProfileField(String value) {
+        if (LEGACY_PROFILE_PLACEHOLDER.equals(value)) {
+            return "";
+        }
+        return value;
     }
 
     @Transient // Para que no se guarde en la base de datos

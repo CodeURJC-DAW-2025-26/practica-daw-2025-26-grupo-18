@@ -15,7 +15,7 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    // Envía un correo de texto simple.
+    // Sends a plain-text email.
     private void sendMail(String destinatario, String asunto, String cuerpo) {
         SimpleMailMessage mensaje = new SimpleMailMessage();
         mensaje.setFrom("scam.noreply67@gmail.com");
@@ -27,7 +27,7 @@ public class EmailService {
         System.out.println("¡Correo enviado con éxito!");
     }
 
-    // Envía un correo con un archivo adjunto.
+    // Sends an email with an attachment.
     private void sendMailWithAttachment(String destinatario, String asunto, String cuerpo, byte[] attachment,
             String attachmentName) {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -47,7 +47,7 @@ public class EmailService {
         }
     }
 
-    // Envía un correo en formato HTML.
+    // Sends an email in HTML format.
     private void sendHtmlMail(String destinatario, String asunto, String cuerpoHtml) {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
 
@@ -65,7 +65,7 @@ public class EmailService {
         }
     }
 
-    // Envía el mensaje de bienvenida al crear una cuenta nueva.
+    // Sends the welcome message when a new account is created.
     public void newAccountMessage(String newUserMail, String newUsername) {
                 String safeUsername = (newUsername == null || newUsername.isBlank()) ? "usuario" : newUsername;
 
@@ -107,7 +107,7 @@ public class EmailService {
                 sendHtmlMail(newUserMail, "Bienvenido a SCAM", messageHtml);
     }
 
-    // Notifica al creador cuando su curso ha sido publicado.
+    // Notifies the creator when their course has been published.
     public void cursePublished(String userMail, String courseName, String creatorName) {
         String message = """
                 ¡Enhorabuena, %s! 🎉
@@ -119,12 +119,12 @@ public class EmailService {
                 Saludos,
                 El equipo de SCAM
                 """
-                .formatted(creatorName, courseName); // Esto inyecta el nombre donde pusimos %s
+                .formatted(creatorName, courseName); // This injects the name where %s was placed
 
         sendMail(userMail, "SE HA PUBLICADO TU CURSO", message);
     }
 
-    // Informa al usuario de que su cuenta ha sido suspendida.
+    // Informs the user that their account has been suspended.
     public void accountBannedMessage(String userEmail, String userName) {
         String message = """
                 Hola %s,
@@ -141,7 +141,7 @@ public class EmailService {
         sendMail(userEmail, "⚠️ Notificación de suspensión de cuenta", message);
     }
 
-    // Notifica al creador cuando su evento ha sido publicado.
+    // Notifies the creator when their event has been published.
     public void eventPublished(String userMail, String eventName, String creatorName) {
         String message = """
                 ¡Enhorabuena, %s! 🎉
@@ -159,7 +159,7 @@ public class EmailService {
 
     }
 
-    // Envía por correo la factura PDF de un pedido.
+    // Sends the PDF invoice of an order by email.
     public void orderInvoiceMessage(String userMail, String userName, Long orderId, byte[] invoicePdf) {
         String message = """
                 Hola %s,

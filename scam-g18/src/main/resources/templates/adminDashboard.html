@@ -16,7 +16,8 @@
     </div><!-- End Page Title -->
 
     <!-- Admin Dashboard Section -->
-    <section id="admin-dashboard-section" class="section service-details">
+    <section id="admin-dashboard-section" class="section service-details" data-active-tab="{{activeTab}}"
+        data-csrf-token="{{_csrf.token}}" data-csrf-param="{{_csrf.parameterName}}">
         <div class="container" data-aos="fade-up">
 
             <div class="service-tabs">
@@ -50,7 +51,7 @@
 
                 <div class="tab-content">
 
-                    <!-- ==================== USUARIOS ==================== -->
+                    <!-- ==================== USERS ==================== -->
                     <div class="tab-pane fade" id="usersTab" role="tabpanel">
                         <div class="card border-0 shadow-sm mb-4">
                             <div class="card-body p-4">
@@ -76,6 +77,7 @@
                                             <tr>
                                                 <th>Usuario</th>
                                                 <th>Email</th>
+                                                <th>Suscripción</th>
                                                 <th>Estado</th>
                                                 <th class="text-end">Acciones</th>
                                             </tr>
@@ -90,6 +92,12 @@
                                                     </div>
                                                 </td>
                                                 <td class="text-muted">{{email}}</td>
+                                                <td>
+                                                    {{#isSubscribed}}<span
+                                                        class="badge bg-success">Sí</span>{{/isSubscribed}}
+                                                    {{^isSubscribed}}<span
+                                                        class="badge bg-secondary">No</span>{{/isSubscribed}}
+                                                </td>
                                                 <td>
                                                     {{#isActive}}<span
                                                         class="badge bg-success">Activo</span>{{/isActive}}
@@ -107,8 +115,9 @@
                                                             class="d-flex align-items-start">
                                                             <input type="hidden" name="{{_csrf.parameterName}}"
                                                                 value="{{_csrf.token}}">
-                                                            <button type="submit" class="btn btn-sm btn-accent-outline"
-                                                                onclick="return confirm('¿Banear a {{username}}?')">
+                                                            <button type="submit"
+                                                                class="btn btn-sm btn-accent-outline js-ban-confirm"
+                                                                data-username="{{username}}">
                                                                 <i class="bi bi-slash-circle"></i> Banear
                                                             </button>
                                                         </form>
@@ -129,7 +138,7 @@
                                             {{/users}}
                                             {{^users}}
                                             <tr>
-                                                <td colspan="4" class="text-center text-muted py-4">No se encontraron
+                                                <td colspan="5" class="text-center text-muted py-4">No se encontraron
                                                     usuarios.</td>
                                             </tr>
                                             {{/users}}
@@ -143,9 +152,9 @@
                                 {{/hasMoreUsers}}
                             </div>
                         </div>
-                    </div><!-- end usersTab -->
+                    </div><!-- End usersTab -->
 
-                    <!-- ==================== CURSOS ==================== -->
+                    <!-- ==================== COURSES ==================== -->
                     <div class="tab-pane fade" id="coursesTab" role="tabpanel">
                         <div class="card border-0 shadow-sm mb-4">
                             <div class="card-body p-4">
@@ -242,9 +251,9 @@
                                 {{/hasMoreCourses}}
                             </div>
                         </div>
-                    </div><!-- end coursesTab -->
+                    </div><!-- End coursesTab -->
 
-                    <!-- ==================== EVENTOS ==================== -->
+                    <!-- ==================== EVENTS ==================== -->
                     <div class="tab-pane fade" id="eventsTab" role="tabpanel">
                         <div class="card border-0 shadow-sm mb-4">
                             <div class="card-body p-4">
@@ -341,9 +350,9 @@
                                 {{/hasMoreEvents}}
                             </div>
                         </div>
-                    </div><!-- end eventsTab -->
+                    </div><!-- End eventsTab -->
 
-                    <!-- ==================== PEDIDOS ==================== -->
+                    <!-- ==================== ORDERS ==================== -->
                     <div class="tab-pane fade" id="ordersTab" role="tabpanel">
                         <div class="card border-0 shadow-sm">
                             <div class="card-body p-0">
@@ -400,7 +409,7 @@
                                 {{/hasMoreOrders}}
                             </div>
                         </div>
-                    </div><!-- end ordersTab -->
+                    </div><!-- End ordersTab -->
 
                 </div><!-- end tab-content -->
             </div><!-- end service-tabs -->
@@ -411,332 +420,33 @@
 
 {{>footer}}
 
-<script>
-    // Activate the tab based on server-provided activeTab value
-    document.addEventListener('DOMContentLoaded', function () {
-        var activeTabKey = '{{activeTab}}';
-        var tabBtn = document.querySelector('#adminTabs [data-tab-key="' + activeTabKey + '"]');
-        if (tabBtn) {
-            new bootstrap.Tab(tabBtn).show();
-        } else {
-            // default to users tab
-            new bootstrap.Tab(document.getElementById('tab-users')).show();
-        }
-
-        // Paginación ajax usuarios
-        const loadMoreUsersBtn = document.getElementById('loadMoreUsersBtn');
-        if (loadMoreUsersBtn) {
-            loadMoreUsersBtn.addEventListener('click', function() {
-                const page = this.getAttribute('data-page');
-                const query = this.getAttribute('data-query');
-                const urlParams = new URLSearchParams();
-                urlParams.set('page', page);
-                if (query) urlParams.set('query', query);
-                
-                const csrfToken = '{{_csrf.token}}';
-                const csrfParam = '{{_csrf.parameterName}}';
-                
-                fetch('/admin/api/users?' + urlParams.toString())
-                .then(response => response.json())
-                .then(data => {
-                    const usersList = document.getElementById('usersList');
-                    
-                    if (data.length > 0) {
-                        data.forEach(user => {
-                            const tr = document.createElement('tr');
-                            
-                            let statusHtml = user.isActive 
-                                ? '<span class="badge bg-success">Activo</span>' 
-                                : '<span class="badge bg-danger">Baneado</span>';
-                                
-                            let actionHtml = '';
-                            if (user.isActive) {
-                                actionHtml = `
-                                <form action="/admin/users/${user.id}/ban" method="post" class="d-flex align-items-start">
-                                    <input type="hidden" name="${csrfParam}" value="${csrfToken}">
-                                    <button type="submit" class="btn btn-sm btn-accent-outline" onclick="return confirm('¿Banear a ${user.username}?')">
-                                        <i class="bi bi-slash-circle"></i> Banear
-                                    </button>
-                                </form>`;
-                            } else {
-                                actionHtml = `
-                                <form action="/admin/users/${user.id}/unban" method="post" class="d-flex align-items-start">
-                                    <input type="hidden" name="${csrfParam}" value="${csrfToken}">
-                                    <button type="submit" class="btn btn-sm btn-accent">
-                                        <i class="bi bi-check-circle"></i> Desbanear
-                                    </button>
-                                </form>`;
-                            }
-                            
-                            tr.innerHTML = `
-                                <td>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <i class="bi bi-person-circle fs-4 text-muted"></i>
-                                        <span class="fw-semibold">${user.username}</span>
-                                    </div>
-                                </td>
-                                <td class="text-muted">${user.email}</td>
-                                <td>${statusHtml}</td>
-                                <td class="text-end">
-                                    <div class="d-flex justify-content-end align-items-start gap-2 flex-nowrap">
-                                        <a href="/profile/${user.id}" class="btn btn-sm btn-accent-outline">Ver perfil</a>
-                                        ${actionHtml}
-                                    </div>
-                                </td>
-                            `;
-                            usersList.appendChild(tr);
-                        });
-                        
-                        this.setAttribute('data-page', parseInt(page) + 1);
-                        
-                        if (data.length < 5) {
-                            this.style.display = 'none';
-                        }
-                    } else {
-                        this.style.display = 'none';
-                    }
-                })
-                .catch(error => console.error('Error loading more users:', error));
-            });
-        }
-
-        // Paginación ajax eventos
-        const loadMoreEventsBtn = document.getElementById('loadMoreEventsBtn');
-        if (loadMoreEventsBtn) {
-            loadMoreEventsBtn.addEventListener('click', function() {
-                const page = this.getAttribute('data-page');
-                const query = this.getAttribute('data-query');
-                const urlParams = new URLSearchParams();
-                urlParams.set('page', page);
-                if (query) urlParams.set('query', query);
-                
-                const csrfToken = '{{_csrf.token}}';
-                const csrfParam = '{{_csrf.parameterName}}';
-                
-                fetch('/admin/api/events?' + urlParams.toString())
-                .then(response => response.json())
-                .then(data => {
-                    const eventsList = document.getElementById('eventsList');
-                    
-                    if (data.length > 0) {
-                        data.forEach(event => {
-                            const tr = document.createElement('tr');
-                            if (event.isPendingReview) {
-                                tr.classList.add('table-warning');
-                            }
-                            
-                            let titleHtml = `
-                                <div>
-                                    <span class="fw-semibold">${event.title}</span>
-                                    ${event.isPendingReview ? '<span class="badge bg-light text-accent ms-2">En revisión</span>' : ''}
-                                    <p class="text-muted small mb-0">${event.category}</p>
-                                </div>
-                            `;
-                            
-                            let statusHtml = event.isPendingReview 
-                                ? '<span class="badge bg-light text-accent">Pendiente</span>' 
-                                : `<span class="badge bg-secondary">${event.status}</span>`;
-                                
-                            let actionHtml = `
-                                <a href="/event/${event.id}" class="btn btn-sm btn-accent-outline">
-                                    <i class="bi bi-eye"></i> Ver
-                                </a>
-                                <a href="/event/${event.id}/edit" class="btn btn-sm btn-accent-outline">
-                                    <i class="bi bi-pencil"></i> Editar
-                                </a>
-                            `;
-                            
-                            if (event.isPendingReview) {
-                                actionHtml += `
-                                <form action="/admin/events/${event.id}/approve" method="post" class="d-inline">
-                                    <input type="hidden" name="${csrfParam}" value="${csrfToken}">
-                                    <button type="submit" class="btn btn-sm btn-accent">
-                                        <i class="bi bi-check-lg"></i> Aprobar
-                                    </button>
-                                </form>
-                                <form action="/admin/events/${event.id}/reject" method="post" class="d-inline">
-                                    <input type="hidden" name="${csrfParam}" value="${csrfToken}">
-                                    <button type="submit" class="btn btn-sm btn-accent-outline" onclick="return confirm('¿Rechazar este evento?')">
-                                        <i class="bi bi-x-lg"></i> Rechazar
-                                    </button>
-                                </form>
-                                `;
-                            }
-                                
-                            tr.innerHTML = `
-                                <td>${titleHtml}</td>
-                                <td class="text-muted">${event.creatorUsername}</td>
-                                <td>${statusHtml}</td>
-                                <td class="text-end">
-                                    <div class="d-flex justify-content-end align-items-start gap-2 flex-wrap">
-                                        ${actionHtml}
-                                    </div>
-                                </td>
-                            `;
-                            
-                            eventsList.appendChild(tr);
-                        });
-                        
-                        this.setAttribute('data-page', parseInt(page) + 1);
-                        
-                        if (data.length < 5) {
-                            this.parentElement.style.display = 'none';
-                        }
-                    } else {
-                        this.parentElement.style.display = 'none';
-                    }
-                })
-                .catch(error => console.error('Error cargando más eventos:', error));
-            });
-        }
-
-        // Paginación ajax cursos
-        const loadMoreCoursesBtn = document.getElementById('loadMoreCoursesBtn');
-        if (loadMoreCoursesBtn) {
-            loadMoreCoursesBtn.addEventListener('click', function() {
-                const page = this.getAttribute('data-page');
-                const query = this.getAttribute('data-query');
-                const urlParams = new URLSearchParams();
-                urlParams.set('page', page);
-                if (query) urlParams.set('query', query);
-                
-                const csrfToken = '{{_csrf.token}}';
-                const csrfParam = '{{_csrf.parameterName}}';
-                
-                fetch('/admin/api/courses?' + urlParams.toString())
-                .then(response => response.json())
-                .then(data => {
-                    const coursesList = document.getElementById('coursesList');
-                    
-                    if (data.length > 0) {
-                        data.forEach(course => {
-                            const tr = document.createElement('tr');
-                            if (course.isPendingReview) {
-                                tr.classList.add('table-warning');
-                            }
-                            
-                            let titleHtml = `
-                                <div>
-                                    <span class="fw-semibold">${course.title}</span>
-                                    ${course.isPendingReview ? '<span class="badge bg-light text-accent ms-2">En revisión</span>' : ''}
-                                    <p class="text-muted small mb-0">${course.shortDescription}</p>
-                                </div>
-                            `;
-                            
-                            let statusHtml = course.isPendingReview 
-                                ? '<span class="badge bg-light text-accent">Pendiente</span>' 
-                                : `<span class="badge bg-secondary">${course.status}</span>`;
-                                
-                            let actionHtml = `
-                                <a href="/course/${course.id}" class="btn btn-sm btn-accent-outline">
-                                    <i class="bi bi-eye"></i> Ver
-                                </a>
-                                <a href="/course/${course.id}/edit" class="btn btn-sm btn-accent-outline">
-                                    <i class="bi bi-pencil"></i> Editar
-                                </a>
-                            `;
-                            
-                            if (course.isPendingReview) {
-                                actionHtml += `
-                                <form action="/admin/courses/${course.id}/approve" method="post" class="d-inline">
-                                    <input type="hidden" name="${csrfParam}" value="${csrfToken}">
-                                    <button type="submit" class="btn btn-sm btn-accent">
-                                        <i class="bi bi-check-lg"></i> Aprobar
-                                    </button>
-                                </form>
-                                <form action="/admin/courses/${course.id}/reject" method="post" class="d-inline">
-                                    <input type="hidden" name="${csrfParam}" value="${csrfToken}">
-                                    <button type="submit" class="btn btn-sm btn-accent-outline" onclick="return confirm('¿Rechazar este curso?')">
-                                        <i class="bi bi-x-lg"></i> Rechazar
-                                    </button>
-                                </form>
-                                `;
-                            }
-                                
-                            tr.innerHTML = `
-                                <td>${titleHtml}</td>
-                                <td class="text-muted">${course.creatorUsername}</td>
-                                <td>${statusHtml}</td>
-                                <td class="text-end">
-                                    <div class="d-flex justify-content-end align-items-start gap-2 flex-wrap">
-                                        ${actionHtml}
-                                    </div>
-                                </td>
-                            `;
-                            
-                            coursesList.appendChild(tr);
-                        });
-                        
-                        this.setAttribute('data-page', parseInt(page) + 1);
-                        
-                        if (data.length < 5) {
-                            this.parentElement.style.display = 'none';
-                        }
-                    } else {
-                        this.parentElement.style.display = 'none';
-                    }
-                })
-                .catch(error => console.error('Error cargando más cursos:', error));
-            });
-        }
-
-        // Paginación ajax pedidos
-        const loadMoreOrdersBtn = document.getElementById('loadMoreOrdersBtn');
-        if (loadMoreOrdersBtn) {
-            loadMoreOrdersBtn.addEventListener('click', function() {
-                const page = this.getAttribute('data-page');
-                const urlParams = new URLSearchParams();
-                urlParams.set('page', page);
-                
-                fetch('/admin/api/orders?' + urlParams.toString())
-                .then(response => response.json())
-                .then(data => {
-                    const ordersList = document.getElementById('ordersList');
-                    
-                    if (data.length > 0) {
-                        data.forEach(order => {
-                            const tr = document.createElement('tr');
-                            
-                            let userHtml = order.username ? order.username : '-';
-                            let clientHtml = `
-                                <div>${order.billingFullName}</div>
-                                <small class="text-muted">${order.billingEmail}</small>
-                            `;
-                            
-                            let dateHtml = order.paidAt ? order.paidAt : (order.createdAt ? order.createdAt : '');
-                            
-                            let paymentHtml = `
-                                <div>${order.paymentMethod}</div>
-                                <small class="text-muted">${order.paymentReference}</small>
-                            `;
-                            
-                            tr.innerHTML = `
-                                <td class="fw-semibold">#${order.id}</td>
-                                <td>${userHtml}</td>
-                                <td>${clientHtml}</td>
-                                <td><span class="badge bg-secondary">${order.status}</span></td>
-                                <td>${dateHtml}</td>
-                                <td>${paymentHtml}</td>
-                                <td class="text-end fw-semibold">${order.totalAmountEuros} €</td>
-                            `;
-                            
-                            ordersList.appendChild(tr);
-                        });
-                        
-                        this.setAttribute('data-page', parseInt(page) + 1);
-                        
-                        if (data.length < 5) {
-                            this.parentElement.style.display = 'none';
-                        }
-                    } else {
-                        this.parentElement.style.display = 'none';
-                    }
-                })
-                .catch(error => console.error('Error cargando más pedidos:', error));
-            });
-        }
-    });
-</script>
+<div class="modal fade scam-ban-modal" id="banConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-1">
+                <h5 class="modal-title d-flex align-items-center gap-2">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    Confirmar baneo
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-1">
+                <p class="mb-3">Vas a banear al usuario:</p>
+                <div class="ban-user-chip mb-3">
+                    <i class="bi bi-person-fill"></i>
+                    <span class="fw-semibold" id="banConfirmUsername"></span>
+                </div>
+                <p class="modal-help mb-0">Esta acción bloqueará su acceso hasta que un administrador lo desbanee.</p>
+            </div>
+            <div class="modal-footer border-0 pt-1">
+                <button type="button" class="btn btn-accent-outline" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-accent" id="confirmBanBtn">
+                    <i class="bi bi-slash-circle me-1"></i> Confirmar baneo
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 </body>
 

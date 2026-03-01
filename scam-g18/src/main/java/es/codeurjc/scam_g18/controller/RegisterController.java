@@ -60,14 +60,6 @@ public class RegisterController {
             return "redirect:/register";
         }
 
-        if (userService.usernameExists(username)) {
-            return "redirect:/register?error=usernameExists";
-        }
-
-        if (userService.emailExists(email)) {
-            return "redirect:/register?error=emailExists";
-        }
-
         boolean registered = userService.registerUser(username, email, password, gender, birthDate, country, imageFile);
         if (!registered) {
             redirectAttributes.addFlashAttribute("error", "El nombre de usuario o correo electrónico ya existen.");

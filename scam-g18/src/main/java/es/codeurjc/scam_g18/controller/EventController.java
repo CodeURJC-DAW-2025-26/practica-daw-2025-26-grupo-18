@@ -1,66 +1,72 @@
 package es.codeurjc.scam_g18.controller;
 
 import java.util.List;
+import java.util.Map;
+import jakarta.servlet.http.HttpServletResponse;
 
+import es.codeurjc.scam_g18.model.Event;
 import es.codeurjc.scam_g18.service.EventService;
+import es.codeurjc.scam_g18.service.TagService;
+import es.codeurjc.scam_g18.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
-import es.codeurjc.scam_g18.service.TagService;
-import es.codeurjc.scam_g18.model.Event;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class EventController {
 
+    private static final int PAGE_SIZE = 10;
+
     @Autowired
     private EventService eventService;
-
     @Autowired
     private TagService tagService;
+    @Autowired
+    private UserService userService;
 
-    private final es.codeurjc.scam_g18.service.UserService userService;
-
-    // Construye el controlador con los servicios necesarios para gestionar eventos.
-    public EventController(EventService eventService, TagService tagService,
-            es.codeurjc.scam_g18.service.UserService userService) {
-        this.eventService = eventService;
-        this.tagService = tagService;
-        this.userService = userService;
-    }
-
-    // Muestra el listado de eventos con búsqueda y filtros por etiquetas.
+    // Displays the event listing with search and tag filters.
     @GetMapping("/events")
     public String events(Model model, @RequestParam(required = false) String search,
             @RequestParam(required = false) List<String> tags) {
         Long currentUserId = userService.getCurrentAuthenticatedUser().map(user -> user.getId()).orElse(null);
-        model.addAttribute("events", eventService.getEventsViewData(search, tags, currentUserId, 0, 5));
-        model.addAttribute("hasMoreEvents", eventService.getTotalPublishedEventsCount(search, tags) > 5);
+        model.addAttribute("events", eventService.getEventsViewData(search, tags, currentUserId, 0, PAGE_SIZE));
+        model.addAttribute("hasMoreEvents", eventService.getTotalPublishedEventsCount(search, tags) > PAGE_SIZE);
         model.addAttribute("search", search);
         model.addAttribute("tagsView", tagService.getTagsView(tags));
 
         return "events";
     }
 
-    // Endpoint AJAX para paginación de eventos
+    // AJAX endpoint for event pagination
     @GetMapping("/api/events")
-    @org.springframework.web.bind.annotation.ResponseBody
-    public org.springframework.http.ResponseEntity<List<java.util.Map<String, Object>>> getEventsApi(
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> getEventsApi(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) List<String> tags,
             @RequestParam(defaultValue = "0") int page) {
         Long currentUserId = userService.getCurrentAuthenticatedUser().map(user -> user.getId()).orElse(null);
-        List<java.util.Map<String, Object>> events = eventService.getEventsViewData(search, tags, currentUserId, page,
-                5);
-        return org.springframework.http.ResponseEntity.ok(events);
+        List<Map<String, Object>> events = eventService.getEventsViewData(search, tags, currentUserId, page,
+                PAGE_SIZE);
+        return ResponseEntity.ok(events);
     }
 
-    // Muestra los eventos comprados por el usuario autenticado.
+    // Delegates Nominatim geocoding to EventService.
+    @GetMapping(value = "/api/location-search", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<String> searchLocations(@RequestParam("q") String query) {
+        return ResponseEntity.ok(eventService.searchLocations(query));
+    }
+
+    // Displays events purchased by the authenticated user.
     @GetMapping("/events/purchased")
     public String purchasedEvents(Model model, java.security.Principal principal) {
         if (principal == null) {
@@ -79,13 +85,17 @@ public class EventController {
         return "purchasedEvents";
     }
 
-    // Muestra el detalle de un evento y permisos de gestión/compra del usuario
-    // actual.
+    // Displays event detail and current user's management/purchase permissions.
     @GetMapping("/event/{id}")
-    public String showEvent(Model model, @PathVariable long id, @RequestParam(required = false) String error) {
+    public String showEvent(Model model, @PathVariable long id, @RequestParam(required = false) String error,
+            HttpServletResponse response) {
         var eventOpt = eventService.getEventById(id);
         if (eventOpt.isEmpty()) {
-            return "redirect:/events";
+            response.setStatus(HttpStatus.NOT_FOUND.value());
+            model.addAttribute("status", HttpStatus.NOT_FOUND.value());
+            model.addAttribute("error", "Not Found");
+            model.addAttribute("message", "El evento con id " + id + " no existe.");
+            return "error";
         }
 
         Event event = eventOpt.get();
@@ -109,7 +119,7 @@ public class EventController {
         return "event";
     }
 
-    // Elimina un evento cuando el usuario actual está autorizado.
+    // Deletes an event when the current user is authorized.
     @PostMapping("/event/{id}/delete")
     public String deleteEvent(@PathVariable long id) {
         userService.getCurrentAuthenticatedUser()
@@ -117,8 +127,7 @@ public class EventController {
         return "redirect:/events";
     }
 
-    // Muestra el formulario de edición de un evento si el usuario puede
-    // gestionarlo.
+    // Displays the event edit form if the user can manage it.
     @GetMapping("/event/{id}/edit")
     public String editEventForm(Model model, @PathVariable long id) {
         try {
@@ -144,7 +153,7 @@ public class EventController {
         return "redirect:/events";
     }
 
-    // Actualiza un evento existente cuando los datos son válidos y hay permisos.
+    // Updates an existing event when data is valid and permissions are granted.
     @PostMapping("/event/{id}/edit")
     public String updateEvent(
             @PathVariable long id,
@@ -173,14 +182,14 @@ public class EventController {
         return "redirect:/events";
     }
 
-    // Muestra el formulario para crear un nuevo evento.
+    // Displays the form to create a new event.
     @GetMapping("/events/new")
     public String newEventForm(Model model) {
         model.addAttribute("allTagsView", tagService.getTagsView(null));
         return "createEvent";
     }
 
-    // Crea un nuevo evento con sus datos e imagen opcional.
+    // Creates a new event with its data and optional image.
     @PostMapping("/event/new")
     public String createEvent(
             Event event,

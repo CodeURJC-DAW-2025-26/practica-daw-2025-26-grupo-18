@@ -14,12 +14,12 @@ public class RolerService {
     @Autowired
     private RoleRepository roleRepository;
 
-    // Busca un rol por nombre.
+    // Finds a role by name.
     public Optional<Role> findByName(String name) {
         return roleRepository.findByName(name);
     }
 
-    // Guarda un rol en base de datos.
+    // Saves a role in the database.
     public void save(Role role) {
         roleRepository.save(role);
     }

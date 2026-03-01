@@ -23,7 +23,7 @@ public class InvoicePdfService {
 
     private static final double TAX_RATE = 0.21;
 
-    // Genera el PDF de factura de un pedido con líneas, impuestos y total.
+    // Generates the invoice PDF for an order with lines, taxes, and total.
     public byte[] generateInvoicePdf(Order order) {
         if (order == null) {
             throw new IllegalArgumentException("El pedido no puede ser nulo");
@@ -83,7 +83,7 @@ public class InvoicePdfService {
         return outputStream.toByteArray();
     }
 
-    // Resuelve el nombre mostrado de una línea de pedido.
+    // Resolves the display name for an order line.
     private String resolveItemName(OrderItem item) {
         if (item.isSubscription()) {
             return "Suscripción Premium (30 días)";
@@ -97,7 +97,7 @@ public class InvoicePdfService {
         return "Producto";
     }
 
-    // Resuelve el tipo mostrado de una línea de pedido.
+    // Resolves the display type for an order line.
     private String resolveItemType(OrderItem item) {
         if (item.isSubscription()) {
             return "Suscripción";
@@ -111,12 +111,12 @@ public class InvoicePdfService {
         return "Otro";
     }
 
-    // Formatea un importe en céntimos a euros.
+    // Formats an amount from cents to euros.
     private String formatEuros(int cents) {
         return String.format("%.2f €", cents / 100.0);
     }
 
-    // Devuelve un valor seguro para mostrar en la factura.
+    // Returns a safe value to display on the invoice.
     private String safeValue(String value) {
         return value == null || value.isBlank() ? "-" : value;
     }

@@ -37,72 +37,59 @@ public class AdminService {
     @Autowired
     private OrderRepository orderRepository;
 
-    // ---- Users ----
-
     @Autowired
     private EmailService emailService;
 
-    // Obtiene todos los usuarios registrados.
+    // ---- Users ----
+
+    // Retrieves all registered users.
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
     public List<User> getAllUsers(int page, int size) {
-        List<User> users = userRepository.findAll();
-        int start = page * size;
-        int end = Math.min((start + size), users.size());
-        if (start >= users.size()) {
-            return new ArrayList<>();
-        }
-        return users.subList(start, end);
+        return paginate(userRepository.findAll(), page, size);
     }
 
     public int getTotalUsersCount() {
-        return userRepository.findAll().size();
+        return (int) userRepository.count();
     }
 
-    // Busca usuarios por coincidencia parcial de username.
+    // Searches users by partial username match.
     public List<User> searchUsers(String query) {
         return userRepository.findByUsernameContainingIgnoreCase(query);
     }
 
     public List<User> searchUsers(String query, int page, int size) {
-        List<User> users = userRepository.findByUsernameContainingIgnoreCase(query);
-        int start = page * size;
-        int end = Math.min((start + size), users.size());
-        if (start >= users.size()) {
-            return new ArrayList<>();
-        }
-        return users.subList(start, end);
+        return paginate(userRepository.findByUsernameContainingIgnoreCase(query), page, size);
     }
 
     public int getTotalSearchUsersCount(String query) {
         return userRepository.findByUsernameContainingIgnoreCase(query).size();
     }
 
-    // Busca un usuario por id.
+    // Looks up a user by id.
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
 
-    // Busca un usuario por nombre de usuario exacto.
+    // Looks up a user by exact username.
     public Optional<User> findUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
-    // Desactiva un usuario y le envía notificación por correo.
+    // Deactivates a user and sends them an email notification.
     public void banUser(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             user.setIsActive(false);
             userRepository.save(user);
-            // Enviar email de notificación al usuario baneado
             emailService.accountBannedMessage(user.getEmail(), user.getUsername());
         }
     }
 
-    // Reactiva una cuenta de usuario bloqueada.
+    // Reactivates a blocked user account.
     public void unbanUser(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
@@ -114,71 +101,53 @@ public class AdminService {
 
     // ---- Courses ----
 
-    // Obtiene cursos priorizando los pendientes de revisión.
+    // Retrieves courses prioritizing those pending review.
     public List<Course> getAllCoursesSortedByStatus() {
         List<Course> pending = courseRepository.findByStatus(Status.PENDING_REVIEW);
         List<Course> others = courseRepository.findAll().stream()
                 .filter(c -> c.getStatus() != Status.PENDING_REVIEW)
                 .collect(Collectors.toList());
-        List<Course> result = new ArrayList<>(pending);
-        result.addAll(others);
-        return result;
+        return sortPendingFirst(pending, others);
     }
 
-    // Busca cursos por título priorizando los pendientes.
+    // Searches courses by title while prioritizing pending ones.
     public List<Course> searchCourses(String query) {
         List<Course> found = courseRepository.findByTitleContainingIgnoreCase(query);
-        // pending first
         List<Course> pending = found.stream().filter(c -> c.getStatus() == Status.PENDING_REVIEW)
                 .collect(Collectors.toList());
         List<Course> others = found.stream().filter(c -> c.getStatus() != Status.PENDING_REVIEW)
                 .collect(Collectors.toList());
-        List<Course> result = new ArrayList<>(pending);
-        result.addAll(others);
-        return result;
+        return sortPendingFirst(pending, others);
     }
 
     public List<Course> getAllCoursesSortedByStatus(int page, int size) {
-        List<Course> result = getAllCoursesSortedByStatus();
-        int start = page * size;
-        int end = Math.min((start + size), result.size());
-        if (start >= result.size()) {
-            return new ArrayList<>();
-        }
-        return result.subList(start, end);
+        return paginate(getAllCoursesSortedByStatus(), page, size);
     }
 
     public int getTotalCoursesCount() {
-        return courseRepository.findAll().size();
+        return (int) courseRepository.count();
     }
 
     public List<Course> searchCourses(String query, int page, int size) {
-        List<Course> result = searchCourses(query);
-        int start = page * size;
-        int end = Math.min((start + size), result.size());
-        if (start >= result.size()) {
-            return new ArrayList<>();
-        }
-        return result.subList(start, end);
+        return paginate(searchCourses(query), page, size);
     }
 
     public int getTotalSearchCoursesCount(String query) {
         return courseRepository.findByTitleContainingIgnoreCase(query).size();
     }
 
-    // Obtiene cursos pendientes de revisión.
+    // Retrieves courses pending review.
     public List<Course> getPendingCourses() {
         return courseRepository.findByStatus(Status.PENDING_REVIEW);
     }
 
-    // Publica un curso pendiente y notifica a su creador.
+    // Publishes a pending course and notifies its creator.
     public void approveCourse(Long courseId) {
         Optional<Course> courseOptional = courseRepository.findById(courseId);
         if (courseOptional.isPresent()) {
             Course course = courseOptional.get();
             course.setStatus(Status.PUBLISHED);
             courseRepository.save(course);
-            // Notificar al creador del curso
             User creator = course.getCreator();
             if (creator != null) {
                 emailService.cursePublished(creator.getEmail(), course.getTitle(), creator.getUsername());
@@ -186,7 +155,7 @@ public class AdminService {
         }
     }
 
-    // Rechaza un curso devolviéndolo a borrador.
+    // Rejects a course and moves it back to draft.
     public void rejectCourse(Long courseId) {
         Optional<Course> courseOptional = courseRepository.findById(courseId);
         if (courseOptional.isPresent()) {
@@ -196,7 +165,7 @@ public class AdminService {
         }
     }
 
-    // Archiva un curso.
+    // Archives a course.
     public void archiveCourse(Long courseId) {
         Optional<Course> courseOptional = courseRepository.findById(courseId);
         if (courseOptional.isPresent()) {
@@ -208,65 +177,48 @@ public class AdminService {
 
     // ---- Events ----
 
-    // Obtiene eventos priorizando los pendientes de revisión.
+    // Retrieves events prioritizing those pending review.
     public List<Event> getAllEventsSortedByStatus() {
         List<Event> pending = eventRepository.findByStatus(Status.PENDING_REVIEW);
         List<Event> others = eventRepository.findAll().stream()
                 .filter(e -> e.getStatus() != Status.PENDING_REVIEW)
                 .collect(Collectors.toList());
-        List<Event> result = new ArrayList<>(pending);
-        result.addAll(others);
-        return result;
+        return sortPendingFirst(pending, others);
     }
 
     public List<Event> getAllEventsSortedByStatus(int page, int size) {
-        List<Event> result = getAllEventsSortedByStatus();
-        int start = page * size;
-        int end = Math.min((start + size), result.size());
-        if (start >= result.size()) {
-            return new ArrayList<>();
-        }
-        return result.subList(start, end);
+        return paginate(getAllEventsSortedByStatus(), page, size);
     }
 
     public int getTotalEventsCount() {
-        return eventRepository.findAll().size();
+        return (int) eventRepository.count();
     }
 
-    // Busca eventos por título priorizando los pendientes.
+    // Searches events by title while prioritizing pending ones.
     public List<Event> searchEvents(String query) {
         List<Event> found = eventRepository.findByTitleContainingIgnoreCase(query);
         List<Event> pending = found.stream().filter(e -> e.getStatus() == Status.PENDING_REVIEW)
                 .collect(Collectors.toList());
         List<Event> others = found.stream().filter(e -> e.getStatus() != Status.PENDING_REVIEW)
                 .collect(Collectors.toList());
-        List<Event> result = new ArrayList<>(pending);
-        result.addAll(others);
-        return result;
+        return sortPendingFirst(pending, others);
     }
 
     public List<Event> searchEvents(String query, int page, int size) {
-        List<Event> result = searchEvents(query);
-        int start = page * size;
-        int end = Math.min((start + size), result.size());
-        if (start >= result.size()) {
-            return new ArrayList<>();
-        }
-        return result.subList(start, end);
+        return paginate(searchEvents(query), page, size);
     }
 
     public int getTotalSearchEventsCount(String query) {
         return eventRepository.findByTitleContainingIgnoreCase(query).size();
     }
 
-    // Publica un evento pendiente y notifica al creador.
+    // Publishes a pending event and notifies the creator.
     public void approveEvent(Long eventId) {
         Optional<Event> opt = eventRepository.findById(eventId);
         if (opt.isPresent()) {
             Event event = opt.get();
             event.setStatus(Status.PUBLISHED);
             eventRepository.save(event);
-            // Notificar al creador del evento
             User creator = event.getCreator();
             if (creator != null) {
                 emailService.eventPublished(creator.getEmail(), event.getTitle(), creator.getUsername());
@@ -274,7 +226,7 @@ public class AdminService {
         }
     }
 
-    // Rechaza un evento devolviéndolo a borrador.
+    // Rejects an event and moves it back to draft.
     public void rejectEvent(Long eventId) {
         Optional<Event> opt = eventRepository.findById(eventId);
         if (opt.isPresent()) {
@@ -286,14 +238,14 @@ public class AdminService {
 
     // ---- Reviews ----
 
-    // Obtiene todas las reseñas del sistema.
+    // Retrieves all reviews in the system.
     public List<Review> getAllReviews() {
         return reviewRepository.findAll();
     }
 
     // ---- Orders ----
 
-    // Obtiene todos los pedidos ordenados por fecha de creación descendente.
+    // Retrieves all orders sorted by creation date descending.
     public List<Order> getAllOrdersSortedByDate() {
         return orderRepository.findAll().stream()
                 .sorted((o1, o2) -> {
@@ -312,21 +264,126 @@ public class AdminService {
     }
 
     public List<Order> getAllOrdersSortedByDate(int page, int size) {
-        List<Order> result = getAllOrdersSortedByDate();
-        int start = page * size;
-        int end = Math.min((start + size), result.size());
-        if (start >= result.size()) {
-            return new ArrayList<>();
-        }
-        return result.subList(start, end);
+        return paginate(getAllOrdersSortedByDate(), page, size);
     }
 
     public int getTotalOrdersCount() {
-        return orderRepository.findAll().size();
+        return (int) orderRepository.count();
     }
 
-    // Elimina una reseña por su id.
+    // Deletes a review by id.
     public void deleteReview(Long reviewId) {
         reviewRepository.deleteById(reviewId);
+    }
+
+    // ---- API DTO mappers (used by AdminController AJAX endpoints) ----
+
+    // Maps a page of users to a serializable list for the admin AJAX endpoint.
+    public List<java.util.Map<String, Object>> getUsersApiData(String query, int page, int size) {
+        List<User> users = (query != null && !query.isBlank())
+                ? searchUsers(query, page, size)
+                : getAllUsers(page, size);
+
+        List<java.util.Map<String, Object>> result = new ArrayList<>();
+        for (User u : users) {
+            java.util.Map<String, Object> map = new java.util.HashMap<>();
+            map.put("id", u.getId());
+            map.put("username", u.getUsername());
+            map.put("email", u.getEmail());
+            map.put("isActive", u.getIsActive());
+            map.put("isSubscribed", u.getIsSubscribed());
+            result.add(map);
+        }
+        return result;
+    }
+
+    // Maps a page of courses to a serializable list for the admin AJAX endpoint.
+    public List<java.util.Map<String, Object>> getCoursesApiData(String query, int page, int size) {
+        List<Course> courses = (query != null && !query.isBlank())
+                ? searchCourses(query, page, size)
+                : getAllCoursesSortedByStatus(page, size);
+
+        List<java.util.Map<String, Object>> result = new ArrayList<>();
+        for (Course c : courses) {
+            java.util.Map<String, Object> map = new java.util.HashMap<>();
+            map.put("id", c.getId());
+            map.put("title", c.getTitle());
+            map.put("shortDescription", c.getShortDescription());
+            map.put("isPendingReview", c.getStatus() == Status.PENDING_REVIEW);
+            map.put("status", statusToString(c.getStatus()));
+            map.put("creatorUsername", c.getCreator() != null ? c.getCreator().getUsername() : "");
+            result.add(map);
+        }
+        return result;
+    }
+
+    // Maps a page of events to a serializable list for the admin AJAX endpoint.
+    public List<java.util.Map<String, Object>> getEventsApiData(String query, int page, int size) {
+        List<Event> events = (query != null && !query.isBlank())
+                ? searchEvents(query, page, size)
+                : getAllEventsSortedByStatus(page, size);
+
+        List<java.util.Map<String, Object>> result = new ArrayList<>();
+        for (Event e : events) {
+            java.util.Map<String, Object> map = new java.util.HashMap<>();
+            map.put("id", e.getId());
+            map.put("title", e.getTitle());
+            map.put("category", e.getCategory());
+            map.put("isPendingReview", e.getStatus() == Status.PENDING_REVIEW);
+            map.put("status", statusToString(e.getStatus()));
+            map.put("creatorUsername", e.getCreator() != null ? e.getCreator().getUsername() : "");
+            result.add(map);
+        }
+        return result;
+    }
+
+    // Maps a page of orders to a serializable list for the admin AJAX endpoint.
+    public List<java.util.Map<String, Object>> getOrdersApiData(int page, int size) {
+        List<Order> orders = getAllOrdersSortedByDate(page, size);
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+        List<java.util.Map<String, Object>> result = new ArrayList<>();
+        for (Order o : orders) {
+            java.util.Map<String, Object> map = new java.util.HashMap<>();
+            map.put("id", o.getId());
+            if (o.getUser() != null)
+                map.put("username", o.getUser().getUsername());
+            map.put("billingFullName", o.getBillingFullName());
+            map.put("billingEmail", o.getBillingEmail());
+            map.put("status", statusToString(o.getStatus()));
+            if (o.getPaidAt() != null) {
+                map.put("paidAt", o.getPaidAt().format(formatter));
+            } else if (o.getCreatedAt() != null) {
+                map.put("createdAt", o.getCreatedAt().format(formatter));
+            }
+            map.put("paymentMethod", o.getPaymentMethod());
+            map.put("paymentReference", o.getPaymentReference());
+            map.put("totalAmountEuros", o.getTotalAmountEuros());
+            result.add(map);
+        }
+        return result;
+    }
+
+    // ---- Private helpers ----
+
+    // Converts an enum status to its string representation, or empty string if
+    // null.
+    private String statusToString(Enum<?> status) {
+        return status != null ? status.toString() : "";
+    }
+
+    // Returns a sublist of the given list for the requested page and size.
+    private <T> List<T> paginate(List<T> list, int page, int size) {
+        int start = page * size;
+        if (start >= list.size())
+            return new ArrayList<>();
+        return list.subList(start, Math.min(start + size, list.size()));
+    }
+
+    // Concatenates two partial lists putting pending-review items first.
+    private <T> List<T> sortPendingFirst(List<T> pending, List<T> others) {
+        List<T> result = new ArrayList<>(pending);
+        result.addAll(others);
+        return result;
     }
 }

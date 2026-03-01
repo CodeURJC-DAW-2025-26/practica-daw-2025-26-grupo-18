@@ -26,18 +26,18 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        // 1. Le pedimos a Google los datos básicos del usuario
+        // 1. Request basic user data from Google
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
-        // 2. Extraemos el email
+        // 2. Extract the email
         String email = oAuth2User.getAttribute("email");
 
-        // 3. Buscamos en NUESTRA base de datos si existe alguien con ese email
+        // 3. Look up in OUR database whether someone with that email exists
         Optional<User> userOptional = userRepository.findByEmail(email);
 
         if (userOptional.isEmpty()) {
-            // SI NO TIENE CUENTA: devolvemos un usuario pendiente de registro
-            // con ROLE_PENDING para poder redirigirle al formulario de completar datos
+            // IF THERE IS NO ACCOUNT: return a user pending registration
+            // with ROLE_PENDING so they can be redirected to the completion form
             List<GrantedAuthority> pendingAuthorities = new ArrayList<>();
             pendingAuthorities.add(new SimpleGrantedAuthority("ROLE_PENDING"));
             return new DefaultOAuth2User(pendingAuthorities, oAuth2User.getAttributes(), "email");
@@ -45,21 +45,21 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         User dbUser = userOptional.get();
 
-        // 4. Comprobamos si el usuario está activo
+        // 4. Check whether the user is active
         if (!dbUser.getIsActive()) {
             throw new org.springframework.security.oauth2.core.OAuth2AuthenticationException(
                     new org.springframework.security.oauth2.core.OAuth2Error("account_disabled"),
                     "El usuario está baneado");
         }
 
-        // 5. Cargamos los roles de NUESTRA base de datos
+        // 5. Load roles from OUR database
         List<GrantedAuthority> authorities = new ArrayList<>();
         for (Role role : dbUser.getRoles()) {
             authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
         }
 
-        // 5. Devolvemos el usuario autenticado (fusionando Google con nuestra BD)
-        // Le decimos a Spring que el identificador principal será el email
+        // 5. Return the authenticated user (merging Google data with our DB)
+        // Tell Spring the principal identifier is the email
         return new DefaultOAuth2User(authorities, oAuth2User.getAttributes(), "email");
     }
 }

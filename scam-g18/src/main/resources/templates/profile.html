@@ -27,7 +27,7 @@
 				<div class="col-lg-4" id="profile-main-container">
 					<div class="card border-0 shadow-sm bg-light h-100">
 						<div class="card-body p-4 text-center">
-							<!-- Vista normal -->
+							<!-- View mode -->
 							<div id="profile-view">
 								<img src="/images/users/{{user.id}}/profile" alt="Foto de perfil" class="rounded-circle mb-3"
 									width="120" height="120">
@@ -51,7 +51,7 @@
 							</div>
 
 							{{#isProfileOwner}}
-							<!-- Vista edición -->
+							<!-- Edit mode -->
 							<div id="profile-edit" style="display: none;">
 								<form action="/profile/{{user.id}}/edit" method="post" enctype="multipart/form-data" class="needs-validation profile-edit-form" novalidate>
 									<input type="hidden" name="_csrf" value="{{_csrf.token}}" />
@@ -60,7 +60,7 @@
 										<p class="text-muted small mb-0">Actualiza tus datos para que tu perfil destaque más.</p>
 									</div>
 
-									<!-- Imagen de perfil -->
+									<!-- Profile image -->
 									<div class="mb-3">
 										<img id="preview-img" src="/images/users/{{user.id}}/profile" alt="Foto de perfil" class="rounded-circle mb-2"
 											width="120" height="120">
@@ -85,7 +85,7 @@
 										<div class="invalid-feedback">Por favor preste un correo electrónico válido.</div>
 									</div>
 
-									<!-- País -->
+									<!-- Country -->
 									<div class="mb-3 text-start">
 										<label for="country" class="form-label fw-semibold"><i class="bi bi-geo-alt me-2"></i>País</label>
 										<select class="form-select" id="country" name="country" data-current-country="{{user.country}}">
@@ -96,25 +96,25 @@
 										</select>
 									</div>
 
-									<!-- Descripción -->
+									<!-- Description -->
 									<div class="mb-3 text-start">
 										<label for="shortDescription" class="form-label fw-semibold"><i class="bi bi-card-text me-2"></i>Sobre mí</label>
 										<textarea class="form-control" id="shortDescription" name="shortDescription" rows="3" placeholder="Cuéntanos algo sobre ti...">{{#user}}{{shortDescription}}{{/user}}</textarea>
 									</div>
 
-									<!-- Objetivo actual -->
+									<!-- Current goal -->
 									<div class="mb-3 text-start">
 										<label for="currentGoal" class="form-label fw-semibold"><i class="bi bi-briefcase me-2"></i>Objetivo actual</label>
 										<input type="text" class="form-control" id="currentGoal" name="currentGoal" value="{{#user}}{{currentGoal}}{{/user}}" placeholder="Ej: Lanzar mi startup en 2026">
 									</div>
 
-									<!-- Rutina semanal -->
+									<!-- Weekly routine -->
 									<div class="mb-3 text-start">
 										<label for="weeklyRoutine" class="form-label fw-semibold"><i class="bi bi-lightning me-2"></i>Rutina semanal</label>
 										<input type="text" class="form-control" id="weeklyRoutine" name="weeklyRoutine" value="{{#user}}{{weeklyRoutine}}{{/user}}" placeholder="Ej: 6h de formación y 2h networking">
 									</div>
 
-									<!-- Comunidad -->
+									<!-- Community -->
 									<div class="mb-3 text-start">
 										<label for="comunity" class="form-label fw-semibold"><i class="bi bi-people me-2"></i>Comunidad</label>
 										<input type="text" class="form-control" id="comunity" name="comunity" value="{{#user}}{{comunity}}{{/user}}" placeholder="Ej: SCAM Builders · Madrid">
@@ -206,7 +206,7 @@
 						<div class="course-progress">
 							<small class="course-progress-label">Progreso global: {{averageProgress}}%</small>
 							<div class="course-progress-bar">
-								<div class="course-progress-fill" style="width: {{averageProgress}}%;"></div>
+								<div class="course-progress-fill" data-progress="{{averageProgress}}"></div>
 							</div>
 						</div>
 						<ul class="feature-list">
@@ -300,12 +300,21 @@
 													<p class="text-muted small mb-1"><i class="bi bi-people me-1"></i> Total de usuarios suscritos: <span class="fw-semibold text-dark">{{totalSubscribers}}</span></p>
 													<p class="text-muted small mb-0"><i class="bi bi-person-plus me-1"></i> Usuarios suscritos este mes: <span class="fw-semibold text-dark">{{monthlySubscribers}}</span></p>
 												</div>
-												<a href="/courses/{{id}}/manage" class="btn btn-sm btn-accent mt-2">Gestionar curso</a>
+												<a href="/course/{{id}}/edit" class="btn btn-sm btn-accent mt-2">Gestionar curso</a>
 											</div>
 											<div class="col-md-7 text-center">
+												{{#hasSubscribers}}
 												<div class="instructor-chart-frame">
 													<iframe src="/statistics/created-course-status?courseId={{id}}" title="Estadísticas del curso"></iframe>
 												</div>
+												{{/hasSubscribers}}
+												{{^hasSubscribers}}
+												<div class="instructor-chart-frame d-flex flex-column align-items-center justify-content-center text-center bg-light rounded" style="min-height: 200px;">
+													<i class="bi bi-people text-muted mb-2" style="font-size: 2rem; opacity: 0.5;"></i>
+													<h6 class="fw-bold text-dark mb-1">Aún no hay nadie en el curso</h6>
+													<p class="text-muted small mb-0">Comparte tu curso para conseguir estudiantes.</p>
+												</div>
+												{{/hasSubscribers}}
 											</div>
 										</div>
 									</div>
@@ -343,7 +352,7 @@
 				<div class="col-lg-4 d-flex flex-column">
 					<div class="card border-0 shadow-sm flex-grow-1 w-100 instructor-create-card">
 						<div class="card-body p-4 d-flex align-items-center justify-content-center border-dashed instructor-create-card-body">
-							<div class="text-center py-4" style="margin-top: -35px;">
+							<div class="text-center py-4">
 								<div class="icon-box mb-3 mx-auto text-muted">
 									<i class="bi bi-plus-lg fs-1"></i>
 								</div>
@@ -438,100 +447,6 @@
 </main>
 
 {{>footer}}
-
-<script>
-{{#errorMessage}}
-document.addEventListener('DOMContentLoaded', function() {
-	setProfileEditMode(true);
-});
-{{/errorMessage}}
-
-function setProfileEditMode(isEditing) {
-	var main = document.getElementById('profile-page-main');
-	var view = document.getElementById('profile-view');
-	var edit = document.getElementById('profile-edit');
-	var about = document.getElementById('profile-about-container');
-	var mainContainer = document.getElementById('profile-main-container');
-
-	if (!view || !edit) return;
-
-	if (isEditing) {
-		view.style.display = 'none';
-		edit.style.display = 'block';
-		if (about) about.style.display = 'none';
-		if (mainContainer) {
-			mainContainer.classList.remove('col-lg-4');
-			mainContainer.classList.add('col-12', 'is-editing');
-		}
-		if (main) {
-			main.classList.add('profile-edit-mode');
-		}
-	} else {
-		view.style.display = 'block';
-		edit.style.display = 'none';
-		if (about) about.style.display = 'block';
-		if (mainContainer) {
-			mainContainer.classList.remove('col-12', 'is-editing');
-			mainContainer.classList.add('col-lg-4');
-		}
-		if (main) {
-			main.classList.remove('profile-edit-mode');
-		}
-	}
-}
-
-function toggleEdit() {
-	var view = document.getElementById('profile-view');
-	if (view.style.display === 'none') {
-		setProfileEditMode(false);
-	} else {
-		setProfileEditMode(true);
-	}
-}
-
-function previewImage(event) {
-	var reader = new FileReader();
-	reader.onload = function() {
-		document.getElementById('preview-img').src = reader.result;
-	};
-	reader.readAsDataURL(event.target.files[0]);
-}
-
-document.querySelectorAll('.course-progress-fill[data-progress]').forEach(function (bar) {
-	var value = parseInt(bar.getAttribute('data-progress'), 10);
-	if (isNaN(value)) value = 0;
-	value = Math.max(0, Math.min(100, value));
-	bar.style.width = value + '%';
-});
-
-(function () {
-	'use strict'
-	var forms = document.querySelectorAll('.needs-validation')
-	Array.prototype.slice.call(forms)
-		.forEach(function (form) {
-			form.addEventListener('submit', function (event) {
-				if (!form.checkValidity()) {
-					event.preventDefault()
-					event.stopPropagation()
-				}
-				form.classList.add('was-validated')
-			}, false)
-		})
-
-	var countrySelect = document.getElementById('country');
-	if (countrySelect) {
-		var currentCountry = countrySelect.getAttribute('data-current-country');
-		if (currentCountry) {
-			for (var i = 0; i < countrySelect.options.length; i++) {
-				if (countrySelect.options[i].value === currentCountry) {
-					countrySelect.selectedIndex = i;
-					break;
-				}
-			}
-		}
-	}
-})()
-</script>
 
 </body>
 
