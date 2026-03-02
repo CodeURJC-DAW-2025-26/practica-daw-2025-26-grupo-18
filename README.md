@@ -327,14 +327,14 @@ Especializado en la gestión y refactorización del sistema de cursos, incluyend
 
 #### **Alumno 3 - Gonzalo Andrés Zurdo Patino**
 
-Arquitecto fundamental de los cimientos del proyecto, responsable de los modelos iniciales de cursos, eventos y perfiles. Implementó el sistema central de carrito de la compra y el panel de administración inicial.
+Arquitecto fundamental de los cimientos del proyecto, responsable de los modelos iniciales de cursos, eventos y perfiles. Implementó el sistema central de carrito de la compra y el sistema de estadísticas.
 
 | Nº    | Commits      | Files      |
 |:------------: |:------------:| :------------:|
 |1| Cimientos del proyecto y modelos base ([0f3ad3d](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/0f3ad3d)) | [ProfileController.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/controller/ProfileController.java) |
 |2| Perfiles de usuario y seguridad base ([ca0d5c1](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/ca0d5c1)) | [profile.html](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/resources/templates/profile.html) |
 |3| Integración de carrito y pedidos ([a47fc46](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/a47fc46)) | [CartService.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/service/CartService.java) |
-|4| Implementación del Admin Dashboard inicial ([d59c2ec](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/d59c2ec)) | [admin.html](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/resources/templates/admin.html) |
+|4| Implementación de las estadísticas ([d59c2ec](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/53fd21b)) | [CourseService.java]([https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/resources/templates/admin.html](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/53fd21bfff43faca9f1079911d4b84f680c7a84f/scam-g18/src/main/java/es/codeurjc/scam_g18/service/CourseService.java)) |
 |5| Unificación de servicios y controladores ([38ee6b5](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/38ee6b5)) | [CartController.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/controller/CartController.java) |
 
 ---
