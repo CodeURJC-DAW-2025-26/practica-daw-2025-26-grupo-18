@@ -17,4 +17,13 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
 	@Query("UPDATE OrderItem oi SET oi.course = NULL WHERE oi.course.id = :courseId AND oi.order.status <> :status")
 	int clearCourseReferenceByCourseIdAndOrderStatusNot(@Param("courseId") Long courseId,
 			@Param("status") OrderStatus status);
+
+	@Modifying
+	@Query("DELETE FROM OrderItem oi WHERE oi.event.id = :eventId AND oi.order.status = :status")
+	int deleteByEventIdAndOrderStatus(@Param("eventId") Long eventId, @Param("status") OrderStatus status);
+
+	@Modifying
+	@Query("UPDATE OrderItem oi SET oi.event = NULL WHERE oi.event.id = :eventId AND oi.order.status <> :status")
+	int clearEventReferenceByEventIdAndOrderStatusNot(@Param("eventId") Long eventId,
+			@Param("status") OrderStatus status);
 }

@@ -3,14 +3,17 @@ package es.codeurjc.scam_g18.service;
 import es.codeurjc.scam_g18.model.Event;
 import es.codeurjc.scam_g18.model.EventRegistration;
 import es.codeurjc.scam_g18.model.EventSession;
+import es.codeurjc.scam_g18.model.OrderStatus;
 import es.codeurjc.scam_g18.model.Status;
 import es.codeurjc.scam_g18.model.Tag;
 import es.codeurjc.scam_g18.model.User;
 import es.codeurjc.scam_g18.repository.EventRepository;
 import es.codeurjc.scam_g18.repository.EventRegistrationRepository;
+import es.codeurjc.scam_g18.repository.OrderItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
 
 import java.net.URLEncoder;
@@ -47,6 +50,9 @@ public class EventService {
 
     @Autowired
     private EventRegistrationRepository eventRegistrationRepository;
+
+    @Autowired
+    private OrderItemRepository orderItemRepository;
 
     @Autowired
     private es.codeurjc.scam_g18.repository.TagRepository tagRepository;
@@ -217,13 +223,24 @@ public class EventService {
     }
 
     // Deletes an event only if the user is authorized.
+    @Transactional
     public boolean deleteEventIfAuthorized(long id, User user) {
         var eventOpt = getEventById(id);
-        if (eventOpt.isPresent() && canManageEvent(eventOpt.get(), user)) {
-            deleteEvent(id);
-            return true;
+        if (eventOpt.isEmpty()) {
+            return false;
         }
-        return false;
+
+        Event event = eventOpt.get();
+        if (!canManageEvent(event, user)) {
+            return false;
+        }
+
+        eventRegistrationRepository.deleteByEventId(event.getId());
+        orderItemRepository.deleteByEventIdAndOrderStatus(event.getId(), OrderStatus.PENDING);
+        orderItemRepository.clearEventReferenceByEventIdAndOrderStatusNot(event.getId(), OrderStatus.PENDING);
+
+        eventRepository.delete(event);
+        return true;
     }
 
     // Updates an event only if the user is authorized.

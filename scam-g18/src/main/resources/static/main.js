@@ -1075,8 +1075,17 @@ function initLoadMoreCoursesCatalog() {
         urlParams.set("page", page);
 
         fetch("/api/courses?" + urlParams.toString())
-            .then((response) => response.json())
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                return response.json();
+            })
             .then((data) => {
+                if (!Array.isArray(data)) {
+                    throw new Error("Respuesta inválida al cargar más cursos");
+                }
+
                 const courseList = document.getElementById("courseList");
 
                 if (data.length > 0) {
