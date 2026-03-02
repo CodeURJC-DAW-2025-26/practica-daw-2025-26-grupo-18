@@ -5,7 +5,7 @@
 |:--- |:--- |:--- |
 | Pau Calvo Jiménez | p.calvo.2023@aulmnos.urjc.es | PauCalvoJ |
 | Alberto Hontanilla Villanueva | a.hontanilla.2023@alumnos.urjc.es | albertohontanilla |
-| Gonzalo Andrés Zurdo Patino | ga.zurdo.2023@alumnos.urjc.es | 51nga |
+| Gonzalo Andrés Zurdo Patino | ga.zurdo.2023@alumnos.urjc.es | 51nga/El Patines |
 | Jaime Sánchez Vázquez | j.sanchezva.2023@alumnos.urjc.es | jaimesnh |
 
 ---
@@ -282,11 +282,17 @@ Pantalla admindashboard modificada
 - **Usuario Registrado**: usuario: `learner18`, contraseña: `pass18`
 
 
-### **Diagrama de Clases y Templates**
+### **DEstructura base de datos**
 
-Diagrama de clases de la aplicación con diferenciación por colores o secciones:
+Representación gráfica de la base de datos:
 
 <img width="1730" height="1372" alt="pauCALVO" src="https://github.com/user-attachments/assets/2bd8bfd1-4dc0-471b-b04b-f41617a1a759" />
+
+### **Diagrama de Clases y Templates**
+
+Diagrama de clases de la aplicación con diferenciación por colores y secciones:
+
+<img width="1209" height="827" alt="51nga" src="https://github.com/user-attachments/assets/c5bf4d3a-6ffa-43be-9c8a-9624d3dc3456" />
 
 
 ### **Participación de Miembros en la Práctica 1**
