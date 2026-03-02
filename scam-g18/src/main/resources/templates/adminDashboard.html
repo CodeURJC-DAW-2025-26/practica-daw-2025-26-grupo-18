@@ -196,7 +196,10 @@
                                                         <p class="text-muted small mb-0">{{shortDescription}}</p>
                                                     </div>
                                                 </td>
-                                                <td class="text-muted">{{creator.username}}</td>
+                                                <td class="text-muted">
+                                                    {{#creator}}{{username}}{{/creator}}
+                                                    {{^creator}}-{{/creator}}
+                                                </td>
                                                 <td>
                                                     {{#isPendingReview}}<span
                                                         class="badge bg-light text-accent">Pendiente</span>{{/isPendingReview}}
@@ -295,7 +298,10 @@
                                                         <p class="text-muted small mb-0">{{category}}</p>
                                                     </div>
                                                 </td>
-                                                <td class="text-muted">{{creator.username}}</td>
+                                                <td class="text-muted">
+                                                    {{#creator}}{{username}}{{/creator}}
+                                                    {{^creator}}-{{/creator}}
+                                                </td>
                                                 <td>
                                                     {{#isPendingReview}}<span
                                                         class="badge bg-light text-accent">Pendiente</span>{{/isPendingReview}}

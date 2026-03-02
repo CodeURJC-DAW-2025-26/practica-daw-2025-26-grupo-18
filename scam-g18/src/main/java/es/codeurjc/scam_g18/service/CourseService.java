@@ -794,6 +794,13 @@ public class CourseService {
 
     // Applies and normalizes shared form data on a course.
     private void applyCommonCourseFormData(Course target, Course source, List<String> tagNames) {
+        List<String> sourceLearningPoints = source.getLearningPoints() != null
+            ? new ArrayList<>(source.getLearningPoints())
+            : new ArrayList<>();
+        List<String> sourcePrerequisites = source.getPrerequisites() != null
+            ? new ArrayList<>(source.getPrerequisites())
+            : new ArrayList<>();
+
         target.setTitle(source.getTitle());
         target.setShortDescription(source.getShortDescription());
         target.setLongDescription(source.getLongDescription());
@@ -810,18 +817,14 @@ public class CourseService {
         }
 
         target.getLearningPoints().clear();
-        if (source.getLearningPoints() != null) {
-            source.getLearningPoints().stream()
+        sourceLearningPoints.stream()
                     .filter(s -> s != null && !s.isBlank())
                     .forEach(target.getLearningPoints()::add);
-        }
 
         target.getPrerequisites().clear();
-        if (source.getPrerequisites() != null) {
-            source.getPrerequisites().stream()
+        sourcePrerequisites.stream()
                     .filter(s -> s != null && !s.isBlank())
                     .forEach(target.getPrerequisites()::add);
-        }
 
         target.getTags().clear();
         target.getTags().addAll(normalizeTags(tagNames));
