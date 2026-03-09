@@ -65,46 +65,7 @@ public class GlobalControllerAdvice {
         }
         model.addAttribute("_csrf", new CsrfViewModel(csrfParameterName, csrfTokenValue));
 
-        // Default values always present for header rendering (Mustache fails if
-        // they do not exist)
-        model.addAttribute("isUserLoggedIn", false);
-        model.addAttribute("userId", "");
-        model.addAttribute("userName", "");
-        model.addAttribute("userProfileImage", "/img/default_avatar.png");
-        model.addAttribute("canCreateEvent", false);
-        model.addAttribute("canCreateCourse", false);
-        model.addAttribute("isAdmin", false);
-        model.addAttribute("isPublisher", false);
-
-        if (hasPrincipal) {
-            var currentUser = userService.getCurrentAuthenticatedUser().orElse(null);
-            // Consider the user "logged in" only if they exist in our DB
-            // (PENDING Google users are not registered yet)
-            if (currentUser != null) {
-                userService.checkAndExpireSubscription(currentUser);
-
-                model.addAttribute("isUserLoggedIn", true);
-                model.addAttribute("userId", currentUser.getId());
-                model.addAttribute("userName", currentUser.getUsername());
-                model.addAttribute("userProfileImage", userService.getProfileImage(currentUser.getId()));
-
-                boolean canCreateEvent = currentUser.getRoles().stream()
-                        .anyMatch(role -> role.getName().equals("ADMIN") || role.getName().equals("SUBSCRIBED"));
-                model.addAttribute("canCreateEvent", canCreateEvent);
-
-                boolean canCreateCourse = currentUser.getRoles().stream()
-                        .anyMatch(role -> role.getName().equals("ADMIN") || role.getName().equals("SUBSCRIBED"));
-                model.addAttribute("canCreateCourse", canCreateCourse);
-
-                boolean isAdmin = currentUser.getRoles().stream()
-                        .anyMatch(role -> role.getName().equals("ADMIN"));
-                model.addAttribute("isAdmin", isAdmin);
-
-                boolean isPublisher = currentUser.getRoles().stream()
-                        .anyMatch(role -> role.getName().equals("ADMIN") || role.getName().equals("SUBSCRIBED"));
-                model.addAttribute("isPublisher", isPublisher);
-            }
-        }
+        model.addAllAttributes(userService.getGlobalHeaderViewData(hasPrincipal));
     }
 
 }

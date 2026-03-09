@@ -1,7 +1,9 @@
 package es.codeurjc.scam_g18.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -39,6 +41,48 @@ public class AdminService {
 
     @Autowired
     private EmailService emailService;
+
+    // Builds admin dashboard view data with filters and pagination flags.
+    public Map<String, Object> getDashboardViewData(String userQuery, String courseQuery, String eventQuery,
+            String activeTab, int pageSize) {
+        Map<String, Object> model = new HashMap<>();
+
+        if (userQuery != null && !userQuery.isBlank()) {
+            model.put("users", searchUsers(userQuery, 0, pageSize));
+            model.put("hasMoreUsers", getTotalSearchUsersCount(userQuery) > pageSize);
+        } else {
+            model.put("users", getAllUsers(0, pageSize));
+            model.put("hasMoreUsers", getTotalUsersCount() > pageSize);
+        }
+
+        if (courseQuery != null && !courseQuery.isBlank()) {
+            model.put("courses", searchCourses(courseQuery, 0, pageSize));
+            model.put("hasMoreCourses", getTotalSearchCoursesCount(courseQuery) > pageSize);
+        } else {
+            model.put("courses", getAllCoursesSortedByStatus(0, pageSize));
+            model.put("hasMoreCourses", getTotalCoursesCount() > pageSize);
+        }
+
+        if (eventQuery != null && !eventQuery.isBlank()) {
+            model.put("events", searchEvents(eventQuery, 0, pageSize));
+            model.put("hasMoreEvents", getTotalSearchEventsCount(eventQuery) > pageSize);
+        } else {
+            model.put("events", getAllEventsSortedByStatus(0, pageSize));
+            model.put("hasMoreEvents", getTotalEventsCount() > pageSize);
+        }
+
+        model.put("userQuery", userQuery != null ? userQuery : "");
+        model.put("courseQuery", courseQuery != null ? courseQuery : "");
+        model.put("eventQuery", eventQuery != null ? eventQuery : "");
+
+        model.put("orders", getAllOrdersSortedByDate(0, pageSize));
+        model.put("hasMoreOrders", getTotalOrdersCount() > pageSize);
+
+        model.put("activeTab", activeTab != null ? activeTab : "users");
+        model.put("reviews", getAllReviews());
+
+        return model;
+    }
 
     // ---- Users ----
 
