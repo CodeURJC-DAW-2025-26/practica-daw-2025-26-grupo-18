@@ -795,11 +795,11 @@ public class CourseService {
     // Applies and normalizes shared form data on a course.
     private void applyCommonCourseFormData(Course target, Course source, List<String> tagNames) {
         List<String> sourceLearningPoints = source.getLearningPoints() != null
-            ? new ArrayList<>(source.getLearningPoints())
-            : new ArrayList<>();
+                ? new ArrayList<>(source.getLearningPoints())
+                : new ArrayList<>();
         List<String> sourcePrerequisites = source.getPrerequisites() != null
-            ? new ArrayList<>(source.getPrerequisites())
-            : new ArrayList<>();
+                ? new ArrayList<>(source.getPrerequisites())
+                : new ArrayList<>();
 
         target.setTitle(source.getTitle());
         target.setShortDescription(source.getShortDescription());
@@ -818,13 +818,13 @@ public class CourseService {
 
         target.getLearningPoints().clear();
         sourceLearningPoints.stream()
-                    .filter(s -> s != null && !s.isBlank())
-                    .forEach(target.getLearningPoints()::add);
+                .filter(s -> s != null && !s.isBlank())
+                .forEach(target.getLearningPoints()::add);
 
         target.getPrerequisites().clear();
         sourcePrerequisites.stream()
-                    .filter(s -> s != null && !s.isBlank())
-                    .forEach(target.getPrerequisites()::add);
+                .filter(s -> s != null && !s.isBlank())
+                .forEach(target.getPrerequisites()::add);
 
         target.getTags().clear();
         target.getTags().addAll(normalizeTags(tagNames));
@@ -1040,7 +1040,7 @@ public class CourseService {
         return genreCount;
     }
 
-    public List<Long> getAgesCourse(Long courseId) {
+    public List<Double> getAgesCourse(Long courseId) {
         long count18_25 = 0;
         long count26_35 = 0;
         long count36_50 = 0;
@@ -1065,7 +1065,12 @@ public class CourseService {
                 }
             }
         }
-        return java.util.Arrays.asList(count18_25, count26_35, count36_50, count50plus);
+
+        List<Long> raw = java.util.Arrays.asList(count18_25, count26_35, count36_50, count50plus);
+        if (raw.stream().allMatch(v -> v == 0)) {
+            return java.util.Arrays.asList(0.0, 0.0, 0.0, 0.0);
+        }
+        return raw.stream().map(Long::doubleValue).collect(java.util.stream.Collectors.toList());
     }
 
     public List<Map.Entry<String, Integer>> getCommonTags(long userId, long courseId) {

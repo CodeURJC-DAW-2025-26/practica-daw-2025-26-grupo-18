@@ -63,17 +63,8 @@ public class StatisticsController {
 
     @GetMapping("/statistics/course-ages")
     public String courseAges(Model model, @RequestParam Long courseId) {
-        List<Long> ages = courseService.getAgesCourse(courseId);
         List<String> labels = List.of("18-25", "26-35", "36-50", "+50");
-        List<Double> values = new ArrayList<>();
-        if (ages != null && ages.size() >= 4) {
-            for (Long count : ages) {
-                values.add(count.doubleValue());
-            }
-        } else {
-            for (int i = 0; i < 4; i++)
-                values.add(0.0);
-        }
+        List<Double> values = courseService.getAgesCourse(courseId);
         return createChart(model, "Edades de estudiantes", "bar", labels, values);
     }
 
