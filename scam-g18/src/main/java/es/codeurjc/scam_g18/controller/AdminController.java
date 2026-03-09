@@ -16,47 +16,6 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-    // Populates dashboard model with users, courses, events, reviews, and orders.
-    private void populateModel(Model model, String userQuery, String courseQuery, String eventQuery, String activeTab) {
-        // Users
-        if (userQuery != null && !userQuery.isBlank()) {
-            model.addAttribute("users", adminService.searchUsers(userQuery, 0, PAGE_SIZE));
-            model.addAttribute("hasMoreUsers", adminService.getTotalSearchUsersCount(userQuery) > PAGE_SIZE);
-        } else {
-            model.addAttribute("users", adminService.getAllUsers(0, PAGE_SIZE));
-            model.addAttribute("hasMoreUsers", adminService.getTotalUsersCount() > PAGE_SIZE);
-        }
-
-        // Courses (pending first)
-        if (courseQuery != null && !courseQuery.isBlank()) {
-            model.addAttribute("courses", adminService.searchCourses(courseQuery, 0, PAGE_SIZE));
-            model.addAttribute("hasMoreCourses", adminService.getTotalSearchCoursesCount(courseQuery) > PAGE_SIZE);
-        } else {
-            model.addAttribute("courses", adminService.getAllCoursesSortedByStatus(0, PAGE_SIZE));
-            model.addAttribute("hasMoreCourses", adminService.getTotalCoursesCount() > PAGE_SIZE);
-        }
-
-        // Events (pending first)
-        if (eventQuery != null && !eventQuery.isBlank()) {
-            model.addAttribute("events", adminService.searchEvents(eventQuery, 0, PAGE_SIZE));
-            model.addAttribute("hasMoreEvents", adminService.getTotalSearchEventsCount(eventQuery) > PAGE_SIZE);
-        } else {
-            model.addAttribute("events", adminService.getAllEventsSortedByStatus(0, PAGE_SIZE));
-            model.addAttribute("hasMoreEvents", adminService.getTotalEventsCount() > PAGE_SIZE);
-        }
-
-        model.addAttribute("userQuery", userQuery != null ? userQuery : "");
-        model.addAttribute("courseQuery", courseQuery != null ? courseQuery : "");
-        model.addAttribute("eventQuery", eventQuery != null ? eventQuery : "");
-
-        // Orders
-        model.addAttribute("orders", adminService.getAllOrdersSortedByDate(0, PAGE_SIZE));
-        model.addAttribute("hasMoreOrders", adminService.getTotalOrdersCount() > PAGE_SIZE);
-
-        model.addAttribute("activeTab", activeTab != null ? activeTab : "users");
-        model.addAttribute("reviews", adminService.getAllReviews());
-    }
-
     // Displays the admin dashboard with optional filters.
     @GetMapping
     public String adminDashboard(
@@ -65,14 +24,15 @@ public class AdminController {
             @RequestParam(required = false) String eventQuery,
             @RequestParam(required = false, defaultValue = "users") String activeTab,
             Model model) {
-        populateModel(model, userQuery, courseQuery, eventQuery, activeTab);
+        model.addAllAttributes(
+                adminService.getDashboardViewData(userQuery, courseQuery, eventQuery, activeTab, PAGE_SIZE));
         return "adminDashboard";
     }
 
     // Searches users by name and keeps the users tab active.
     @GetMapping("/users/search")
     public String searchUser(@RequestParam String name, Model model) {
-        populateModel(model, name, null, null, "users");
+        model.addAllAttributes(adminService.getDashboardViewData(name, null, null, "users", PAGE_SIZE));
         return "adminDashboard";
     }
 

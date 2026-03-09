@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +49,47 @@ public class UserService {
 
     @Autowired
     private SubscriptionRepository subscriptionRepository;
+
+    // Builds global header/view attributes for all pages.
+    public Map<String, Object> getGlobalHeaderViewData(boolean hasPrincipal) {
+        Map<String, Object> model = new HashMap<>();
+
+        model.put("isUserLoggedIn", false);
+        model.put("userId", "");
+        model.put("userName", "");
+        model.put("userProfileImage", "/img/default_avatar.png");
+        model.put("canCreateEvent", false);
+        model.put("canCreateCourse", false);
+        model.put("isAdmin", false);
+        model.put("isPublisher", false);
+
+        if (!hasPrincipal) {
+            return model;
+        }
+
+        var currentUser = getCurrentAuthenticatedUser().orElse(null);
+        if (currentUser == null) {
+            return model;
+        }
+
+        checkAndExpireSubscription(currentUser);
+
+        boolean canCreate = currentUser.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("ADMIN") || role.getName().equals("SUBSCRIBED"));
+        boolean isAdmin = currentUser.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("ADMIN"));
+
+        model.put("isUserLoggedIn", true);
+        model.put("userId", currentUser.getId());
+        model.put("userName", currentUser.getUsername());
+        model.put("userProfileImage", getProfileImage(currentUser.getId()));
+        model.put("canCreateEvent", canCreate);
+        model.put("canCreateCourse", canCreate);
+        model.put("isAdmin", isAdmin);
+        model.put("isPublisher", canCreate);
+
+        return model;
+    }
 
     // Indicates whether there is an authenticated user in the current session.
     public boolean isUserLoggedIn() {
