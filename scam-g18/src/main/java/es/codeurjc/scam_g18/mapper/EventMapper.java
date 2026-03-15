@@ -1,0 +1,16 @@
+package es.codeurjc.scam_g18.mapper;
+
+import java.util.Collection;
+import java.util.List;
+
+import org.mapstruct.Mapper;
+
+import es.codeurjc.scam_g18.dto.EventDTO;
+import es.codeurjc.scam_g18.model.Event;
+
+@Mapper(componentModel = "spring")
+public interface EventMapper {
+    EventDTO toDTO(Event event);
+    Event toDomain(EventDTO eventDTO);
+    List<EventDTO> toDTOs(Collection<Event> events);
+}
