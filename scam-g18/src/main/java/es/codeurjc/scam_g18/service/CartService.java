@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 
+import es.codeurjc.scam_g18.dto.CheckoutRequestDTO;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -69,7 +71,13 @@ public class CartService {
     }
 
     // Adds a course to the order and recalculates subtotal.
+    // Silently ignores if the course is already in the cart.
     public void addCourseToOrder(Order order, Course course) {
+        boolean alreadyInCart = order.getItems() != null && order.getItems().stream()
+                .anyMatch(item -> item.getCourse() != null && item.getCourse().getId().equals(course.getId()));
+        if (alreadyInCart) {
+            return;
+        }
         OrderItem item = new OrderItem(order, course, null, course.getPriceCents());
         order.getItems().add(item);
         order.setTotalAmountCents(calculateSubtotal(order));
@@ -152,7 +160,7 @@ public class CartService {
         return calculateSubtotal(order) + calculateTax(order);
     }
 
-    // Returns a formatted cart summary for the view
+    // Returns a formatted cart summary for the view (does not include the order entity).
     public Map<String, Object> getCartSummary(Order order, String error) {
         Map<String, Object> summary = new HashMap<>();
 
@@ -160,7 +168,6 @@ public class CartService {
         int taxCents = calculateTax(order);
         int totalCents = calculateTotal(order);
 
-        summary.put("order", order);
         summary.put("subtotal", formatPriceInEuros(subtotalCents));
         summary.put("tax", formatPriceInEuros(taxCents));
         summary.put("total", formatPriceInEuros(totalCents));
@@ -176,8 +183,13 @@ public class CartService {
 
     @Transactional
     // Processes payment, activates purchases, and generates/sends invoice.
-    public void processPayment(Order order, String cardName, String billingEmail, String cardNumber,
-            String cardExpiry, String cardCvv) {
+    public void processPayment(Order order, CheckoutRequestDTO checkoutRequest) {
+
+        String cardName     = checkoutRequest.getCardName();
+        String billingEmail = checkoutRequest.getBillingEmail();
+        String cardNumber   = checkoutRequest.getCardNumber();
+        String cardExpiry   = checkoutRequest.getCardExpiry();
+        String cardCvv      = checkoutRequest.getCardCvv();
 
         // --- BACKEND VALIDATION RULES ---
         StringBuilder errors = new StringBuilder();
