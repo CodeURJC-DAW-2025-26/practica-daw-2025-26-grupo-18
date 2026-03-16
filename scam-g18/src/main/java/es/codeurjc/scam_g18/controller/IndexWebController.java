@@ -6,7 +6,7 @@ import org.springframework.ui.Model;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
-public class IndexController {
+public class IndexWebController {
 
 
     // Displays the application's home page.

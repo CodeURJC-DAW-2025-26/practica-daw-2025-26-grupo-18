@@ -16,7 +16,7 @@ import es.codeurjc.scam_g18.service.EmailService;
 import es.codeurjc.scam_g18.service.UserService;
 
 @Controller
-public class RegisterController {
+public class RegisterWebController {
 
     @Autowired
     private EmailService emailService;

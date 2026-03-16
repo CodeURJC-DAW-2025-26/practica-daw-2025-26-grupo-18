@@ -23,7 +23,7 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/register/google")
-public class RegisterGoogleController {
+public class RegisterGoogleWebController {
 
     @Autowired
     private UserService userService;

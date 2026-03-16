@@ -117,6 +117,18 @@ public class AdminService {
         return userRepository.findById(id);
     }
 
+    public boolean courseExists(Long id) {
+        return courseRepository.existsById(id);
+    }
+
+    public boolean eventExists(Long id) {
+        return eventRepository.existsById(id);
+    }
+
+    public boolean reviewExists(Long id) {
+        return reviewRepository.existsById(id);
+    }
+
     // Looks up a user by exact username.
     public Optional<User> findUserByUsername(String username) {
         return userRepository.findByUsername(username);

@@ -57,6 +57,7 @@ public class SecurityConfiguration {
 
                 http
                                 .addFilterBefore(activeUserSessionFilter, UsernamePasswordAuthenticationFilter.class)
+                                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/v1/**"))
                                 .headers(headers -> headers
                                                 .frameOptions(frameOptions -> frameOptions.sameOrigin()))
                                 .authorizeHttpRequests(authorize -> authorize
@@ -98,6 +99,7 @@ public class SecurityConfiguration {
 
                                                 // LEVEL 3: ADMIN (Everything)
                                                 .requestMatchers("/admin/**").hasRole("ADMIN")
+                                                .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
 
                                                 // Any other request requires login
                                                 .anyRequest().authenticated())

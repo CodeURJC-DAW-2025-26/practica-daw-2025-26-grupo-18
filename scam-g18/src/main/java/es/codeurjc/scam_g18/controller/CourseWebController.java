@@ -25,7 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-public class CourseController {
+public class CourseWebController {
 
     private static final int PAGE_SIZE = 10;
 
@@ -42,7 +42,7 @@ public class CourseController {
     private ReviewService reviewService;
 
     // Builds the controller with main course and tag services.
-    public CourseController(CourseService courseService, TagService tagService) {
+    public CourseWebController(CourseService courseService, TagService tagService) {
         this.courseService = courseService;
         this.tagService = tagService;
     }

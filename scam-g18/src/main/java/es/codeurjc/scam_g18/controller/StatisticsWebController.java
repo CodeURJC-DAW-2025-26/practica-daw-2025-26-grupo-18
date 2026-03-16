@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import es.codeurjc.scam_g18.service.CourseService;
 import es.codeurjc.scam_g18.service.EnrollmentService;
 @Controller
-public class StatisticsController {
+public class StatisticsWebController {
 
     @Autowired
     private EnrollmentService enrollmentService;

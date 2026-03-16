@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-public class EventController {
+public class EventWebController {
 
     private static final int PAGE_SIZE = 10;
 
