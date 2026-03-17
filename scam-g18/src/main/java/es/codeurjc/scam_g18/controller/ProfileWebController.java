@@ -23,7 +23,7 @@ import es.codeurjc.scam_g18.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
-public class ProfileController {
+public class ProfileWebController {
 
     @Autowired
     private UserService userService;

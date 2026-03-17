@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import es.codeurjc.scam_g18.service.UserService;
 
 @Controller
-public class LoginController {
+public class LoginWebController {
 
     @Autowired
     private UserService userService;

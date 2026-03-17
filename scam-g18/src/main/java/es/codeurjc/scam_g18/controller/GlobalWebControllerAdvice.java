@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.web.csrf.CsrfToken;
 
 @ControllerAdvice
-public class GlobalControllerAdvice {
+public class GlobalWebControllerAdvice {
 
     public static class CsrfViewModel {
         private final String parameterName;

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/admin")
-public class AdminController {
+public class AdminWebController {
 
     private static final int PAGE_SIZE = 10;
 
