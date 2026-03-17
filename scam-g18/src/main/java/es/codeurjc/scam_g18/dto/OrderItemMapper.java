@@ -9,7 +9,6 @@ import es.codeurjc.scam_g18.model.OrderItem;
 
 @Mapper(componentModel = "spring")
 public interface OrderItemMapper {
-    @Mapping(source = "subscription", target = "isSubscription")
     OrderItemDTO toDTO(OrderItem orderItem);
 
     OrderItem toDomain(OrderItemDTO orderItemDTO);
