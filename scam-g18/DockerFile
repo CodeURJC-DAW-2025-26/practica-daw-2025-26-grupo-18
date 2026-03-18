@@ -1,0 +1,27 @@
+FROM maven:3.9-eclipse-temurin-21 AS builder
+
+# set the working directory in the container
+WORKDIR /project
+COPY pom.xml /project/
+
+# Download the dependencies
+RUN mvn dependency:go-offline
+
+# Copy the source code into the container
+COPY /src /project/src
+# Build the application
+RUN mvn -B package -DskipTests
+# Use a smaller base image for the runtime stage
+FROM eclipse-temurin:21-jre
+# Set the working directory in the container
+WORKDIR /usr/src/app/
+# Copy the built jar file from the builder stage to the runtime stage
+COPY --from=builder /project/target/*.jar /usr/src/app/app.jar
+# Expose the port that the application will run on
+EXPOSE 8443
+# Run the application
+CMD [ "java", "-jar", "app.jar" ] 
+
+
+
+

@@ -185,11 +185,11 @@ public class CartService {
     // Processes payment, activates purchases, and generates/sends invoice.
     public void processPayment(Order order, CheckoutRequestDTO checkoutRequest) {
 
-        String cardName     = checkoutRequest.getCardName();
-        String billingEmail = checkoutRequest.getBillingEmail();
-        String cardNumber   = checkoutRequest.getCardNumber();
-        String cardExpiry   = checkoutRequest.getCardExpiry();
-        String cardCvv      = checkoutRequest.getCardCvv();
+        String cardName     = checkoutRequest.cardName();
+        String billingEmail = checkoutRequest.billingEmail();
+        String cardNumber   = checkoutRequest.cardNumber();
+        String cardExpiry   = checkoutRequest.cardExpiry();
+        String cardCvv      = checkoutRequest.cardCvv();
 
         // --- BACKEND VALIDATION RULES ---
         StringBuilder errors = new StringBuilder();
