@@ -97,17 +97,12 @@ public class RegisterRestController {
 			}
 
 			emailService.newAccountMessage(email, username);
-
-			try {
-				userLoginService.login(response, new LoginRequest(username, password));
+			
+			userLoginService.login(response, new LoginRequest(username, password));
 				return ResponseEntity.status(HttpStatus.CREATED)
 						.body(new AuthResponse(AuthResponse.Status.SUCCESS,
 								"Usuario registrado correctamente e inicio de sesión realizado."));
-			} catch (Exception ex) {
-				return ResponseEntity.status(HttpStatus.CREATED)
-						.body(new AuthResponse(AuthResponse.Status.SUCCESS,
-								"Usuario registrado correctamente. Inicia sesión en /api/v1/login."));
-			}
+			
 		} catch (IOException | SQLException ex) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(new AuthResponse(AuthResponse.Status.FAILURE,
