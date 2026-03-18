@@ -1,9 +1,6 @@
 package es.codeurjc.scam_g18.controller;
 
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +13,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import es.codeurjc.scam_g18.model.Review;
+import es.codeurjc.scam_g18.dto.CourseDTO;
+import es.codeurjc.scam_g18.dto.CourseMapper;
+import es.codeurjc.scam_g18.dto.EventDTO;
+import es.codeurjc.scam_g18.dto.EventMapper;
+import es.codeurjc.scam_g18.dto.OrderDTO;
+import es.codeurjc.scam_g18.dto.OrderMapper;
+import es.codeurjc.scam_g18.dto.ReviewDTO;
+import es.codeurjc.scam_g18.dto.ReviewMapper;
+import es.codeurjc.scam_g18.dto.UserDTO;
+import es.codeurjc.scam_g18.dto.UserMapper;
 import es.codeurjc.scam_g18.model.Status;
 import es.codeurjc.scam_g18.service.AdminService;
 
@@ -25,16 +31,33 @@ import es.codeurjc.scam_g18.service.AdminService;
 public class AdminRestController {
 
 	private static final int PAGE_SIZE = 10;
-	private static final DateTimeFormatter REVIEW_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
 	@Autowired
 	private AdminService adminService;
 
+	@Autowired
+	private UserMapper userMapper;
+
+	@Autowired
+	private CourseMapper courseMapper;
+
+	@Autowired
+	private EventMapper eventMapper;
+
+	@Autowired
+	private OrderMapper orderMapper;
+
+	@Autowired
+	private ReviewMapper reviewMapper;
+
 	@GetMapping("/users")
-	public ResponseEntity<List<Map<String, Object>>> getUsers(
+	public ResponseEntity<List<UserDTO>> getUsers(
 			@RequestParam(required = false) String query,
 			@RequestParam(defaultValue = "0") int page) {
-		return ResponseEntity.ok(adminService.getUsersApiData(query, page, PAGE_SIZE));
+		if (query != null && !query.isBlank()) {
+			return ResponseEntity.ok(userMapper.toDTOs(adminService.searchUsers(query, page, PAGE_SIZE)));
+		}
+		return ResponseEntity.ok(userMapper.toDTOs(adminService.getAllUsers(page, PAGE_SIZE)));
 	}
 
 	@PutMapping("/users/{id}/status")
@@ -59,10 +82,13 @@ public class AdminRestController {
 	}
 
 	@GetMapping("/courses")
-	public ResponseEntity<List<Map<String, Object>>> getCourses(
+	public ResponseEntity<List<CourseDTO>> getCourses(
 			@RequestParam(required = false) String query,
 			@RequestParam(defaultValue = "0") int page) {
-		return ResponseEntity.ok(adminService.getCoursesApiData(query, page, PAGE_SIZE));
+		if (query != null && !query.isBlank()) {
+			return ResponseEntity.ok(courseMapper.toDTOs(adminService.searchCourses(query, page, PAGE_SIZE)));
+		}
+		return ResponseEntity.ok(courseMapper.toDTOs(adminService.getAllCoursesSortedByStatus(page, PAGE_SIZE)));
 	}
 
 	@PutMapping("/courses/{id}/status")
@@ -96,10 +122,13 @@ public class AdminRestController {
 	}
 
 	@GetMapping("/events")
-	public ResponseEntity<List<Map<String, Object>>> getEvents(
+	public ResponseEntity<List<EventDTO>> getEvents(
 			@RequestParam(required = false) String query,
 			@RequestParam(defaultValue = "0") int page) {
-		return ResponseEntity.ok(adminService.getEventsApiData(query, page, PAGE_SIZE));
+		if (query != null && !query.isBlank()) {
+			return ResponseEntity.ok(eventMapper.toDTOs(adminService.searchEvents(query, page, PAGE_SIZE)));
+		}
+		return ResponseEntity.ok(eventMapper.toDTOs(adminService.getAllEventsSortedByStatus(page, PAGE_SIZE)));
 	}
 
 	@PutMapping("/events/{id}/status")
@@ -133,16 +162,13 @@ public class AdminRestController {
 	}
 
 	@GetMapping("/orders")
-	public ResponseEntity<List<Map<String, Object>>> getOrders(@RequestParam(defaultValue = "0") int page) {
-		return ResponseEntity.ok(adminService.getOrdersApiData(page, PAGE_SIZE));
+	public ResponseEntity<List<OrderDTO>> getOrders(@RequestParam(defaultValue = "0") int page) {
+		return ResponseEntity.ok(orderMapper.toDTOs(adminService.getAllOrdersSortedByDate(page, PAGE_SIZE)));
 	}
 
 	@GetMapping("/reviews")
-	public ResponseEntity<List<Map<String, Object>>> getReviews() {
-		List<Map<String, Object>> payload = adminService.getAllReviews().stream()
-				.map(this::reviewToMap)
-				.toList();
-		return ResponseEntity.ok(payload);
+	public ResponseEntity<List<ReviewDTO>> getReviews() {
+		return ResponseEntity.ok(reviewMapper.toDTOs(adminService.getAllReviews()));
 	}
 
 	@DeleteMapping("/reviews/{id}")
@@ -152,17 +178,6 @@ public class AdminRestController {
 		}
 		adminService.deleteReview(id);
 		return ResponseEntity.noContent().build();
-	}
-
-	private Map<String, Object> reviewToMap(Review review) {
-		Map<String, Object> map = new HashMap<>();
-		map.put("id", review.getId());
-		map.put("content", review.getContent());
-		map.put("rating", review.getRating());
-		map.put("username", review.getUser() != null ? review.getUser().getUsername() : "");
-		map.put("courseTitle", review.getCourse() != null ? review.getCourse().getTitle() : "");
-		map.put("createdAt", review.getCreatedAt() != null ? review.getCreatedAt().format(REVIEW_DATE_FORMAT) : "");
-		return map;
 	}
 
 	public record UserStatusRequest(Boolean active) {
