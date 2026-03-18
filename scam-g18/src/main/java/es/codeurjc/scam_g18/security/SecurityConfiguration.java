@@ -5,132 +5,176 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
+import es.codeurjc.scam_g18.security.jwt.JwtRequestFilter;
+import es.codeurjc.scam_g18.security.jwt.UnauthorizedHandlerJwt;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-        @Autowired
-        public UserDetailsService userDetailsService;
-        @Autowired
-        private CustomOAuth2UserService customOAuth2UserService;
-        @Autowired
-        private ActiveUserSessionFilter activeUserSessionFilter;
+    @Autowired
+    public UserDetailsService userDetailsService;
+    @Autowired
+    private CustomOAuth2UserService customOAuth2UserService;
+    @Autowired
+    private ActiveUserSessionFilter activeUserSessionFilter;
+    @Autowired
+    private JwtRequestFilter jwtRequestFilter;
+    @Autowired
+    private UnauthorizedHandlerJwt unauthorizedHandlerJwt;
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
+    }
 
         @Bean
-        public PasswordEncoder passwordEncoder() {
-                return new BCryptPasswordEncoder();
+        public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+                        throws Exception {
+                return authenticationConfiguration.getAuthenticationManager();
         }
 
-        @Bean
-        public DaoAuthenticationProvider authenticationProvider() {
-                DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
-                authProvider.setPasswordEncoder(passwordEncoder());
-                return authProvider;
-        }
+    @Bean
+    public AuthenticationSuccessHandler oauth2SuccessHandler() {
+        return (request, response, authentication) -> {
+            boolean isPending = authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_PENDING"));
+            if (isPending) {
+                response.sendRedirect("/register/google");
+            } else {
+                response.sendRedirect("/");
+            }
+        };
+    }
 
-        @Bean
-        public AuthenticationSuccessHandler oauth2SuccessHandler() {
-                return (request, response, authentication) -> {
-                        boolean isPending = authentication.getAuthorities().stream()
-                                        .anyMatch(a -> a.getAuthority().equals("ROLE_PENDING"));
-                        if (isPending) {
-                                response.sendRedirect("/register/google");
-                        } else {
-                                response.sendRedirect("/");
-                        }
-                };
-        }
+    @Bean
+    @Order(1) // API filter chain. crsf and oauth2 disabled, JWT-based authentication, only for /api/v1/**
+    public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
 
-        @Bean
-        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.securityMatcher("/api/v1/**");
 
-                http.authenticationProvider(authenticationProvider());
+        http.authenticationProvider(authenticationProvider());
 
-                http
-                                .addFilterBefore(activeUserSessionFilter, UsernamePasswordAuthenticationFilter.class)
-                                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/v1/**"))
-                                .headers(headers -> headers
-                                                .frameOptions(frameOptions -> frameOptions.sameOrigin()))
-                                .authorizeHttpRequests(authorize -> authorize
-                                                // LEVEL 0: ANONYMOUS (Public)
-                                                .requestMatchers("/css/**", "/js/**", "/img/**", "/images/**", "/*.css",
-                                                                "/*.js", "/webjars/**")
-                                                .permitAll()
-                                                .requestMatchers("/", "/courses", "/events").permitAll()
-                                                .requestMatchers("/api/courses", "/api/events", "/api/location-search")
-                                                .permitAll()
-                                                .requestMatchers("/login", "/register", "/register/check-availability", "/error")
-                                                .permitAll()
-                                                .requestMatchers("/course/{id}", "/event/{id}").permitAll()
-                                                .requestMatchers("/statistics/course-ages",
-                                                                "/statistics/course-genders", "/statistics/course-tags")
-                                                .permitAll()
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .authenticationEntryPoint(unauthorizedHandlerJwt))
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/api/v1/login", "/api/v1/refresh")
+                        .permitAll()
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated())
+                .formLogin(AbstractHttpConfigurer::disable)
+                .oauth2Login(AbstractHttpConfigurer::disable)
+                .logout(AbstractHttpConfigurer::disable);
 
-                                                // Complete registration data via Google (PENDING users only)
-                                                .requestMatchers("/register/google", "/register/google/cancel")
-                                                .hasAnyRole("PENDING")
+        return http.build();
+    }
 
-                                                // LEVEL 1: REGISTERED (Purchase)
-                                                .requestMatchers("/course/{id}/enroll", "/events/{id}/register")
-                                                .hasAnyRole("USER", "SUBSCRIBED", "ADMIN")
+    @Bean
+    @Order(2) // Web filter chain. For the rest of the endpoints, with form login and oauth2 login
+    public SecurityFilterChain webFilterChain(HttpSecurity http) throws Exception {
 
-                                                // LEVEL 2: SUBSCRIBED (Create content)
-                                                .requestMatchers("/courses/new", "/events/new")
-                                                .hasAnyRole("SUBSCRIBED", "ADMIN")
+        http.authenticationProvider(authenticationProvider());
 
-                                                .requestMatchers("/course/new", "/event/new")
-                                                .hasAnyRole("SUBSCRIBED", "ADMIN")
+        http
+                .addFilterBefore(activeUserSessionFilter, UsernamePasswordAuthenticationFilter.class)
+                .headers(headers -> headers
+                        .frameOptions(frameOptions -> frameOptions.sameOrigin()))
+                .authorizeHttpRequests(authorize -> authorize
+                        // LEVEL 0: ANONYMOUS (Public)
+                        .requestMatchers("/css/**", "/js/**", "/img/**", "/images/**", "/*.css",
+                                "/*.js", "/webjars/**")
+                        .permitAll()
+                        .requestMatchers("/", "/courses", "/events").permitAll()
+                        .requestMatchers("/api/courses", "/api/events", "/api/location-search")
+                        .permitAll()
+                        .requestMatchers("/login", "/register", "/register/check-availability", "/error")
+                        .permitAll()
+                        .requestMatchers("/course/{id}", "/event/{id}").permitAll()
+                        .requestMatchers("/statistics/course-ages",
+                                "/statistics/course-genders", "/statistics/course-tags")
+                        .permitAll()
 
-                                                // Edit and delete ("owner" validation is done in the controller,
-                                                // but here we enforce the minimum role)
-                                                .requestMatchers("/course/{id}/edit", "/course/{id}/delete")
-                                                .hasAnyRole("SUBSCRIBED", "ADMIN")
-                                                .requestMatchers("/event/{id}/edit", "/event/{id}/delete")
-                                                .hasAnyRole("SUBSCRIBED", "ADMIN")
+                        // Complete registration data via Google (PENDING users only)
+                        .requestMatchers("/register/google", "/register/google/cancel")
+                        .hasAnyRole("PENDING")
 
-                                                // LEVEL 3: ADMIN (Everything)
-                                                .requestMatchers("/admin/**").hasRole("ADMIN")
-                                                .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        // LEVEL 1: REGISTERED (Purchase)
+                        .requestMatchers("/course/{id}/enroll", "/events/{id}/register")
+                        .hasAnyRole("USER", "SUBSCRIBED", "ADMIN")
 
-                                                // Any other request requires login
-                                                .anyRequest().authenticated())
+                        // LEVEL 2: SUBSCRIBED (Create content)
+                        .requestMatchers("/courses/new", "/events/new")
+                        .hasAnyRole("SUBSCRIBED", "ADMIN")
 
-                                // 1. TRADITIONAL LOGIN SYSTEM (Username and Password)
-                                .formLogin(formLogin -> formLogin
-                                                .loginPage("/login")
-                                                .failureUrl("/loginerror")
-                                                .defaultSuccessUrl("/", true)
-                                                .permitAll())
+                        .requestMatchers("/course/new", "/event/new")
+                        .hasAnyRole("SUBSCRIBED", "ADMIN")
 
-                                // 2. SOCIAL LOGIN SYSTEM (OAuth2 with Google)
-                                .oauth2Login(oauth2 -> oauth2
-                                                .loginPage("/login")
-                                                .successHandler(oauth2SuccessHandler())
-                                                .failureUrl("/login?error=oauth2error")
-                                                .userInfoEndpoint(userInfo -> userInfo
-                                                                .userService(customOAuth2UserService)))
+                        // Edit and delete ("owner" validation is done in the controller,
+                        // but here we enforce the minimum role)
+                        .requestMatchers("/course/{id}/edit", "/course/{id}/delete")
+                        .hasAnyRole("SUBSCRIBED", "ADMIN")
+                        .requestMatchers("/event/{id}/edit", "/event/{id}/delete")
+                        .hasAnyRole("SUBSCRIBED", "ADMIN")
 
-                                // 2.1 ACCESS DENIED (Logged user without required role)
-                                .exceptionHandling(exceptionHandling -> exceptionHandling
-                                                .accessDeniedHandler((request, response, accessDeniedException) -> {
-                                                        response.sendRedirect("/error/forbidden");
-                                                }))
+                        // LEVEL 3: ADMIN (Everything)
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
 
-                                // 3. LOGOUT SYSTEM
-                                .logout(logout -> logout
-                                                .logoutUrl("/logout")
-                                                .logoutSuccessUrl("/")
-                                                .permitAll());
+                        // Any other request requires login
+                        .anyRequest().authenticated())
 
-                return http.build();
-        }
+                // 1. TRADITIONAL LOGIN SYSTEM (Username and Password)
+                .formLogin(formLogin -> formLogin
+                        .loginPage("/login")
+                        .failureUrl("/loginerror")
+                        .defaultSuccessUrl("/", true)
+                        .permitAll())
+
+                // 2. SOCIAL LOGIN SYSTEM (OAuth2 with Google)
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/login")
+                        .successHandler(oauth2SuccessHandler())
+                        .failureUrl("/login?error=oauth2error")
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)))
+
+                // 2.1 ACCESS DENIED (Logged user without required role)
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.sendRedirect("/error/forbidden");
+                        }))
+
+                // 3. LOGOUT SYSTEM
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/")
+                        .permitAll());
+
+        return http.build();
+    }
 }
