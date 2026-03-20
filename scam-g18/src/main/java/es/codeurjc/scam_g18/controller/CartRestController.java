@@ -1,5 +1,165 @@
 package es.codeurjc.scam_g18.controller;
 
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import jakarta.servlet.http.HttpServletRequest;
+
+import es.codeurjc.scam_g18.dto.CheckoutRequestDTO;
+import es.codeurjc.scam_g18.dto.OrderDTO;
+import es.codeurjc.scam_g18.mapper.OrderMapper;
+import es.codeurjc.scam_g18.model.Course;
+import es.codeurjc.scam_g18.model.Event;
+import es.codeurjc.scam_g18.model.Order;
+import es.codeurjc.scam_g18.model.User;
+import es.codeurjc.scam_g18.service.CartService;
+import es.codeurjc.scam_g18.service.CourseService;
+import es.codeurjc.scam_g18.service.EventService;
+import es.codeurjc.scam_g18.service.UserService;
+
+@RestController
+@RequestMapping("/api/cart")
 public class CartRestController {
-    
+
+    @Autowired
+    private CartService cartService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private CourseService courseService;
+
+    @Autowired
+    private EventService eventService;
+
+    @Autowired
+    private OrderMapper orderMapper;
+
+    // Returns the authenticated user's pending order info
+    @GetMapping
+    public ResponseEntity<OrderDTO> getCart() {
+        User currentUser = getCurrentUser();
+        if (currentUser == null) {
+            return ResponseEntity.status(401).build();
+        }
+        Order order = cartService.getOrCreatePendingOrder(currentUser);
+        return ResponseEntity.ok(orderMapper.toDTO(order));
+    }
+
+    // Adds a course to the current user's pending order
+    @PostMapping("/add/course/{id}")
+    public ResponseEntity<?> addCourseToCart(@PathVariable Long id) {
+        User currentUser = getCurrentUser();
+        if (currentUser == null) {
+            return ResponseEntity.status(401).build();
+        }
+        Course course;
+        try {
+            course = courseService.getCourseById(id);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Order order = cartService.getOrCreatePendingOrder(currentUser);
+        cartService.addCourseToOrder(order, course);
+
+        return ResponseEntity.ok(orderMapper.toDTO(order));
+    }
+
+    // Adds an event to the pending order
+    @PostMapping("/add/event/{id}")
+    public ResponseEntity<?> addEventToCart(@PathVariable Long id) {
+        User currentUser = getCurrentUser();
+        if (currentUser == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        Optional<Event> eventOpt = eventService.getEventById(id);
+        if (eventOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Event event = eventOpt.get();
+        Order order = cartService.getOrCreatePendingOrder(currentUser);
+        try {
+            cartService.addEventToOrder(order, event);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body("EVENT_FULL");
+        }
+
+        return ResponseEntity.ok(orderMapper.toDTO(order));
+    }
+
+    // Adds the premium subscription to the order
+    @PostMapping("/add/subscription")
+    public ResponseEntity<OrderDTO> addSubscriptionToCart() {
+        User currentUser = getCurrentUser();
+        if (currentUser == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        Order order = cartService.getOrCreatePendingOrder(currentUser);
+        cartService.addSubscriptionToOrder(order);
+
+        return ResponseEntity.ok(orderMapper.toDTO(order));
+    }
+
+    // Removes an item from the cart
+    @PostMapping("/remove/{itemId}")
+    public ResponseEntity<OrderDTO> removeItemFromCart(@PathVariable Long itemId) {
+        User currentUser = getCurrentUser();
+        if (currentUser == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        Order order = cartService.getOrCreatePendingOrder(currentUser);
+        cartService.removeItemFromOrder(order, itemId);
+
+        return ResponseEntity.ok(orderMapper.toDTO(order));
+    }
+
+    // Processes payment (expects JSON body)
+    @PostMapping("/checkout")
+    public ResponseEntity<?> checkout(
+            @RequestBody CheckoutRequestDTO checkoutRequest,
+            HttpServletRequest request) {
+
+        if (checkoutRequest == null) {
+            return ResponseEntity.badRequest().body("Invalid request");
+        }
+
+        User currentUser = getCurrentUser();
+        if (currentUser == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        Order order = cartService.getOrCreatePendingOrder(currentUser);
+
+        try {
+            cartService.processPayment(order, checkoutRequest);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(409).body("EVENT_FULL");
+        }
+
+        // Reload user details in Spring Security session
+        if (currentUser.getUsername() != null) {
+            userService.refreshUserSession(currentUser.getUsername(), request);
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+    private User getCurrentUser() {
+        return userService.getCurrentAuthenticatedUser().orElse(null);
+    }
 }
