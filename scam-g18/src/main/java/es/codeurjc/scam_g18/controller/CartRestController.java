@@ -10,11 +10,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import jakarta.servlet.http.HttpServletRequest;
 
 import es.codeurjc.scam_g18.dto.CheckoutRequestDTO;
 import es.codeurjc.scam_g18.dto.OrderDTO;
-import es.codeurjc.scam_g18.mapper.OrderMapper;
+import es.codeurjc.scam_g18.dto.OrderMapper;
 import es.codeurjc.scam_g18.model.Course;
 import es.codeurjc.scam_g18.model.Event;
 import es.codeurjc.scam_g18.model.Order;
@@ -23,6 +22,7 @@ import es.codeurjc.scam_g18.service.CartService;
 import es.codeurjc.scam_g18.service.CourseService;
 import es.codeurjc.scam_g18.service.EventService;
 import es.codeurjc.scam_g18.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/cart")
