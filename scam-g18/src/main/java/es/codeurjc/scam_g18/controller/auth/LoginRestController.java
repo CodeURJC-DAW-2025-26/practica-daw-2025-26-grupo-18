@@ -1,4 +1,4 @@
-package es.codeurjc.scam_g18.controller;
+package es.codeurjc.scam_g18.controller.auth;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,7 +16,7 @@ import es.codeurjc.scam_g18.security.jwt.UserLoginService;
 import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/auth")
 public class LoginRestController {
 
     private final UserLoginService userLoginService;

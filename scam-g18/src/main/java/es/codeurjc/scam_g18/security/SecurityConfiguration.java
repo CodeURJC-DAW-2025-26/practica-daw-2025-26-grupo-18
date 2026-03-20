@@ -83,8 +83,14 @@ public class SecurityConfiguration {
                         .authenticationEntryPoint(unauthorizedHandlerJwt))
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/v1/login", "/api/v1/refresh", "/api/v1/register",
-                                "/api/v1/register/check-availability")
+                        .requestMatchers("/api/v1/auth/login", "/api/v1/auth/refresh", "/api/v1/auth/logout", "/api/v1/auth/register",
+                                "/api/v1/auth/register/check-availability")
+                        .permitAll()
+                        .requestMatchers("/api/v1/global")
+                        .permitAll()
+                        .requestMatchers("/api/v1/courses", "/api/v1/courses/", "/api/v1/courses/{id}")
+                        .permitAll()
+                        .requestMatchers("/api/v1/events", "/api/v1/events/", "/api/v1/events/{id}", "/api/v1/events/location-search")
                         .permitAll()
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
