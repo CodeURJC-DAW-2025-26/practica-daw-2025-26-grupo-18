@@ -14,7 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import es.codeurjc.scam_g18.dto.CheckoutRequestDTO;
 import es.codeurjc.scam_g18.dto.OrderDTO;
-import es.codeurjc.scam_g18.mapper.OrderMapper;
+import es.codeurjc.scam_g18.dto.OrderMapper;
 import es.codeurjc.scam_g18.model.Course;
 import es.codeurjc.scam_g18.model.Event;
 import es.codeurjc.scam_g18.model.Order;

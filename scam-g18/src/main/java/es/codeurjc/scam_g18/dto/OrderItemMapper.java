@@ -1,7 +1,6 @@
 package es.codeurjc.scam_g18.dto;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import java.util.Collection;
 import java.util.List;
 
