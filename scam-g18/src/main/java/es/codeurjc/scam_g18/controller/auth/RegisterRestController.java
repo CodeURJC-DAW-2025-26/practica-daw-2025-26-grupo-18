@@ -117,7 +117,13 @@ public class RegisterRestController {
 						.body(new AuthResponse(AuthResponse.Status.FAILURE, DUPLICATE_USER_MESSAGE));
 			}
 
-			emailService.newAccountMessage(data.email(), data.username());
+			//in case of email delivery issues
+			//we still want to consider the registration successful and allow login.
+			try {
+				emailService.newAccountMessage(data.email(), data.username());
+			} catch (RuntimeException ex) {
+				// Ignore email delivery issues
+			}
 
 			try {
 				ResponseEntity<AuthResponse> loginResponse = userLoginService.login(
