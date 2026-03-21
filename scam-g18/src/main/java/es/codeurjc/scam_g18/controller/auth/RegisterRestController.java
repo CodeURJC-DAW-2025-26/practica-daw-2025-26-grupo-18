@@ -33,6 +33,8 @@ public class RegisterRestController {
 	private static final String REGISTER_SUCCESS_MESSAGE = "Usuario registrado correctamente e inicio de sesión realizado.";
 	private static final String REGISTER_SUCCESS_WITH_LOGIN_PENDING_MESSAGE = "Usuario registrado correctamente. Inicia sesión para continuar.";
 	private static final String REGISTER_ERROR_MESSAGE = "No se pudo completar el registro.";
+	private static final String REQUIRED_FIELDS_MESSAGE = "Debe indicar contraseña, fecha de nacimiento, género y país.";
+	private static final String INVALID_GENDER_MESSAGE = "El género debe ser MALE, FEMALE o PREFER_NOT_TO_SAY.";
 
 	@Autowired
 	private UserService userService;
@@ -91,6 +93,14 @@ public class RegisterRestController {
 		}
 
 		RegisterRequestDTO data = normalizeRequest(request);
+
+		if (missingRequiredFields(data)) {
+			return badRequest(REQUIRED_FIELDS_MESSAGE);
+		}
+
+		if (!isValidGender(data.gender())) {
+			return badRequest(INVALID_GENDER_MESSAGE);
+		}
 
 		String validationErrors = userService.validateUserAttributes(
 				data.username(),
@@ -178,6 +188,19 @@ public class RegisterRestController {
 		}
 		String trimmed = value.trim();
 		return trimmed.isEmpty() ? null : trimmed;
+	}
+
+	private static boolean missingRequiredFields(RegisterRequestDTO data) {
+		return data.password() == null
+				|| data.birthDate() == null
+				|| data.gender() == null
+				|| data.country() == null;
+	}
+
+	private static boolean isValidGender(String gender) {
+		return "MALE".equals(gender)
+				|| "FEMALE".equals(gender)
+				|| "PREFER_NOT_TO_SAY".equals(gender);
 	}
 
 	public record AvailabilityResponse(boolean usernameTaken, boolean emailTaken, boolean available) {
