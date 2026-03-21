@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -192,7 +191,7 @@ public class CourseRestController {
                     .buildAndExpand(course.getId()).toUri();
             return ResponseEntity.created(location).body(courseMapper.toDTO(course));
         } catch (Exception e) {
-             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Error creating course: " + e.getMessage()));
         }
     }
@@ -214,19 +213,19 @@ public class CourseRestController {
         String validationError = courseService.validateCourseData(courseUpdate, tagNames, imageFile, false, false);
 
         if (validationError != null && !validationError.isEmpty()) {
-             return ResponseEntity.badRequest().body(Map.of("error", validationError));
+            return ResponseEntity.badRequest().body(Map.of("error", validationError));
         }
 
         try {
             boolean updated = courseService.updateCourseIfAuthorized(id, courseUpdate, currentUserOpt.get(), imageFile, tagNames);
             if (updated) {
-                 Course updatedCourse = courseService.getCourseById(id);
-                 return ResponseEntity.ok(courseMapper.toDTO(updatedCourse));
+                Course updatedCourse = courseService.getCourseById(id);
+                return ResponseEntity.ok(courseMapper.toDTO(updatedCourse));
             } else {
-                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Not authorized to update this course"));
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Not authorized to update this course"));
             }
         } catch (Exception e) {
-             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Error updating course: " + e.getMessage()));
         }
     }

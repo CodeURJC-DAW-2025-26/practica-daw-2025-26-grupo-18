@@ -3,6 +3,7 @@ package es.codeurjc.scam_g18.controller.auth;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,16 +28,24 @@ import jakarta.servlet.http.HttpServletResponse;
 @RequestMapping("/api/v1/auth")
 public class RegisterRestController {
 
-	private final UserService userService;
-	private final EmailService emailService;
-	private final UserLoginService userLoginService;
+	private static final String REGISTER_DATA_MISSING_MESSAGE = "Datos de registro no proporcionados.";
+	private static final String DUPLICATE_USER_MESSAGE = "El nombre de usuario o correo electrónico ya existen.";
+	private static final String REGISTER_SUCCESS_MESSAGE = "Usuario registrado correctamente e inicio de sesión realizado.";
+	private static final String REGISTER_SUCCESS_WITH_LOGIN_PENDING_MESSAGE = "Usuario registrado correctamente. Inicia sesión para continuar.";
+	private static final String REGISTER_ERROR_MESSAGE = "No se pudo completar el registro.";
 
-	public RegisterRestController(UserService userService, EmailService emailService, UserLoginService userLoginService) {
-		this.userService = userService;
-		this.emailService = emailService;
-		this.userLoginService = userLoginService;
-	}
+	@Autowired
+	private UserService userService;
 
+	@Autowired
+	private EmailService emailService;
+
+	@Autowired
+	private UserLoginService userLoginService;
+
+	/**
+	 * Checks whether the provided username and/or email are already in use.
+	 */
 	@GetMapping("/register/check-availability")
 	public ResponseEntity<AvailabilityResponse> checkAvailability(
 			@RequestParam(required = false) String username,
@@ -51,12 +60,19 @@ public class RegisterRestController {
 				!usernameTaken && !emailTaken));
 	}
 
+	/**
+	 * Registers a user when the client sends JSON data.
+	 */
 	@PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<AuthResponse> registerUserJson(@RequestBody RegisterRequestDTO request,
 			HttpServletResponse response) {
 		return registerUserInternal(request, null, response);
 	}
 
+	/**
+	 * Registers a user when the client sends multipart data, optionally including
+	 * a profile image.
+	 */
 	@PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<AuthResponse> registerUserMultipart(@ModelAttribute RegisterRequestDTO request,
 			@RequestParam(value = "image", required = false) MultipartFile imageFile,
@@ -64,78 +80,98 @@ public class RegisterRestController {
 		return registerUserInternal(request, imageFile, response);
 	}
 
+	/**
+	 * Shared registration workflow: normalize input, validate attributes, create
+	 * user, send welcome email, and try automatic login.
+	 */
 	private ResponseEntity<AuthResponse> registerUserInternal(RegisterRequestDTO request, MultipartFile imageFile,
 			HttpServletResponse response) {
 		if (request == null) {
-			return badRequest("Datos de registro no proporcionados.");
+			return badRequest(REGISTER_DATA_MISSING_MESSAGE);
 		}
 
-		String username = normalize(request.username());
-		String email = normalize(request.email());
-		String password = normalize(request.password());
-		String gender = normalize(request.gender());
-		String birthDate = normalize(request.birthDate());
-		String country = normalize(request.country());
+		RegisterRequestDTO data = normalizeRequest(request);
 
-		String requiredFieldsError = requiredFieldsError(password, birthDate, gender, country);
-		if (requiredFieldsError != null) {
-			return badRequest(requiredFieldsError);
-		}
-
-		String validationErrors = userService.validateUserAttributes(username, email, password, birthDate, gender, country);
+		String validationErrors = userService.validateUserAttributes(
+				data.username(),
+				data.email(),
+				data.password(),
+				data.birthDate(),
+				data.gender(),
+				data.country());
 		if (validationErrors != null) {
 			return badRequest(validationErrors);
 		}
 
 		try {
-			boolean registered = userService.registerUser(username, email, password, gender, birthDate, country,
+			boolean registered = userService.registerUser(
+					data.username(),
+					data.email(),
+					data.password(),
+					data.gender(),
+					data.birthDate(),
+					data.country(),
 					imageFile);
 			if (!registered) {
 				return ResponseEntity.status(HttpStatus.CONFLICT)
-						.body(new AuthResponse(AuthResponse.Status.FAILURE,
-								"El nombre de usuario o correo electrónico ya existen."));
+						.body(new AuthResponse(AuthResponse.Status.FAILURE, DUPLICATE_USER_MESSAGE));
 			}
 
-			emailService.newAccountMessage(email, username);
-			
-			userLoginService.login(response, new LoginRequest(username, password));
+			emailService.newAccountMessage(data.email(), data.username());
+
+			try {
+				ResponseEntity<AuthResponse> loginResponse = userLoginService.login(
+						response,
+						new LoginRequest(data.username(), data.password()));
+				AuthResponse loginBody = loginResponse.getBody();
+				if (!loginResponse.getStatusCode().is2xxSuccessful()
+						|| loginBody == null
+						|| loginBody.getStatus() != AuthResponse.Status.SUCCESS) {
+					return ResponseEntity.status(HttpStatus.CREATED)
+							.body(new AuthResponse(AuthResponse.Status.SUCCESS, REGISTER_SUCCESS_WITH_LOGIN_PENDING_MESSAGE));
+				}
+			} catch (RuntimeException ex) {
 				return ResponseEntity.status(HttpStatus.CREATED)
-						.body(new AuthResponse(AuthResponse.Status.SUCCESS,
-								"Usuario registrado correctamente e inicio de sesión realizado."));
-			
+						.body(new AuthResponse(AuthResponse.Status.SUCCESS, REGISTER_SUCCESS_WITH_LOGIN_PENDING_MESSAGE));
+			}
+
+			return ResponseEntity.status(HttpStatus.CREATED)
+					.body(new AuthResponse(AuthResponse.Status.SUCCESS, REGISTER_SUCCESS_MESSAGE));
 		} catch (IOException | SQLException ex) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new AuthResponse(AuthResponse.Status.FAILURE,
-							"No se pudo completar el registro."));
+					.body(new AuthResponse(AuthResponse.Status.FAILURE, REGISTER_ERROR_MESSAGE));
 		}
 	}
 
+	/**
+	 * Returns a normalized copy of the incoming registration payload.
+	 */
+	private RegisterRequestDTO normalizeRequest(RegisterRequestDTO request) {
+		return new RegisterRequestDTO(
+				normalize(request.username()),
+				normalize(request.email()),
+				normalize(request.password()),
+				normalize(request.gender()),
+				normalize(request.birthDate()),
+				normalize(request.country()));
+	}
+
+	/**
+	 * Builds a standard 400 response body for validation or input errors.
+	 */
 	private ResponseEntity<AuthResponse> badRequest(String message) {
 		return ResponseEntity.badRequest().body(new AuthResponse(AuthResponse.Status.FAILURE, message));
 	}
 
+	/**
+	 * Trims a string and converts blank values to null.
+	 */
 	private static String normalize(String value) {
 		if (value == null) {
 			return null;
 		}
 		String trimmed = value.trim();
 		return trimmed.isEmpty() ? null : trimmed;
-	}
-
-	private static String requiredFieldsError(String password, String birthDate, String gender, String country) {
-		if (password == null) {
-			return "Por favor, introduzca una contraseña.";
-		}
-		if (birthDate == null) {
-			return "Por favor, introduzca una fecha de nacimiento.";
-		}
-		if (gender == null) {
-			return "Por favor, seleccione un género.";
-		}
-		if (country == null) {
-			return "Por favor, seleccione un país.";
-		}
-		return null;
 	}
 
 	public record AvailabilityResponse(boolean usernameTaken, boolean emailTaken, boolean available) {
