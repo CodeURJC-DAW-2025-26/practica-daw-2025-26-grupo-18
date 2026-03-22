@@ -13,9 +13,12 @@ import es.codeurjc.scam_g18.dto.GlobalDataDTO;
 import es.codeurjc.scam_g18.dto.GlobalMapper;
 import es.codeurjc.scam_g18.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/v1")
+@Tag(name = "Global API", description = "Common global data for frontend clients")
 public class GlobalRestController {
 
     @Autowired
@@ -25,6 +28,7 @@ public class GlobalRestController {
     private GlobalMapper globalMapper;
 
     @GetMapping("/global")
+    @Operation(summary = "Get global data", description = "Returns global UI/session metadata used by frontend clients.")
     public ResponseEntity<GlobalDataDTO> getGlobalData(HttpServletRequest request) {
         boolean hasPrincipal = (request.getUserPrincipal() != null);
         Map<String, Object> viewData = userService.getGlobalHeaderViewData(hasPrincipal);

@@ -23,9 +23,12 @@ import es.codeurjc.scam_g18.service.CourseService;
 import es.codeurjc.scam_g18.service.EventService;
 import es.codeurjc.scam_g18.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/v1/cart")
+@Tag(name = "Cart API", description = "Shopping cart and checkout endpoints")
 public class CartRestController {
 
     @Autowired
@@ -45,6 +48,7 @@ public class CartRestController {
 
     // Returns the authenticated user's pending order info
     @GetMapping
+    @Operation(summary = "Get cart", description = "Returns the current authenticated user's pending cart order.")
     public ResponseEntity<OrderDTO> getCart() {
         User currentUser = getCurrentUser();
         if (currentUser == null) {
@@ -56,6 +60,7 @@ public class CartRestController {
 
     // Adds a course to the current user's pending order
     @PostMapping("/add/course/{id}")
+    @Operation(summary = "Add course to cart", description = "Adds a course to the authenticated user's pending order.")
     public ResponseEntity<?> addCourseToCart(@PathVariable Long id) {
         User currentUser = getCurrentUser();
         if (currentUser == null) {
@@ -76,6 +81,7 @@ public class CartRestController {
 
     // Adds an event to the pending order
     @PostMapping("/add/event/{id}")
+    @Operation(summary = "Add event to cart", description = "Adds an event to the authenticated user's pending order.")
     public ResponseEntity<?> addEventToCart(@PathVariable Long id) {
         User currentUser = getCurrentUser();
         if (currentUser == null) {
@@ -100,6 +106,7 @@ public class CartRestController {
 
     // Adds the premium subscription to the order
     @PostMapping("/add/subscription")
+    @Operation(summary = "Add subscription to cart", description = "Adds a subscription line item to the authenticated user's pending order.")
     public ResponseEntity<OrderDTO> addSubscriptionToCart() {
         User currentUser = getCurrentUser();
         if (currentUser == null) {
@@ -114,6 +121,7 @@ public class CartRestController {
 
     // Removes an item from the cart
     @PostMapping("/remove/{itemId}")
+    @Operation(summary = "Remove cart item", description = "Removes an item from the authenticated user's cart by item id.")
     public ResponseEntity<OrderDTO> removeItemFromCart(@PathVariable Long itemId) {
         User currentUser = getCurrentUser();
         if (currentUser == null) {
@@ -128,6 +136,7 @@ public class CartRestController {
 
     // Processes payment (expects JSON body)
     @PostMapping("/checkout")
+    @Operation(summary = "Checkout", description = "Processes payment and finalizes the current pending order.")
     public ResponseEntity<?> checkout(
             @RequestBody CheckoutRequestDTO checkoutRequest,
             HttpServletRequest request) {

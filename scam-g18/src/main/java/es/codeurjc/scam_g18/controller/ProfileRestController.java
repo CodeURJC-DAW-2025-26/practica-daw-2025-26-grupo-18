@@ -28,9 +28,12 @@ import es.codeurjc.scam_g18.service.CourseService;
 import es.codeurjc.scam_g18.service.EnrollmentService;
 import es.codeurjc.scam_g18.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/v1/profile")
+@Tag(name = "Profile API", description = "Profile data retrieval and update endpoints")
 public class ProfileRestController {
 
 	@Autowired
@@ -43,6 +46,7 @@ public class ProfileRestController {
 	private CourseService courseService;
 
 	@GetMapping("/me")
+	@Operation(summary = "Get current profile id", description = "Returns the current authenticated user id.")
 	public ResponseEntity<Map<String, Long>> myProfile() {
 		return userService.getCurrentAuthenticatedUser()
 				.map(user -> ResponseEntity.ok(Map.of("userId", user.getId())))
@@ -50,6 +54,7 @@ public class ProfileRestController {
 	}
 
 	@GetMapping("/{id}")
+	@Operation(summary = "Get profile", description = "Returns complete profile data for a given user id.")
 	public ResponseEntity<ProfileDTO> profile(@PathVariable long id) {
 		Optional<User> userOpt = userService.findById(id);
 		if (userOpt.isEmpty()) {
@@ -93,6 +98,7 @@ public class ProfileRestController {
 	}
 
 	@PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@Operation(summary = "Update profile (JSON)", description = "Updates profile data from JSON payload for the authenticated owner.")
 	public ResponseEntity<?> editProfileJson(
 			@PathVariable long id,
 			@RequestBody ProfileUpdateRequestDTO request,
@@ -101,6 +107,7 @@ public class ProfileRestController {
 	}
 
 	@PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@Operation(summary = "Update profile (multipart)", description = "Updates profile data from multipart payload, optionally including profile image.")
 	public ResponseEntity<?> editProfileMultipart(
 			@PathVariable long id,
 			@ModelAttribute ProfileUpdateRequestDTO request,

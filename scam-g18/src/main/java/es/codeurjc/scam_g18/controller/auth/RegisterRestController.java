@@ -23,9 +23,12 @@ import es.codeurjc.scam_g18.security.jwt.UserLoginService;
 import es.codeurjc.scam_g18.service.EmailService;
 import es.codeurjc.scam_g18.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@Tag(name = "Authentication API", description = "Registration and account availability endpoints")
 public class RegisterRestController {
 
 	private static final String REGISTER_DATA_MISSING_MESSAGE = "Datos de registro no proporcionados.";
@@ -49,6 +52,7 @@ public class RegisterRestController {
 	 * Checks whether the provided username and/or email are already in use.
 	 */
 	@GetMapping("/register/check-availability")
+	@Operation(summary = "Check availability", description = "Checks whether username and email are already taken.")
 	public ResponseEntity<AvailabilityResponse> checkAvailability(
 			@RequestParam(required = false) String username,
 			@RequestParam(required = false) String email) {
@@ -66,6 +70,7 @@ public class RegisterRestController {
 	 * Registers a user when the client sends JSON data.
 	 */
 	@PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@Operation(summary = "Register user (JSON)", description = "Registers a user from a JSON payload and attempts automatic login.")
 	public ResponseEntity<AuthResponse> registerUserJson(@RequestBody RegisterRequestDTO request,
 			HttpServletResponse response) {
 		return registerUserInternal(request, null, response);
@@ -76,6 +81,7 @@ public class RegisterRestController {
 	 * a profile image.
 	 */
 	@PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@Operation(summary = "Register user (multipart)", description = "Registers a user from multipart form data, optionally with a profile image.")
 	public ResponseEntity<AuthResponse> registerUserMultipart(@ModelAttribute RegisterRequestDTO request,
 			@RequestParam(value = "image", required = false) MultipartFile imageFile,
 			HttpServletResponse response) {
