@@ -17,7 +17,7 @@ import es.codeurjc.scam_g18.service.CourseService;
 import es.codeurjc.scam_g18.service.EnrollmentService;
 
 @RestController
-@RequestMapping("/api/statistics")
+@RequestMapping("/api/v1/statistics")
 public class StatisticsRestController {
 
     @Autowired
