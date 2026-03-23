@@ -51,19 +51,13 @@ public class RegisterRestController {
 	/**
 	 * Checks whether the provided username and/or email are already in use.
 	 */
-	@GetMapping("/register/check-availability")
-	@Operation(summary = "Check availability", description = "Checks whether username and email are already taken.")
-	public ResponseEntity<AvailabilityResponse> checkAvailability(
+	@GetMapping("/register/availability")
+	public ResponseEntity<Boolean> checkAvailability(
 			@RequestParam(required = false) String username,
 			@RequestParam(required = false) String email) {
 
-		boolean usernameTaken = userService.usernameExists(username);
-		boolean emailTaken = userService.emailExists(email);
-
-		return ResponseEntity.ok(new AvailabilityResponse(
-				usernameTaken,
-				emailTaken,
-				!usernameTaken && !emailTaken));
+		boolean available = !userService.usernameExists(username) && !userService.emailExists(email);
+		return ResponseEntity.ok(available);
 	}
 
 	/**
@@ -207,8 +201,5 @@ public class RegisterRestController {
 		return "MALE".equals(gender)
 				|| "FEMALE".equals(gender)
 				|| "PREFER_NOT_TO_SAY".equals(gender);
-	}
-
-	public record AvailabilityResponse(boolean usernameTaken, boolean emailTaken, boolean available) {
 	}
 }
