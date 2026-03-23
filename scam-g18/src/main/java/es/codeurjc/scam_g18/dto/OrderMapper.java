@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 
 import es.codeurjc.scam_g18.model.Order;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE)
 public interface OrderMapper {
     OrderDTO toDTO(Order order);
     Order toDomain(OrderDTO orderDTO);

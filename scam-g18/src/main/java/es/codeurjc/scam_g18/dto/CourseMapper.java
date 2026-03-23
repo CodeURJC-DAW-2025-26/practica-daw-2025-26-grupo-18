@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 
 import es.codeurjc.scam_g18.model.Course;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE)
 public interface CourseMapper {
     CourseDTO toDTO(Course course);
     Course toDomain(CourseDTO courseDTO);

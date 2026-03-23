@@ -6,7 +6,7 @@ import java.util.List;
 
 import es.codeurjc.scam_g18.model.OrderItem;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE)
 public interface OrderItemMapper {
     OrderItemDTO toDTO(OrderItem orderItem);
 
