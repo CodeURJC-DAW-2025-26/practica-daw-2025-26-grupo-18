@@ -27,9 +27,12 @@ import es.codeurjc.scam_g18.model.Event;
 import es.codeurjc.scam_g18.model.User;
 import es.codeurjc.scam_g18.service.EventService;
 import es.codeurjc.scam_g18.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/v1/events")
+@Tag(name = "Event API", description = "Event browsing, detail and management endpoints")
 public class EventRestController {
 
     private static final int PAGE_SIZE = 10;
@@ -44,6 +47,7 @@ public class EventRestController {
     private EventMapper eventMapper;
 
     @GetMapping("/")
+    @Operation(summary = "List events", description = "Returns paginated published events with optional search and tag filters.")
     public ResponseEntity<List<Map<String, Object>>> getEvents(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) List<String> tags,
@@ -54,11 +58,13 @@ public class EventRestController {
     }
 
     @GetMapping(value = "/location-search", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Search locations", description = "Searches event locations using the external geocoding service.")
     public ResponseEntity<String> searchLocations(@RequestParam("q") String query) {
         return ResponseEntity.ok(eventService.searchLocations(query));
     }
 
     @GetMapping("/purchased")
+    @Operation(summary = "List purchased events", description = "Returns events purchased by the authenticated user.")
     public ResponseEntity<List<Map<String, Object>>> purchasedEvents() {
         var userOpt = userService.getCurrentAuthenticatedUser();
         if (userOpt.isEmpty()) {
@@ -70,6 +76,7 @@ public class EventRestController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get event detail", description = "Returns a full event detail payload including management and purchase flags.")
     public ResponseEntity<Map<String, Object>> getEvent(@PathVariable long id) {
         var eventOpt = eventService.getEventById(id);
         if (eventOpt.isEmpty()) {
@@ -95,6 +102,7 @@ public class EventRestController {
     }
 
     @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Create event", description = "Creates an event from multipart data, optionally including image and tags.")
     public ResponseEntity<Object> createEvent(
             @RequestPart("event") EventDTO eventDTO,
             @RequestParam(required = false) List<String> tagNames,
@@ -124,6 +132,7 @@ public class EventRestController {
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Update event", description = "Updates an event if the current user is authorized.")
     public ResponseEntity<Object> updateEvent(
             @PathVariable long id, 
             @RequestPart("event") EventDTO eventDTO,
@@ -157,6 +166,7 @@ public class EventRestController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete event", description = "Deletes an event if the current user is authorized.")
     public ResponseEntity<Object> deleteEvent(@PathVariable long id) {
         var currentUserOpt = userService.getCurrentAuthenticatedUser();
         if (currentUserOpt.isEmpty()) {

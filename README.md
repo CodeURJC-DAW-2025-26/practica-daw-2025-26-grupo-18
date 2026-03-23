@@ -380,6 +380,7 @@ Diagrama actualizado incluyendo los @RestController y su relación con los @Serv
 #### **Requisitos previos:**
 - Docker instalado (versión 20.10 o superior)
 - Docker Compose instalado (versión 2.0 o superior)
+- (Opcional) Git Bash o WSL para ejecutar los scripts `.sh` en Windows
 
 #### **Pasos para ejecutar con docker-compose:**
 
@@ -389,7 +390,99 @@ Diagrama actualizado incluyendo los @RestController y su relación con los @Serv
    cd [repositorio]
    ```
 
-2. **AQUÍ LOS SIGUIENTES PASOS**:
+2. **(Opcional) Configurar variables de entorno para la base de datos**:
+   - El fichero `docker/docker-compose.yml` ya define valores por defecto:
+     - `DB_NAME=test`
+     - `DB_USER=root`
+     - `DB_PASSWORD=SC@M2026-2027`
+   - Si quieres personalizarlos, crea un archivo `.env` en la raíz del repositorio con:
+   ```env
+   DB_NAME=scam_db
+   DB_USER=root
+   DB_PASSWORD=tu_password
+   ```
+
+3. **Levantar la aplicación y MySQL con Docker Compose**:
+   ```bash
+   docker compose -f docker/docker-compose.yml up -d
+   ```
+
+4. **Comprobar que los contenedores están en ejecución**:
+   ```bash
+   docker compose -f docker/docker-compose.yml ps
+   ```
+
+5. **Ver logs de la aplicación (si lo necesitas)**:
+   ```bash
+   docker compose -f docker/docker-compose.yml logs -f web
+   ```
+
+6. **Abrir la aplicación**:
+   ```
+   https://localhost:8443
+   ```
+   > La aplicación usa HTTPS con certificado autofirmado y el navegador puede mostrar aviso de seguridad.
+
+7. **Parar y eliminar contenedores**:
+   ```bash
+   docker compose -f docker/docker-compose.yml down
+   ```
+   Para borrar también el volumen de MySQL:
+   ```bash
+   docker compose -f docker/docker-compose.yml down -v
+   ```
+
+#### **Ejecución directamente desde Docker Hub (sin clonar repositorio)**
+
+Puedes ejecutar la práctica usando las imágenes publicadas en Docker Hub:
+- `jaimesnh/scam-g18`
+- `jaimesnh/scam-g18-compose`
+
+1. **Descargar el artefacto OCI que contiene `docker-compose.yml`**:
+   ```bash
+   docker pull jaimesnh/scam-g18-compose:latest
+   ```
+
+2. **Extraer `docker-compose.yml` del artefacto a tu máquina**:
+   ```bash
+   docker create --name scam_compose_tmp jaimesnh/scam-g18-compose:latest
+   docker cp scam_compose_tmp:/docker-compose.yml ./docker-compose.yml
+   docker rm scam_compose_tmp
+   ```
+
+3. **(Opcional) Crear `.env` en el mismo directorio para personalizar la BD**:
+   ```env
+   DB_NAME=test
+   DB_USER=root
+   DB_PASSWORD=SC@M2026-2027
+   ```
+
+4. **Arrancar los servicios con Docker Compose**:
+   ```bash
+   docker compose up -d
+   ```
+
+5. **Comprobar estado y logs**:
+   ```bash
+   docker compose ps
+   docker compose logs -f web
+   ```
+
+6. **Abrir la aplicación**:
+   ```
+   https://localhost:8443
+   ```
+
+7. **Parar y limpiar**:
+   ```bash
+   docker compose down
+   ```
+   Para borrar también el volumen de MySQL:
+   ```bash
+   docker compose down -v
+   ```
+
+> Nota: el servicio `web` del compose ya referencia `jaimesnh/scam-g18:latest`, por lo que no necesitas hacer `docker pull` manual de esa imagen (aunque puedes hacerlo si quieres forzar descarga previa).
 
 ### **Construcción de la Imagen Docker**
 
@@ -403,7 +496,25 @@ Diagrama actualizado incluyendo los @RestController y su relación con los @Serv
    cd docker
    ```
 
-2. **AQUÍ LOS SIGUIENTES PASOS**
+2. **Construir imagen local con el script del proyecto**:
+   ```bash
+   ./create_image.sh scam-g18 latest
+   ```
+   Esto construye la imagen usando `docker/DockerFile` y el contexto `scam-g18/`.
+
+3. **(Opcional) Publicar la imagen en Docker Hub**:
+   ```bash
+   ./publish_image.sh <dockerhub_user> scam-g18 latest
+   ```
+   Ejemplo:
+   ```bash
+   ./publish_image.sh jaimesnh scam-g18 latest
+   ```
+
+4. **(Opcional) Publicar `docker-compose.yml` como artefacto OCI**:
+   ```bash
+   ./publish_docker-compose.sh <dockerhub_user> scam-g18-compose latest
+   ```
 
 ### **Despliegue en Máquina Virtual**
 

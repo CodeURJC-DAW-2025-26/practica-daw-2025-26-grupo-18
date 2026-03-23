@@ -11,11 +11,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import es.codeurjc.scam_g18.service.EmailService;
 import es.codeurjc.scam_g18.service.UserService;
 
 @Controller
+@Tag(name = "Registration Web API", description = "AJAX helper endpoints used in web registration")
 public class RegisterWebController {
 
     @Autowired
@@ -25,6 +28,7 @@ public class RegisterWebController {
     private UserService userService;
 
     @GetMapping("/register/check-availability")
+    @Operation(summary = "Check availability (web)", description = "Checks whether username and email are already in use for web registration.")
     @ResponseBody
     public Map<String, Boolean> checkAvailability(
             @RequestParam(required = false) String username,

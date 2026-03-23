@@ -116,6 +116,8 @@ public class SecurityConfiguration {
                         .requestMatchers("/css/**", "/js/**", "/img/**", "/images/**", "/*.css",
                                 "/*.js", "/webjars/**")
                         .permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
+                        .permitAll()
                         .requestMatchers("/", "/courses", "/events").permitAll()
                         .requestMatchers("/api/courses", "/api/events", "/api/location-search")
                         .permitAll()

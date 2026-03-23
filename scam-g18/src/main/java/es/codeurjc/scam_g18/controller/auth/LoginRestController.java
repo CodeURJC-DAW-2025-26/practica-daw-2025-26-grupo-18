@@ -14,9 +14,12 @@ import es.codeurjc.scam_g18.security.jwt.AuthResponse;
 import es.codeurjc.scam_g18.security.jwt.LoginRequest;
 import es.codeurjc.scam_g18.security.jwt.UserLoginService;
 import jakarta.servlet.http.HttpServletResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@Tag(name = "Authentication API", description = "Authentication and token lifecycle endpoints")
 public class LoginRestController {
 
     private final UserLoginService userLoginService;
@@ -26,6 +29,7 @@ public class LoginRestController {
     }
 
     @PostMapping("/login")
+    @Operation(summary = "Login", description = "Authenticates a user with username and password.")
     public ResponseEntity<AuthResponse> login(
             @RequestBody LoginRequest loginRequest,
             HttpServletResponse response) {
@@ -40,6 +44,7 @@ public class LoginRestController {
     }
 
     @PostMapping("/refresh")
+    @Operation(summary = "Refresh token", description = "Issues fresh credentials using a refresh token from cookie or authorization header.")
     public ResponseEntity<AuthResponse> refresh(
             @CookieValue(name = "RefreshToken", required = false) String refreshTokenCookie,
             @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String authorizationHeader,
@@ -55,6 +60,7 @@ public class LoginRestController {
     } 
 
     @PostMapping("/logout")
+    @Operation(summary = "Logout", description = "Invalidates current authentication context and clears auth cookies.")
     public ResponseEntity<AuthResponse> logout(HttpServletResponse response) {
         String message = userLoginService.logout(response);
         return ResponseEntity.ok(new AuthResponse(AuthResponse.Status.SUCCESS, message));

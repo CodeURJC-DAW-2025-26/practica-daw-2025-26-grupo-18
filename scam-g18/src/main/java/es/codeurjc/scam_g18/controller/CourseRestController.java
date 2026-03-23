@@ -28,9 +28,12 @@ import es.codeurjc.scam_g18.model.User;
 import es.codeurjc.scam_g18.service.CourseService;
 import es.codeurjc.scam_g18.service.ReviewService;
 import es.codeurjc.scam_g18.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/v1/courses")
+@Tag(name = "Course API", description = "Course browsing, detail and management endpoints")
 public class CourseRestController {
 
     private static final int PAGE_SIZE = 10;
@@ -48,6 +51,7 @@ public class CourseRestController {
     private CourseMapper courseMapper;
 
     @GetMapping("/")
+    @Operation(summary = "List courses", description = "Returns paginated published courses with optional search and tag filters.")
     public ResponseEntity<List<Map<String, Object>>> getCourses(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) List<String> tags,
@@ -58,6 +62,7 @@ public class CourseRestController {
     }
 
     @GetMapping("/subscribed")
+    @Operation(summary = "List subscribed courses", description = "Returns courses subscribed by the authenticated user.")
     public ResponseEntity<List<Map<String, Object>>> subscribedCourses() {
         var userOpt = userService.getCurrentAuthenticatedUser();
         if (userOpt.isEmpty()) {
@@ -69,6 +74,7 @@ public class CourseRestController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get course detail", description = "Returns a full course detail payload including permissions and progress flags.")
     public ResponseEntity<Map<String, Object>> getCourse(@PathVariable long id) {
         Course course;
         try {
@@ -107,6 +113,7 @@ public class CourseRestController {
     }
 
     @GetMapping("/{courseId}/lesson/{lessonId}/video")
+    @Operation(summary = "Get lesson video URL", description = "Returns the lesson video URL if the user has access rights.")
     public ResponseEntity<Map<String, String>> getLessonVideoUrl(
             @PathVariable long courseId, 
             @PathVariable long lessonId) {
@@ -139,6 +146,7 @@ public class CourseRestController {
     }
 
     @PostMapping("/{courseId}/lesson/{lessonId}/complete")
+    @Operation(summary = "Complete lesson", description = "Marks a lesson as completed and returns updated course progress information.")
     public ResponseEntity<Map<String, Object>> markLessonAsCompleted(
             @PathVariable long courseId,
             @PathVariable long lessonId) {
@@ -167,6 +175,7 @@ public class CourseRestController {
     }
 
     @PostMapping(value = "/", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Create course", description = "Creates a course from multipart data, optionally including image and tags.")
     public ResponseEntity<Object> createCourse(
             @RequestPart("course") CourseDTO courseDTO,
             @RequestParam(required = false) List<String> tagNames,
@@ -197,6 +206,7 @@ public class CourseRestController {
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Update course", description = "Updates a course if the current user is authorized.")
     public ResponseEntity<Object> updateCourse(
             @PathVariable long id,
             @RequestPart("course") CourseDTO courseDTO,
@@ -231,6 +241,7 @@ public class CourseRestController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete course", description = "Deletes a course if the current user is authorized.")
     public ResponseEntity<Object> deleteCourse(@PathVariable long id) {
         var currentUserOpt = userService.getCurrentAuthenticatedUser();
         if (currentUserOpt.isEmpty()) {
@@ -246,6 +257,7 @@ public class CourseRestController {
     }
 
     @PostMapping("/{id}/review")
+    @Operation(summary = "Add review", description = "Adds a review to a course from the authenticated user.")
     public ResponseEntity<Object> addReview(
             @PathVariable long id,
             @RequestParam int rating,

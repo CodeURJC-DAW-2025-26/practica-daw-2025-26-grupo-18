@@ -7,8 +7,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @Controller
 @RequestMapping("/admin")
+@Tag(name = "Admin Web API", description = "AJAX endpoints used by the admin dashboard")
 public class AdminWebController {
 
     private static final int PAGE_SIZE = 10;
@@ -38,6 +42,7 @@ public class AdminWebController {
 
     // AJAX endpoint for user pagination
     @GetMapping("/api/users")
+    @Operation(summary = "List dashboard users", description = "Returns a paginated list of users for the admin dashboard table.")
     @ResponseBody
     public org.springframework.http.ResponseEntity<java.util.List<java.util.Map<String, Object>>> getUsersApi(
             @RequestParam(required = false) String query,
@@ -47,6 +52,7 @@ public class AdminWebController {
 
     // AJAX endpoint for event pagination
     @GetMapping("/api/events")
+    @Operation(summary = "List dashboard events", description = "Returns a paginated list of events for the admin dashboard table.")
     @ResponseBody
     public org.springframework.http.ResponseEntity<java.util.List<java.util.Map<String, Object>>> getAdminEventsApi(
             @RequestParam(required = false) String query,
@@ -56,6 +62,7 @@ public class AdminWebController {
 
     // AJAX endpoint for course pagination
     @GetMapping("/api/courses")
+    @Operation(summary = "List dashboard courses", description = "Returns a paginated list of courses for the admin dashboard table.")
     @ResponseBody
     public org.springframework.http.ResponseEntity<java.util.List<java.util.Map<String, Object>>> getAdminCoursesApi(
             @RequestParam(required = false) String query,
@@ -65,6 +72,7 @@ public class AdminWebController {
 
     // AJAX endpoint for order pagination
     @GetMapping("/api/orders")
+    @Operation(summary = "List dashboard orders", description = "Returns a paginated list of orders for the admin dashboard table.")
     @ResponseBody
     public org.springframework.http.ResponseEntity<java.util.List<java.util.Map<String, Object>>> getAdminOrdersApi(
             @RequestParam(defaultValue = "0") int page) {

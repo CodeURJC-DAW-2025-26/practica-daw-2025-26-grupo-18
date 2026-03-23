@@ -15,9 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 import es.codeurjc.scam_g18.dto.ChartDTO;
 import es.codeurjc.scam_g18.service.CourseService;
 import es.codeurjc.scam_g18.service.EnrollmentService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@RequestMapping("/api/statistics")
+@RequestMapping("/api/v1/statistics")
+@Tag(name = "Statistics API", description = "Analytics endpoints returning chart-ready data")
 public class StatisticsRestController {
 
     @Autowired
@@ -32,6 +35,7 @@ public class StatisticsRestController {
     }
 
     @GetMapping("/course-progress")
+    @Operation(summary = "Course progress", description = "Returns completed vs in-progress course counts for a user.")
     public ResponseEntity<ChartDTO> courseProgress(@RequestParam Long userId) {
         Map<String, Integer> stats = enrollmentService.getCourseProgressStats(userId);
         List<String> labels = List.of("Completados", "En progreso");
@@ -42,6 +46,7 @@ public class StatisticsRestController {
     }
 
     @GetMapping("/lessons-learned")
+    @Operation(summary = "Lessons learned", description = "Returns monthly lessons completed by the user.")
     public ResponseEntity<ChartDTO> lessonsLearned(@RequestParam Long userId) {
         Map<String, Object> data = enrollmentService.getLessonsPerMonth(userId);
         @SuppressWarnings("unchecked")
@@ -52,6 +57,7 @@ public class StatisticsRestController {
     }
 
     @GetMapping("/course-genders")
+    @Operation(summary = "Course genders", description = "Returns gender distribution for enrollments in a course.")
     public ResponseEntity<ChartDTO> courseGenders(@RequestParam Long courseId) {
         Map<String, Long> genreCount = courseService.getNumberGenre(courseId);
         List<String> labels = List.of("Hombres", "Mujeres");
@@ -62,6 +68,7 @@ public class StatisticsRestController {
     }
 
     @GetMapping("/course-ages")
+    @Operation(summary = "Course ages", description = "Returns age-range distribution for enrollments in a course.")
     public ResponseEntity<ChartDTO> courseAges(@RequestParam Long courseId) {
         List<String> labels = List.of("18-25", "26-35", "36-50", "+50");
         List<Double> values = courseService.getAgesCourse(courseId);
@@ -69,6 +76,7 @@ public class StatisticsRestController {
     }
 
     @GetMapping("/course-tags")
+    @Operation(summary = "Common course tags", description = "Returns overlap between user interests and course tags.")
     public ResponseEntity<ChartDTO> courseTags(@RequestParam Long userId, @RequestParam Long courseId) {
         List<Entry<String, Integer>> tags = courseService.getCommonTags(userId, courseId);
         List<String> labels = new ArrayList<>();
@@ -81,6 +89,7 @@ public class StatisticsRestController {
     }
 
     @GetMapping("/course-user-progress")
+    @Operation(summary = "User progress in course", description = "Returns completed vs pending lessons for one user in one course.")
     public ResponseEntity<ChartDTO> courseUserProgress(@RequestParam Long courseId, @RequestParam Long userId) {
         long totalLessons = courseService.getTotalLessons(courseId);
         Map<String, Long> progress = enrollmentService.getUserLessonProgressForCourse(userId, courseId, totalLessons);
@@ -92,6 +101,7 @@ public class StatisticsRestController {
     }
 
     @GetMapping("/created-course-status")
+    @Operation(summary = "Created course completion status", description = "Returns completion breakdown for students of a course.")
     public ResponseEntity<ChartDTO> createdCourseStatus(@RequestParam Long courseId) {
         Map<String, Integer> stats = courseService.getCourseCompletionStats(courseId);
         List<String> labels = List.of("Completado", "En progreso");

@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import es.codeurjc.scam_g18.dto.CourseDTO;
 import es.codeurjc.scam_g18.dto.CourseMapper;
 import es.codeurjc.scam_g18.dto.EventDTO;
@@ -28,6 +31,7 @@ import es.codeurjc.scam_g18.service.AdminService;
 
 @RestController
 @RequestMapping("/api/v1/admin")
+@Tag(name = "Admin API", description = "Administrative endpoints for moderation and resource management")
 public class AdminRestController {
 
 	private static final int PAGE_SIZE = 10;
@@ -51,6 +55,7 @@ public class AdminRestController {
 	private ReviewMapper reviewMapper;
 
 	@GetMapping("/users")
+	@Operation(summary = "List users", description = "Returns paginated users for admin management with optional text filtering.")
 	public ResponseEntity<List<UserDTO>> getUsers(
 			@RequestParam(required = false) String query,
 			@RequestParam(defaultValue = "0") int page) {
@@ -61,6 +66,7 @@ public class AdminRestController {
 	}
 
 	@PutMapping("/users/{id}/status")
+	@Operation(summary = "Update user status", description = "Activates or deactivates a user account by id.")
 	public ResponseEntity<Void> updateUserStatus(
 			@PathVariable Long id,
 			@RequestBody UserStatusRequest request) {
@@ -82,6 +88,7 @@ public class AdminRestController {
 	}
 
 	@GetMapping("/courses")
+	@Operation(summary = "List courses", description = "Returns paginated courses for admin management with optional text filtering.")
 	public ResponseEntity<List<CourseDTO>> getCourses(
 			@RequestParam(required = false) String query,
 			@RequestParam(defaultValue = "0") int page) {
@@ -92,6 +99,7 @@ public class AdminRestController {
 	}
 
 	@PutMapping("/courses/{id}/status")
+	@Operation(summary = "Update course status", description = "Updates course moderation status (published or draft) by id.")
 	public ResponseEntity<Void> updateCourseStatus(
 			@PathVariable Long id,
 			@RequestBody ResourceStatusRequest request) {
@@ -122,6 +130,7 @@ public class AdminRestController {
 	}
 
 	@GetMapping("/events")
+	@Operation(summary = "List events", description = "Returns paginated events for admin management with optional text filtering.")
 	public ResponseEntity<List<EventDTO>> getEvents(
 			@RequestParam(required = false) String query,
 			@RequestParam(defaultValue = "0") int page) {
@@ -132,6 +141,7 @@ public class AdminRestController {
 	}
 
 	@PutMapping("/events/{id}/status")
+	@Operation(summary = "Update event status", description = "Updates event moderation status (published or draft) by id.")
 	public ResponseEntity<Void> updateEventStatus(
 			@PathVariable Long id,
 			@RequestBody ResourceStatusRequest request) {
@@ -162,16 +172,19 @@ public class AdminRestController {
 	}
 
 	@GetMapping("/orders")
+	@Operation(summary = "List orders", description = "Returns paginated orders sorted by date for the admin panel.")
 	public ResponseEntity<List<OrderDTO>> getOrders(@RequestParam(defaultValue = "0") int page) {
 		return ResponseEntity.ok(orderMapper.toDTOs(adminService.getAllOrdersSortedByDate(page, PAGE_SIZE)));
 	}
 
 	@GetMapping("/reviews")
+	@Operation(summary = "List reviews", description = "Returns all reviews available for moderation.")
 	public ResponseEntity<List<ReviewDTO>> getReviews() {
 		return ResponseEntity.ok(reviewMapper.toDTOs(adminService.getAllReviews()));
 	}
 
 	@DeleteMapping("/reviews/{id}")
+	@Operation(summary = "Delete review", description = "Deletes a review by id.")
 	public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
 		if (!adminService.reviewExists(id)) {
 			return ResponseEntity.notFound().build();

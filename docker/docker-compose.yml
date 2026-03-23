@@ -1,19 +1,19 @@
 services:
   web:
-    build: .
+    image: jaimesnh/scam-g18:latest
     ports:
       - 8443:8443
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://db/${DB_NAME:-test}
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-password}
+      - SPRING_DATASOURCE_USERNAME=${DB_USER:-root}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-SC@M2026-2027}
     depends_on:
       db:
         condition: service_healthy
   db:
     image: mysql:9.6
     environment:
-      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD:-password}
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD:-SC@M2026-2027}
       - MYSQL_DATABASE=${DB_NAME:-test}
     volumes:
       - db_data:/var/lib/mysql

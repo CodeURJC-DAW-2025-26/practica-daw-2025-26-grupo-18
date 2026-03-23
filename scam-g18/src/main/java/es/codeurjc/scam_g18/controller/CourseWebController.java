@@ -23,8 +23,11 @@ import es.codeurjc.scam_g18.service.TagService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ResponseBody;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Controller
+@Tag(name = "Course Web API", description = "AJAX endpoints used by course web pages")
 public class CourseWebController {
 
     private static final int PAGE_SIZE = 10;
@@ -61,6 +64,7 @@ public class CourseWebController {
 
     // AJAX endpoint for course pagination
     @GetMapping("/api/courses")
+    @Operation(summary = "List courses (web)", description = "Returns paginated courses for the public web listing via AJAX.")
     @ResponseBody
     public ResponseEntity<List<Map<String, Object>>> getCoursesApi(
             @RequestParam(required = false) String search,
@@ -165,6 +169,7 @@ public class CourseWebController {
 
     // Marks a lesson as completed via AJAX and returns updated progress.
     @PostMapping("/course/{courseId}/lesson/{lessonId}/complete-ajax")
+    @Operation(summary = "Complete lesson (web AJAX)", description = "Marks a lesson as completed and returns updated progress for web clients.")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> markLessonAsCompletedAjax(
             @PathVariable long courseId,

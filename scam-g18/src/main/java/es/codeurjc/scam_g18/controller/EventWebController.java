@@ -20,8 +20,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Controller
+@Tag(name = "Event Web API", description = "AJAX endpoints used by event web pages")
 public class EventWebController {
 
     private static final int PAGE_SIZE = 10;
@@ -48,6 +51,7 @@ public class EventWebController {
 
     // AJAX endpoint for event pagination
     @GetMapping("/api/events")
+    @Operation(summary = "List events (web)", description = "Returns paginated events for the public web listing via AJAX.")
     @ResponseBody
     public ResponseEntity<List<Map<String, Object>>> getEventsApi(
             @RequestParam(required = false) String search,
@@ -61,6 +65,7 @@ public class EventWebController {
 
     // Delegates Nominatim geocoding to EventService.
     @GetMapping(value = "/api/location-search", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Search locations (web)", description = "Returns location suggestions for event forms in web clients.")
     @ResponseBody
     public ResponseEntity<String> searchLocations(@RequestParam("q") String query) {
         return ResponseEntity.ok(eventService.searchLocations(query));
