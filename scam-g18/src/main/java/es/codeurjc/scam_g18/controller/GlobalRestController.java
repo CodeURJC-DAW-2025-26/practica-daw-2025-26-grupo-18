@@ -33,7 +33,7 @@ public class GlobalRestController {
         boolean hasPrincipal = (request.getUserPrincipal() != null);
         Map<String, Object> viewData = userService.getGlobalHeaderViewData(hasPrincipal);
 
-        GlobalDataDTO dto = globalMapper.toDTO(viewData, request);
+        GlobalDataDTO dto = globalMapper.toDTO(viewData);
 
         return ResponseEntity.ok(dto);
     }
