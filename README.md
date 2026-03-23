@@ -565,45 +565,43 @@ Responsable principal de la dockerización y despliegue de la práctica, del end
 
 ---
 
-#### **Alumno 2 - [Nombre Completo]**
+#### **Alumno 2 - Pau Calvo Jiménez**
 
-[Descripción de las tareas y responsabilidades principales del alumno en el proyecto]
+Implementación de controladores REST para las entidades principales de Cursos y Eventos, permitiendo operaciones CRUD, gestión de suscripciones y acceso al contenido multimedia bajo la nueva arquitectura de API REST.
 
 | Nº    | Commits      | Files      |
 |:------------: |:------------:| :------------:|
-|1| [Descripción commit 1](URL_commit_1)  | [Archivo1](URL_archivo_1)   |
-|2| [Descripción commit 2](URL_commit_2)  | [Archivo2](URL_archivo_2)   |
-|3| [Descripción commit 3](URL_commit_3)  | [Archivo3](URL_archivo_3)   |
-|4| [Descripción commit 4](URL_commit_4)  | [Archivo4](URL_archivo_4)   |
-|5| [Descripción commit 5](URL_commit_5)  | [Archivo5](URL_archivo_5)   |
+|1| CourseRestController para gestión total de cursos ([68297bb](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/68297bb))  | [CourseRestController.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/controller/CourseRestController.java)   |
+|2| EventRestController para gestión y búsqueda de eventos ([b6214a6](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/b6214a6))  | [EventRestController.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/controller/EventRestController.java)   |
+|3| Implementación inicial de endpoints CRUD para cursos ([ca16ce0](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/ca16ce0))  | [CourseRestController.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/controller/CourseRestController.java)   |
 
 ---
 
-#### **Alumno 3 - [Nombre Completo]**
+#### **Alumno 3 - Alberto Hontanilla Villanueva**
 
-[Descripción de las tareas y responsabilidades principales del alumno en el proyecto]
+Refactorización y robustecimiento de la API de registro y comprobación de disponibilidad de usuarios en la migración a la arquitectura REST. Validación y manejo de envío de correos.
 
 | Nº    | Commits      | Files      |
 |:------------: |:------------:| :------------:|
-|1| [Descripción commit 1](URL_commit_1)  | [Archivo1](URL_archivo_1)   |
-|2| [Descripción commit 2](URL_commit_2)  | [Archivo2](URL_archivo_2)   |
-|3| [Descripción commit 3](URL_commit_3)  | [Archivo3](URL_archivo_3)   |
-|4| [Descripción commit 4](URL_commit_4)  | [Archivo4](URL_archivo_4)   |
-|5| [Descripción commit 5](URL_commit_5)  | [Archivo5](URL_archivo_5)   |
+|1| Simplificación de endpoint de disponibilidad de usuario ([3f7cbe8](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/3f7cbe8))  | [RegisterRestController.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/controller/auth/RegisterRestController.java)   |
+|2| Validación de campos requeridos en la API de registro ([6df8b3f](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/6df8b3f))  | [RegisterRestController.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/controller/auth/RegisterRestController.java)   |
+|3| Manejo robusto de excepciones y de fallos de servicio de email ([4594e48](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/4594e48))  | [RegisterRestController.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/controller/auth/RegisterRestController.java)   |
+|4| Refactorización general del flujo de registro y errores ([6169654](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/6169654))  | [RegisterRestController.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/controller/auth/RegisterRestController.java)   |
+|5| Implementación inicial del controlador REST para registro ([de602c0](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/de602c0))  | [RegisterRestController.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/controller/RegisterRestController.java)   |
 
 ---
 
-#### **Alumno 4 - [Nombre Completo]**
+#### **Alumno 4 - Gonzalo Andrés Zurdo Patino**
 
-[Descripción de las tareas y responsabilidades principales del alumno en el proyecto]
+Desarrollo de la API REST para la gestión del carrito de compras y del proceso de checkout de la aplicación. Implementación de los endpoints relacionados con visualización de estadísticas, y mappers iniciales.
 
 | Nº    | Commits      | Files      |
 |:------------: |:------------:| :------------:|
-|1| [Descripción commit 1](URL_commit_1)  | [Archivo1](URL_archivo_1)   |
-|2| [Descripción commit 2](URL_commit_2)  | [Archivo2](URL_archivo_2)   |
-|3| [Descripción commit 3](URL_commit_3)  | [Archivo3](URL_archivo_3)   |
-|4| [Descripción commit 4](URL_commit_4)  | [Archivo4](URL_archivo_4)   |
-|5| [Descripción commit 5](URL_commit_5)  | [Archivo5](URL_archivo_5)   |
+|1| API REST para gestión integral del carrito de compra ([e501b31](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/e501b31))  | [CartRestController.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/controller/CartRestController.java)   |
+|2| Controladores REST para consultas de estadísticas ([3c16799](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/3c16799))  | [StatisticsRestController.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/controller/StatisticsRestController.java)   |
+|3| Implementación de la capa de DTOs y lógica de pedidos ([c116545](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/c116545))  | [OrderDTO.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/dto/OrderDTO.java)   |
+|4| Preparación de mappers base para Cursos, Eventos y Pedidos ([262b469](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/262b469))  | [CartController.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/controller/CartController.java)   |
+|5| Setup inicial de la API REST mediante GlobalRestController ([63e16c2](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/63e16c2))  | [GlobalRestController.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/controller/GlobalRestController.java)   |
 
 ---
 
