@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@RequestMapping("/images")
+@RequestMapping({"/api/v1/images","/images"})
 @Tag(name = "Image API", description = "Endpoints that serve profile, course and event images")
 public class ImageController {
 
