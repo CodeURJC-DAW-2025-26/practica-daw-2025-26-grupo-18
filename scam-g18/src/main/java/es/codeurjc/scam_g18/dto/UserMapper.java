@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 
 import es.codeurjc.scam_g18.model.User;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE)
 public interface UserMapper {
     UserDTO toDTO(User user);
     User toDomain(UserDTO userDTO);

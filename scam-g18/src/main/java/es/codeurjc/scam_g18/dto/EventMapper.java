@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 
 import es.codeurjc.scam_g18.model.Event;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE)
 public interface EventMapper {
     EventDTO toDTO(Event event);
     Event toDomain(EventDTO eventDTO);
