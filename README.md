@@ -373,7 +373,8 @@ Lideró el desarrollo avanzado del panel de administración, motores de búsqued
 
 Diagrama actualizado incluyendo los @RestController y su relación con los @Service compartidos:
 
-![Diagrama de Clases Actualizado](images/complete-classes-diagram.png)
+![Diagrama de Clases Actualizado](<img width="2288" height="1897" alt="Diagrama-Clases-P2-G18" src="https://github.com/user-attachments/assets/da2a383c-1ef9-48cf-8fd4-9c764ec49f16" />
+)
 
 ### **Instrucciones de Ejecución con Docker**
 
