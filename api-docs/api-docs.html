@@ -1,0 +1,1653 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SCAM G18 API Docs</title>
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #f5f7fb;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 16px;
+      background: #0f172a;
+      color: #e2e8f0;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+
+    .topbar .hint {
+      font-size: 12px;
+      opacity: 0.85;
+    }
+
+    #swagger-ui {
+      height: calc(100% - 48px);
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <h1>SCAM G18 - API Documentation</h1>
+  </div>
+
+  <div id="swagger-ui"></div>
+
+  <script id="openapi-spec" type="text/plain">
+openapi: 3.1.0
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+  - url: https://localhost:8443
+    description: Generated server url
+tags:
+  - name: Event API
+    description: "Event browsing, detail and management endpoints"
+  - name: Statistics API
+    description: Analytics endpoints returning chart-ready data
+  - name: Image API
+    description: "Endpoints that serve profile, course and event images"
+  - name: Admin API
+    description: Administrative endpoints for moderation and resource management
+  - name: Profile API
+    description: Profile data retrieval and update endpoints
+  - name: Authentication API
+    description: Registration and account availability endpoints
+  - name: Course API
+    description: "Course browsing, detail and management endpoints"
+  - name: Cart API
+    description: Shopping cart and checkout endpoints
+  - name: Global API
+    description: Common global data for frontend clients
+paths:
+  /api/v1/profile/{id}:
+    get:
+      tags:
+        - Profile API
+      summary: Get profile
+      description: Returns complete profile data for a given user id.
+      operationId: profile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ProfileDTO"
+    put:
+      tags:
+        - Profile API
+      summary: Update profile (JSON)
+      description: Updates profile data from JSON payload for the authenticated owner.
+      operationId: editProfileMultipart
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                request:
+                  $ref: "#/components/schemas/ProfileUpdateRequestDTO"
+                imageFile:
+                  type: string
+                  format: binary
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileUpdateRequestDTO"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+  /api/v1/events/{id}:
+    get:
+      tags:
+        - Event API
+      summary: Get event detail
+      description:
+        Returns a full event detail payload including management and purchase
+        flags.
+      operationId: getEvent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+    put:
+      tags:
+        - Event API
+      summary: Update event
+      description: Updates an event if the current user is authorized.
+      operationId: updateEvent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: tagNames
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                event:
+                  $ref: "#/components/schemas/EventDTO"
+                imageFile:
+                  type: string
+                  format: binary
+              required:
+                - event
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+    delete:
+      tags:
+        - Event API
+      summary: Delete event
+      description: Deletes an event if the current user is authorized.
+      operationId: deleteEvent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+  /api/v1/courses/{id}:
+    get:
+      tags:
+        - Course API
+      summary: Get course detail
+      description:
+        Returns a full course detail payload including permissions and
+        progress flags.
+      operationId: getCourse
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+    put:
+      tags:
+        - Course API
+      summary: Update course
+      description: Updates a course if the current user is authorized.
+      operationId: updateCourse
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: tagNames
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                course:
+                  $ref: "#/components/schemas/CourseDTO"
+                imageFile:
+                  type: string
+                  format: binary
+              required:
+                - course
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+    delete:
+      tags:
+        - Course API
+      summary: Delete course
+      description: Deletes a course if the current user is authorized.
+      operationId: deleteCourse
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+  /api/v1/admin/users/{id}/status:
+    put:
+      tags:
+        - Admin API
+      summary: Update user status
+      description: Activates or deactivates a user account by id.
+      operationId: updateUserStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserStatusRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+  /api/v1/admin/events/{id}/status:
+    put:
+      tags:
+        - Admin API
+      summary: Update event status
+      description: Updates event moderation status (published or draft) by id.
+      operationId: updateEventStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResourceStatusRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+  /api/v1/admin/courses/{id}/status:
+    put:
+      tags:
+        - Admin API
+      summary: Update course status
+      description: Updates course moderation status (published or draft) by id.
+      operationId: updateCourseStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResourceStatusRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+  /api/v1/events/:
+    get:
+      tags:
+        - Event API
+      summary: List events
+      description:
+        Returns paginated published events with optional search and tag
+        filters.
+      operationId: getEvents
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: tags
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties:
+                    type: object
+    post:
+      tags:
+        - Event API
+      summary: Create event
+      description:
+        "Creates an event from multipart data, optionally including image\
+        \ and tags."
+      operationId: createEvent
+      parameters:
+        - name: tagNames
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                event:
+                  $ref: "#/components/schemas/EventDTO"
+                imageFile:
+                  type: string
+                  format: binary
+              required:
+                - event
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+  /api/v1/courses/{id}/review:
+    post:
+      tags:
+        - Course API
+      summary: Add review
+      description: Adds a review to a course from the authenticated user.
+      operationId: addReview
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: rating
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: content
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+  /api/v1/courses/{courseId}/lesson/{lessonId}/complete:
+    post:
+      tags:
+        - Course API
+      summary: Complete lesson
+      description:
+        Marks a lesson as completed and returns updated course progress
+        information.
+      operationId: markLessonAsCompleted
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: lessonId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /api/v1/courses/:
+    get:
+      tags:
+        - Course API
+      summary: List courses
+      description:
+        Returns paginated published courses with optional search and tag
+        filters.
+      operationId: getCourses
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: tags
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties:
+                    type: object
+    post:
+      tags:
+        - Course API
+      summary: Create course
+      description:
+        "Creates a course from multipart data, optionally including image\
+        \ and tags."
+      operationId: createCourse
+      parameters:
+        - name: tagNames
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                course:
+                  $ref: "#/components/schemas/CourseDTO"
+                imageFile:
+                  type: string
+                  format: binary
+              required:
+                - course
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+  /api/v1/cart/remove/{itemId}:
+    post:
+      tags:
+        - Cart API
+      summary: Remove cart item
+      description: Removes an item from the authenticated user's cart by item id.
+      operationId: removeItemFromCart
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/OrderDTO"
+  /api/v1/cart/checkout:
+    post:
+      tags:
+        - Cart API
+      summary: Checkout
+      description: Processes payment and finalizes the current pending order.
+      operationId: checkout
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CheckoutRequestDTO"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+  /api/v1/cart/add/subscription:
+    post:
+      tags:
+        - Cart API
+      summary: Add subscription to cart
+      description:
+        Adds a subscription line item to the authenticated user's pending
+        order.
+      operationId: addSubscriptionToCart
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/OrderDTO"
+  /api/v1/cart/add/event/{id}:
+    post:
+      tags:
+        - Cart API
+      summary: Add event to cart
+      description: Adds an event to the authenticated user's pending order.
+      operationId: addEventToCart
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+  /api/v1/cart/add/course/{id}:
+    post:
+      tags:
+        - Cart API
+      summary: Add course to cart
+      description: Adds a course to the authenticated user's pending order.
+      operationId: addCourseToCart
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+  /api/v1/auth/register:
+    post:
+      tags:
+        - Authentication API
+      summary: Register user (JSON)
+      description: Registers a user from a JSON payload and attempts automatic login.
+      operationId: registerUserMultipart
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                request:
+                  $ref: "#/components/schemas/RegisterRequestDTO"
+                image:
+                  type: string
+                  format: binary
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequestDTO"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+  /api/v1/auth/refresh:
+    post:
+      tags:
+        - Authentication API
+      summary: Refresh token
+      description:
+        Issues fresh credentials using a refresh token from cookie or authorization
+        header.
+      operationId: refresh
+      parameters:
+        - name: RefreshToken
+          in: cookie
+          required: false
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+  /api/v1/auth/logout:
+    post:
+      tags:
+        - Authentication API
+      summary: Logout
+      description: Invalidates current authentication context and clears auth cookies.
+      operationId: logout
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+  /api/v1/auth/login:
+    post:
+      tags:
+        - Authentication API
+      summary: Login
+      description: Authenticates a user with username and password.
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+  /api/v1/statistics/lessons-learned:
+    get:
+      tags:
+        - Statistics API
+      summary: Lessons learned
+      description: Returns monthly lessons completed by the user.
+      operationId: lessonsLearned
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ChartDTO"
+  /api/v1/statistics/created-course-status:
+    get:
+      tags:
+        - Statistics API
+      summary: Created course completion status
+      description: Returns completion breakdown for students of a course.
+      operationId: createdCourseStatus
+      parameters:
+        - name: courseId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ChartDTO"
+  /api/v1/statistics/course-user-progress:
+    get:
+      tags:
+        - Statistics API
+      summary: User progress in course
+      description: Returns completed vs pending lessons for one user in one course.
+      operationId: courseUserProgress
+      parameters:
+        - name: courseId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ChartDTO"
+  /api/v1/statistics/course-tags:
+    get:
+      tags:
+        - Statistics API
+      summary: Common course tags
+      description: Returns overlap between user interests and course tags.
+      operationId: courseTags
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: courseId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ChartDTO"
+  /api/v1/statistics/course-progress:
+    get:
+      tags:
+        - Statistics API
+      summary: Course progress
+      description: Returns completed vs in-progress course counts for a user.
+      operationId: courseProgress
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ChartDTO"
+  /api/v1/statistics/course-genders:
+    get:
+      tags:
+        - Statistics API
+      summary: Course genders
+      description: Returns gender distribution for enrollments in a course.
+      operationId: courseGenders
+      parameters:
+        - name: courseId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ChartDTO"
+  /api/v1/statistics/course-ages:
+    get:
+      tags:
+        - Statistics API
+      summary: Course ages
+      description: Returns age-range distribution for enrollments in a course.
+      operationId: courseAges
+      parameters:
+        - name: courseId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ChartDTO"
+  /api/v1/profile/me:
+    get:
+      tags:
+        - Profile API
+      summary: Get current profile id
+      description: Returns the current authenticated user id.
+      operationId: myProfile
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+                  format: int64
+  /api/v1/images/users/{userId}/profile:
+    get:
+      tags:
+        - Image API
+      summary: Get user profile image
+      description: Returns profile image bytes for a user id.
+      operationId: getUserProfileImage_1
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: string
+                format: byte
+  /api/v1/images/events/{eventId}:
+    get:
+      tags:
+        - Image API
+      summary: Get event image
+      description: Returns event image bytes for an event id.
+      operationId: getEventImage
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: string
+                format: byte
+  /api/v1/images/courses/{courseId}:
+    get:
+      tags:
+        - Image API
+      summary: Get course image
+      description: Returns course image bytes for a course id.
+      operationId: getCourseImage
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: string
+                format: byte
+  /api/v1/global:
+    get:
+      tags:
+        - Global API
+      summary: Get global data
+      description: Returns global UI/session metadata used by frontend clients.
+      operationId: getGlobalData
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/GlobalDataDTO"
+  /api/v1/events/purchased:
+    get:
+      tags:
+        - Event API
+      summary: List purchased events
+      description: Returns events purchased by the authenticated user.
+      operationId: purchasedEvents
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties:
+                    type: object
+  /api/v1/events/location-search:
+    get:
+      tags:
+        - Event API
+      summary: Search locations
+      description: Searches event locations using the external geocoding service.
+      operationId: searchLocations
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+  /api/v1/courses/{courseId}/lesson/{lessonId}/video:
+    get:
+      tags:
+        - Course API
+      summary: Get lesson video URL
+      description: Returns the lesson video URL if the user has access rights.
+      operationId: getLessonVideoUrl
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: lessonId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+  /api/v1/courses/subscribed:
+    get:
+      tags:
+        - Course API
+      summary: List subscribed courses
+      description: Returns courses subscribed by the authenticated user.
+      operationId: subscribedCourses
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties:
+                    type: object
+  /api/v1/cart:
+    get:
+      tags:
+        - Cart API
+      summary: Get cart
+      description: Returns the current authenticated user's pending cart order.
+      operationId: getCart
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/OrderDTO"
+  /api/v1/auth/register/availability:
+    get:
+      tags:
+        - Authentication API
+      operationId: checkAvailability_1
+      parameters:
+        - name: username
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: email
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: boolean
+  /api/v1/admin/users:
+    get:
+      tags:
+        - Admin API
+      summary: List users
+      description:
+        Returns paginated users for admin management with optional text
+        filtering.
+      operationId: getUsers
+      parameters:
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserDTO"
+  /api/v1/admin/reviews:
+    get:
+      tags:
+        - Admin API
+      summary: List reviews
+      description: Returns all reviews available for moderation.
+      operationId: getReviews
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ReviewDTO"
+  /api/v1/admin/orders:
+    get:
+      tags:
+        - Admin API
+      summary: List orders
+      description: Returns paginated orders sorted by date for the admin panel.
+      operationId: getOrders
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrderDTO"
+  /api/v1/admin/events:
+    get:
+      tags:
+        - Admin API
+      summary: List events
+      description:
+        Returns paginated events for admin management with optional text
+        filtering.
+      operationId: getEvents_1
+      parameters:
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EventDTO"
+  /api/v1/admin/courses:
+    get:
+      tags:
+        - Admin API
+      summary: List courses
+      description:
+        Returns paginated courses for admin management with optional text
+        filtering.
+      operationId: getCourses_1
+      parameters:
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CourseDTO"
+  /api/v1/admin/reviews/{id}:
+    delete:
+      tags:
+        - Admin API
+      summary: Delete review
+      description: Deletes a review by id.
+      operationId: deleteReview
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+components:
+  schemas:
+    ProfileUpdateRequestDTO:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        country:
+          type: string
+        shortDescription:
+          type: string
+        currentGoal:
+          type: string
+        weeklyRoutine:
+          type: string
+        comunity:
+          type: string
+    EventDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        description:
+          type: string
+        priceCents:
+          type: integer
+          format: int32
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        capacity:
+          type: integer
+          format: int32
+        category:
+          type: string
+        status:
+          type: string
+          enum:
+            - DRAFT
+            - PENDING_REVIEW
+            - PUBLISHED
+            - ARCHIVED
+    CourseDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        shortDescription:
+          type: string
+        priceCents:
+          type: integer
+          format: int32
+        status:
+          type: string
+          enum:
+            - DRAFT
+            - PENDING_REVIEW
+            - PUBLISHED
+            - ARCHIVED
+        language:
+          type: string
+    UserStatusRequest:
+      type: object
+      properties:
+        active:
+          type: boolean
+    ResourceStatusRequest:
+      type: object
+      properties:
+        status:
+          type: string
+    OrderDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        userId:
+          type: integer
+          format: int64
+        totalAmountCents:
+          type: integer
+          format: int32
+        totalAmountEuros:
+          type: string
+        status:
+          type: string
+          enum:
+            - PENDING
+            - PAID
+            - FAILED
+            - REFUNDED
+        createdAt:
+          type: string
+          format: date-time
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItemDTO"
+    OrderItemDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        course:
+          $ref: "#/components/schemas/CourseDTO"
+        event:
+          $ref: "#/components/schemas/EventDTO"
+        priceAtPurchaseCents:
+          type: integer
+          format: int32
+        priceInEuros:
+          type: string
+        subscription:
+          type: boolean
+    CheckoutRequestDTO:
+      type: object
+      properties:
+        cardName:
+          type: string
+        billingEmail:
+          type: string
+        cardNumber:
+          type: string
+        cardExpiry:
+          type: string
+        cardCvv:
+          type: string
+    RegisterRequestDTO:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        gender:
+          type: string
+        birthDate:
+          type: string
+        country:
+          type: string
+    AuthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - SUCCESS
+            - FAILURE
+        message:
+          type: string
+        error:
+          type: string
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    ChartDTO:
+      type: object
+      properties:
+        chartTitle:
+          type: string
+        chartType:
+          type: string
+        chartLabels:
+          type: array
+          items:
+            type: string
+        chartValues:
+          type: array
+          items:
+            type: number
+            format: double
+    ProfileDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        email:
+          type: string
+        country:
+          type: string
+        shortDescription:
+          type: string
+        currentGoal:
+          type: string
+        weeklyRoutine:
+          type: string
+        comunity:
+          type: string
+        profileImage:
+          type: string
+        isProfileOwner:
+          type: boolean
+        userType:
+          type: string
+        completedCourses:
+          type: integer
+          format: int32
+        completedCourseNames:
+          type: array
+          items:
+            type: string
+        inProgressCount:
+          type: integer
+          format: int32
+        userTags:
+          type: array
+          items:
+            type: string
+          uniqueItems: true
+        subscribedCourses:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+        userEvents:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+        averageProgress:
+          type: integer
+          format: int32
+        totalEnrollments:
+          type: integer
+          format: int32
+        totalLessonsCompleted:
+          type: integer
+          format: int64
+        completedLessonsThisMonth:
+          type: integer
+          format: int64
+        averageLessonsPerMonth:
+          type: string
+        createdCourses:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: object
+        hasMultipleCourses:
+          type: boolean
+    GlobalDataDTO:
+      type: object
+      properties:
+        isUserLoggedIn:
+          type: boolean
+        userId:
+          type: integer
+          format: int64
+        userName:
+          type: string
+        userProfileImage:
+          type: string
+        canCreateEvent:
+          type: boolean
+        canCreateCourse:
+          type: boolean
+        isAdmin:
+          type: boolean
+        isPublisher:
+          type: boolean
+    UserDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        email:
+          type: string
+        isActive:
+          type: boolean
+        isSubscribed:
+          type: boolean
+    ReviewDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        courseId:
+          type: integer
+          format: int64
+        userId:
+          type: integer
+          format: int64
+        content:
+          type: string
+        rating:
+          type: integer
+          format: int32
+        createdAt:
+          type: string
+          format: date-time
+
+  </script>
+
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
+  <script src="https://unpkg.com/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+  <script>
+    window.onload = function () {
+      var raw = document.getElementById("openapi-spec").textContent;
+      var spec = jsyaml.load(raw);
+
+      SwaggerUIBundle({
+        spec: spec,
+        dom_id: "#swagger-ui",
+        deepLinking: true,
+        docExpansion: "none",
+        displayRequestDuration: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        layout: "BaseLayout",
+        tryItOutEnabled: true
+      });
+    };
+  </script>
+</body>
+</html>
