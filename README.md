@@ -365,7 +365,7 @@ Lideró el desarrollo avanzado del panel de administración, motores de búsqued
 📄 **[Especificación OpenAPI (YAML)](/api-docs/api-docs.yaml)**
 
 #### **Documentación HTML**
-📖 **[Documentación API REST (HTML)](https://raw.githack.com/[usuario]/[repositorio]/main/api-docs/api-docs.html)**
+📖 **[Documentación API REST (HTML)](https://rawcdn.githack.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/3209f70743181cbb227b3d6b5cb24b62e28ce25e/api-docs/api-docs.html)**
 
 > La documentación de la API REST se encuentra en la carpeta `/api-docs` del repositorio. Se ha generado automáticamente con SpringDoc a partir de las anotaciones en el código Java.
 
@@ -539,29 +539,29 @@ Puedes ejecutar la práctica usando las imágenes publicadas en Docker Hub:
 
 ### **URL de la Aplicación Desplegada**
 
-🌐 **URL de acceso**: `https://[nombre-app].etsii.urjc.es:8443`
+🌐 **URL de acceso**: `https://appweb18.dawgis.etsii.urjc.es:8443`
 
 #### **Credenciales de Usuarios de Ejemplo**
 
 | Rol | Usuario | Contraseña |
 |:---|:---|:---|
-| Administrador | admin | admin123 |
-| Usuario Registrado | user1 | user123 |
-| Usuario Registrado | user2 | user123 |
+| Administrador | admin | adminpass |
+| Usuario Registrado | learner1 | pass1 |
+| Usuario Registrado | learner2 | pass2 |
 
 ### **Participación de Miembros en la Práctica 2**
 
-#### **Alumno 1 - [Nombre Completo]**
+#### **Alumno 1 - Jaime Sánchez Vázquez (jaimesnh)**
 
-[Descripción de las tareas y responsabilidades principales del alumno en el proyecto]
+Responsable principal de la dockerización y despliegue de la práctica, del endurecimiento de seguridad para endpoints API y de la evolución de la capa REST con DTOs/mappers en los endpoints del pefil, panel de administrador y login. Por ultimo ha sido el responsable de la documentación OpenAPI y Postman. 
 
 | Nº    | Commits      | Files      |
 |:------------: |:------------:| :------------:|
-|1| [Descripción commit 1](URL_commit_1)  | [Archivo1](URL_archivo_1)   |
-|2| [Descripción commit 2](URL_commit_2)  | [Archivo2](URL_archivo_2)   |
-|3| [Descripción commit 3](URL_commit_3)  | [Archivo3](URL_archivo_3)   |
-|4| [Descripción commit 4](URL_commit_4)  | [Archivo4](URL_archivo_4)   |
-|5| [Descripción commit 5](URL_commit_5)  | [Archivo5](URL_archivo_5)   |
+|1| Documentación de la API con OpenAPI ([3209f70](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/3209f70)) | [api-docs.html](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/api-docs/api-docs.html) |
+|2| Configuración Docker y conexión de aplicación a base de datos ([1044dd2](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/1044dd2)) | [docker-compose.yml](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/docker/docker-compose.yml) |
+|3| Endpoints de autenticación (login/logout/registro/disponibilidad) ([7e98721](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/7e98721)) | [LoginRestController.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/controller/auth/LoginRestController.java) |
+|4| Evolución de la API de perfil con DTOs y nuevos contratos ([cf2c32a](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/cf2c32a)) | [ProfileRestController.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/controller/ProfileRestController.java) |
+|5| Refactor REST admin con DTOs y mappers compartidos ([4294564](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/commit/4294564)) | [AdminRestController.java](https://github.com/CodeURJC-DAW-2025-26/practica-daw-2025-26-grupo-18/blob/main/scam-g18/src/main/java/es/codeurjc/scam_g18/controller/AdminRestController.java) |
 
 ---
 
