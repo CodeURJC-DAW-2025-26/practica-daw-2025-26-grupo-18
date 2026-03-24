@@ -356,7 +356,7 @@ Lideró el desarrollo avanzado del panel de administración, motores de búsqued
 ## 🛠 **Práctica 2: Incorporación de una API REST a la aplicación web, despliegue con Docker y despliegue remoto**
 
 ### **Vídeo de Demostración**
-📹 **[Enlace al vídeo en YouTube](https://www.youtube.com/watch?v=x91MPoITQ3I)**
+📹 **[Enlace al vídeo en YouTube](https://youtu.be/BGjn1VLPkfA)**
 > Vídeo mostrando las principales funcionalidades de la aplicación web.
 
 ### **Documentación de la API REST**
