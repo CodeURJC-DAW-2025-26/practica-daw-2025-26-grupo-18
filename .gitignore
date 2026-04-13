@@ -6,28 +6,45 @@ Desktop.ini
 # OneDrive temporary files
 ~$*
 
-# Node / JavaScript
-node_modules/
+# Variables de entorno
+.env
+.env.*.local
+
+# Node / JavaScript (frontend y herramientas)
+/node_modules/
+**/node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
 
-# Build outputs
-dist/
-build/
-out/
-.cache/
-.parcel-cache/
-.vite/
-.next/
+# React Router (raiz si aplica)
+/.react-router/
+/build/
 
-# Environment files (may contain secrets)
-.env
-.env.*.local
+# Frontend artifacts (nueva app)
+/frontend/.react-router/
+/frontend/build/
+/frontend/dist/
+/frontend/.next/
+/frontend/.vite/
+/frontend/.cache/
+/frontend/.parcel-cache/
+/frontend/app/.react-router/
+/frontend/app/build/
+/frontend/app/dist/
+/frontend/app/.next/
+/frontend/app/.vite/
+/frontend/app/.cache/
+/frontend/app/.parcel-cache/
+
+# Backend Java MVC (Spring / Maven)
+/backend/scam-g18/target/
+**/target/
+*.class
+*.jar
+*.war
+hs_err_pid*
 
 # Editor / IDE
 .vscode/
@@ -39,40 +56,10 @@ out/
 *.swp
 .history/
 
-# Logs
+# Logs & coverage
 *.log
-
-# Coverage
 coverage/
 .nyc_output/
 
-# Sass / caches
+# Caches
 .sass-cache/
-
-# Python
-__pycache__/
-*.py[cod]
-
-# Java artifacts (kept from original template in case present)
-*.class
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
-.classpath
-.project
-.factorypath
-target/
-hs_err_pid*
-
-# Misc
-.DS_Store
-.vscode/
-
-# Allow vendor/ and assets/ to be tracked (they are part of the site)
-# If you want to ignore a specific vendor package, add it explicitly.
-
-aplication.properties
