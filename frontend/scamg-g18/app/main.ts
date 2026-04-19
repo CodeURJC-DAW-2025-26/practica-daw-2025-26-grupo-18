@@ -1,4 +1,5 @@
 // @ts-nocheck
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 (function () {
     "use strict";
@@ -23,7 +24,9 @@
     const mobileNavToggleBtn = document.querySelector(".mobile-nav-toggle");
 
     function mobileNavToogle() {
-        document.querySelector("body").classList.toggle("mobile-nav-active");
+        const body = document.querySelector("body");
+        if (!body || !mobileNavToggleBtn) return;
+        body.classList.toggle("mobile-nav-active");
         mobileNavToggleBtn.classList.toggle("bi-list");
         mobileNavToggleBtn.classList.toggle("bi-x");
     }
@@ -110,7 +113,18 @@
             return;
         }
         document.querySelectorAll(".init-swiper").forEach(function (swiperElement) {
-            let config = JSON.parse(swiperElement.querySelector(".swiper-config").innerHTML.trim());
+            const configElement = swiperElement.querySelector(".swiper-config");
+            if (!configElement) {
+                return;
+            }
+
+            let config;
+            try {
+                config = JSON.parse(configElement.innerHTML.trim());
+            } catch (error) {
+                console.warn("Invalid swiper config JSON", error);
+                return;
+            }
 
             if (swiperElement.classList.contains("swiper-tab")) {
                 initSwiperWithCustomPagination(swiperElement, config);
@@ -140,6 +154,10 @@
         const monthlyText = container.querySelector(".monthly");
         const yearlyText = container.querySelector(".yearly");
 
+        if (!pricingSwitch || !monthlyText || !yearlyText) {
+            return;
+        }
+
         pricingSwitch.addEventListener("change", function () {
             const pricingItems = container.querySelectorAll(".pricing-item");
 
@@ -164,7 +182,7 @@
      */
     document.querySelectorAll(".faq-item h3, .faq-item .faq-toggle, .faq-item .faq-header").forEach((faqItem) => {
         faqItem.addEventListener("click", () => {
-            faqItem.parentNode.classList.toggle("faq-active");
+            faqItem.parentElement?.classList.toggle("faq-active");
         });
     });
 
@@ -176,6 +194,9 @@
             if (document.querySelector(window.location.hash)) {
                 setTimeout(() => {
                     let section = document.querySelector(window.location.hash);
+                    if (!section) {
+                        return;
+                    }
                     let scrollMarginTop = getComputedStyle(section).scrollMarginTop;
                     window.scrollTo({
                         top: section.offsetTop - parseInt(scrollMarginTop),
@@ -193,6 +214,7 @@
 
     function navmenuScrollspy() {
         navmenulinks.forEach((navmenulink) => {
+            if (!(navmenulink instanceof HTMLAnchorElement)) return;
             if (!navmenulink.hash) return;
             let section = document.querySelector(navmenulink.hash);
             if (!section) return;
