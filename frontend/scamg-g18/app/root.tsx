@@ -33,7 +33,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   useEffect(() => {
-    void import("~/utils/main");
+    void import("~/main");
   }, []);
 
   return <Outlet />;
