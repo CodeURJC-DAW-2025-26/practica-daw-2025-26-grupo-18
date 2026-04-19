@@ -55,7 +55,7 @@ export default function AppLayout() {
             <div className="col-lg-6 order-1 order-lg-2" data-aos="fade-left" data-aos-delay="300">
               <div className="hero-visual">
                 <div className="hero-image-wrapper">
-                  <img src="../img/illustration/illustration-15.webp" className="img-fluid hero-image" alt="Hero Image" />
+                  <img src="/illustration/illustration-15.webp" className="img-fluid hero-image" alt="Hero Image" />
                   <div className="floating-elements">
                     <div className="floating-card card-1">
                       <i className="bi bi-lightbulb"></i>
@@ -126,7 +126,7 @@ export default function AppLayout() {
             <div className="col-lg-6" data-aos="fade-left" data-aos-delay="300">
               <div className="visual-section">
                 <div className="main-image-container">
-                  <img src="../img/about/about-8.webp" alt="Estudiantes colaborando" className="img-fluid main-visual" />
+                  <img src="/about/about-8.webp" alt="Estudiantes colaborando" className="img-fluid main-visual" />
                   <div className="overlay-card">
                     <div className="card-content">
                       <h4>Mentores Exitosos</h4>
@@ -141,10 +141,10 @@ export default function AppLayout() {
                 <div className="secondary-images">
                   <div className="row g-3">
                     <div className="col-6">
-                      <img src="../img/about/about-11.webp" alt="Team meeting" className="img-fluid secondary-img" />
+                      <img src="/about/about-11.webp" alt="Team meeting" className="img-fluid secondary-img" />
                     </div>
                     <div className="col-6">
-                      <img src="../img/about/about-5.webp" alt="Office workspace" className="img-fluid secondary-img" />
+                      <img src="/about/about-5.webp" alt="Office workspace" className="img-fluid secondary-img" />
                     </div>
                   </div>
                 </div>
@@ -313,7 +313,7 @@ export default function AppLayout() {
                   <div className="col-lg-7">
                     <div className="visual-content">
                       <div className="main-image">
-                        <img src="../img/features/features-4.webp" alt="" className="img-fluid" />
+                        <img src="/features/features-4.webp" alt="" className="img-fluid" />
                         <div className="floating-card">
                           <i className="bi bi-graph-up-arrow"></i>
                           <div className="card-content">
@@ -381,7 +381,7 @@ export default function AppLayout() {
                   <div className="col-lg-7">
                     <div className="visual-content">
                       <div className="main-image">
-                        <img src="../img/features/features-2.webp" alt="" className="img-fluid" />
+                        <img src="/features/features-2.webp" alt="" className="img-fluid" />
                         <div className="floating-card">
                           <i className="bi bi-shield-check"></i>
                           <div className="card-content">
@@ -449,7 +449,7 @@ export default function AppLayout() {
                   <div className="col-lg-7">
                     <div className="visual-content">
                       <div className="main-image">
-                        <img src="../img/features/features-6.webp" alt="" className="img-fluid" />
+                        <img src="/features/features-6.webp" alt="" className="img-fluid" />
                         <div className="floating-card">
                           <i className="bi bi-speedometer2"></i>
                           <div className="card-content">
@@ -517,7 +517,7 @@ export default function AppLayout() {
                   <div className="col-lg-7">
                     <div className="visual-content">
                       <div className="main-image">
-                        <img src="../img/features/features-1.webp" alt="" className="img-fluid" />
+                        <img src="/features/features-1.webp" alt="" className="img-fluid" />
                         <div className="floating-card">
                           <i className="bi bi-headset"></i>
                           <div className="card-content">
@@ -552,7 +552,7 @@ export default function AppLayout() {
                   <h4>Libertad Financiera</h4>
                   <p>Cada día más cerca de tomar decisiones basadas en deseos, no en necesidades.</p>
                 </div>
-                <img src="../img/misc/misc-6.webp" alt="Libertad Financiera" className="img-fluid main-image" />
+                <img src="/misc/misc-6.webp" alt="Libertad Financiera" className="img-fluid main-image" />
               </div>
             </div>
 
@@ -612,7 +612,7 @@ export default function AppLayout() {
                   pasivos. ¡Finalmente respiro tranquila!.</p>
                 <div className="client-info">
                   <div className="client-image">
-                    <img src="../img/person/person-f-7.webp" alt="Client" />
+                    <img src="/person/person-f-7.webp" alt="Client" />
                   </div>
                   <div className="client-details">
                     <h3>Rachel Bennett</h3>
@@ -631,7 +631,7 @@ export default function AppLayout() {
                   vivir donde quiero. Este programa cambió mi perspectiva completamente.</p>
                 <div className="client-info">
                   <div className="client-image">
-                    <img src="../img/person/person-m-7.webp" alt="Client" />
+                    <img src="/person/person-m-7.webp" alt="Client" />
                   </div>
                   <div className="client-details">
                     <h3>Daniel Morgan</h3>
@@ -650,7 +650,7 @@ export default function AppLayout() {
                   funcionan y son adaptables a cualquier nicho.</p>
                 <div className="client-info">
                   <div className="client-image">
-                    <img src="../img/person/person-f-8.webp" alt="Client" />
+                    <img src="/person/person-f-8.webp" alt="Client" />
                   </div>
                   <div className="client-details">
                     <h3>Emma Thompson</h3>
@@ -669,7 +669,7 @@ export default function AppLayout() {
                   semana. SCAM me enseñó el roadmap exacto.</p>
                 <div className="client-info">
                   <div className="client-image">
-                    <img src="../img/person/person-m-8.webp" alt="Client" />
+                    <img src="/person/person-m-8.webp" alt="Client" />
                   </div>
                   <div className="client-details">
                     <h3>Christopher Lee</h3>
@@ -688,7 +688,7 @@ export default function AppLayout() {
                   mi primer mes y sigo creciendo. Increíble.</p>
                 <div className="client-info">
                   <div className="client-image">
-                    <img src="../img/person/person-f-9.webp" alt="Client" />
+                    <img src="/person/person-f-9.webp" alt="Client" />
                   </div>
                   <div className="client-details">
                     <h3>Olivia Carter</h3>
@@ -707,7 +707,7 @@ export default function AppLayout() {
                   SCAM fue el catalizador que necesitaba.</p>
                 <div className="client-info">
                   <div className="client-image">
-                    <img src="../img/person/person-m-13.webp" alt="Client" />
+                    <img src="/person/person-m-13.webp" alt="Client" />
                   </div>
                   <div className="client-details">
                     <h3>Nathan Brooks</h3>
@@ -752,7 +752,7 @@ export default function AppLayout() {
             </div>
             <div className="col-lg-6">
               <div className="hero-visual" data-aos="fade-left" data-aos-delay="150">
-                <img src="../img/services/services-1.webp" alt="Cursos" className="img-fluid" />
+                <img src="/services/services-1.webp" alt="Cursos" className="img-fluid" />
               </div>
             </div>
           </div>
