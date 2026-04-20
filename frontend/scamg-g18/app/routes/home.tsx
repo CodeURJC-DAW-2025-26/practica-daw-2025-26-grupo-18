@@ -1,14 +1,9 @@
 import Footer from "~/components/Footer";
-import type { Route } from "./+types/home";
 import { Outlet } from "react-router";
 import Header from "~/components/Header";
 import { useEffect } from "react";
 
-export function loader() {
-    return { name: "React Router" };
-}
-
-export default function Home({ loaderData }: Route.ComponentProps) {
+export default function Home() {
     useEffect(() => {
         document.body.classList.add("index-page");
         return () => {

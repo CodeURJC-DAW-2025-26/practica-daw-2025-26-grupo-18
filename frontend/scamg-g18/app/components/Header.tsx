@@ -20,7 +20,7 @@ export default function Header() {
     return (
         <Navbar id="header" className="header d-flex align-items-center sticky-top">
             <Container className="position-relative d-flex align-items-center justify-content-between">
-                <Navbar.Brand as={Link} to="/" className="logo d-flex align-items-center me-auto me-xl-0">
+                <Navbar.Brand as={Link} to="/new" className="logo d-flex align-items-center me-auto me-xl-0">
                     <img src="/logo.png" alt="SCAM" style={{ height: 36 }} />
                     <h1>SCAM</h1>
                 </Navbar.Brand>
@@ -28,40 +28,40 @@ export default function Header() {
                 <nav id="navmenu" className="navmenu">
                     <ul>
                         <li>
-                            <NavLink to="/" end className={({ isActive }) => (isActive ? "active" : "")}>
+                            <NavLink to="/new" end className={({ isActive }) => (isActive ? "active" : "")}>
                                 Inicio
                             </NavLink>
                         </li>
                         <li>
-                            <NavLink to="/courses" className={({ isActive }) => (isActive ? "active" : "")}>
+                            <NavLink to="/new/courses" className={({ isActive }) => (isActive ? "active" : "")}>
                                 Cursos
                             </NavLink>
                         </li>
                         {isUserLoggedIn && (
                             <li>
-                                <NavLink to="/courses/subscribed" className={({ isActive }) => (isActive ? "active" : "")}>
+                                <NavLink to="/new/courses/subscribed" className={({ isActive }) => (isActive ? "active" : "")}>
                                     Cursos suscritos
                                 </NavLink>
                             </li>
                         )}
                         <li>
-                            <NavLink to="/events" className={({ isActive }) => (isActive ? "active" : "")}>
+                            <NavLink to="/new/events" className={({ isActive }) => (isActive ? "active" : "")}>
                                 Eventos
                             </NavLink>
                         </li>
                         {isUserLoggedIn && (
                             <li>
-                                <NavLink to="/events/purchased" className={({ isActive }) => (isActive ? "active" : "")}>
+                                <NavLink to="/new/events/purchased" className={({ isActive }) => (isActive ? "active" : "")}>
                                     Eventos comprados
                                 </NavLink>
                             </li>
                         )}
                         <li>
-                            <a href="/#pricing">Pricing</a>
+                            <a href="/new#pricing">Pricing</a>
                         </li>
                         {isAdmin && (
                             <li>
-                                <NavLink to="/admin" className={({ isActive }) => (isActive ? "active" : "")}>
+                                <NavLink to="/new/admin" className={({ isActive }) => (isActive ? "active" : "")}>
                                     Admin Dashboard
                                 </NavLink>
                             </li>
@@ -71,7 +71,7 @@ export default function Header() {
                 </nav>
 
                 <div className="header-user-actions d-flex align-items-center gap-3">
-                    <Link to="/cart" className="header-cart-link" aria-label="Ir al carrito">
+                    <Link to="/new/cart" className="header-cart-link" aria-label="Ir al carrito">
                         <i className="bi bi-bag" />
                     </Link>
 
@@ -83,7 +83,7 @@ export default function Header() {
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu className="dropdown-menu-end profile-dropdown" aria-labelledby="profileDropdown">
-                                <Dropdown.Item href={userId ? `/profile/${userId}` : "/profile/me"}>
+                                <Dropdown.Item href={userId ? `/new/profile/${userId}` : "/new/profile/me"}>
                                     <i className="bi bi-person-circle" /> Mi Perfil
                                 </Dropdown.Item>
                                 <Dropdown.Divider />
@@ -95,7 +95,7 @@ export default function Header() {
                             </Dropdown.Menu>
                         </Dropdown>
                     ) : (
-                        <a href="/login" className="btn-getstarted">
+                        <a href="/new/login" className="btn-getstarted">
                             Iniciar sesión/Registrarse
                         </a>
                     )}

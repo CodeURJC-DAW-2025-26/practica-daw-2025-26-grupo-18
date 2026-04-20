@@ -566,7 +566,7 @@ function initAdminDashboard() {
                             if (user.isActive) {
                                 const safeUsername = escapeHtml(user.username);
                                 actionHtml = `
-                                <form action="/admin/users/${user.id}/ban" method="post" class="d-flex align-items-start">
+                                <form action="/new/admin/users/${user.id}/ban" method="post" class="d-flex align-items-start">
                                     <input type="hidden" name="${csrfParam}" value="${csrfToken}">
                                     <button type="submit" class="btn btn-sm btn-accent-outline js-ban-confirm" data-username="${safeUsername}">
                                         <i class="bi bi-slash-circle"></i> Banear
@@ -574,7 +574,7 @@ function initAdminDashboard() {
                                 </form>`;
                             } else {
                                 actionHtml = `
-                                <form action="/admin/users/${user.id}/unban" method="post" class="d-flex align-items-start">
+                                <form action="/new/admin/users/${user.id}/unban" method="post" class="d-flex align-items-start">
                                     <input type="hidden" name="${csrfParam}" value="${csrfToken}">
                                     <button type="submit" class="btn btn-sm btn-accent">
                                         <i class="bi bi-check-circle"></i> Desbanear
@@ -594,7 +594,7 @@ function initAdminDashboard() {
                                 <td>${statusHtml}</td>
                                 <td class="text-end">
                                     <div class="d-flex justify-content-end align-items-start gap-2 flex-nowrap">
-                                        <a href="/profile/${user.id}" class="btn btn-sm btn-accent-outline">Ver perfil</a>
+                                        <a href="/new/profile/${user.id}" class="btn btn-sm btn-accent-outline">Ver perfil</a>
                                         ${actionHtml}
                                     </div>
                                 </td>
@@ -647,23 +647,23 @@ function initAdminDashboard() {
                             const statusHtml = event.isPendingReview ? '<span class="badge bg-light text-accent">Pendiente</span>' : `<span class="badge bg-secondary">${escapeHtml(event.status)}</span>`;
 
                             let actionHtml = `
-                                <a href="/event/${event.id}" class="btn btn-sm btn-accent-outline">
+                                <a href="/new/event/${event.id}" class="btn btn-sm btn-accent-outline">
                                     <i class="bi bi-eye"></i> Ver
                                 </a>
-                                <a href="/event/${event.id}/edit" class="btn btn-sm btn-accent-outline">
+                                <a href="/new/event/${event.id}/edit" class="btn btn-sm btn-accent-outline">
                                     <i class="bi bi-pencil"></i> Editar
                                 </a>
                             `;
 
                             if (event.isPendingReview) {
                                 actionHtml += `
-                                <form action="/admin/events/${event.id}/approve" method="post" class="d-inline">
+                                <form action="/new/admin/events/${event.id}/approve" method="post" class="d-inline">
                                     <input type="hidden" name="${csrfParam}" value="${csrfToken}">
                                     <button type="submit" class="btn btn-sm btn-accent">
                                         <i class="bi bi-check-lg"></i> Aprobar
                                     </button>
                                 </form>
-                                <form action="/admin/events/${event.id}/reject" method="post" class="d-inline">
+                                <form action="/new/admin/events/${event.id}/reject" method="post" class="d-inline">
                                     <input type="hidden" name="${csrfParam}" value="${csrfToken}">
                                     <button type="submit" class="btn btn-sm btn-accent-outline" onclick="return confirm('¿Rechazar este evento?')">
                                         <i class="bi bi-x-lg"></i> Rechazar
@@ -731,23 +731,23 @@ function initAdminDashboard() {
                             const statusHtml = course.isPendingReview ? '<span class="badge bg-light text-accent">Pendiente</span>' : `<span class="badge bg-secondary">${escapeHtml(course.status)}</span>`;
 
                             let actionHtml = `
-                                <a href="/course/${course.id}" class="btn btn-sm btn-accent-outline">
+                                <a href="/new/course/${course.id}" class="btn btn-sm btn-accent-outline">
                                     <i class="bi bi-eye"></i> Ver
                                 </a>
-                                <a href="/course/${course.id}/edit" class="btn btn-sm btn-accent-outline">
+                                <a href="/new/course/${course.id}/edit" class="btn btn-sm btn-accent-outline">
                                     <i class="bi bi-pencil"></i> Editar
                                 </a>
                             `;
 
                             if (course.isPendingReview) {
                                 actionHtml += `
-                                <form action="/admin/courses/${course.id}/approve" method="post" class="d-inline">
+                                <form action="/new/admin/courses/${course.id}/approve" method="post" class="d-inline">
                                     <input type="hidden" name="${csrfParam}" value="${csrfToken}">
                                     <button type="submit" class="btn btn-sm btn-accent">
                                         <i class="bi bi-check-lg"></i> Aprobar
                                     </button>
                                 </form>
-                                <form action="/admin/courses/${course.id}/reject" method="post" class="d-inline">
+                                <form action="/new/admin/courses/${course.id}/reject" method="post" class="d-inline">
                                     <input type="hidden" name="${csrfParam}" value="${csrfToken}">
                                     <button type="submit" class="btn btn-sm btn-accent-outline" onclick="return confirm('¿Rechazar este curso?')">
                                         <i class="bi bi-x-lg"></i> Rechazar
@@ -1153,7 +1153,7 @@ function initLoadMoreCoursesCatalog() {
                                         <div class="course-card-students"><i class="bi bi-person-circle"></i> Por ${course.creatorUsername}</div>
                                     </div>
                                     <div class="course-card-actions">
-                                        <a href="/course/${course.id}" class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver curso</a>
+                                        <a href="/new/course/${course.id}" class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver curso</a>
                                     </div>
                                 `;
                         courseList.appendChild(article);
@@ -1226,7 +1226,7 @@ function initLoadMoreEventsCatalog() {
                                     ${locationHtml}
                                 </div>
                                 <div class="course-card-actions">
-                                    <a href="/event/${event.id}" class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver detalles</a>
+                                    <a href="/new/event/${event.id}" class="btn btn-outline-primary btn-sm btn-accent-outline course-card-btn">Ver detalles</a>
                                 </div>
                             `;
 
