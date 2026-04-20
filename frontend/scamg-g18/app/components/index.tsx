@@ -23,7 +23,7 @@ export default function AppLayout() {
                                 <h1 className="hero-title">Crea Tu Libertad Financiera con SCAM</h1>
                                 <p className="hero-description">Aprende a emprender, generar ingresos pasivos y alcanzar la autonomía financiera. Domina las habilidades que te harán independiente y próspero.</p>
                                 <div className="hero-actions">
-                                    <a href="/courses" className="btn-primary">
+                                    <a href="/new/courses" className="btn-primary">
                                         Explorar Cursos
                                     </a>
                                     <a href="https://www.youtube.com/watch?v=fxd3jT3r3BY" className="btn-secondary glightbox">
@@ -708,7 +708,7 @@ export default function AppLayout() {
                                             <span className="btn btn-choose w-100 disabled">Plan actual</span>
                                         )
                                     ) : (
-                                        <a href="/login" className="btn btn-choose w-100">
+                                        <a href="/new/login" className="btn btn-choose w-100">
                                             Iniciar sesión
                                         </a>
                                     )}
@@ -749,14 +749,14 @@ export default function AppLayout() {
                                         isPublisher ? (
                                             <span className="btn btn-choose w-100 disabled">Ya tienes Premium</span>
                                         ) : (
-                                            <form action="/cart/add/subscription" method="post">
+                                            <form action="/new/cart/add/subscription" method="post">
                                                 <button type="submit" className="btn btn-choose w-100">
                                                     Comprar por 10€
                                                 </button>
                                             </form>
                                         )
                                     ) : (
-                                        <a href="/login" className="btn btn-choose w-100">
+                                        <a href="/new/login" className="btn btn-choose w-100">
                                             Iniciar sesión para comprar
                                         </a>
                                     )}

@@ -6,7 +6,7 @@ export default function Footer() {
             <Container className="footer-top">
                 <Row className="g-4 footer-main-row">
                     <Col xs={12} className="footer-intro text-center">
-                        <a href="/" className="logo d-inline-flex align-items-center justify-content-center text-decoration-none">
+                        <a href="/new" className="logo d-inline-flex align-items-center justify-content-center text-decoration-none">
                             <span className="sitename fs-4 fw-bold">SCAM</span>
                         </a>
                         <p className="footer-lead mb-0 mt-2">
@@ -63,7 +63,7 @@ export default function Footer() {
                     © <span>Copyright</span> <strong className="px-1 sitename">SCAM</strong> <span>All Rights Reserved</span>
                 </p>
                 <div className="credits">
-                    Designed by <a href="/">Grupo 18</a> | <a href="/">SCAM</a>
+                    Designed by <a href="/new">Grupo 18</a> | <a href="/new">SCAM</a>
                 </div>
             </Container>
         </footer>
