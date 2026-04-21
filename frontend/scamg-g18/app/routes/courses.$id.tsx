@@ -5,7 +5,7 @@ import { addCourseToCart } from "~/services/cartService";
 import { getCourseImageUrl, getUserProfileImageUrl } from "~/utils/imageUrls";
 import { useGlobalStore } from "~/stores/globalStore";
 import type { LoaderFunctionArgs } from "react-router";
-import type { CourseDetailDTO } from "~/dtos/CourseDTO";
+import type { CourseDetailDTO, ModuleDTO, LessonDTO } from "~/dtos/CourseDTO";
 
 export async function clientLoader({ params }: LoaderFunctionArgs) {
   const id = Number(params.id);
@@ -17,12 +17,16 @@ clientLoader.hydrate = true;
 export default function CourseDetail() {
   const data = useLoaderData<typeof clientLoader>();
   const navigate = useNavigate();
-  
-  const { 
-    course, 
-    modules, 
-    reviews, 
-    isSuscribedToCourse: isSubscribed, 
+
+  if (!data || !data.course) {
+    return <Container className="py-5 text-center"><h3>Cargando curso...</h3></Container>;
+  }
+
+  const {
+    course,
+    modules,
+    reviews,
+    isSubscribedToCourse: isSubscribed,
     canEdit: isOwner,
     courseProgressPercentage,
     averageRating,
@@ -67,7 +71,7 @@ export default function CourseDetail() {
                         <Link to={`/new/courses/${course.id}/edit`} className="btn btn-outline-secondary btn-sm">
                           <i className="bi bi-pencil me-1"></i> Editar curso
                         </Link>
-                        <button className="btn btn-outline-danger btn-sm" onClick={() => { if(confirm('¿Seguro?')) { /* delete */ } }}>
+                        <button className="btn btn-outline-danger btn-sm" onClick={() => { if (confirm('¿Seguro?')) { /* delete */ } }}>
                           <i className="bi bi-trash me-1"></i> Eliminar curso
                         </button>
                       </>
@@ -107,15 +111,16 @@ export default function CourseDetail() {
                         <div className="card-body" style={{ padding: "0.75rem 0.75rem 1.2rem" }}>
                           {/* Placeholder para carrusel de stats */}
                           <div className="stats-modern-frame" style={{ height: "210px", width: "100%", borderRadius: "12px", background: "#ffffff", border: "1px solid rgba(0, 0, 0, 0.06)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                             <span className="text-muted small">Cargando estadísticas...</span>
+                            {/* Grafico */}
+                            <span className="text-muted small">Cargando estadísticas...</span>
                           </div>
                         </div>
                       </div>
                     ) : (
                       <div className="card stats-modern-card text-center py-5">
-                         <i className="bi bi-people text-muted mb-2" style={{ fontSize: "3rem", opacity: 0.5 }}></i>
-                         <h6 className="fw-bold text-dark mb-1">Aún no hay nadie registrado</h6>
-                         <p className="text-muted small mb-0">¡Puedes ser el primero!</p>
+                        <i className="bi bi-people text-muted mb-2" style={{ fontSize: "3rem", opacity: 0.5 }}></i>
+                        <h6 className="fw-bold text-dark mb-1">Aún no hay nadie registrado</h6>
+                        <p className="text-muted small mb-0">¡Puedes ser el primero!</p>
                       </div>
                     )}
                   </div>
@@ -126,16 +131,16 @@ export default function CourseDetail() {
                 <div className="card-body p-4">
                   <h3 className="h5 fw-bold mb-4">Temas relacionados</h3>
                   <div className="d-flex flex-wrap gap-2 mb-4">
-                    {course.tags?.map((tag: any) => (
-                      <Link 
-                        key={tag.name} 
+                    {Array.isArray(course.tags) && course.tags.map((tag: { id: number; name: string }) => (
+                      <Link
+                        key={tag.name || tag.id}
                         to={`/new/courses?tags=${tag.name}`}
                         className="badge bg-white text-dark border rounded-pill text-decoration-none px-3 py-2"
                       >
                         <i className="bi bi-tag me-1" style={{ color: "var(--accent-color)" }}></i>{tag.name}
                       </Link>
                     ))}
-                    {(!course.tags || course.tags.length === 0) && (
+                    {(!Array.isArray(course.tags) || course.tags.length === 0) && (
                       <span className="badge text-bg-light border rounded-pill px-3 py-2">Sin etiquetas disponibles</span>
                     )}
                   </div>
@@ -153,42 +158,59 @@ export default function CourseDetail() {
               </div>
 
               {isSubscribed && (
-                <div className="card border-0 shadow-sm mb-4 bg-light">
-                  <div className="card-body p-3 p-md-4">
-                    <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
-                      <h4 className="h6 fw-bold mb-0">Tu progreso en este curso</h4>
-                      <strong>{courseProgressPercentage}%</strong>
+                <>
+                  <div className="mt-4 mb-5 mx-auto stats-modern-wrap">
+                    <h6 className="mb-2 stats-modern-title"><i className="bi bi-pie-chart-fill me-1"></i> Mi Progreso</h6>
+                    <div className="card stats-modern-card">
+                      <div className="card-body">
+                        <div className="stats-modern-frame" style={{ height: "210px", width: "100%", borderRadius: "12px", background: "#ffffff", border: "1px solid rgba(0, 0, 0, 0.06)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          {/* Grafico */}
+                          <span className="text-muted small">Cargando gráfico de progreso...</span>
+                        </div>
+                      </div>
                     </div>
-                    <ProgressBar now={courseProgressPercentage} variant="success" style={{ height: "10px" }} />
                   </div>
-                </div>
+
+                  <div className="card border-0 shadow-sm mb-4 bg-light">
+                    <div className="card-body p-3 p-md-4">
+                      <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                        <h4 className="h6 fw-bold mb-0">Tu progreso en este curso</h4>
+                        <strong>{courseProgressPercentage}%</strong>
+                      </div>
+                      <ProgressBar now={courseProgressPercentage} variant="success" style={{ height: "10px" }} />
+                    </div>
+                  </div>
+                </>
               )}
 
               <h3 className="h4 mb-4 fw-bold">Contenido del curso</h3>
               <Accordion defaultActiveKey="0" id="courseAccordion" className="mb-5">
-                {modules.map((module, mIdx) => (
-                  <Accordion.Item eventKey={mIdx.toString()} key={module.id} className="border mb-2 rounded overflow-hidden">
+                {modules.map((module: ModuleDTO, mIdx) => (
+                  <Accordion.Item eventKey={mIdx.toString()} key={module.id} className="border mb-2 rounded shadow-sm">
                     <Accordion.Header>
                       <span className="fw-bold">Módulo {module.orderIndex}: {module.title}</span>
                     </Accordion.Header>
-                    <Accordion.Body className="p-0">
+                    <Accordion.Body className="p-0 bg-white border-top">
                       <ListGroup variant="flush">
-                        {module.lessons?.map((lesson: any) => (
-                          <ListGroup.Item key={lesson.id} className="d-flex justify-content-between align-items-center px-4 py-3">
-                            <div>
-                              {isSubscribed ? (
+                        {module.lessons?.map((lesson: LessonDTO) => (
+                          <ListGroup.Item key={lesson.id} className="d-flex justify-content-between align-items-center px-4 py-3 border-bottom bg-white">
+                            <div className="d-flex align-items-center">
+                              {(isSubscribed || isOwner) ? (
                                 <>
-                                  <i className="bi bi-play-circle me-2 text-secondary"></i>
-                                  <Link to={`/new/courses/${course.id}/lessons/${lesson.id}`} className="text-decoration-none text-dark">{lesson.title}</Link>
+                                  <i className="bi bi-play-circle me-3 fs-5 text-primary"></i>
+                                  <a href={`/course/${course.id}/lesson/${lesson.id}/video`} className="text-decoration-none fw-semibold text-dark">{lesson.title}</a>
                                 </>
                               ) : (
                                 <>
-                                  <i className="bi bi-lock me-2 text-secondary"></i>
+                                  <i className="bi bi-lock me-3 fs-5 text-secondary"></i>
                                   <span className="text-muted">{lesson.title}</span>
                                 </>
                               )}
                             </div>
-                            {lesson.completed && <span className="badge bg-success">Completada</span>}
+                            <div className="d-flex align-items-center gap-2">
+                              {lesson.completed && <Badge bg="success" pill className="px-2">Completada</Badge>}
+                              <span className="text-muted small">10:00</span>
+                            </div>
                           </ListGroup.Item>
                         ))}
                       </ListGroup>

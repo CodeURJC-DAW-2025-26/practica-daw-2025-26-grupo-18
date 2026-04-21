@@ -41,10 +41,11 @@ clientLoader.hydrate = true;
 export default function EventDetail() {
   const { event } = useLoaderData<typeof clientLoader>();
   const navigate = useNavigate();
-  const mapInitialized = useRef(false);
+  const mapInstance = useRef<any>(null);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (mapInitialized.current || !event.locationLatitude || !event.locationLongitude) return;
+    if (!event.locationLatitude || !event.locationLongitude) return;
 
     async function initMap() {
       try {
@@ -52,13 +53,16 @@ export default function EventDetail() {
         await loadExternalScript("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js", "leaflet-js");
 
         const L = (window as any).L;
-        if (!L) return;
+        if (!L || !mapContainerRef.current) return;
 
-        const mapContainer = document.getElementById("map");
-        if (!mapContainer) return;
+        // Limpiar mapa anterior si existe
+        if (mapInstance.current) {
+          mapInstance.current.remove();
+          mapInstance.current = null;
+        }
 
-        mapContainer.innerHTML = ""; // Limpiar el placeholder
-        const map = L.map("map").setView([event.locationLatitude, event.locationLongitude], 13);
+        const map = L.map(mapContainerRef.current).setView([event.locationLatitude, event.locationLongitude], 13);
+        mapInstance.current = map;
 
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -69,14 +73,20 @@ export default function EventDetail() {
           .bindPopup(event.locationName || "Ubicación del evento")
           .openPopup();
         
-        mapInitialized.current = true;
       } catch (error) {
         console.error("Error al cargar el mapa:", error);
       }
     }
 
     initMap();
-  }, [event]);
+
+    return () => {
+      if (mapInstance.current) {
+        mapInstance.current.remove();
+        mapInstance.current = null;
+      }
+    };
+  }, [event.id, event.locationLatitude, event.locationLongitude]);
 
   const isPurchased = event.alreadyPurchased;
   const isOwner = event.canEdit;
@@ -225,9 +235,8 @@ export default function EventDetail() {
                         </div>
                       </Col>
                       <Col lg={7}>
-                        {/* Placeholder para el mapa de Leaflet */}
-                        <div id="map" style={{ height: "300px", background: "#eee", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                          <i className="bi bi-map display-4 text-muted"></i>
+                        {/* Contenedor del mapa de Leaflet */}
+                        <div ref={mapContainerRef} style={{ height: "300px", background: "#eee", borderRadius: "12px", overflow: "hidden" }}>
                         </div>
                       </Col>
                     </Row>

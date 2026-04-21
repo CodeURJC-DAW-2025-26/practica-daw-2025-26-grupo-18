@@ -5564,3 +5564,13 @@ section,
         color: #f3e4c9;
         border-top: 1px solid rgba(217, 109, 60, 0.25);
     }
+
+/* Fix for Tailwind vs Bootstrap collapse conflict */
+.collapse:not(.show) {
+    display: none !important;
+}
+
+.accordion-collapse.collapse.show {
+    display: block !important;
+    visibility: visible !important;
+}

@@ -23,9 +23,9 @@ export default function EditCourse() {
   const { course } = useLoaderData<typeof clientLoader>();
   const navigate = useNavigate();
 
-  const handleSubmit = async (data: CourseDTO, imageFile?: File) => {
+  const handleSubmit = async (data: any, imageFile?: File) => {
     try {
-      await updateCourse(course.id, data, [], imageFile);
+      await updateCourse(course.id, data, data.tagNames || [], imageFile);
       navigate(`/new/courses/${course.id}`);
     } catch (error) {
       console.error(error);
