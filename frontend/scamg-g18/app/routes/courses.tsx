@@ -65,7 +65,7 @@ export default function CoursesPage() {
         <Container>
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb mb-1">
-              <li className="breadcrumb-item"><Link to="/">Inicio</Link></li>
+              <li className="breadcrumb-item"><Link to="/new">Inicio</Link></li>
               <li className="breadcrumb-item active">Cursos</li>
             </ol>
           </nav>
@@ -91,7 +91,7 @@ export default function CoursesPage() {
               </InputGroup>
 
               {globalData?.canCreateCourse && (
-                <Link to="/courses/new" className="btn btn-success">
+                <Link to="/new/courses/new" className="btn btn-success">
                   <i className="bi bi-plus-circle me-2" />Crear Nuevo Curso
                 </Link>
               )}
@@ -148,7 +148,7 @@ export default function CoursesPage() {
                               <span><i className="bi bi-people me-1" />{course.subscribersNumber} suscritos</span>
                               <span><i className="bi bi-person-circle me-1" />Por {course.creatorUsername}</span>
                             </div>
-                            <Link to={`/courses/${course.id}`} className="btn btn-outline-primary btn-sm">
+                            <Link to={`/new/courses/${course.id}`} className="btn btn-outline-primary btn-sm">
                               Ver curso
                             </Link>
                           </div>

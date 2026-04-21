@@ -65,7 +65,7 @@ export default function EventsPage() {
         <Container>
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb mb-1">
-              <li className="breadcrumb-item"><Link to="/">Inicio</Link></li>
+              <li className="breadcrumb-item"><Link to="/new">Inicio</Link></li>
               <li className="breadcrumb-item active">Eventos</li>
             </ol>
           </nav>
@@ -91,7 +91,7 @@ export default function EventsPage() {
               </InputGroup>
 
               {globalData?.canCreateEvent && (
-                <Link to="/events/new" className="btn btn-success">
+                <Link to="/new/events/new" className="btn btn-success">
                   <i className="bi bi-plus-circle me-2" />Crear Nuevo Evento
                 </Link>
               )}
@@ -151,7 +151,7 @@ export default function EventsPage() {
                                 {event.locationName ?? "Online"}
                               </span>
                             </div>
-                            <Link to={`/events/${event.id}`} className="btn btn-outline-primary btn-sm">
+                            <Link to={`/new/events/${event.id}`} className="btn btn-outline-primary btn-sm">
                               Ver detalles
                             </Link>
                           </div>
