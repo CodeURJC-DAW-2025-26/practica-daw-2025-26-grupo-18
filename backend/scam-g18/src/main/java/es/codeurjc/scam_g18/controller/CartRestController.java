@@ -3,6 +3,7 @@ package es.codeurjc.scam_g18.controller;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -59,7 +60,7 @@ public class CartRestController {
     }
 
     // Adds a course to the current user's pending order
-    @PostMapping("/add/course/{id}")
+    @PostMapping("/courses/{id}")
     @Operation(summary = "Add course to cart", description = "Adds a course to the authenticated user's pending order.")
     public ResponseEntity<?> addCourseToCart(@PathVariable Long id) {
         User currentUser = getCurrentUser();
@@ -80,7 +81,7 @@ public class CartRestController {
     }
 
     // Adds an event to the pending order
-    @PostMapping("/add/event/{id}")
+    @PostMapping("/events/{id}")
     @Operation(summary = "Add event to cart", description = "Adds an event to the authenticated user's pending order.")
     public ResponseEntity<?> addEventToCart(@PathVariable Long id) {
         User currentUser = getCurrentUser();
@@ -105,7 +106,7 @@ public class CartRestController {
     }
 
     // Adds the premium subscription to the order
-    @PostMapping("/add/subscription")
+    @PostMapping("/subscriptions")
     @Operation(summary = "Add subscription to cart", description = "Adds a subscription line item to the authenticated user's pending order.")
     public ResponseEntity<OrderDTO> addSubscriptionToCart() {
         User currentUser = getCurrentUser();
@@ -120,7 +121,7 @@ public class CartRestController {
     }
 
     // Removes an item from the cart
-    @PostMapping("/remove/{itemId}")
+    @DeleteMapping("/items/{itemId}")
     @Operation(summary = "Remove cart item", description = "Removes an item from the authenticated user's cart by item id.")
     public ResponseEntity<OrderDTO> removeItemFromCart(@PathVariable Long itemId) {
         User currentUser = getCurrentUser();
@@ -135,7 +136,7 @@ public class CartRestController {
     }
 
     // Processes payment (expects JSON body)
-    @PostMapping("/checkout")
+    @PostMapping("/payments")
     @Operation(summary = "Checkout", description = "Processes payment and finalizes the current pending order.")
     public ResponseEntity<?> checkout(
             @RequestBody CheckoutRequestDTO checkoutRequest,

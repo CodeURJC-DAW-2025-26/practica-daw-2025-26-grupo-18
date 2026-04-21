@@ -820,7 +820,7 @@
               <span class="btn btn-choose w-100 disabled">Ya tienes Premium</span>
               {{/isPublisher}}
               {{^isPublisher}}
-              <form action="/cart/add/subscription" method="post">
+              <form action="/cart/subscriptions" method="post">
                 <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}" />
                 <button type="submit" class="btn btn-choose w-100">Comprar por 10€</button>
               </form>
