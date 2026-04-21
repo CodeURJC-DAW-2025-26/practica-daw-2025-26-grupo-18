@@ -1,10 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
 
-import {
-  getProfileById,
-  updateProfile,
-} from "~/services/profileService";
+import { getProfileById, updateProfile } from "~/services/profileService";
 import type { ProfileDTO, ProfileUpdateDTO } from "~/dtos/ProfileDTO";
 import { getUserProfileImageUrl } from "~/utils/imageUrls";
 
@@ -60,7 +57,7 @@ export default function ProfileRoute() {
   });
 
   const profileImageUrl = useMemo(() => {
-    if (!profile) return "/public/services/default_avatar.png";
+    if (!profile) return "/services/default_avatar.png";
     return profile.profileImage || getUserProfileImageUrl(profile.id);
   }, [profile]);
 
@@ -255,6 +252,9 @@ export default function ProfileRoute() {
                         <p className="mb-2">
                           <i className="bi bi-geo-alt me-2" /> {profile.country || "Sin país"}
                         </p>
+                        <p className="mb-0">
+                          <i className="bi bi-calendar-event me-2" /> Miembro desde 2024
+                        </p>
                       </div>
                     </div>
                   )}
@@ -288,100 +288,49 @@ export default function ProfileRoute() {
                           <label htmlFor="username" className="form-label fw-semibold">
                             <i className="bi bi-person me-2" />Nombre de usuario
                           </label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="username"
-                            name="username"
-                            value={form.username}
-                            onChange={(e) => updateFormField("username", e.target.value)}
-                            required
-                          />
+                          <input type="text" className="form-control" id="username" name="username" value={form.username} onChange={(e) => updateFormField("username", e.target.value)} required />
                         </div>
 
                         <div className="mb-3 text-start">
                           <label htmlFor="email" className="form-label fw-semibold">
                             <i className="bi bi-envelope me-2" />Email
                           </label>
-                          <input
-                            type="email"
-                            className="form-control"
-                            id="email"
-                            name="email"
-                            value={form.email}
-                            onChange={(e) => updateFormField("email", e.target.value)}
-                            required
-                          />
+                          <input type="email" className="form-control" id="email" name="email" value={form.email} onChange={(e) => updateFormField("email", e.target.value)} required />
                         </div>
 
                         <div className="mb-3 text-start">
                           <label htmlFor="country" className="form-label fw-semibold">
                             <i className="bi bi-geo-alt me-2" />País
                           </label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="country"
-                            name="country"
-                            value={form.country}
-                            onChange={(e) => updateFormField("country", e.target.value)}
-                          />
+                          <input type="text" className="form-control" id="country" name="country" value={form.country} onChange={(e) => updateFormField("country", e.target.value)} />
                         </div>
 
                         <div className="mb-3 text-start">
                           <label htmlFor="shortDescription" className="form-label fw-semibold">
                             <i className="bi bi-card-text me-2" />Sobre mí
                           </label>
-                          <textarea
-                            className="form-control"
-                            id="shortDescription"
-                            name="shortDescription"
-                            rows={3}
-                            value={form.shortDescription}
-                            onChange={(e) => updateFormField("shortDescription", e.target.value)}
-                          />
+                          <textarea className="form-control" id="shortDescription" name="shortDescription" rows={3} value={form.shortDescription} onChange={(e) => updateFormField("shortDescription", e.target.value)} />
                         </div>
 
                         <div className="mb-3 text-start">
                           <label htmlFor="currentGoal" className="form-label fw-semibold">
                             <i className="bi bi-briefcase me-2" />Objetivo actual
                           </label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="currentGoal"
-                            name="currentGoal"
-                            value={form.currentGoal}
-                            onChange={(e) => updateFormField("currentGoal", e.target.value)}
-                          />
+                          <input type="text" className="form-control" id="currentGoal" name="currentGoal" value={form.currentGoal} onChange={(e) => updateFormField("currentGoal", e.target.value)} />
                         </div>
 
                         <div className="mb-3 text-start">
                           <label htmlFor="weeklyRoutine" className="form-label fw-semibold">
                             <i className="bi bi-lightning me-2" />Rutina semanal
                           </label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="weeklyRoutine"
-                            name="weeklyRoutine"
-                            value={form.weeklyRoutine}
-                            onChange={(e) => updateFormField("weeklyRoutine", e.target.value)}
-                          />
+                          <input type="text" className="form-control" id="weeklyRoutine" name="weeklyRoutine" value={form.weeklyRoutine} onChange={(e) => updateFormField("weeklyRoutine", e.target.value)} />
                         </div>
 
                         <div className="mb-3 text-start">
                           <label htmlFor="comunity" className="form-label fw-semibold">
                             <i className="bi bi-people me-2" />Comunidad
                           </label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="comunity"
-                            name="comunity"
-                            value={form.comunity}
-                            onChange={(e) => updateFormField("comunity", e.target.value)}
-                          />
+                          <input type="text" className="form-control" id="comunity" name="comunity" value={form.comunity} onChange={(e) => updateFormField("comunity", e.target.value)} />
                         </div>
 
                         <div className="d-flex gap-2 justify-content-center mt-3">
@@ -399,62 +348,60 @@ export default function ProfileRoute() {
               </div>
             </div>
 
-            {!isEditing && (
-              <div className="col-lg-8" id="profile-about-container">
-                <div className="card border-0 shadow-sm bg-light h-100">
-                  <div className="card-body p-4">
-                    <h3 className="h5 fw-bold mb-3">Sobre mí</h3>
-                    <p className="text-muted">{profile.shortDescription || "Todavía no se ha añadido ninguna información."}</p>
-                    <div className="row g-3">
-                      <div className="col-md-6">
-                        <div className="d-flex align-items-center gap-3">
-                          <i className="bi bi-briefcase fs-4 text-accent" />
-                          <div>
-                            <p className="mb-1 fw-semibold">Objetivo actual</p>
-                            <p className="mb-0 text-muted">{profile.currentGoal || "Todavía no se ha añadido ninguna información."}</p>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-md-6">
-                        <div className="d-flex align-items-center gap-3">
-                          <i className="bi bi-lightning fs-4 text-accent" />
-                          <div>
-                            <p className="mb-1 fw-semibold">Rutina semanal</p>
-                            <p className="mb-0 text-muted">{profile.weeklyRoutine || "Todavía no se ha añadido ninguna información."}</p>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-md-6">
-                        <div className="d-flex align-items-center gap-3">
-                          <i className="bi bi-people fs-4 text-accent" />
-                          <div>
-                            <p className="mb-1 fw-semibold">Comunidad</p>
-                            <p className="mb-0 text-muted">{profile.comunity || "Todavía no se ha añadido ninguna información."}</p>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-md-6">
-                        <div className="d-flex align-items-center gap-3">
-                          <i className="bi bi-award fs-4 text-accent" />
-                          <div>
-                            <p className="mb-1 fw-semibold">Certificaciones</p>
-                            <p className="mb-0 text-muted">{profile.completedCourses} completadas</p>
-                          </div>
+            <div className="col-lg-8" id="profile-about-container">
+              <div className="card border-0 shadow-sm bg-light h-100">
+                <div className="card-body p-4">
+                  <h3 className="h5 fw-bold mb-3">Sobre mí</h3>
+                  <p className="text-muted">{profile.shortDescription || "Todavía no se ha añadido ninguna información."}</p>
+                  <div className="row g-3">
+                    <div className="col-md-6">
+                      <div className="d-flex align-items-center gap-3">
+                        <i className="bi bi-briefcase fs-4 text-accent" />
+                        <div>
+                          <p className="mb-1 fw-semibold">Objetivo actual</p>
+                          <p className="mb-0 text-muted">{profile.currentGoal || "Todavía no se ha añadido ninguna información."}</p>
                         </div>
                       </div>
                     </div>
-
-                    {profile.profileOwner && (
-                      <div className="d-flex flex-wrap gap-2 mt-4">
-                        <button type="button" className="btn btn-accent" onClick={() => setIsEditing(true)}>
-                          Editar perfil
-                        </button>
+                    <div className="col-md-6">
+                      <div className="d-flex align-items-center gap-3">
+                        <i className="bi bi-lightning fs-4 text-accent" />
+                        <div>
+                          <p className="mb-1 fw-semibold">Rutina semanal</p>
+                          <p className="mb-0 text-muted">{profile.weeklyRoutine || "Todavía no se ha añadido ninguna información."}</p>
+                        </div>
                       </div>
-                    )}
+                    </div>
+                    <div className="col-md-6">
+                      <div className="d-flex align-items-center gap-3">
+                        <i className="bi bi-people fs-4 text-accent" />
+                        <div>
+                          <p className="mb-1 fw-semibold">Comunidad</p>
+                          <p className="mb-0 text-muted">{profile.comunity || "Todavía no se ha añadido ninguna información."}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-6">
+                      <div className="d-flex align-items-center gap-3">
+                        <i className="bi bi-award fs-4 text-accent" />
+                        <div>
+                          <p className="mb-1 fw-semibold">Certificaciones</p>
+                          <p className="mb-0 text-muted">{profile.completedCourses} completadas</p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
+
+                  {profile.profileOwner && (
+                    <div className="d-flex flex-wrap gap-2 mt-4">
+                      <button type="button" className="btn btn-accent" onClick={() => setIsEditing(true)}>
+                        Editar perfil
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
-            )}
+            </div>
           </div>
         </div>
       </section>
@@ -473,9 +420,7 @@ export default function ProfileRoute() {
                       <span className="badge status-badge">ACTIVO</span>
                     </div>
                     <h3>Cursos en progreso</h3>
-                    <p>
-                      Actualmente estás avanzando en {profile.inProgressCount} cursos. Total inscritos: {profile.totalEnrollments}.
-                    </p>
+                    <p>Actualmente estas avanzando en {profile.inProgressCount} cursos. Total inscritos: {profile.totalEnrollments}.</p>
                     <div className="course-progress">
                       <small className="course-progress-label">Progreso global: {profile.averageProgress}%</small>
                       <div className="course-progress-bar">
@@ -515,17 +460,17 @@ export default function ProfileRoute() {
                       <span className="badge status-badge">LOGROS</span>
                     </div>
                     <h3>Certificados</h3>
-                    <p>{profile.completedCourses} certificados completados.</p>
+                    <p>{profile.completedCourses} certificados completados y {profile.inProgressCount} cursos en progreso.</p>
                     <ul className="feature-list">
                       {profile.completedCourseNames.length > 0 ? (
-                        profile.completedCourseNames.slice(0, 6).map((name) => (
+                        profile.completedCourseNames.map((name) => (
                           <li key={name}>
                             <i className="bi bi-check-circle" /> {name}
                           </li>
                         ))
                       ) : (
                         <li className="text-muted">
-                          <i className="bi bi-info-circle" /> Aún no has completado ningún curso
+                          <i className="bi bi-info-circle" /> Aun no has completado ningun curso
                         </li>
                       )}
                     </ul>
@@ -534,106 +479,218 @@ export default function ProfileRoute() {
               </div>
             </div>
           </section>
-
-          <section className="section bg-light">
-            <div className="container">
-              <div className="row g-4">
-                <div className="col-lg-6">
-                  <div className="card border-0 shadow-sm h-100">
-                    <div className="card-body p-4">
-                      <h3 className="h5 fw-bold mb-3">Cursos suscritos</h3>
-                      {profile.subscribedCourses.length > 0 ? (
-                        <ul className="list-group list-group-flush">
-                          {profile.subscribedCourses.slice(0, 8).map((course, index) => {
-                            const id = getNumberValue(course, ["id", "courseId"]);
-                            const title = getStringValue(course, ["title", "name"]) || `Curso #${index + 1}`;
-                            return (
-                              <li className="list-group-item px-0" key={`${id ?? "course"}-${index}`}>
-                                {id ? <a href={`/new/course/${id}`}>{title}</a> : title}
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      ) : (
-                        <p className="text-muted mb-0">No tienes cursos suscritos.</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="col-lg-6">
-                  <div className="card border-0 shadow-sm h-100">
-                    <div className="card-body p-4">
-                      <h3 className="h5 fw-bold mb-3">Eventos del usuario</h3>
-                      {profile.userEvents.length > 0 ? (
-                        <ul className="list-group list-group-flush">
-                          {profile.userEvents.slice(0, 8).map((event, index) => {
-                            const id = getNumberValue(event, ["id", "eventId"]);
-                            const title = getStringValue(event, ["title", "name"]) || `Evento #${index + 1}`;
-                            return (
-                              <li className="list-group-item px-0" key={`${id ?? "event"}-${index}`}>
-                                {id ? <a href={`/new/event/${id}`}>{title}</a> : title}
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      ) : (
-                        <p className="text-muted mb-0">No tienes eventos registrados.</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
           {profile.createdCourses.length > 0 && (
-            <section className="section instructor-panel-section">
+            <section className="section bg-light instructor-panel-section">
               <div className="container" data-aos="fade-up">
                 <div className="section-title section-title-compact">
                   <h2>Panel de Instructor</h2>
-                  <p>Gestiona tus cursos creados y visualiza información básica de publicación.</p>
+                  <p>Gestiona tus cursos creados y visualiza el progreso de tus estudiantes.</p>
                 </div>
 
-                <div className="row g-4">
-                  {profile.createdCourses.map((course, index) => {
-                    const id = getNumberValue(course, ["id", "courseId"]);
-                    const title = getStringValue(course, ["title", "name"]) || `Curso #${index + 1}`;
-                    const status = getStringValue(course, ["status"]);
-                    const totalSubscribers = getNumberValue(course, ["totalSubscribers", "subscribers"]);
+                <div className="row g-4 align-items-stretch">
+                  <div className="col-lg-8 d-flex flex-column">
+                    <div id="instructorCoursesCarousel" className="carousel slide flex-grow-1 instructor-carousel w-100" data-bs-ride="false">
+                      <div className="carousel-inner h-100">
+                        {profile.createdCourses.map((course, index) => {
+                          const id = getNumberValue(course, ["id", "courseId"]);
+                          const title = getStringValue(course, ["title", "name"]) || `Curso #${index + 1}`;
+                          const status = getStringValue(course, ["status"]);
+                          const totalSubscribers = getNumberValue(course, ["totalSubscribers", "subscribers"]);
+                          const monthlySubscribers = getNumberValue(course, ["monthlySubscribers", "subscribersThisMonth"]);
+                          const hasSubscribers = (totalSubscribers ?? 0) > 0;
 
-                    return (
-                      <div className="col-lg-6" key={`${id ?? "created-course"}-${index}`}>
-                        <div className="card border-0 shadow-sm instructor-course-card-modern h-100">
-                          <div className="card-body p-4">
-                            <div className="d-flex justify-content-between align-items-center mb-2">
-                              <h4 className="h5 fw-bold mb-0">{title}</h4>
-                              {status && <span className="badge bg-secondary">{status}</span>}
+                          return (
+                            <div className={`carousel-item ${index === 0 ? "active" : ""} h-100`} key={`${id ?? "created-course"}-${index}`}>
+                              <div className="card border-0 shadow-sm h-100 instructor-course-card instructor-course-card-modern">
+                                <div className="card-body p-4">
+                                  <div className="d-flex justify-content-between align-items-center mb-3">
+                                    <h4 className="h5 fw-bold mb-0 text-truncate instructor-course-title" title={title}>
+                                      {title}
+                                    </h4>
+                                    {status ? <span className="badge bg-success">{status}</span> : <span className="badge bg-secondary">Borrador</span>}
+                                  </div>
+                                  <div className="row align-items-center">
+                                    <div className="col-md-5">
+                                      <div className="mb-3">
+                                        <p className="text-muted small mb-1">
+                                          <i className="bi bi-people me-1" /> Total de usuarios suscritos: <span className="fw-semibold text-dark">{totalSubscribers ?? 0}</span>
+                                        </p>
+                                        <p className="text-muted small mb-0">
+                                          <i className="bi bi-person-plus me-1" /> Usuarios suscritos este mes: <span className="fw-semibold text-dark">{monthlySubscribers ?? 0}</span>
+                                        </p>
+                                      </div>
+                                      {id && (
+                                        <a href={`/new/course/${id}/edit`} className="btn btn-sm btn-accent mt-2">
+                                          Gestionar curso
+                                        </a>
+                                      )}
+                                    </div>
+                                    <div className="col-md-7 text-center">
+                                      {hasSubscribers ? (
+                                        <div className="instructor-chart-frame">
+                                          <iframe
+                                            src={`/statistics/created-course-status?courseId=${id}`}
+                                            title="Estadísticas del curso"
+                                            width="100%"
+                                            height="100%"
+                                            style={{ border: "none", overflow: "hidden" }}
+                                            scrolling="no"
+                                          />
+                                        </div>
+                                      ) : (
+                                        <div className="instructor-chart-frame d-flex flex-column align-items-center justify-content-center text-center bg-light rounded" style={{ minHeight: 200 }}>
+                                          <i className="bi bi-people text-muted mb-2" style={{ fontSize: "2rem", opacity: 0.5 }} />
+                                          <h6 className="fw-bold text-dark mb-1">Aún no hay nadie en el curso</h6>
+                                          <p className="text-muted small mb-0">Comparte tu curso para conseguir estudiantes.</p>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
-                            <p className="text-muted mb-3">
-                              Suscriptores totales: <strong>{totalSubscribers ?? 0}</strong>
-                            </p>
-                            <div className="d-flex gap-2">
-                              {id && (
-                                <a className="btn btn-sm btn-accent-outline" href={`/new/course/${id}`}>
-                                  Ver curso
-                                </a>
-                              )}
-                              {id && (
-                                <a className="btn btn-sm btn-accent" href={`/new/course/${id}/edit`}>
-                                  Editar curso
-                                </a>
-                              )}
-                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {profile.createdCourses.length > 1 && (
+                        <>
+                          <button className="carousel-control-prev instructor-carousel-control" type="button" data-bs-target="#instructorCoursesCarousel" data-bs-slide="prev">
+                            <span className="carousel-control-prev-icon" aria-hidden="true" />
+                            <span className="visually-hidden">Anterior</span>
+                          </button>
+                          <button className="carousel-control-next instructor-carousel-control" type="button" data-bs-target="#instructorCoursesCarousel" data-bs-slide="next">
+                            <span className="carousel-control-next-icon" aria-hidden="true" />
+                            <span className="visually-hidden">Siguiente</span>
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="col-lg-4 d-flex flex-column">
+                    <div className="card border-0 shadow-sm flex-grow-1 w-100 instructor-create-card">
+                      <div className="card-body p-4 d-flex align-items-center justify-content-center border-dashed instructor-create-card-body">
+                        <div className="text-center py-4">
+                          <div className="icon-box mb-3 mx-auto text-muted">
+                            <i className="bi bi-plus-lg fs-1" />
                           </div>
+                          <h5 className="fw-bold text-muted">Crear nuevo curso</h5>
+                          <a href="/new/courses/new" className="stretched-link" aria-label="Crear nuevo curso" />
                         </div>
                       </div>
-                    );
-                  })}
+                    </div>
+                  </div>
                 </div>
               </div>
             </section>
           )}
+          <section className="courses-catalog section">
+            <div className="container" data-aos="fade-up">
+              <div className="section-title section-title-compact">
+                <h2>Mis cursos suscritos</h2>
+                <p>Continua donde lo dejaste y completa tus rutas activas.</p>
+              </div>
+
+              <div className="course-list">
+                {profile.subscribedCourses.length > 0 ? (
+                  profile.subscribedCourses.map((course, index) => {
+                    const id = getNumberValue(course, ["id", "courseId"]);
+                    const title = getStringValue(course, ["title", "name"]) || `Curso #${index + 1}`;
+                    const description = getStringValue(course, ["description", "shortDescription"]) || "";
+                    const creatorName = getStringValue(course, ["creatorName", "authorName", "teacherName"]) || "";
+                    const progress = Math.max(0, Math.min(getNumberValue(course, ["progress"]) ?? 0, 100));
+                    const tagsValue = (course as Record<string, unknown>).tags;
+                    const tags = Array.isArray(tagsValue) ? tagsValue.filter((tag): tag is string => typeof tag === "string") : [];
+
+                    return (
+                      <article className="course-card-full" data-aos="fade-up" key={`${id ?? "course"}-${index}`}>
+                        <div className="course-card-header">
+                          <div>
+                            <h3 className="course-card-title">{title}</h3>
+                            <div className="course-tags">
+                              {tags.map((tag) => (
+                                <span className="course-tag" key={tag}>
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="course-card-price">
+                            <span className="badge" style={{ backgroundColor: "var(--accent-color)", color: "#fff" }}>
+                              En curso · {progress}%
+                            </span>
+                          </div>
+                        </div>
+                        <p className="course-card-desc">{description}</p>
+                        <div className="course-card-meta">
+                          <div>
+                            <i className="bi bi-person" /> {creatorName}
+                          </div>
+                        </div>
+                        <div className="course-progress mt-3">
+                          <small className="course-progress-label">Avance actual</small>
+                          <div className="course-progress-bar" style={{ height: 10 }}>
+                            <div className="course-progress-fill" style={{ width: `${progress}%` }} />
+                          </div>
+                        </div>
+                        {id && (
+                          <div className="course-card-actions">
+                            <a href={`/new/course/${id}`} className="btn btn-sm btn-accent-outline course-card-btn">
+                              Ver detalles
+                            </a>
+                          </div>
+                        )}
+                      </article>
+                    );
+                  })
+                ) : (
+                  <p className="text-muted text-center">No estas suscrito a ningun curso todavia.</p>
+                )}
+              </div>
+            </div>
+          </section>
+
+          <section className="section">
+            <div className="container" data-aos="fade-up">
+              <div className="section-title section-title-compact">
+                <h2>Eventos guardados</h2>
+                <p>Actividades que has marcado para ampliar tu red profesional.</p>
+              </div>
+
+              <div className="list-group">
+                {profile.userEvents.length > 0 ? (
+                  profile.userEvents.map((event, index) => {
+                    const id = getNumberValue(event, ["id", "eventId"]);
+                    const title = getStringValue(event, ["title", "name"]) || `Evento #${index + 1}`;
+                    const locationLabel = getStringValue(event, ["locationLabel", "location", "city"]);
+                    const startDate = getStringValue(event, ["startDate", "date"]);
+
+                    return id ? (
+                      <a
+                        href={`/new/event/${id}`}
+                        className="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                        key={`${id ?? "event"}-${index}`}>
+                        <div>
+                          <h6 className="mb-1">{title}</h6>
+                          <small className="text-muted">
+                            <i className="bi bi-geo-alt me-1" /> {locationLabel || ""}
+                          </small>
+                        </div>
+                        <span className="badge bg-light text-dark border">{startDate || ""}</span>
+                      </a>
+                    ) : (
+                      <div className="list-group-item" key={`${id ?? "event"}-${index}`}>
+                        {title}
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p className="text-muted text-center">No tienes eventos guardados.</p>
+                )}
+              </div>
+            </div>
+          </section>
         </>
       )}
     </main>
