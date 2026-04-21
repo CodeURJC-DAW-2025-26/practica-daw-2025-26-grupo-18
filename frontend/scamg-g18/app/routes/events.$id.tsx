@@ -4,21 +4,23 @@ import { getEventById } from "~/services/eventService";
 import { addEventToCart } from "~/services/cartService";
 import { getEventImageUrl } from "~/utils/imageUrls";
 import { useGlobalStore } from "~/stores/globalStore";
-import type { ClientLoaderArgs } from "react-router";
+import type { LoaderFunctionArgs } from "react-router";
+import type { EventDTO } from "~/dtos/EventDTO";
 
-export async function clientLoader({ params }: ClientLoaderArgs) {
+export async function clientLoader({ params }: LoaderFunctionArgs) {
   const id = Number(params.id);
   if (isNaN(id)) throw new Error("ID de evento no válido");
   const event = await getEventById(id);
-  return { event };
+  return { event: event as EventDTO };
 }
+clientLoader.hydrate = true;
 
 export default function EventDetail() {
   const { event } = useLoaderData<typeof clientLoader>();
   const navigate = useNavigate();
 
-  const isPurchased = (event as any).isPurchased;
-  const isOwner = (event as any).isOwner;
+  const isPurchased = event.alreadyPurchased;
+  const isOwner = event.canEdit;
 
   const handleAddToCart = async () => {
     try {
@@ -61,12 +63,12 @@ export default function EventDetail() {
                 <div className="service-header mb-5">
                   <h1 className="display-5 fw-bold text-dark mb-3">{event.title}</h1>
                   <div className="service-meta d-flex flex-wrap gap-4 text-secondary small opacity-90 mb-4 pb-4 border-bottom">
-                    <span><i className="bi bi-calendar-event me-2" style={{ color: "var(--accent-color)" }}></i> {event.startDateStr}</span>
-                    <span><i className="bi bi-clock me-2" style={{ color: "var(--accent-color)" }}></i> {event.startTimeStr} - {event.endTimeStr}</span>
+                    <span><i className="bi bi-calendar-event me-2" style={{ color: "var(--accent-color)" }}></i> {event.formattedDate}</span>
+                    <span><i className="bi bi-clock me-2" style={{ color: "var(--accent-color)" }}></i> {event.formattedTime}</span>
                     <span><i className="bi bi-geo-alt me-2" style={{ color: "var(--accent-color)" }}></i>
                       {event.locationName ?? "Online"}
                     </span>
-                    <span><i className="bi bi-people me-2" style={{ color: "var(--accent-color)" }}></i> {(event as any).attendeesCount || 0} / {event.capacity} plazas ocupadas</span>
+                    <span><i className="bi bi-people me-2" style={{ color: "var(--accent-color)" }}></i> {event.attendeesCount || 0} / {event.capacity} plazas ocupadas</span>
                   </div>
                   <p className="lead text-muted" style={{ lineHeight: "1.7" }}>{event.description}</p>
                 </div>
@@ -88,13 +90,13 @@ export default function EventDetail() {
                 <div className="mb-5 py-4 border-top">
                   <h3 className="h4 fw-bold mb-4"><i className="bi bi-diagram-3 me-2" style={{ color: "var(--accent-color)" }}></i>Agenda</h3>
                   <div className="process-timeline border-start ms-2 ps-4 position-relative">
-                    {event.sessionTitles?.map((title: string, idx: number) => (
+                    {event.sessions?.map((session, idx: number) => (
                       <div key={idx} className="timeline-item mb-4 position-relative">
                         <div className="timeline-marker position-absolute start-0 translate-middle-x bg-white border border-4 rounded-circle"
                           style={{ width: "16px", height: "16px", left: "-25px", borderColor: "var(--accent-color) !important", top: "10px" }}></div>
-                        <div className="fw-bold text-accent mb-1" style={{ color: "var(--accent-color)" }}>{event.sessionTimes?.[idx] || "--:--"}</div>
-                        <h4 className="h5 fw-bold mb-1">{title}</h4>
-                        <p className="text-muted small mb-0">{event.sessionDescriptions?.[idx]}</p>
+                        <div className="fw-bold text-accent mb-1" style={{ color: "var(--accent-color)" }}>{session.time || "--:--"}</div>
+                        <h4 className="h5 fw-bold mb-1">{session.title}</h4>
+                        <p className="text-muted small mb-0">{session.description}</p>
                       </div>
                     ))}
                   </div>
@@ -104,7 +106,7 @@ export default function EventDetail() {
                 <div className="mb-5 py-4 border-top">
                   <h3 className="h4 fw-bold mb-4"><i className="bi bi-mic me-2" style={{ color: "var(--accent-color)" }}></i>Ponentes</h3>
                   <Row className="g-4">
-                    {event.speakerNames?.map((name: string, idx: number) => (
+                    {event.speakers?.map((name: string, idx: number) => (
                       <Col md={4} key={idx}>
                         <div className="benefit-card p-4 border rounded-4 text-center h-100 shadow-sm bg-white">
                           <div className="benefit-icon mb-3">
@@ -168,7 +170,7 @@ export default function EventDetail() {
                         Comprar entrada
                       </Button>
                       <p className="mt-3 mb-0 text-center text-muted small">
-                        Plazas disponibles: <strong>{event.capacity - ((event as any).attendeesCount || 0)}</strong>
+                        Plazas disponibles: <strong>{event.capacity - (event.attendeesCount || 0)}</strong>
                       </p>
                       <div className="guarantee mt-4 pt-3 border-top d-flex align-items-center justify-content-center gap-2 small text-muted">
                         <i className="bi bi-shield-check text-accent" style={{ color: "var(--accent-color)" }}></i>

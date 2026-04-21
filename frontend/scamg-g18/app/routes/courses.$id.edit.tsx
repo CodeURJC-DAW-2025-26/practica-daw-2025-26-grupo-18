@@ -3,13 +3,19 @@ import { useNavigate, useLoaderData } from "react-router";
 import CourseForm from "~/components/CourseForm";
 import { getCourseById, updateCourse } from "~/services/courseService";
 import type { CourseDTO } from "~/dtos/CourseDTO";
-import type { ClientLoaderArgs } from "react-router";
+import type { LoaderFunctionArgs } from "react-router";
 
-export async function clientLoader({ params }: ClientLoaderArgs) {
+export async function clientLoader({ params }: LoaderFunctionArgs) {
   const id = Number(params.id);
-  const course = await getCourseById(id);
-  return { course: course as unknown as CourseDTO };
+  const data = await getCourseById(id);
+  return { 
+    course: {
+      ...data.course,
+      modules: data.modules
+    } as unknown as CourseDTO 
+  };
 }
+clientLoader.hydrate = true;
 
 import { Link } from "react-router";
 
