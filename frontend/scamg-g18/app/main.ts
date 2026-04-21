@@ -1,5 +1,7 @@
 // @ts-nocheck
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 (function () {
     "use strict";
@@ -84,9 +86,6 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
      * Animation on scroll function and init
      */
     function aosInit() {
-        if (typeof AOS === "undefined") {
-            return;
-        }
         AOS.init({
             duration: 600,
             easing: "ease-in-out",
@@ -94,6 +93,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
             mirror: false,
         });
     }
+    aosInit();
     window.addEventListener("load", aosInit);
 
     /**

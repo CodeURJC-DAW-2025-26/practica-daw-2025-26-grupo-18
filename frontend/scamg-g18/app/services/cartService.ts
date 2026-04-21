@@ -12,10 +12,10 @@ export async function getCart(): Promise<CartDTO> {
 }
 
 /**
- * POST /api/v1/cart/add/course/:id — Add a course to the cart
+ * POST /api/v1/cart/courses/:id — Add a course to the cart
  */
 export async function addCourseToCart(id: number): Promise<CartDTO> {
-  const res = await fetch(`${BASE_URL}/add/course/${id}`, { method: "POST" });
+  const res = await fetch(`${BASE_URL}/courses/${id}`, { method: "POST" });
   if (!res.ok) {
     const errorText = await res.text().catch(() => "");
     throw new Error(errorText || `Error adding course to cart: ${res.status}`);
@@ -24,10 +24,10 @@ export async function addCourseToCart(id: number): Promise<CartDTO> {
 }
 
 /**
- * POST /api/v1/cart/add/event/:id — Add an event to the cart
+ * POST /api/v1/cart/events/:id — Add an event to the cart
  */
 export async function addEventToCart(id: number): Promise<CartDTO> {
-  const res = await fetch(`${BASE_URL}/add/event/${id}`, { method: "POST" });
+  const res = await fetch(`${BASE_URL}/events/${id}`, { method: "POST" });
   if (!res.ok) {
     const errorText = await res.text().catch(() => "");
     throw new Error(errorText || `Error adding event to cart: ${res.status}`);
@@ -36,10 +36,10 @@ export async function addEventToCart(id: number): Promise<CartDTO> {
 }
 
 /**
- * POST /api/v1/cart/add/subscription — Add the premium subscription to the cart
+ * POST /api/v1/cart/subscriptions — Add the premium subscription to the cart
  */
 export async function addSubscriptionToCart(): Promise<CartDTO> {
-  const res = await fetch(`${BASE_URL}/add/subscription`, { method: "POST" });
+  const res = await fetch(`${BASE_URL}/subscriptions`, { method: "POST" });
   if (!res.ok) {
     const errorText = await res.text().catch(() => "");
     throw new Error(errorText || `Error adding subscription to cart: ${res.status}`);
@@ -48,10 +48,10 @@ export async function addSubscriptionToCart(): Promise<CartDTO> {
 }
 
 /**
- * POST /api/v1/cart/remove/:itemId — Remove an item from the cart
+ * DELETE /api/v1/cart/items/:itemId — Remove an item from the cart
  */
 export async function removeItemFromCart(itemId: number): Promise<CartDTO> {
-  const res = await fetch(`${BASE_URL}/remove/${itemId}`, { method: "POST" });
+  const res = await fetch(`${BASE_URL}/items/${itemId}`, { method: "DELETE" });
   if (!res.ok) {
     const errorText = await res.text().catch(() => "");
     throw new Error(errorText || `Error removing item from cart: ${res.status}`);
@@ -60,10 +60,10 @@ export async function removeItemFromCart(itemId: number): Promise<CartDTO> {
 }
 
 /**
- * POST /api/v1/cart/checkout — Process payment and complete purchase
+ * POST /api/v1/cart/payments — Process payment and complete purchase
  */
 export async function checkout(request: CheckoutRequestDTO): Promise<void> {
-  const res = await fetch(`${BASE_URL}/checkout`, {
+  const res = await fetch(`${BASE_URL}/payments`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

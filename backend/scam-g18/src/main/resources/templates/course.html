@@ -482,7 +482,7 @@
                             <div class="px-4 pb-4">
                                 <div class="cta mb-4">
                                     {{#isUserLoggedIn}}
-                                    <form action="/cart/add/course/{{course.id}}" method="post">
+                                    <form action="/cart/courses/{{course.id}}" method="post">
                                         <input type="hidden" name="_csrf" value="{{_csrf.token}}">
                                         <button type="submit" class="btn btn-choose w-100 py-3 fw-bold fs-5"
                                             style="background-color: #d96d3c; border-color: #d96d3c; color: white">

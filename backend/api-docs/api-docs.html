@@ -587,8 +587,8 @@ paths:
             "*/*":
               schema:
                 type: object
-  /api/v1/cart/remove/{itemId}:
-    post:
+  /api/v1/cart/items/{itemId}:
+    delete:
       tags:
         - Cart API
       summary: Remove cart item
@@ -608,7 +608,7 @@ paths:
             "*/*":
               schema:
                 $ref: "#/components/schemas/OrderDTO"
-  /api/v1/cart/checkout:
+  /api/v1/cart/payments:
     post:
       tags:
         - Cart API
@@ -628,7 +628,7 @@ paths:
             "*/*":
               schema:
                 type: object
-  /api/v1/cart/add/subscription:
+  /api/v1/cart/subscriptions:
     post:
       tags:
         - Cart API
@@ -644,7 +644,7 @@ paths:
             "*/*":
               schema:
                 $ref: "#/components/schemas/OrderDTO"
-  /api/v1/cart/add/event/{id}:
+  /api/v1/cart/events/{id}:
     post:
       tags:
         - Cart API
@@ -665,7 +665,7 @@ paths:
             "*/*":
               schema:
                 type: object
-  /api/v1/cart/add/course/{id}:
+  /api/v1/cart/courses/{id}:
     post:
       tags:
         - Cart API
