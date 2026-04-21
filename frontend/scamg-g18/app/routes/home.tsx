@@ -1,19 +1,25 @@
-import type { Route } from "./+types/home";
+import Footer from "~/components/Footer";
+import { Outlet } from "react-router";
+import Header from "~/components/Header";
+import { useEffect } from "react";
 
-export function loader() {
-  return { name: "React Router" };
-}
+export default function Home() {
+    useEffect(() => {
+        document.body.classList.add("index-page");
+        return () => {
+            document.body.classList.remove("index-page");
+            document.body.classList.remove("scrolled");
+            document.body.classList.remove("mobile-nav-active");
+        };
+    }, []);
 
-export default function Home({ loaderData }: Route.ComponentProps) {
-  return (
-    <div className="text-center p-4">
-      <h1 className="text-2xl">Hello, {loaderData.name}</h1>
-      <a
-        className="block mt-2 text-blue-500 underline hover:text-blue-600"
-        href="https://reactrouter.com/docs"
-      >
-        React Router Docs
-      </a>
-    </div>
-  );
+    return (
+        <div className="d-flex flex-column min-vh-100">
+            <Header />
+            <main className="flex-grow-1">
+                <Outlet />
+            </main>
+            <Footer />
+        </div>
+    );
 }

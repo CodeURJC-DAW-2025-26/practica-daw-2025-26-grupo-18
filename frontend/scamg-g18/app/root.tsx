@@ -6,10 +6,16 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
+import { useEffect } from "react";
 
 import type { Route } from "./+types/root";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import "./app.css";
+
+export const links: Route.LinksFunction = () => [
+  { rel: "icon", href: "/favicon.ico" },
+];
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -30,7 +36,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  useEffect(() => {
+    void import("~/main");
+  }, []);
+
   return <Outlet />;
+}
+
+export function HydrateFallback() {
+  return (
+    <main className="container py-5 text-center">
+      <p className="mb-0">Cargando aplicacion...</p>
+    </main>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

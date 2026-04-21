@@ -13,6 +13,7 @@
     "@react-router/serve": "7.14.0",
     "axios": "^1.15.0",
     "bootstrap": "^5.3.8",
+    "bootstrap-icons": "^1.13.1",
     "isbot": "^5.1.36",
     "react": "^19.2.4",
     "react-bootstrap": "^2.10.10",
@@ -23,6 +24,7 @@
   },
   "devDependencies": {
     "@react-router/dev": "7.14.0",
+    "@rolldown/binding-win32-x64-msvc": "^1.0.0-rc.15",
     "@tailwindcss/vite": "^4.2.2",
     "@types/node": "^22",
     "@types/react": "^19.2.14",
