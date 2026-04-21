@@ -1,21 +1,33 @@
-import { useEffect } from "react";
-import { Link, NavLink } from "react-router";
+import { useState } from "react";
+import { Link, NavLink, useNavigate } from "react-router";
 import { Container, Dropdown, Navbar } from "react-bootstrap";
 import { useGlobalStore } from "~/stores/globalStore";
+import { logout } from "~/services/authService";
 
 export default function Header() {
+    const navigate = useNavigate();
     const globalData = useGlobalStore().globalData;
-    const fetchGlobalData = useGlobalStore().fetchGlobalData;
-
-    useEffect(() => {
-        void fetchGlobalData();
-    }, [fetchGlobalData]);
+    const clearGlobalData = useGlobalStore().clearGlobalData;
+    const [loggingOut, setLoggingOut] = useState(false);
 
     const isUserLoggedIn = globalData?.isUserLoggedIn ?? false;
     const isAdmin = globalData?.isAdmin ?? false;
     const userId = globalData?.userId;
     const userName = globalData?.userName ?? "Usuario";
-    const userProfileImage = globalData?.userProfileImage ?? "/default_avatar.png";
+    const userProfileImage = globalData?.userProfileImage ?? "/services/default_avatar.png";
+
+    async function handleLogout() {
+        try {
+            setLoggingOut(true);
+            await logout();
+        } catch {
+            // Even when logout fails server-side, clear local auth state to avoid stale UI.
+        } finally {
+            clearGlobalData();
+            setLoggingOut(false);
+            navigate("/new/login", { replace: true });
+        }
+    }
 
     return (
         <Navbar id="header" className="header d-flex align-items-center sticky-top">
@@ -87,11 +99,9 @@ export default function Header() {
                                     <i className="bi bi-person-circle" /> Mi Perfil
                                 </Dropdown.Item>
                                 <Dropdown.Divider />
-                                <form action="/logout" method="post" className="m-0">
-                                    <button type="submit" className="dropdown-item">
-                                        <i className="bi bi-box-arrow-right" /> Logout
-                                    </button>
-                                </form>
+                                <button type="button" className="dropdown-item" onClick={() => void handleLogout()} disabled={loggingOut}>
+                                    <i className="bi bi-box-arrow-right" /> {loggingOut ? "Cerrando..." : "Logout"}
+                                </button>
                             </Dropdown.Menu>
                         </Dropdown>
                     ) : (

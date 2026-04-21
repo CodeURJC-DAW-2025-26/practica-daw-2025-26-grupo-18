@@ -1,14 +1,8 @@
-import { useEffect } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { useGlobalStore } from "~/stores/globalStore";
 
 export default function AppLayout() {
     const globalData = useGlobalStore().globalData;
-    const fetchGlobalData = useGlobalStore().fetchGlobalData;
-
-    useEffect(() => {
-        void fetchGlobalData();
-    }, [fetchGlobalData]);
 
     const isUserLoggedIn = globalData?.isUserLoggedIn ?? false;
     const isPublisher = globalData?.isPublisher ?? false;

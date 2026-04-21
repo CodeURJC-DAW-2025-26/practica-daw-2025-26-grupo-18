@@ -3,14 +3,14 @@ import type { ProfileDTO, ProfileUpdateDTO } from "~/dtos/ProfileDTO";
 const BASE_URL = "/api/v1/profile";
 
 export async function getMyProfileId(): Promise<number> {
-  const res = await fetch(`${BASE_URL}/me`);
+  const res = await fetch(`${BASE_URL}/me`, { credentials: "include" });
   if (!res.ok) throw new Error(`Error fetching current profile id: ${res.status}`);
   const body = (await res.json()) as { userId: number };
   return body.userId;
 }
 
 export async function getProfileById(id: number): Promise<ProfileDTO> {
-  const res = await fetch(`${BASE_URL}/${id}`);
+  const res = await fetch(`${BASE_URL}/${id}`, { credentials: "include" });
   if (!res.ok) throw new Error(`Error fetching profile ${id}: ${res.status}`);
 
   // Backend serializes boolean records like isProfileOwner as profileOwner in JSON.
@@ -50,6 +50,7 @@ export async function updateProfile(
 
     const res = await fetch(`${BASE_URL}/${id}`, {
       method: "PUT",
+      credentials: "include",
       body: formData,
     });
 
@@ -63,6 +64,7 @@ export async function updateProfile(
 
   const res = await fetch(`${BASE_URL}/${id}`, {
     method: "PUT",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },

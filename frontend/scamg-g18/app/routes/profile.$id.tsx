@@ -60,7 +60,7 @@ export default function ProfileRoute() {
   });
 
   const profileImageUrl = useMemo(() => {
-    if (!profile) return "/default_avatar.png";
+    if (!profile) return "/public/services/default_avatar.png";
     return profile.profileImage || getUserProfileImageUrl(profile.id);
   }, [profile]);
 

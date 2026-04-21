@@ -2,6 +2,14 @@ import Footer from "~/components/Footer";
 import { Outlet } from "react-router";
 import Header from "~/components/Header";
 import { useEffect } from "react";
+import { loadGlobalDataIntoStore } from "~/services/globalService";
+
+export async function clientLoader() {
+    await loadGlobalDataIntoStore();
+    return null;
+}
+
+clientLoader.hydrate = true;
 
 export default function Home() {
     useEffect(() => {

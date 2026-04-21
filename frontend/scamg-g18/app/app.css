@@ -60,6 +60,33 @@ body {
     font-family: var(--default-font);
 }
 
+.global-loading-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(66, 40, 35, 0.3);
+    backdrop-filter: blur(2px);
+}
+
+.global-loading-spinner {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 4px solid rgba(255, 255, 255, 0.35);
+    border-top-color: var(--accent-color);
+    animation: global-loading-spin 0.8s linear infinite;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+@keyframes global-loading-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 a {
     color: var(--accent-color);
     text-decoration: none;

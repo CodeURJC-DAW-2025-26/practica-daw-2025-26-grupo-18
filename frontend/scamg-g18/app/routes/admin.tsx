@@ -20,6 +20,14 @@ import type {
   AdminUserDTO,
 } from "~/dtos/AdminDTO";
 import { useGlobalStore } from "~/stores/globalStore";
+import { loadGlobalDataIntoStore } from "~/services/globalService";
+
+export async function clientLoader() {
+  await loadGlobalDataIntoStore();
+  return null;
+}
+
+clientLoader.hydrate = true;
 
 type TabKey = "users" | "courses" | "events" | "orders" | "reviews";
 
@@ -39,7 +47,6 @@ export default function AdminRoute() {
     tabParam === "users" || tabParam === "courses" || tabParam === "events" || tabParam === "orders" || tabParam === "reviews" ? tabParam : "users";
 
   const globalData = useGlobalStore().globalData;
-  const fetchGlobalData = useGlobalStore().fetchGlobalData;
 
   const [error, setError] = useState<string | null>(null);
 
@@ -68,10 +75,6 @@ export default function AdminRoute() {
 
   const [reviews, setReviews] = useState<AdminReviewDTO[]>([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
-
-  useEffect(() => {
-    void fetchGlobalData();
-  }, [fetchGlobalData]);
 
   const isAdmin = globalData?.isAdmin ?? false;
 
