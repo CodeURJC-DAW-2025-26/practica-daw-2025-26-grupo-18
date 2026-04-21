@@ -1,6 +1,27 @@
-import { useState } from "react";
-import { Form, Button, Row, Col, InputGroup, Card } from "react-bootstrap";
+import { useState, useEffect, useRef } from "react";
+import { Form, Button, Row, Col, InputGroup, Card, ListGroup } from "react-bootstrap";
 import type { EventDTO } from "~/dtos/EventDTO";
+
+// Helper para cargar scripts externos
+async function loadExternalScript(src: string, id: string): Promise<void> {
+  return new Promise((resolve) => {
+    if (document.getElementById(id)) return resolve();
+    const script = document.createElement("script");
+    script.src = src;
+    script.id = id;
+    script.onload = () => resolve();
+    document.head.appendChild(script);
+  });
+}
+
+async function loadExternalStyle(href: string, id: string): Promise<void> {
+  if (document.getElementById(id)) return;
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = href;
+  link.id = id;
+  document.head.appendChild(link);
+}
 
 interface EventFormProps {
   initialData?: Partial<EventDTO>;
@@ -22,6 +43,8 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
     locationAddress: initialData?.locationAddress || "",
     locationCity: initialData?.locationCity || "Madrid",
     locationCountry: initialData?.locationCountry || "España",
+    locationLatitude: initialData?.locationLatitude || 40.4168,
+    locationLongitude: initialData?.locationLongitude || -3.7038,
     startDateStr: initialData?.startDateStr || "",
     startTimeStr: initialData?.startTimeStr || "",
     endDateStr: initialData?.endDateStr || "",
@@ -32,6 +55,89 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
     sessionDescriptions: initialData?.sessionDescriptions || [""],
   });
   const [imageFile, setImageFile] = useState<File | undefined>();
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const mapRef = useRef<any>(null);
+  const markerRef = useRef<any>(null);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    async function initLeaflet() {
+      await loadExternalStyle("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css", "leaflet-css");
+      await loadExternalScript("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js", "leaflet-js");
+      
+      const L = (window as any).L;
+      if (!L || !mapContainerRef.current) return;
+
+      if (!mapRef.current) {
+        mapRef.current = L.map(mapContainerRef.current).setView([formData.locationLatitude || 40.4168, formData.locationLongitude || -3.7038], 15);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: "&copy; OpenStreetMap contributors",
+        }).addTo(mapRef.current);
+        markerRef.current = L.marker([formData.locationLatitude || 40.4168, formData.locationLongitude || -3.7038]).addTo(mapRef.current);
+      }
+    }
+    initLeaflet();
+  }, []);
+
+  const updateMap = (lat: number, lon: number) => {
+    const L = (window as any).L;
+    if (mapRef.current && L) {
+      const pos = [lat, lon];
+      mapRef.current.setView(pos, 15);
+      if (markerRef.current) {
+        markerRef.current.setLatLng(pos);
+      } else {
+        markerRef.current = L.marker(pos).addTo(mapRef.current);
+      }
+    }
+  };
+
+  const handleLocationSearch = (query: string) => {
+    setFormData(prev => ({ ...prev, locationName: query }));
+    
+    if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    
+    if (query.length < 3) {
+      setSearchResults([]);
+      return;
+    }
+
+    searchTimeoutRef.current = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const res = await fetch(`/api/location-search?q=${encodeURIComponent(query)}`);
+        if (res.ok) {
+          const data = await res.json();
+          setSearchResults(data);
+        }
+      } catch (err) {
+        console.error("Error searching location:", err);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 500);
+  };
+
+  const selectLocation = (result: any) => {
+    const address = result.address || {};
+    const newLat = parseFloat(result.lat);
+    const newLon = parseFloat(result.lon);
+    
+    setFormData(prev => ({
+      ...prev,
+      locationName: result.display_name.split(",")[0],
+      locationAddress: address.road || address.pedestrian || result.display_name,
+      locationCity: address.city || address.town || address.village || "",
+      locationCountry: address.country || "",
+      locationLatitude: newLat,
+      locationLongitude: newLon,
+    }));
+    
+    setSearchResults([]);
+    updateMap(newLat, newLon);
+  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     const form = event.currentTarget;
@@ -195,7 +301,7 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
               <h5 className="mb-0 fw-bold">Ubicación</h5>
             </Card.Header>
             <Card.Body className="pt-0">
-               <Form.Group className="mb-3">
+               <Form.Group className="mb-3 position-relative">
                   <Form.Label className="fw-medium small text-muted">Lugar / Nombre</Form.Label>
                   <InputGroup className="shadow-sm rounded-3 overflow-hidden border">
                     <InputGroup.Text className="bg-white border-0"><i className="bi bi-geo-alt text-muted"></i></InputGroup.Text>
@@ -203,27 +309,48 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
                         required 
                         name="locationName" 
                         value={formData.locationName} 
-                        onChange={handleInputChange} 
+                        onChange={(e) => handleLocationSearch(e.target.value)} 
                         placeholder="Nombre del lugar"
                         className="border-0 shadow-none py-2"
+                        autoComplete="off"
                     />
                   </InputGroup>
+                  
+                  {searchResults.length > 0 && (
+                    <ListGroup className="position-absolute w-100 shadow-lg z-3 mt-1" style={{ maxHeight: "200px", overflowY: "auto" }}>
+                      {searchResults.map((res, idx) => (
+                        <ListGroup.Item 
+                          key={idx} 
+                          action 
+                          onClick={() => selectLocation(res)}
+                          className="small py-2 border-0 border-bottom"
+                        >
+                          {res.display_name}
+                        </ListGroup.Item>
+                      ))}
+                    </ListGroup>
+                  )}
+                  {isSearching && (
+                    <div className="position-absolute end-0 top-50 translate-middle-y me-3 z-3">
+                      <div className="spinner-border spinner-border-sm" style={{ color: "var(--accent-color)" }} role="status"></div>
+                    </div>
+                  )}
                </Form.Group>
 
-               <Form.Group className="mb-3">
-                  <Form.Label className="fw-medium small text-muted">Dirección Completa</Form.Label>
-                  <Form.Control 
-                    required 
-                    name="locationAddress" 
-                    value={formData.locationAddress} 
-                    onChange={handleInputChange} 
-                    placeholder="Calle, número, etc."
-                    className="rounded-3 shadow-none border"
-                  />
-               </Form.Group>
+               <Row className="g-3">
+                 <Col lg={5}>
+                    <Form.Group className="mb-3">
+                        <Form.Label className="fw-medium small text-muted">Dirección Completa</Form.Label>
+                        <Form.Control 
+                          required 
+                          name="locationAddress" 
+                          value={formData.locationAddress} 
+                          onChange={handleInputChange} 
+                          placeholder="Calle, número, etc."
+                          className="rounded-3 shadow-none border"
+                        />
+                    </Form.Group>
 
-               <Row>
-                  <Col md={6}>
                     <Form.Group className="mb-3">
                         <Form.Label className="fw-medium small text-muted">Ciudad</Form.Label>
                         <Form.Control 
@@ -235,8 +362,7 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
                             className="rounded-3 shadow-none border"
                         />
                     </Form.Group>
-                  </Col>
-                  <Col md={6}>
+
                     <Form.Group className="mb-3">
                         <Form.Label className="fw-medium small text-muted">País</Form.Label>
                         <Form.Control 
@@ -248,7 +374,12 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
                             className="rounded-3 shadow-none border"
                         />
                     </Form.Group>
-                  </Col>
+                 </Col>
+                 <Col lg={7}>
+                    <div className="rounded-3 overflow-hidden border shadow-sm h-100" style={{ minHeight: "220px" }}>
+                       <div ref={mapContainerRef} style={{ height: "100%", width: "100%", minHeight: "220px" }}></div>
+                    </div>
+                 </Col>
                </Row>
             </Card.Body>
           </Card>

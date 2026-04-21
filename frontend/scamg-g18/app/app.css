@@ -60,6 +60,75 @@ body {
     font-family: var(--default-font);
 }
 
+/* Stats Modern Styles from course.html */
+.stats-modern-wrap {
+    max-width: 430px;
+}
+
+.stats-modern-title {
+    text-align: center;
+    color: #6c757d;
+    font-weight: 700;
+}
+
+.stats-modern-card {
+    border: 0;
+    border-radius: 16px;
+    box-shadow: 0 12px 28px rgba(16, 24, 40, 0.08);
+    background: linear-gradient(180deg, rgba(217, 109, 60, 0.08) 0%, rgba(255, 255, 255, 1) 52%);
+    overflow: hidden;
+}
+
+.stats-modern-card .card-body {
+    padding: 0.75rem 0.75rem 1.2rem;
+}
+
+.stats-modern-frame {
+    position: relative;
+    height: 210px;
+    width: 100%;
+    border-radius: 12px;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+}
+
+.stats-modern-indicators {
+    bottom: -16px;
+}
+
+.stats-modern-indicators button {
+    width: 18px !important;
+    height: 4px !important;
+    border-radius: 999px;
+    opacity: 0.35;
+    background-color: #98a2b3 !important;
+}
+
+.stats-modern-indicators .active {
+    opacity: 1;
+    background-color: var(--accent-color) !important;
+}
+
+.stats-modern-control {
+    width: 11% !important;
+}
+
+.stats-modern-control .carousel-control-prev-icon,
+.stats-modern-control .carousel-control-next-icon {
+    background-color: rgba(0, 0, 0, 0.55);
+    border-radius: 999px;
+    padding: 0.95rem;
+    background-size: 55% 55%;
+    opacity: 0.75;
+    transform: none !important;
+}
+
+.stats-modern-control:hover .carousel-control-prev-icon,
+.stats-modern-control:hover .carousel-control-next-icon {
+    opacity: 1;
+}
+
 .global-loading-overlay {
     position: fixed;
     inset: 0;
