@@ -3,13 +3,14 @@ import { useNavigate, useLoaderData } from "react-router";
 import EventForm from "~/components/EventForm";
 import { getEventById, updateEvent } from "~/services/eventService";
 import type { EventDTO } from "~/dtos/EventDTO";
-import type { ClientLoaderArgs } from "react-router";
+import type { LoaderFunctionArgs } from "react-router";
 
-export async function clientLoader({ params }: ClientLoaderArgs) {
+export async function clientLoader({ params }: LoaderFunctionArgs) {
   const id = Number(params.id);
   const event = await getEventById(id);
   return { event: event as unknown as EventDTO };
 }
+clientLoader.hydrate = true;
 
 import { Link } from "react-router";
 

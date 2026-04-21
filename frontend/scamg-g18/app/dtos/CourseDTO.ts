@@ -4,6 +4,7 @@ export interface LessonDTO {
   videoUrl: string;
   description: string;
   orderIndex: number;
+  completed?: boolean;
 }
 
 export interface ModuleDTO {
@@ -12,6 +13,7 @@ export interface ModuleDTO {
   description: string;
   orderIndex: number;
   lessons: LessonDTO[];
+  first?: boolean;
 }
 
 export interface CourseDTO {
@@ -25,7 +27,34 @@ export interface CourseDTO {
   downloadableResources: number;
   learningPoints: string[];
   prerequisites: string[];
-  modules: ModuleDTO[];
   status: 'DRAFT' | 'PENDING_REVIEW' | 'PUBLISHED' | 'ARCHIVED';
   language: string;
+  updatedAt?: string;
+  subscribersNumber?: number;
+  creator?: {
+    id: number;
+    username: string;
+    shortDescription: string;
+    currentGoal: string;
+    comunity: string;
+    otherCourses: { id: number; title: string }[];
+  };
+  image?: {
+    url: string;
+  };
+}
+
+export interface CourseDetailDTO {
+  course: CourseDTO;
+  modules: ModuleDTO[];
+  reviews: any[];
+  priceInEuros: string;
+  averageRating: string;
+  ratingCount: number;
+  reviewsNumber: number;
+  averageRatingStars: string;
+  hasSubscribers: boolean;
+  courseProgressPercentage: number;
+  isSuscribedToCourse: boolean;
+  canEdit: boolean;
 }

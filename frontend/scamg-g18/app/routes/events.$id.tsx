@@ -1,24 +1,86 @@
-import { Container, Row, Col, Badge, Card, ListGroup, Button } from "react-bootstrap";
+import { Container, Row, Col, Badge, Tab, Nav, Button } from "react-bootstrap";
 import { useLoaderData, useNavigate, Link } from "react-router";
 import { getEventById } from "~/services/eventService";
 import { addEventToCart } from "~/services/cartService";
 import { getEventImageUrl } from "~/utils/imageUrls";
 import { useGlobalStore } from "~/stores/globalStore";
-import type { ClientLoaderArgs } from "react-router";
+import type { LoaderFunctionArgs } from "react-router";
+import type { EventDTO } from "~/dtos/EventDTO";
+import { useEffect, useRef } from "react";
 
-export async function clientLoader({ params }: ClientLoaderArgs) {
+// Helper para cargar scripts externos como hacía el main.js original
+async function loadExternalScript(src: string, id: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (document.getElementById(id)) return resolve();
+    const script = document.createElement("script");
+    script.src = src;
+    script.id = id;
+    script.onload = () => resolve();
+    script.onerror = () => reject();
+    document.head.appendChild(script);
+  });
+}
+
+async function loadExternalStyle(href: string, id: string): Promise<void> {
+  if (document.getElementById(id)) return;
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = href;
+  link.id = id;
+  document.head.appendChild(link);
+}
+
+export async function clientLoader({ params }: LoaderFunctionArgs) {
   const id = Number(params.id);
   if (isNaN(id)) throw new Error("ID de evento no válido");
   const event = await getEventById(id);
-  return { event };
+  return { event: event as EventDTO };
 }
+clientLoader.hydrate = true;
 
 export default function EventDetail() {
   const { event } = useLoaderData<typeof clientLoader>();
   const navigate = useNavigate();
+  const mapInitialized = useRef(false);
 
-  const isPurchased = (event as any).isPurchased;
-  const isOwner = (event as any).isOwner;
+  useEffect(() => {
+    if (mapInitialized.current || !event.locationLatitude || !event.locationLongitude) return;
+
+    async function initMap() {
+      try {
+        await loadExternalStyle("https://unpkg.com/leaflet@1.9.4/dist/leaflet.css", "leaflet-css");
+        await loadExternalScript("https://unpkg.com/leaflet@1.9.4/dist/leaflet.js", "leaflet-js");
+
+        const L = (window as any).L;
+        if (!L) return;
+
+        const mapContainer = document.getElementById("map");
+        if (!mapContainer) return;
+
+        mapContainer.innerHTML = ""; // Limpiar el placeholder
+        const map = L.map("map").setView([event.locationLatitude, event.locationLongitude], 13);
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        L.marker([event.locationLatitude, event.locationLongitude])
+          .addTo(map)
+          .bindPopup(event.locationName || "Ubicación del evento")
+          .openPopup();
+        
+        mapInitialized.current = true;
+      } catch (error) {
+        console.error("Error al cargar el mapa:", error);
+      }
+    }
+
+    initMap();
+  }, [event]);
+
+  const isPurchased = event.alreadyPurchased;
+  const isOwner = event.canEdit;
+  const canDelete = event.canDelete;
 
   const handleAddToCart = async () => {
     try {
@@ -31,170 +93,194 @@ export default function EventDetail() {
 
   return (
     <main className="main">
-      {/* Page Title & Breadcrumbs */}
-      <div className="page-title light-background mb-0">
+      {/* Page Title */}
+      <div className="page-title light-background">
         <Container>
-          <nav className="breadcrumbs mb-4">
-            <ol className="list-unstyled d-flex gap-2 m-0 p-0 small">
+          <nav className="breadcrumbs">
+            <ol>
               <li><Link to="/new">Inicio</Link></li>
               <li><Link to="/new/events">Eventos</Link></li>
-              <li className="current text-muted">{event.title}</li>
+              <li className="current">{event.title}</li>
             </ol>
           </nav>
         </Container>
       </div>
 
-      <section id="service-details" className="service-details section pt-4 pb-5">
-        <Container data-aos="fade-up">
+      {/* Event Details Section */}
+      <section id="service-details" className="service-details section">
+        <Container data-aos="fade-up" data-aos-delay="100">
           <Row className="gy-5">
-            {/* Main Content */}
             <Col lg={8} className="order-lg-1 order-2">
               <div className="service-main-content">
-                <div className="d-flex justify-content-end mb-3 gap-2">
+                <div className="d-flex justify-content-end mb-2 gap-2">
                   {isOwner && (
-                    <Link to={`/new/events/${event.id}/edit`} className="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                    <Link to={`/new/events/${event.id}/edit`} className="btn btn-outline-secondary btn-sm">
                       <i className="bi bi-pencil me-1"></i> Editar evento
                     </Link>
                   )}
-                </div>
-
-                <div className="service-header mb-5">
-                  <h1 className="display-5 fw-bold text-dark mb-3">{event.title}</h1>
-                  <div className="service-meta d-flex flex-wrap gap-4 text-secondary small opacity-90 mb-4 pb-4 border-bottom">
-                    <span><i className="bi bi-calendar-event me-2" style={{ color: "var(--accent-color)" }}></i> {event.startDateStr}</span>
-                    <span><i className="bi bi-clock me-2" style={{ color: "var(--accent-color)" }}></i> {event.startTimeStr} - {event.endTimeStr}</span>
-                    <span><i className="bi bi-geo-alt me-2" style={{ color: "var(--accent-color)" }}></i>
-                      {event.locationName ?? "Online"}
-                    </span>
-                    <span><i className="bi bi-people me-2" style={{ color: "var(--accent-color)" }}></i> {(event as any).attendeesCount || 0} / {event.capacity} plazas ocupadas</span>
-                  </div>
-                  <p className="lead text-muted" style={{ lineHeight: "1.7" }}>{event.description}</p>
-                </div>
-
-                {/* Info Blocks / Tabs Alternative */}
-                <div className="mb-5">
-                  <h3 className="h4 fw-bold mb-4 border-start border-4 ps-3" style={{ borderColor: "var(--accent-color) !important" }}>Sobre este evento</h3>
-                  <div className="row align-items-center gy-4">
-                    <Col md={6}>
-                      <p className="text-secondary mb-0">{event.description}</p>
-                    </Col>
-                    <Col md={6}>
-                      <img src={getEventImageUrl(event.id)} alt={event.title} className="img-fluid rounded-4 shadow-sm border" />
-                    </Col>
-                  </div>
-                </div>
-
-                {/* Agenda */}
-                <div className="mb-5 py-4 border-top">
-                  <h3 className="h4 fw-bold mb-4"><i className="bi bi-diagram-3 me-2" style={{ color: "var(--accent-color)" }}></i>Agenda</h3>
-                  <div className="process-timeline border-start ms-2 ps-4 position-relative">
-                    {event.sessionTitles?.map((title: string, idx: number) => (
-                      <div key={idx} className="timeline-item mb-4 position-relative">
-                        <div className="timeline-marker position-absolute start-0 translate-middle-x bg-white border border-4 rounded-circle"
-                          style={{ width: "16px", height: "16px", left: "-25px", borderColor: "var(--accent-color) !important", top: "10px" }}></div>
-                        <div className="fw-bold text-accent mb-1" style={{ color: "var(--accent-color)" }}>{event.sessionTimes?.[idx] || "--:--"}</div>
-                        <h4 className="h5 fw-bold mb-1">{title}</h4>
-                        <p className="text-muted small mb-0">{event.sessionDescriptions?.[idx]}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Speakers */}
-                <div className="mb-5 py-4 border-top">
-                  <h3 className="h4 fw-bold mb-4"><i className="bi bi-mic me-2" style={{ color: "var(--accent-color)" }}></i>Ponentes</h3>
-                  <Row className="g-4">
-                    {event.speakerNames?.map((name: string, idx: number) => (
-                      <Col md={4} key={idx}>
-                        <div className="benefit-card p-4 border rounded-4 text-center h-100 shadow-sm bg-white">
-                          <div className="benefit-icon mb-3">
-                            <i className="bi bi-person-circle display-4 text-accent opacity-50" style={{ color: "var(--accent-color)" }}></i>
-                          </div>
-                          <h4 className="h6 fw-bold mb-1">Ponente</h4>
-                          <p className="text-muted small mb-0">{name}</p>
-                        </div>
-                      </Col>
-                    ))}
-                  </Row>
-                </div>
-
-                {/* Ubicación */}
-                <div className="mb-5 py-4 border-top">
-                  <h3 className="h4 fw-bold mb-4"><i className="bi bi-geo-alt me-2" style={{ color: "var(--accent-color)" }}></i>Ubicación</h3>
-                  <div className="card border-0 shadow-sm overflow-hidden bg-light rounded-4">
-                    <Row className="g-0 align-items-center">
-                      <Col lg={5} className="p-4 p-md-5">
-                        <h3 className="h5 fw-bold mb-3">{event.locationName || "Ubicación del evento"}</h3>
-                        <p className="mb-1 text-muted">{event.locationAddress}</p>
-                        <p className="mb-0 text-muted">{event.locationCity}, {event.locationCountry}</p>
-                      </Col>
-                      <Col lg={7} className="bg-secondary opacity-25 d-flex align-items-center justify-content-center" style={{ minHeight: "250px" }}>
-                        <i className="bi bi-map display-1 text-white"></i>
-                      </Col>
-                    </Row>
-                  </div>
-                </div>
-              </div>
-            </Col>
-
-            {/* Sidebar */}
-            <Col lg={4} className="order-lg-2 order-1">
-              <aside className="service-sidebar sticky-top" style={{ top: "100px", zIndex: 10 }}>
-                <div className="action-card p-4 bg-white rounded-4 shadow-lg border-0 mb-4 overflow-hidden position-relative">
-                  <div className="position-absolute top-0 end-0" style={{ opacity: 0.05, transform: "translate(20%, -20%)" }}>
-                    <i className="bi bi-ticket-perforated" style={{ fontSize: "10rem" }}></i>
-                  </div>
-                  <h3 className="h4 fw-bold mb-3">Reserva tu plaza</h3>
-                  <p className="text-secondary small mb-4">Únete a nosotros en este evento único y accede a contenido exclusivo.</p>
-
-                  {isPurchased ? (
-                    <div className="alert alert-success d-flex align-items-center rounded-3 py-3 mb-0 border-0" style={{ backgroundColor: "#e6f4ea", color: "#1e8e3e" }}>
-                      <i className="bi bi-check-circle-fill me-3 fs-3"></i>
-                      <div>
-                        <p className="fw-bold mb-0">¡Plaza Reservada!</p>
-                        <p className="small mb-0">Ya tienes tu entrada para este evento.</p>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="price-tag h1 fw-bold text-dark mb-4 d-flex align-items-center">
-                        {event.priceEuros} <span className="h4 fw-normal text-muted mb-0 ms-1">€</span>
-                      </div>
-                      <Button
-                        onClick={handleAddToCart}
-                        className="btn-primary w-100 py-3 fw-bold fs-5 border-0 rounded-3 shadow-sm"
-                        style={{ background: "#d96d3c", color: "white" }}
-                      >
-                        Comprar entrada
-                      </Button>
-                      <p className="mt-3 mb-0 text-center text-muted small">
-                        Plazas disponibles: <strong>{event.capacity - ((event as any).attendeesCount || 0)}</strong>
-                      </p>
-                      <div className="guarantee mt-4 pt-3 border-top d-flex align-items-center justify-content-center gap-2 small text-muted">
-                        <i className="bi bi-shield-check text-accent" style={{ color: "var(--accent-color)" }}></i>
-                        Confirmación inmediata por email
-                      </div>
-                    </>
+                  {canDelete && (
+                    <button className="btn btn-outline-danger btn-sm"
+                      onClick={() => { if (confirm('¿Estás seguro de eliminar este evento?')) { /* Lógica de borrado */ } }}>
+                      <i className="bi bi-trash me-1"></i> Eliminar evento
+                    </button>
                   )}
                 </div>
 
-                <div className="service-features-list p-4 bg-white rounded-4 shadow-sm border-0 mb-4">
-                  <h4 className="h6 fw-bold text-uppercase text-muted mb-4 border-bottom pb-2">Detalles clave</h4>
-                  <ul className="list-unstyled mb-0 d-grid gap-4">
-                    <li className="d-flex align-items-start gap-3">
-                      <i className="bi bi-broadcast fs-4" style={{ color: "var(--accent-color)" }}></i>
+                <div className="service-header" data-aos="fade-up">
+                  <h1>{event.title}</h1>
+                  <div className="service-meta">
+                    <span><i className="bi bi-calendar-event"></i> {event.formattedDate}</span>
+                    <span><i className="bi bi-clock"></i> {event.formattedTime}</span>
+                    <span><i className="bi bi-geo-alt"></i> {event.locationName === 'Online' ? 'Online' : `${event.locationAddress}, ${event.locationCity}, ${event.locationCountry}`}</span>
+                    <span><i className="bi bi-people"></i> {event.attendeesCount} / {event.capacity} plazas ocupadas</span>
+                  </div>
+                  <p className="lead">{event.description}</p>
+                </div>
+
+                <div className="service-tabs" data-aos="fade-up" data-aos-delay="200">
+                  <Tab.Container defaultActiveKey="overview">
+                    <Nav variant="tabs" id="eventTab" className="mb-3">
+                      <Nav.Item>
+                        <Nav.Link eventKey="overview">
+                          <i className="bi bi-info-circle"></i> Resumen
+                        </Nav.Link>
+                      </Nav.Item>
+                      <Nav.Item>
+                        <Nav.Link eventKey="agenda">
+                          <i className="bi bi-diagram-3"></i> Agenda
+                        </Nav.Link>
+                      </Nav.Item>
+                      <Nav.Item>
+                        <Nav.Link eventKey="speakers">
+                          <i className="bi bi-mic"></i> Ponentes
+                        </Nav.Link>
+                      </Nav.Item>
+                    </Nav>
+
+                    <Tab.Content>
+                      <Tab.Pane eventKey="overview">
+                        <Row>
+                          <Col md={6}>
+                            <div className="content-block">
+                              <h3>Sobre este evento</h3>
+                              <p>{event.description}</p>
+                            </div>
+                          </Col>
+                          <Col md={6}>
+                            <img src={getEventImageUrl(event.id)} alt={event.title} className="img-fluid rounded" />
+                          </Col>
+                        </Row>
+                      </Tab.Pane>
+
+                      <Tab.Pane eventKey="agenda">
+                        <div className="process-timeline">
+                          {event.sessions && event.sessions.length > 0 ? (
+                            event.sessions.map((session, idx) => (
+                              <div key={idx} className="timeline-item">
+                                <div className="timeline-marker">{session.time}</div>
+                                <div className="timeline-content">
+                                  <h4>{session.title}</h4>
+                                  <p>{session.description}</p>
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <p>Agenda no disponible.</p>
+                          )}
+                        </div>
+                      </Tab.Pane>
+
+                      <Tab.Pane eventKey="speakers">
+                        <Row className="g-4">
+                          {event.speakers && event.speakers.length > 0 ? (
+                            event.speakers.map((name, idx) => (
+                              <Col md={6} key={idx}>
+                                <div className="benefit-card">
+                                  <div className="benefit-icon">
+                                    <i className="bi bi-person-circle"></i>
+                                  </div>
+                                  <h4>Ponente</h4>
+                                  <p>{name}</p>
+                                </div>
+                              </Col>
+                            ))
+                          ) : (
+                            <p>Ponentes por confirmar.</p>
+                          )}
+                        </Row>
+                      </Tab.Pane>
+                    </Tab.Content>
+                  </Tab.Container>
+                </div>
+
+                {event.locationName !== 'Online' && (
+                  <div className="service-gallery" data-aos="fade-up" data-aos-delay="300">
+                    <h3>Ubicación del evento</h3>
+                    <Row className="g-4 align-items-center">
+                      <Col lg={5}>
+                        <div className="content-block">
+                          <h3>{event.locationName}</h3>
+                          <p className="mb-2">{event.locationAddress}</p>
+                          <p className="mb-2">{event.locationCity}, {event.locationCountry}</p>
+                        </div>
+                      </Col>
+                      <Col lg={7}>
+                        {/* Placeholder para el mapa de Leaflet */}
+                        <div id="map" style={{ height: "300px", background: "#eee", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <i className="bi bi-map display-4 text-muted"></i>
+                        </div>
+                      </Col>
+                    </Row>
+                  </div>
+                )}
+              </div>
+            </Col>
+
+            <Col lg={4} className="order-lg-2 order-1">
+              <aside className="service-sidebar" data-aos="fade-up" data-aos-delay="200">
+                <div className="action-card">
+                  <h3>Reserva tu plaza</h3>
+                  <p>Acceso completo al evento.</p>
+
+                  {isPurchased ? (
+                    <div className="purchase-status purchase-status-success" role="status">
+                      <i className="bi bi-check-circle-fill"></i>
+                      <span>Ya has comprado la entrada para este evento.</span>
+                    </div>
+                  ) : (
+                    <>
+                      {/* Lógica de Sold Out simplificada */}
+                      <Button
+                        onClick={handleAddToCart}
+                        className="btn-primary w-100"
+                        style={{ border: "none" }}
+                      >
+                        Comprar entrada · {event.priceEuros} €
+                      </Button>
+                    </>
+                  )}
+
+                  <p className="mt-2 mb-0"><small>Plazas disponibles: {event.capacity - (event.attendeesCount || 0)}</small></p>
+                  <span className="guarantee"><i className="bi bi-shield-check"></i> Confirmación inmediata por email</span>
+                </div>
+
+                <div className="service-features-list">
+                  <h4>Detalles clave</h4>
+                  <ul>
+                    <li>
+                      <i className="bi bi-broadcast"></i>
                       <div>
-                        <h5 className="h6 fw-bold mb-1">Formato</h5>
-                        <p className="text-muted small mb-0">{event.locationName || "Presencial"}</p>
+                        <h5>Formato</h5>
+                        <p>{event.locationName}</p>
                       </div>
                     </li>
-                    <li className="d-flex align-items-start gap-3">
-                      <i className="bi bi-tags fs-4" style={{ color: "var(--accent-color)" }}></i>
+                    <li>
+                      <i className="bi bi-tags"></i>
                       <div>
-                        <h5 className="h6 fw-bold mb-1">Categoría</h5>
-                        <div className="d-flex flex-wrap gap-1 mt-1">
+                        <h5>Categoría</h5>
+                        <div className="d-flex flex-wrap gap-1">
                           {event.tags?.map((tag: any) => (
-                            <span key={tag.name} className="badge bg-light text-dark fw-normal border">{tag.name}</span>
+                            <span key={tag.name} className="badge bg-light text-dark">{tag.name}</span>
                           ))}
                         </div>
                       </div>
@@ -202,20 +288,20 @@ export default function EventDetail() {
                   </ul>
                 </div>
 
-                <div className="contact-info p-4 bg-white rounded-4 shadow-sm border-0" style={{ background: "linear-gradient(135deg, #ffffff 0%, #fef8f5 100%)" }}>
-                  <h4 className="h6 fw-bold text-uppercase text-muted mb-4 border-bottom pb-2">Organización</h4>
-                  <div className="contact-method d-flex align-items-center gap-3 mb-3">
-                    <i className="bi bi-envelope fs-5 text-accent" style={{ color: "var(--accent-color)" }}></i>
+                <div className="contact-info">
+                  <h4>Organización</h4>
+                  <div className="contact-method">
+                    <i className="bi bi-envelope"></i>
                     <div>
-                      <span className="text-muted extra-small d-block fw-bold text-uppercase">Email</span>
-                      <p className="mb-0 small fw-medium">eventos@scam.com</p>
+                      <span>Email</span>
+                      <p>eventos@scam.com</p>
                     </div>
                   </div>
-                  <div className="contact-method d-flex align-items-center gap-3">
-                    <i className="bi bi-telephone fs-5 text-accent" style={{ color: "var(--accent-color)" }}></i>
+                  <div className="contact-method">
+                    <i className="bi bi-telephone"></i>
                     <div>
-                      <span className="text-muted extra-small d-block fw-bold text-uppercase">Teléfono</span>
-                      <p className="mb-0 small fw-medium">+34 91 123 45 67</p>
+                      <span>Teléfono</span>
+                      <p>+34 91 123 45 67</p>
                     </div>
                   </div>
                 </div>

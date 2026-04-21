@@ -4,12 +4,12 @@ export interface EventDTO {
   description: string;
   price: number;
   priceCents: number;
-  startDate: string;
-  endDate: string;
-  startDateStr: string;
-  startTimeStr: string;
-  endDateStr: string;
-  endTimeStr: string;
+  startDate?: string;
+  endDate?: string;
+  startDateStr?: string;
+  startTimeStr?: string;
+  endDateStr?: string;
+  endTimeStr?: string;
   capacity: number;
   category: string;
   locationName: string;
@@ -18,9 +18,28 @@ export interface EventDTO {
   locationCountry: string;
   locationLatitude: number;
   locationLongitude: number;
-  speakerNames: string[];
-  sessionTimes: string[];
-  sessionTitles: string[];
-  sessionDescriptions: string[];
   status: 'DRAFT' | 'PENDING_REVIEW' | 'PUBLISHED' | 'ARCHIVED';
+
+  // Campos que vienen del backend en la vista detalle (GET)
+  speakers?: string[];
+  sessions?: {
+    id?: number;
+    time: string;
+    title: string;
+    description: string;
+  }[];
+  alreadyPurchased?: boolean;
+  canEdit?: boolean;
+  canDelete?: boolean;
+  formattedDate?: string;
+  formattedTime?: string;
+  attendeesCount?: number;
+  priceEuros?: string;
+  tags?: { name: string }[];
+
+  // Campos para CREACIÓN/EDICIÓN (POST/PUT)
+  speakerNames?: string[];
+  sessionTimes?: string[];
+  sessionTitles?: string[];
+  sessionDescriptions?: string[];
 }
