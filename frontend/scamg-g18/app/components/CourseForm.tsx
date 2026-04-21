@@ -1,10 +1,10 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Form, Button, Row, Col, InputGroup, Card } from "react-bootstrap";
 import type { CourseDTO, ModuleDTO, LessonDTO } from "~/dtos/CourseDTO";
 
 interface CourseFormProps {
   initialData?: Partial<CourseDTO>;
-  onSubmit: (data: CourseDTO, imageFile?: File) => void;
+  onSubmit: (data: any, imageFile?: File) => void;
   isSubmitting?: boolean;
 }
 
@@ -24,6 +24,9 @@ export default function CourseForm({ initialData, onSubmit, isSubmitting }: Cour
     prerequisites: initialData?.prerequisites || [""],
     modules: initialData?.modules || [],
   });
+  const [tagsString, setTagsString] = useState<string>(
+    initialData?.tags?.map(t => t.name).join(", ") || ""
+  );
   const [imageFile, setImageFile] = useState<File | undefined>();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -36,7 +39,8 @@ export default function CourseForm({ initialData, onSubmit, isSubmitting }: Cour
       return;
     }
 
-    onSubmit(formData as CourseDTO, imageFile);
+    const tagNames = tagsString.split(",").map(t => t.trim()).filter(t => t !== "");
+    onSubmit({ ...formData, tagNames } as any, imageFile);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -435,6 +439,18 @@ export default function CourseForm({ initialData, onSubmit, isSubmitting }: Cour
                   onChange={handleInputChange}
                   className="rounded-3 shadow-none border py-2"
                 />
+              </Form.Group>
+
+              <Form.Group className="mb-4">
+                <Form.Label className="fw-medium small text-muted">Etiquetas (separadas por comas)</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Ej: IA, React, Programación"
+                  value={tagsString}
+                  onChange={(e) => setTagsString(e.target.value)}
+                  className="rounded-3 shadow-none border py-2"
+                />
+                <Form.Text className="text-muted small">Ayudan a los usuarios a encontrar tu curso.</Form.Text>
               </Form.Group>
 
               <hr className="mb-4 opacity-10" />

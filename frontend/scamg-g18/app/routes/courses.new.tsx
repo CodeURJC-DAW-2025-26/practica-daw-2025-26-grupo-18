@@ -9,9 +9,9 @@ import { Link } from "react-router";
 export default function NewCourse() {
   const navigate = useNavigate();
 
-  const handleSubmit = async (data: CourseDTO, imageFile?: File) => {
+  const handleSubmit = async (data: any, imageFile?: File) => {
     try {
-      const newCourse = await createCourse(data, [], imageFile);
+      const newCourse = await createCourse(data, data.tagNames || [], imageFile);
       navigate(`/new/courses/${newCourse.id}`);
     } catch (error) {
       console.error(error);

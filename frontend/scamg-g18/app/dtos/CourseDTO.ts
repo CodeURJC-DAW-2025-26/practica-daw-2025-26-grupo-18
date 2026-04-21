@@ -42,6 +42,9 @@ export interface CourseDTO {
   image?: {
     url: string;
   };
+  tags?: { id: number; name: string }[];
+  tagNames?: string[];
+  modules?: ModuleDTO[];
 }
 
 export interface CourseDetailDTO {
@@ -55,6 +58,6 @@ export interface CourseDetailDTO {
   averageRatingStars: string;
   hasSubscribers: boolean;
   courseProgressPercentage: number;
-  isSuscribedToCourse: boolean;
+  isSubscribedToCourse: boolean;
   canEdit: boolean;
 }
