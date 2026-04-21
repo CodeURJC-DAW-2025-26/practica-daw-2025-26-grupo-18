@@ -4,6 +4,8 @@ import CourseForm from "~/components/CourseForm";
 import { createCourse } from "~/services/courseService";
 import type { CourseDTO } from "~/dtos/CourseDTO";
 
+import { Link } from "react-router";
+
 export default function NewCourse() {
   const navigate = useNavigate();
 
@@ -18,12 +20,25 @@ export default function NewCourse() {
   };
 
   return (
-    <Container className="py-5">
-      <div className="mb-4">
-        <h2 className="display-5 text-primary">Crear Nuevo Curso</h2>
-        <p className="text-secondary">Rellena los detalles para publicar tu nuevo contenido.</p>
+    <main className="main">
+      <div className="page-title light-background mb-4">
+        <Container>
+          <nav className="breadcrumbs mb-2">
+            <ol className="list-unstyled d-flex gap-2 m-0 p-0 small">
+              <li><Link to="/new">Inicio</Link></li>
+              <li><Link to="/new/courses">Cursos</Link></li>
+              <li className="current text-muted">Crear Curso</li>
+            </ol>
+          </nav>
+          <h1 className="m-0 h2 fw-bold">Crear Nuevo Curso</h1>
+        </Container>
       </div>
-      <CourseForm onSubmit={handleSubmit} />
-    </Container>
+
+      <section className="section py-4">
+        <Container>
+          <CourseForm onSubmit={handleSubmit} />
+        </Container>
+      </section>
+    </main>
   );
 }

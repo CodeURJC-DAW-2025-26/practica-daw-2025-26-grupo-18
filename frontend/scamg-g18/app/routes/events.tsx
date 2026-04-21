@@ -59,112 +59,150 @@ export default function EventsPage() {
   };
 
   return (
-    <>
+    <main className="main">
       {/* Page Title */}
-      <div className="py-4 bg-light border-bottom">
+      <div className="page-title light-background mb-4">
         <Container>
-          <nav aria-label="breadcrumb">
-            <ol className="breadcrumb mb-1">
-              <li className="breadcrumb-item"><Link to="/new">Inicio</Link></li>
-              <li className="breadcrumb-item active">Eventos</li>
+          <nav className="breadcrumbs mb-2">
+            <ol className="list-unstyled d-flex gap-2 m-0 p-0">
+              <li><Link to="/new">Inicio</Link></li>
+              <li className="current">Eventos</li>
             </ol>
           </nav>
-          <h1 className="mb-0">Eventos disponibles</h1>
+          <h1 className="m-0">Eventos disponibles</h1>
         </Container>
       </div>
 
       {/* Catalog */}
-      <section className="py-5">
-        <Container>
+      <section className="courses-catalog section py-4">
+        <Container data-aos="fade-up">
           {/* Search & controls */}
-          <Form onSubmit={handleSearch} className="mb-4">
-            <div className="d-flex flex-wrap gap-3 align-items-center justify-content-between mb-3">
-              <InputGroup style={{ maxWidth: "480px" }}>
-                <InputGroup.Text><i className="bi bi-search" /></InputGroup.Text>
-                <Form.Control
-                  type="search"
-                  placeholder="Buscar eventos..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-                <Button variant="primary" type="submit">Buscar</Button>
-              </InputGroup>
+          <Form onSubmit={handleSearch} className="mb-5">
+            <div className="course-controls p-4 bg-white rounded-4 shadow-sm border">
+              <div className="d-flex flex-wrap gap-4 align-items-center justify-content-between">
+                <div className="flex-grow-1" style={{ maxWidth: "600px" }}>
+                  <InputGroup className="shadow-sm border rounded-pill overflow-hidden">
+                    <InputGroup.Text className="bg-white border-0 ps-3">
+                      <i className="bi bi-search text-muted" />
+                    </InputGroup.Text>
+                    <Form.Control
+                      type="search"
+                      placeholder="Buscar por título, descripción o ciudad..."
+                      className="border-0 shadow-none py-2 px-3"
+                      style={{ fontSize: "1rem" }}
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                    />
+                    <Button 
+                      variant="primary" 
+                      type="submit"
+                      className="px-4 fw-bold"
+                      style={{ background: "var(--accent-color)", borderColor: "var(--accent-color)" }}
+                    >
+                      Buscar
+                    </Button>
+                  </InputGroup>
+                </div>
 
-              {globalData?.canCreateEvent && (
-                <Link to="/new/events/new" className="btn btn-success">
-                  <i className="bi bi-plus-circle me-2" />Crear Nuevo Evento
-                </Link>
-              )}
+                {globalData?.canCreateEvent && (
+                  <Link 
+                    to="/new/events/new" 
+                    className="btn btn-primary btn-lg fw-bold px-4 rounded-pill shadow-sm"
+                    style={{ background: "var(--accent-color)", border: "none" }}
+                  >
+                    <i className="bi bi-plus-circle me-2" />Crear Nuevo Evento
+                  </Link>
+                )}
+              </div>
             </div>
           </Form>
 
           {/* Content */}
           {loading ? (
             <div className="text-center py-5">
-              <Spinner animation="border" variant="primary" />
+              <Spinner animation="border" style={{ color: "var(--accent-color)" }} />
             </div>
           ) : error ? (
-            <Alert variant="danger">{error}</Alert>
+            <Alert variant="danger" className="rounded-3 shadow-sm">{error}</Alert>
           ) : events.length === 0 ? (
-            <p className="text-muted">No hay eventos disponibles en este momento.</p>
+            <div className="text-center py-5 bg-white rounded-3 shadow-sm border">
+               <i className="bi bi-calendar-x display-4 text-muted mb-3 d-block"></i>
+               <p className="text-muted fs-5">No hay eventos disponibles en este momento.</p>
+            </div>
           ) : (
             <>
-              <div className="d-flex flex-column gap-3" id="eventsList">
+              <div className="course-list d-flex flex-column gap-4" id="eventsList">
                 {events.map((event) => (
-                  <article key={event.id} className="card shadow-sm">
-                    <Row className="g-0">
-                      <Col md={3}>
-                        <img
-                          src={getEventImageUrl(event.id)}
-                          alt={event.title}
-                          className="img-fluid rounded-start h-100 object-fit-cover"
-                          style={{ minHeight: "140px" }}
-                        />
-                      </Col>
-                      <Col md={9}>
-                        <div className="card-body h-100 d-flex flex-column">
-                          <div className="d-flex justify-content-between align-items-start mb-2">
-                            <div>
-                              <h5 className="card-title mb-1">{event.title}</h5>
-                              <div className="d-flex flex-wrap gap-1 mb-2">
-                                {event.tags?.map((tag: any) => (
-                                  <Badge key={tag.name} bg="secondary">{tag.name}</Badge>
-                                ))}
-                              </div>
-                            </div>
-                            <div className="text-end">
-                              {event.isSubscribed && (
-                                <Badge bg="success" className="mb-1 d-block">Entrada comprada</Badge>
-                              )}
-                              <span className="fw-bold fs-5">{event.priceEuros}€</span>
-                            </div>
-                          </div>
-
-                          <p className="card-text text-muted flex-grow-1">{event.description}</p>
-
-                          <div className="d-flex flex-wrap gap-3 align-items-center justify-content-between mt-2">
-                            <div className="d-flex gap-3 text-muted small">
-                              <span><i className="bi bi-calendar-event me-1" />{event.formattedDate}</span>
-                              <span><i className="bi bi-clock me-1" />{event.formattedTime}</span>
-                              <span>
-                                <i className="bi bi-geo-alt me-1" />
-                                {event.locationName ?? "Online"}
-                              </span>
-                            </div>
-                            <Link to={`/new/events/${event.id}`} className="btn btn-outline-primary btn-sm">
-                              Ver detalles
-                            </Link>
-                          </div>
+                  <article key={event.id} className="course-card-full p-4 bg-white rounded-4 shadow-sm border-0 position-relative overflow-hidden">
+                    <div className="course-card-header d-flex justify-content-between align-items-start mb-3">
+                      <div>
+                        <h3 className="course-card-title h4 fw-bold mb-2">
+                          <Link to={`/new/events/${event.id}`} className="text-dark text-decoration-none">
+                            {event.title}
+                          </Link>
+                        </h3>
+                        <div className="course-tags d-flex flex-wrap gap-2">
+                          {event.tags?.map((tag: any) => (
+                            <span 
+                              key={tag.name} 
+                              className="badge bg-light text-dark fw-normal border rounded-pill px-3 py-1"
+                              style={{ fontSize: "0.8rem" }}
+                            >
+                              <i className="bi bi-tag text-accent me-1" style={{ color: "var(--accent-color)" }}></i>{tag.name}
+                            </span>
+                          ))}
                         </div>
-                      </Col>
-                    </Row>
+                      </div>
+                      <div className="d-flex flex-column align-items-end gap-2">
+                        {event.isSubscribed && (
+                          <Badge bg="success" className="rounded-pill px-3 py-1 fw-medium">Entrada comprada</Badge>
+                        )}
+                        <div className="course-card-price h3 fw-bold m-0" style={{ color: "var(--accent-color)" }}>
+                          {event.priceEuros}€
+                        </div>
+                      </div>
+                    </div>
+
+                    <p className="course-card-desc text-muted mb-4 line-clamp-2">
+                      {event.description}
+                    </p>
+
+                    <div className="course-card-meta d-flex flex-wrap align-items-center gap-4 text-muted small border-top pt-4 mt-auto">
+                      <div className="d-flex align-items-center gap-1">
+                        <i className="bi bi-calendar-event text-accent" style={{ color: "var(--accent-color)" }}></i>
+                        <span>{event.formattedDate}</span>
+                      </div>
+                      <div className="d-flex align-items-center gap-1">
+                        <i className="bi bi-clock text-accent" style={{ color: "var(--accent-color)" }}></i>
+                        <span>{event.formattedTime}</span>
+                      </div>
+                      <div className="course-card-students">
+                        <i className="bi bi-geo-alt me-1 text-accent" style={{ color: "var(--accent-color)" }}></i>
+                        {event.locationName ?? "Online"}
+                      </div>
+                      <div className="ms-auto">
+                        <Link 
+                          to={`/new/events/${event.id}`} 
+                          className="btn btn-outline-primary btn-sm px-4 fw-bold rounded-pill"
+                          style={{ borderColor: "var(--accent-color)", color: "var(--accent-color)" }}
+                        >
+                          Ver detalles
+                        </Link>
+                      </div>
+                    </div>
                   </article>
                 ))}
               </div>
 
               {hasMore && (
-                <div className="text-center mt-4">
-                  <Button variant="primary" size="lg" onClick={handleLoadMore}>
+                <div className="text-center mt-5">
+                  <Button 
+                    variant="primary" 
+                    size="lg" 
+                    onClick={handleLoadMore}
+                    className="px-5 fw-bold rounded-pill shadow-sm"
+                    style={{ background: "var(--accent-color)", border: "none" }}
+                  >
                     Cargar más eventos
                   </Button>
                 </div>
@@ -173,6 +211,6 @@ export default function EventsPage() {
           )}
         </Container>
       </section>
-    </>
+    </main>
   );
 }

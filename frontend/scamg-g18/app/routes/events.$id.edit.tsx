@@ -11,6 +11,8 @@ export async function clientLoader({ params }: ClientLoaderArgs) {
   return { event: event as unknown as EventDTO };
 }
 
+import { Link } from "react-router";
+
 export default function EditEvent() {
   const { event } = useLoaderData<typeof clientLoader>();
   const navigate = useNavigate();
@@ -26,12 +28,25 @@ export default function EditEvent() {
   };
 
   return (
-    <Container className="py-5">
-      <div className="mb-4">
-        <h2 className="display-5 text-primary">Editar Evento</h2>
-        <p className="text-secondary">Actualiza los detalles de "{event.title}"</p>
+    <main className="main">
+      <div className="page-title light-background mb-4">
+        <Container>
+          <nav className="breadcrumbs mb-2">
+            <ol className="list-unstyled d-flex gap-2 m-0 p-0 small">
+              <li><Link to="/new">Inicio</Link></li>
+              <li><Link to="/new/events">Eventos</Link></li>
+              <li className="current text-muted">Editar Evento</li>
+            </ol>
+          </nav>
+          <h1 className="m-0 h2 fw-bold">Editar Evento</h1>
+        </Container>
       </div>
-      <EventForm initialData={event} onSubmit={handleSubmit} />
-    </Container>
+
+      <section className="section py-4">
+        <Container>
+          <EventForm initialData={event} onSubmit={handleSubmit} />
+        </Container>
+      </section>
+    </main>
   );
 }

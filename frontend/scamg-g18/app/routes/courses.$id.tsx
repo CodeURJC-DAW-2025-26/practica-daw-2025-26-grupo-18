@@ -30,137 +30,204 @@ export default function CourseDetail() {
   };
 
   return (
-    <div className="bg-light min-vh-100 pb-5">
-      {/* Hero Section */}
-      <div className="bg-dark text-white py-5 mb-5 shadow">
+    <main className="main">
+      {/* Breadcrumbs & Title placeholder */}
+      <div className="page-title light-background mb-0">
         <Container>
-          <Row className="align-items-center">
-            <Col lg={8}>
-              <Badge bg="primary" className="mb-2">{course.language}</Badge>
-              <h1 className="display-4 fw-bold mb-3">{course.title}</h1>
-              <p className="lead mb-4">{course.shortDescription}</p>
-              <div className="d-flex gap-4 small opacity-75">
-                <span><i className="bi bi-clock me-1"></i> {course.videoHours} horas</span>
-                <span><i className="bi bi-file-earmark-arrow-down me-1"></i> {course.downloadableResources} recursos</span>
-                <span><i className="bi bi-translate me-1"></i> {course.language}</span>
-              </div>
-            </Col>
-            <Col lg={4} className="mt-4 mt-lg-0">
-               <Card className="shadow-lg border-0">
-                 <Card.Img variant="top" src={getCourseImageUrl(course.id)} />
-                 <Card.Body className="p-4 text-dark text-center">
-                   <div className="h2 fw-bold mb-3">{course.price > 0 ? `${course.price}€` : "Gratis"}</div>
-                   
-                   {isSubscribed ? (
-                     <Button variant="success" size="lg" className="w-100" onClick={() => navigate(`/new/courses/${course.id}/learn`)}>
-                       Ir al curso
-                     </Button>
-                   ) : isOwner ? (
-                     <Link 
-                       to={`/new/courses/${course.id}/edit`} 
-                       className="btn btn-outline-primary btn-lg w-100"
-                     >
-                       Editar Curso
-                     </Link>
-                   ) : (
-                     <Button variant="primary" size="lg" className="w-100 py-3 fw-bold" onClick={handleAddToCart}>
-                       Comprar ahora
-                     </Button>
-                   )}
-                   
-                   <p className="small text-muted mt-3">Garantía de reembolso de 30 días</p>
-                 </Card.Body>
-               </Card>
-            </Col>
-          </Row>
+          <nav className="breadcrumbs mb-4">
+            <ol className="list-unstyled d-flex gap-2 m-0 p-0 small">
+              <li><Link to="/new">Inicio</Link></li>
+              <li><Link to="/new/courses">Cursos</Link></li>
+              <li className="current text-muted">{course.title}</li>
+            </ol>
+          </nav>
         </Container>
       </div>
 
-      <Container>
-        <Row>
-          <Col lg={8}>
-            {/* Learning Points */}
-            <Card className="mb-4 border-0 shadow-sm p-4">
-              <h4 className="fw-bold mb-3">¿Qué aprenderás?</h4>
-              <Row>
-                {course.learningPoints.map((point: string, idx: number) => (
-                  <Col md={6} key={idx} className="mb-2">
-                    <i className="bi bi-check-lg text-success me-2"></i> {point}
-                  </Col>
-                ))}
-              </Row>
-            </Card>
+      <section id="course-details" className="section pt-4">
+        <Container data-aos="fade-up">
+          <Row className="gy-5">
+            {/* Main Content */}
+            <Col lg={8}>
+              <div className="mb-5">
+                <div className="d-flex justify-content-between align-items-start mb-2">
+                  <span className="badge px-3 py-2 rounded-pill" style={{ backgroundColor: "var(--accent-color)" }}>
+                    {course.category || "General"}
+                  </span>
+                  <div className="d-flex gap-2">
+                    {isOwner && (
+                      <Link to={`/new/courses/${course.id}/edit`} className="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                        <i className="bi bi-pencil me-1"></i> Editar
+                      </Link>
+                    )}
+                  </div>
+                </div>
 
-            {/* Description */}
-            <div className="mb-5">
-              <h4 className="fw-bold mb-3">Descripción</h4>
-              <div className="text-secondary" style={{ whiteSpace: "pre-line" }}>
-                {course.longDescription}
+                <h1 className="display-5 fw-bold text-dark mb-3">{course.title}</h1>
+                <p className="lead text-muted mb-4">{course.shortDescription}</p>
+
+                <div className="d-flex flex-wrap align-items-center gap-4 text-secondary mt-3 small opacity-90 border-bottom pb-4 mb-4">
+                  <div className="d-flex align-items-center">
+                    <i className="bi bi-person-circle me-2 fs-5" style={{ color: "var(--accent-color)" }}></i>
+                    <span>Por <strong>{(course as any).creator?.username || (course as any).creatorUsername || "Instructor"}</strong></span>
+                  </div>
+                  <div className="vr d-none d-md-block"></div>
+                  <div className="d-flex align-items-center">
+                    <span className="fw-bold me-1 text-dark">{(course as any).averageRating || "0.0"}</span>
+                    <i className="bi bi-star-fill text-warning me-1"></i>
+                    <span className="text-muted">({(course as any).reviewsNumber || 0} reseñas)</span>
+                  </div>
+                  <div className="vr d-none d-md-block"></div>
+                  <div><i className="bi bi-people me-1"></i>{course.subscribersNumber} estudiantes</div>
+                  <div className="vr d-none d-md-block"></div>
+                  <div><i className="bi bi-globe me-1"></i>{course.language}</div>
+                </div>
+
+                {/* Lo que aprenderás section */}
+                <div className="card border-0 shadow-sm mb-5" style={{ backgroundColor: "#faf8f5" }}>
+                  <div className="card-body p-4">
+                    <h3 className="h5 fw-bold mb-4">Lo que aprenderás</h3>
+                    <Row className="gy-2">
+                      {course.learningPoints.map((point: string, idx: number) => (
+                        <Col md={12} key={idx} className="d-flex align-items-start gap-2">
+                          <i className="bi bi-check-circle-fill" style={{ color: "var(--accent-color)" }}></i>
+                          <span>{point}</span>
+                        </Col>
+                      ))}
+                    </Row>
+                  </div>
+                </div>
+
+                <h3 className="h4 mb-4 fw-bold">Contenido del curso</h3>
+                <Accordion defaultActiveKey="0" className="mb-5 custom-accordion">
+                  {course.modules.map((module: any, mIdx: number) => (
+                    <Accordion.Item eventKey={mIdx.toString()} key={mIdx} className="border mb-2 rounded overflow-hidden">
+                      <Accordion.Header>
+                        <span className="fw-bold">Módulo {mIdx + 1}: {module.title}</span>
+                      </Accordion.Header>
+                      <Accordion.Body className="p-0">
+                        <ListGroup variant="flush">
+                          {module.lessons.map((lesson: any, lIdx: number) => (
+                            <ListGroup.Item key={lIdx} className="d-flex justify-content-between align-items-center px-4 py-3 border-bottom">
+                              <div className="d-flex align-items-center gap-3">
+                                {isSubscribed ? (
+                                  <i className="bi bi-play-circle fs-5" style={{ color: "var(--accent-color)" }}></i>
+                                ) : (
+                                  <i className="bi bi-lock text-muted fs-5"></i>
+                                )}
+                                <div>
+                                  <div className={`fw-medium ${!isSubscribed ? 'text-muted' : ''}`}>{lesson.title}</div>
+                                </div>
+                              </div>
+                            </ListGroup.Item>
+                          ))}
+                        </ListGroup>
+                      </Accordion.Body>
+                    </Accordion.Item>
+                  ))}
+                </Accordion>
+
+                <h3 className="h4 mb-3 fw-bold">Requisitos previos</h3>
+                <ul className="mb-5 text-secondary ps-3">
+                  {course.prerequisites.map((req: string, idx: number) => (
+                    <li key={idx} className="mb-2">{req}</li>
+                  ))}
+                </ul>
+
+                <h3 className="h4 mb-3 fw-bold">Descripción</h3>
+                <div className="mb-5 text-secondary" style={{ lineHeight: "1.8" }}>
+                  <p>{course.longDescription}</p>
+                </div>
+
+                {/* Instructor Card */}
+                <h3 className="h4 mb-4 fw-bold">Instructor</h3>
+                <div className="card border-0 shadow-sm mb-5 p-2">
+                  <div className="card-body p-4 d-flex flex-column flex-md-row gap-4 align-items-center align-items-md-start">
+                    <div className="bg-light rounded-circle d-flex align-items-center justify-content-center text-secondary border"
+                      style={{ width: "100px", height: "100px", minWidth: "100px" }}>
+                      <i className="bi bi-person-fill fs-1"></i>
+                    </div>
+                    <div className="text-center text-md-start w-100">
+                      <h4 className="h5 fw-bold mb-1">{(course as any).creator?.username || (course as any).creatorUsername}</h4>
+                      <p className="small mb-2" style={{ color: "var(--accent-color)" }}>Instructor Certificado</p>
+                      <p className="small text-muted mb-3 line-clamp-3">Experto en la materia con años de experiencia compartiendo conocimientos de alto nivel.</p>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
+            </Col>
 
-            {/* Content */}
-            <div className="mb-5">
-              <h4 className="fw-bold mb-3">Contenido del curso</h4>
-              <Accordion defaultActiveKey="0">
-                {course.modules.map((module: any, mIdx: number) => (
-                  <Accordion.Item eventKey={mIdx.toString()} key={mIdx}>
-                    <Accordion.Header>
-                      <div className="d-flex justify-content-between w-100 pe-3">
-                        <strong>{module.title}</strong>
-                        <span className="text-muted small">{module.lessons.length} lecciones</span>
+            {/* Sidebar with Buy Card */}
+            <Col lg={4}>
+              <div className="sticky-top" style={{ top: "100px", zIndex: 10 }}>
+                <article className="price-card border-0 shadow-lg h-auto mb-4 bg-white rounded-4 overflow-hidden">
+                  <div className="text-center pt-4 pb-2 px-3">
+                    <div className="aspect-ratio-box rounded-4 mb-3 overflow-hidden"
+                      style={{ position: 'relative', paddingTop: '56.25%', background: '#eee' }}>
+                      <img
+                        src={getCourseImageUrl(course.id)}
+                        alt={course.title}
+                        className="w-100 h-100 position-absolute top-0 start-0 object-fit-cover"
+                      />
+                    </div>
+                    <h3 className="title h5 mb-0 px-2 fw-bold text-dark">Acceso Completo</h3>
+                    <div className="price-wrap mt-3 mb-3 d-flex justify-content-center">
+                      <span className="price display-4 fw-bold text-dark">{(course as any).priceInEuros || course.price}€</span>
+                    </div>
+                  </div>
+
+                  <div className="px-4 pb-4">
+                    <div className="cta mb-4">
+                      {isSubscribed ? (
+                        <div className="alert alert-success text-center py-3 fw-bold rounded-3 mb-0">
+                          <i className="bi bi-check-circle me-2"></i>Ya estás suscrito
+                        </div>
+                      ) : (
+                        <Button
+                          onClick={handleAddToCart}
+                          className="btn-choose w-100 py-3 fw-bold fs-5 border-0 rounded-3 shadow-sm transition-all"
+                          style={{ background: "#d96d3c", color: "white" }}
+                        >
+                          Añadir al carrito
+                        </Button>
+                      )}
+                    </div>
+
+                    <p className="fw-bold text-dark mb-2 small text-uppercase opacity-75">Este curso incluye:</p>
+                    <ul className="list-unstyled small text-secondary mb-4 ps-1">
+                      <li className="mb-2 d-flex align-items-center gap-2">
+                        <i className="bi bi-camera-video fs-6" style={{ color: "var(--accent-color)" }}></i>
+                        {course.videoHours} horas de video
+                      </li>
+                      <li className="mb-2 d-flex align-items-center gap-2">
+                        <i className="bi bi-file-earmark-arrow-down fs-6" style={{ color: "var(--accent-color)" }}></i>
+                        {course.downloadableResources} recursos descargables
+                      </li>
+                      <li className="mb-2 d-flex align-items-center gap-2">
+                        <i className="bi bi-trophy fs-6" style={{ color: "var(--accent-color)" }}></i>
+                        Certificado digital
+                      </li>
+                      <li className="mb-2 d-flex align-items-center gap-2">
+                        <i className="bi bi-infinity fs-6" style={{ color: "var(--accent-color)" }}></i>
+                        Acceso de por vida
+                      </li>
+                    </ul>
+
+                    <hr className="text-muted opacity-25" />
+
+                    <div className="mb-2">
+                      <span className="small fw-bold text-muted text-uppercase" style={{ fontSize: "0.65rem" }}>Categoría:</span>
+                      <div className="mt-1">
+                        <span className="badge bg-light text-secondary border fw-normal">{course.category || "General"}</span>
                       </div>
-                    </Accordion.Header>
-                    <Accordion.Body className="p-0">
-                      <ListGroup variant="flush">
-                        {module.lessons.map((lesson: any, lIdx: number) => (
-                          <ListGroup.Item key={lIdx} className="py-3 d-flex align-items-center">
-                            <i className="bi bi-play-circle me-3 text-primary"></i>
-                            <div>
-                               <div className="fw-medium">{lesson.title}</div>
-                               <div className="small text-muted">{lesson.description}</div>
-                            </div>
-                          </ListGroup.Item>
-                        ))}
-                      </ListGroup>
-                    </Accordion.Body>
-                  </Accordion.Item>
-                ))}
-              </Accordion>
-            </div>
-
-            {/* Prerequisites */}
-            <div className="mb-5">
-              <h4 className="fw-bold mb-3">Requisitos</h4>
-              <ul className="text-secondary">
-                {course.prerequisites.map((req: string, idx: number) => (
-                  <li key={idx}>{req}</li>
-                ))}
-              </ul>
-            </div>
-          </Col>
-
-          <Col lg={4}>
-            {/* Sidebar or additional info could go here */}
-            {isOwner && (
-               <Card className="border-0 shadow-sm p-3 mb-4 text-center">
-                 <h5>Estadísticas de Instructor</h5>
-                 <hr/>
-                 <div className="d-flex justify-content-around">
-                    <div>
-                      <div className="h4 fw-bold">{course.studentsCount || 0}</div>
-                      <div className="small text-muted">Alumnos</div>
                     </div>
-                    <div>
-                      <div className="h4 fw-bold">{course.rating || 0}</div>
-                      <div className="small text-muted">Valoración</div>
-                    </div>
-                 </div>
-               </Card>
-            )}
-          </Col>
-        </Row>
-      </Container>
-    </div>
+                  </div>
+                </article>
+              </div>
+            </Col>
+          </Row>
+        </Container>
+      </section>
+    </main>
   );
 }

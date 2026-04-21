@@ -4,6 +4,8 @@ import EventForm from "~/components/EventForm";
 import { createEvent } from "~/services/eventService";
 import type { EventDTO } from "~/dtos/EventDTO";
 
+import { Link } from "react-router";
+
 export default function NewEvent() {
   const navigate = useNavigate();
 
@@ -18,12 +20,25 @@ export default function NewEvent() {
   };
 
   return (
-    <Container className="py-5">
-      <div className="mb-4">
-        <h2 className="display-5 text-primary">Organizar Nuevo Evento</h2>
-        <p className="text-secondary">Define la agenda y ubicación para tu próximo evento presencial u online.</p>
+    <main className="main">
+      <div className="page-title light-background mb-4">
+        <Container>
+          <nav className="breadcrumbs mb-2">
+            <ol className="list-unstyled d-flex gap-2 m-0 p-0 small">
+              <li><Link to="/new">Inicio</Link></li>
+              <li><Link to="/new/events">Eventos</Link></li>
+              <li className="current text-muted">Crear Evento</li>
+            </ol>
+          </nav>
+          <h1 className="m-0 h2 fw-bold">Crear Nuevo Evento</h1>
+        </Container>
       </div>
-      <EventForm onSubmit={handleSubmit} />
-    </Container>
+
+      <section className="section py-4">
+        <Container>
+          <EventForm onSubmit={handleSubmit} />
+        </Container>
+      </section>
+    </main>
   );
 }

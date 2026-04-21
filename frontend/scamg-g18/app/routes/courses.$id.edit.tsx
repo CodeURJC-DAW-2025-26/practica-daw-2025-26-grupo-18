@@ -11,6 +11,8 @@ export async function clientLoader({ params }: ClientLoaderArgs) {
   return { course: course as unknown as CourseDTO };
 }
 
+import { Link } from "react-router";
+
 export default function EditCourse() {
   const { course } = useLoaderData<typeof clientLoader>();
   const navigate = useNavigate();
@@ -26,12 +28,25 @@ export default function EditCourse() {
   };
 
   return (
-    <Container className="py-5">
-      <div className="mb-4">
-        <h2 className="display-5 text-primary">Editar Curso</h2>
-        <p className="text-secondary">Actualiza los detalles de "{course.title}"</p>
+    <main className="main">
+      <div className="page-title light-background mb-4">
+        <Container>
+          <nav className="breadcrumbs mb-2">
+            <ol className="list-unstyled d-flex gap-2 m-0 p-0 small">
+              <li><Link to="/new">Inicio</Link></li>
+              <li><Link to="/new/courses">Cursos</Link></li>
+              <li className="current text-muted">Editar Curso</li>
+            </ol>
+          </nav>
+          <h1 className="m-0 h2 fw-bold">Editar Curso</h1>
+        </Container>
       </div>
-      <CourseForm initialData={course} onSubmit={handleSubmit} />
-    </Container>
+
+      <section className="section py-4">
+        <Container>
+          <CourseForm initialData={course} onSubmit={handleSubmit} />
+        </Container>
+      </section>
+    </main>
   );
 }

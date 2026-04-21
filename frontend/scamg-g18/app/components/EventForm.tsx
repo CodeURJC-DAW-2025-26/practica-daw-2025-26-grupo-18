@@ -80,176 +80,320 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
   };
 
   return (
-    <Form noValidate validated={validated} onSubmit={handleSubmit} className="p-4 bg-white rounded shadow-sm">
-      <h3 className="mb-4">{initialData?.id ? "Editar Evento" : "Nuevo Evento"}</h3>
+    <Form noValidate validated={validated} onSubmit={handleSubmit} className="needs-validation">
+      <Row className="g-4">
+        {/* Main Column */}
+        <Col lg={8}>
+          {/* Basic Info */}
+          <Card className="shadow-sm border-0 mb-4 rounded-4">
+            <Card.Header className="bg-white py-3 border-bottom-0">
+              <h5 className="mb-0 fw-bold">Información Básica</h5>
+            </Card.Header>
+            <Card.Body className="pt-0">
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-medium small text-muted">Imagen del Evento</Form.Label>
+                <Form.Control
+                  type="file"
+                  accept="image/*"
+                  className="rounded-3"
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setImageFile(e.target.files?.[0])}
+                />
+                <Form.Text className="text-muted small">Se recomienda una imagen de 1280x720 px.</Form.Text>
+              </Form.Group>
 
-      <Row className="mb-3">
-        <Form.Group as={Col} md="8" controlId="eventTitle">
-          <Form.Label>Título del Evento</Form.Label>
-          <Form.Control
-            required
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleInputChange}
-          />
-        </Form.Group>
-        <Form.Group as={Col} md="4" controlId="eventCategory">
-          <Form.Label>Categoría</Form.Label>
-          <Form.Control
-            required
-            type="text"
-            name="category"
-            value={formData.category}
-            onChange={handleInputChange}
-          />
-        </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-medium small text-muted">Título del Evento</Form.Label>
+                <Form.Control
+                  required
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  placeholder="Ej: Foro de Innovación 2026"
+                  className="rounded-3 shadow-none border"
+                />
+                <Form.Control.Feedback type="invalid">El título del evento es obligatorio.</Form.Control.Feedback>
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label className="fw-medium small text-muted">Descripción Detallada</Form.Label>
+                <Form.Control
+                  required
+                  as="textarea"
+                  rows={6}
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  placeholder="Detalles completos del evento..."
+                  className="rounded-3 shadow-none border"
+                />
+                <Form.Control.Feedback type="invalid">La descripción del evento es obligatoria.</Form.Control.Feedback>
+              </Form.Group>
+
+              <Row>
+                <Col md={6}>
+                  <Form.Group className="mb-3">
+                    <Form.Label className="fw-medium small text-muted">Fecha de Inicio</Form.Label>
+                    <Form.Control 
+                      required 
+                      type="date" 
+                      name="startDateStr" 
+                      value={formData.startDateStr} 
+                      onChange={handleInputChange} 
+                      className="rounded-3 shadow-none border"
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={6}>
+                  <Form.Group className="mb-3">
+                    <Form.Label className="fw-medium small text-muted">Hora de Inicio</Form.Label>
+                    <Form.Control 
+                      required 
+                      type="time" 
+                      name="startTimeStr" 
+                      value={formData.startTimeStr} 
+                      onChange={handleInputChange} 
+                      className="rounded-3 shadow-none border"
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+              <Row>
+                <Col md={6}>
+                  <Form.Group className="mb-3">
+                    <Form.Label className="fw-medium small text-muted">Fecha de Fin</Form.Label>
+                    <Form.Control 
+                      required 
+                      type="date" 
+                      name="endDateStr" 
+                      value={formData.endDateStr} 
+                      onChange={handleInputChange} 
+                      className="rounded-3 shadow-none border"
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={6}>
+                  <Form.Group className="mb-3">
+                    <Form.Label className="fw-medium small text-muted">Hora de Fin</Form.Label>
+                    <Form.Control 
+                      required 
+                      type="time" 
+                      name="endTimeStr" 
+                      value={formData.endTimeStr} 
+                      onChange={handleInputChange} 
+                      className="rounded-3 shadow-none border"
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
+
+          {/* Location Info */}
+          <Card className="shadow-sm border-0 mb-4 rounded-4">
+            <Card.Header className="bg-white py-3 border-bottom-0">
+              <h5 className="mb-0 fw-bold">Ubicación</h5>
+            </Card.Header>
+            <Card.Body className="pt-0">
+               <Form.Group className="mb-3">
+                  <Form.Label className="fw-medium small text-muted">Lugar / Nombre</Form.Label>
+                  <InputGroup className="shadow-sm rounded-3 overflow-hidden border">
+                    <InputGroup.Text className="bg-white border-0"><i className="bi bi-geo-alt text-muted"></i></InputGroup.Text>
+                    <Form.Control 
+                        required 
+                        name="locationName" 
+                        value={formData.locationName} 
+                        onChange={handleInputChange} 
+                        placeholder="Nombre del lugar"
+                        className="border-0 shadow-none py-2"
+                    />
+                  </InputGroup>
+               </Form.Group>
+
+               <Form.Group className="mb-3">
+                  <Form.Label className="fw-medium small text-muted">Dirección Completa</Form.Label>
+                  <Form.Control 
+                    required 
+                    name="locationAddress" 
+                    value={formData.locationAddress} 
+                    onChange={handleInputChange} 
+                    placeholder="Calle, número, etc."
+                    className="rounded-3 shadow-none border"
+                  />
+               </Form.Group>
+
+               <Row>
+                  <Col md={6}>
+                    <Form.Group className="mb-3">
+                        <Form.Label className="fw-medium small text-muted">Ciudad</Form.Label>
+                        <Form.Control 
+                            required 
+                            name="locationCity" 
+                            value={formData.locationCity} 
+                            onChange={handleInputChange} 
+                            placeholder="Madrid"
+                            className="rounded-3 shadow-none border"
+                        />
+                    </Form.Group>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Group className="mb-3">
+                        <Form.Label className="fw-medium small text-muted">País</Form.Label>
+                        <Form.Control 
+                            required 
+                            name="locationCountry" 
+                            value={formData.locationCountry} 
+                            onChange={handleInputChange} 
+                            placeholder="España"
+                            className="rounded-3 shadow-none border"
+                        />
+                    </Form.Group>
+                  </Col>
+               </Row>
+            </Card.Body>
+          </Card>
+
+          {/* Agenda */}
+          <Card className="shadow-sm border-0 mb-4 rounded-4 overflow-hidden">
+            <Card.Header className="bg-white py-3 border-bottom-0 d-flex justify-content-between align-items-center">
+              <h5 className="mb-0 fw-bold">Agenda</h5>
+              <Button 
+                variant="outline-primary" 
+                size="sm" 
+                className="rounded-pill px-3"
+                style={{ borderColor: "var(--accent-color)", color: "var(--accent-color)" }}
+                onClick={addItem}
+              >
+                + Añadir Sesión
+              </Button>
+            </Card.Header>
+            <Card.Body className="pt-0">
+               {formData.sessionTitles?.map((_, idx) => (
+                  <div key={idx} className="border rounded-4 p-3 mb-3 bg-light shadow-sm">
+                     <div className="d-flex justify-content-between mb-3 align-items-center">
+                        <span className="fw-bold text-muted small text-uppercase">Sesión {idx + 1}</span>
+                        <Button 
+                          variant="outline-danger" 
+                          size="sm" 
+                          className="border-0 bg-transparent text-danger p-0"
+                          onClick={() => removeItem(idx)}
+                        >
+                          Eliminar
+                        </Button>
+                     </div>
+                     <Row className="g-3">
+                        <Col md={3}>
+                           <Form.Control
+                              required
+                              type="time"
+                              className="rounded-3 border shadow-none"
+                              value={formData.sessionTimes?.[idx] || ""}
+                              onChange={(e) => updateArrayItem("sessionTimes", idx, e.target.value)}
+                           />
+                        </Col>
+                        <Col md={9}>
+                           <Form.Control
+                              required
+                              placeholder="Título de la sesión"
+                              className="rounded-3 border shadow-none"
+                              value={formData.sessionTitles?.[idx] || ""}
+                              onChange={(e) => updateArrayItem("sessionTitles", idx, e.target.value)}
+                           />
+                        </Col>
+                        <Col md={12}>
+                           <Form.Control
+                              as="textarea"
+                              rows={2}
+                              placeholder="Descripción breve de la sesión"
+                              className="rounded-3 border shadow-none"
+                              value={formData.sessionDescriptions?.[idx] || ""}
+                              onChange={(e) => updateArrayItem("sessionDescriptions", idx, e.target.value)}
+                           />
+                        </Col>
+                     </Row>
+                  </div>
+               ))}
+            </Card.Body>
+          </Card>
+        </Col>
+
+        {/* Sidebar Column */}
+        <Col lg={4}>
+           <Card className="shadow-sm border-0 rounded-4 mb-4 sticky-top" style={{ top: "100px" }}>
+              <Card.Header className="bg-white py-3 border-bottom-0">
+                <h5 className="mb-0 fw-bold">Detalles Adicionales</h5>
+              </Card.Header>
+              <Card.Body className="pt-0">
+                 <Form.Group className="mb-3">
+                    <Form.Label className="fw-medium small text-muted">Precio (€)</Form.Label>
+                    <InputGroup className="shadow-sm rounded-3 overflow-hidden border">
+                       <InputGroup.Text className="bg-white border-0">€</InputGroup.Text>
+                       <Form.Control
+                          required
+                          type="number"
+                          name="price"
+                          step="0.01"
+                          min="0"
+                          value={formData.price}
+                          onChange={handleInputChange}
+                          className="border-0 shadow-none py-2"
+                       />
+                    </InputGroup>
+                 </Form.Group>
+
+                 <Form.Group className="mb-4">
+                    <Form.Label className="fw-medium small text-muted">Capacidad (Personas)</Form.Label>
+                    <Form.Control
+                       required
+                       type="number"
+                       name="capacity"
+                       min="1"
+                       value={formData.capacity}
+                       onChange={handleInputChange}
+                       className="rounded-3 shadow-none border py-2"
+                    />
+                 </Form.Group>
+
+                 <Form.Group className="mb-4">
+                    <Form.Label className="fw-medium small text-muted">Tipo de Evento</Form.Label>
+                    <Form.Select 
+                      name="category" 
+                      value={formData.category} 
+                      onChange={handleInputChange} 
+                      className="rounded-3 shadow-none border py-2"
+                    >
+                      <option value="Conferencia">Conferencia</option>
+                      <option value="Webinar">Webinar</option>
+                      <option value="Taller">Taller</option>
+                      <option value="Networking">Networking</option>
+                    </Form.Select>
+                 </Form.Group>
+
+                 <hr className="mb-4 opacity-10" />
+
+                 <div className="d-grid gap-3">
+                    <Button 
+                      variant="primary" 
+                      type="submit" 
+                      size="lg" 
+                      disabled={isSubmitting}
+                      className="py-3 shadow-sm fw-bold rounded-3 border-0 transition-all"
+                      style={{ background: "#d96d3c", transform: isSubmitting ? "none" : "scale(1)" }}
+                    >
+                      {isSubmitting ? "Publicando..." : initialData?.id ? "Actualizar Evento" : "Publicar Evento"}
+                    </Button>
+                    <Button 
+                      variant="light" 
+                      onClick={() => window.history.back()}
+                      className="py-2 text-muted fw-medium rounded-3 border bg-white"
+                    >
+                      Cancelar
+                    </Button>
+                 </div>
+              </Card.Body>
+           </Card>
+        </Col>
       </Row>
-
-      <Form.Group className="mb-3" controlId="eventDescription">
-        <Form.Label>Descripción del Evento</Form.Label>
-        <Form.Control
-          required
-          as="textarea"
-          rows={3}
-          name="description"
-          value={formData.description}
-          onChange={handleInputChange}
-        />
-      </Form.Group>
-
-      <Row className="mb-3">
-        <Col md={3}>
-           <Form.Group controlId="eventPrice">
-             <Form.Label>Precio (€)</Form.Label>
-             <Form.Control
-               required
-               type="number"
-               name="price"
-               value={formData.price}
-               onChange={handleInputChange}
-             />
-           </Form.Group>
-        </Col>
-        <Col md={3}>
-           <Form.Group controlId="eventCapacity">
-             <Form.Label>Capacidad</Form.Label>
-             <Form.Control
-               required
-               type="number"
-               name="capacity"
-               value={formData.capacity}
-               onChange={handleInputChange}
-             />
-           </Form.Group>
-        </Col>
-        <Col md={6}>
-           <Form.Group controlId="eventImage">
-             <Form.Label>Imagen promocional</Form.Label>
-             <Form.Control
-               type="file"
-               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setImageFile(e.target.files?.[0])}
-             />
-           </Form.Group>
-        </Col>
-      </Row>
-
-      <hr className="my-4" />
-
-      <h5>Fecha y Hora</h5>
-      <Row className="mb-3">
-        <Col md={3}>
-          <Form.Label>Fecha Inicio</Form.Label>
-          <Form.Control required type="date" name="startDateStr" value={formData.startDateStr} onChange={handleInputChange} />
-        </Col>
-        <Col md={3}>
-          <Form.Label>Hora Inicio</Form.Label>
-          <Form.Control required type="time" name="startTimeStr" value={formData.startTimeStr} onChange={handleInputChange} />
-        </Col>
-        <Col md={3}>
-          <Form.Label>Fecha Fin</Form.Label>
-          <Form.Control required type="date" name="endDateStr" value={formData.endDateStr} onChange={handleInputChange} />
-        </Col>
-        <Col md={3}>
-          <Form.Label>Hora Fin</Form.Label>
-          <Form.Control required type="time" name="endTimeStr" value={formData.endTimeStr} onChange={handleInputChange} />
-        </Col>
-      </Row>
-
-      <hr className="my-4" />
-
-      <h5>Ubicación</h5>
-      <Row className="mb-3">
-        <Col md={6}>
-          <Form.Label>Lugar / Nombre</Form.Label>
-          <Form.Control required name="locationName" value={formData.locationName} onChange={handleInputChange} />
-        </Col>
-        <Col md={6}>
-          <Form.Label>Dirección</Form.Label>
-          <Form.Control required name="locationAddress" value={formData.locationAddress} onChange={handleInputChange} />
-        </Col>
-      </Row>
-      <Row className="mb-3">
-        <Col md={6}>
-          <Form.Label>Ciudad</Form.Label>
-          <Form.Control required name="locationCity" value={formData.locationCity} onChange={handleInputChange} />
-        </Col>
-        <Col md={6}>
-          <Form.Label>País</Form.Label>
-          <Form.Control required name="locationCountry" value={formData.locationCountry} onChange={handleInputChange} />
-        </Col>
-      </Row>
-
-      <hr className="my-4" />
-
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h5>Agenda / Sesiones</h5>
-        <Button variant="outline-success" size="sm" onClick={addItem}>+ Añadir Sesión</Button>
-      </div>
-
-      {formData.sessionTitles?.map((_, idx) => (
-        <Card key={idx} className="mb-3 bg-light">
-          <Card.Body>
-            <div className="d-flex justify-content-between mb-2">
-              <strong>Sesión {idx + 1}</strong>
-              <Button variant="link" className="text-danger p-0" onClick={() => removeItem(idx)}>Eliminar</Button>
-            </div>
-            <Row className="g-2">
-               <Col md={3}>
-                 <Form.Control
-                   required
-                   type="time"
-                   value={formData.sessionTimes?.[idx] || ""}
-                   onChange={(e) => updateArrayItem("sessionTimes", idx, e.target.value)}
-                 />
-               </Col>
-               <Col md={9}>
-                 <Form.Control
-                   required
-                   placeholder="Título de la sesión"
-                   value={formData.sessionTitles?.[idx] || ""}
-                   onChange={(e) => updateArrayItem("sessionTitles", idx, e.target.value)}
-                 />
-               </Col>
-               <Col md={12}>
-                 <Form.Control
-                   as="textarea"
-                   rows={2}
-                   placeholder="Descripción breve"
-                   value={formData.sessionDescriptions?.[idx] || ""}
-                   onChange={(e) => updateArrayItem("sessionDescriptions", idx, e.target.value)}
-                 />
-               </Col>
-            </Row>
-          </Card.Body>
-        </Card>
-      ))}
-
-      <div className="d-grid mt-5">
-        <Button variant="primary" type="submit" size="lg" disabled={isSubmitting}>
-          {isSubmitting ? "Guardando..." : initialData?.id ? "Actualizar Evento" : "Crear Evento"}
-        </Button>
-      </div>
     </Form>
   );
 }
