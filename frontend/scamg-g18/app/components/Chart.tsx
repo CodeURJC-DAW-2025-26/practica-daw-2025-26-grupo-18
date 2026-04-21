@@ -1,96 +1,94 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink } from "react-router";
 import type { ChartDataDTO } from "../dtos/ChartDTO";
 import * as ChartService from "../services/chartService";
 import * as C from "../constants/constants";
 import { PieChart, BarChart } from '@mui/x-charts';
 
-
-function getInfo(info: string, infoUser: number, infoCourse: number): Promise<ChartDataDTO>{
-  switch (info) {
-      case C.GET_COURSE_PROGRESS:
-        return ChartService.getCourseProgress(infoUser);
-      case C.GET_LESSONS_LEARNED:
-        return ChartService.getLessonsLearned(infoUser);
-      case C.GET_COURSE_GENDERS:
-        return ChartService.getCourseGenders(infoUser);
-      case C.GET_COURSE_AGES:
-        return ChartService.getCourseAges(infoUser);
-      case C.GET_COURSE_TAGS:
-        return ChartService.getCourseTags(infoUser, infoCourse);
-      case C.GET_COURSE_USER_PROGRESS:
-        return ChartService.getCourseUserProgress(infoCourse, infoUser);
-      case C.GET_CREATED_COURSE_STATUS:
-        return ChartService.getCreatedCourseStatus(infoCourse);
-      default:
-        return Promise.resolve(null!);
-  }
-}
-function barChart(info: ChartDataDTO){
-  const { chartLabels, chartValues, chartTitle } = info;
+function RenderBarChart({ data }: { data: ChartDataDTO }) {
   return (
     <BarChart
-      xAxis={[{data: chartLabels, 
-        scaleType: 'band'}]}
-      series={[{
-        data: chartValues,
-        label: chartTitle}]}
+      xAxis={[{ data: data.chartLabels, scaleType: 'band' }]}
+      series={[{ data: data.chartValues, label: data.chartTitle }]}
       height={300}
     />
   );
 }
 
-function pieChart(info: ChartDataDTO){
-  const { chartLabels, chartValues, chartTitle } = info;
-  const formatedData = chartLabels.map((name, i) => ({
-    id: i, 
-    value: chartValues[i],
+function RenderPieChart({ data, isDonut }: { data: ChartDataDTO, isDonut: boolean }) {
+  const formattedData = data.chartLabels.map((name, i) => ({
+    id: i,
+    value: data.chartValues[i],
     label: name
   }));
+
   return (
     <PieChart
       series={[
         {
-          data: formatedData
+          data: formattedData,
+          ...(isDonut && {
+            innerRadius: 30,
+            outerRadius: 100,
+            paddingAngle: 5,
+            cornerRadius: 5,
+          }),
         },
       ]}
-      width={400} 
+      width={400}
       height={200}
     />
   );
 }
 
-
-//info = getCourseProgress, getLesson...
-export default function Chart({ chartType, info, infoUser, infoCourse }: { 
-  chartType: string, 
+export default function Chart({ info, infoUser, infoCourse }: { 
   info: string, 
   infoUser: number, 
   infoCourse: number 
-}){
+}) {
   const [data, setData] = useState<ChartDataDTO | null>(null);
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadData() {
       try {
-        const dtoResult = await getInfo(info, infoUser, infoCourse);
+        setLoading(true);
+        let dtoResult: ChartDataDTO;
+        switch (info) {
+          case C.GET_COURSE_PROGRESS: dtoResult = await ChartService.getCourseProgress(infoUser); break;
+          case C.GET_LESSONS_LEARNED: dtoResult = await ChartService.getLessonsLearned(infoUser); break;
+          case C.GET_COURSE_GENDERS: dtoResult = await ChartService.getCourseGenders(infoUser); break;
+          case C.GET_COURSE_AGES: dtoResult = await ChartService.getCourseAges(infoUser); break;
+          case C.GET_COURSE_TAGS: dtoResult = await ChartService.getCourseTags(infoUser, infoCourse); break;
+          case C.GET_COURSE_USER_PROGRESS: dtoResult = await ChartService.getCourseUserProgress(infoCourse, infoUser); break;
+          case C.GET_CREATED_COURSE_STATUS: dtoResult = await ChartService.getCreatedCourseStatus(infoCourse); break;
+          default: throw new Error("Tipo de info no soportado");
+        }
+        
         setData(dtoResult);
+        setError(false);
       } catch (e) {
+        console.error("Error cargando gráfico:", e);
         setError(true);
+      } finally {
+        setLoading(false);
       }
     }
     loadData();
-  }, [info, infoUser, infoCourse]); 
-  if (error) return <>Fallo con la carga de contenido</>;
-  if (!data) return <>Movida de carga de Alberto</>; 
+  }, [info, infoUser, infoCourse]);
 
-  switch(chartType){
+  if (loading) return <>Cargando estadísticas...</>;
+  if (error || !data) return <>Error al cargar el contenido</>;
+
+  switch (data.chartType) { 
     case C.GRAPHIC_BAR:
-      return barChart(data);
+      return <RenderBarChart data={data} />;
+    
     case C.GRAPHIC_PIE:
-      return pieChart(data);
+      return <RenderPieChart data={data} isDonut={false} />;  
+    case C.GRAPHIC_DOUGHTNUT:
+      return <RenderPieChart data={data} isDonut={true} />;    
     default:
-      return <>Tipo de gráfico no reconocido</>;
+      return <>Tipo de gráfico no reconocido: {data.chartType}</>;
   }
 }

@@ -1,5 +1,6 @@
-export const GRAPHIC_BAR = "BAR";
-export const GRAPHIC_PIE = "PIE";
+export const GRAPHIC_BAR = "bar";
+export const GRAPHIC_PIE = "pie";
+export const GRAPHIC_DOUGHTNUT = "doughnut";
 
 export const GET_COURSE_PROGRESS = "getCourseProgress";
 export const GET_LESSONS_LEARNED = "getLessonsLearned";
