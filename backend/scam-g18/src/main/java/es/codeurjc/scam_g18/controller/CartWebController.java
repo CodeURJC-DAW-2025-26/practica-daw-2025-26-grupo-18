@@ -63,7 +63,7 @@ public class CartWebController {
     }
 
     // Adds a course to the current user's pending order.
-    @PostMapping("/cart/add/course/{id}")
+    @PostMapping("/cart/courses/{id}")
     public String addCourseToCart(@PathVariable Long id) {
         User currentUser = getCurrentUser();
         if (currentUser == null) {
@@ -86,7 +86,7 @@ public class CartWebController {
     }
 
     // Adds an event to the pending order and handles sold-out availability.
-    @PostMapping("/cart/add/event/{id}")
+    @PostMapping("/cart/events/{id}")
     public String addEventToCart(@PathVariable Long id) {
         User currentUser = getCurrentUser();
         if (currentUser == null) {
@@ -111,7 +111,7 @@ public class CartWebController {
     }
 
     // Adds the premium subscription to the authenticated user's pending order.
-    @PostMapping("/cart/add/subscription")
+    @PostMapping("/cart/subscriptions")
     public String addSubscriptionToCart() {
         User currentUser = getCurrentUser();
         if (currentUser == null) {
@@ -125,7 +125,7 @@ public class CartWebController {
     }
 
     // Removes a specific item from the authenticated user's cart.
-    @PostMapping("/cart/remove/{itemId}")
+    @PostMapping("/cart/items/{itemId}")
     public String removeItemFromCart(@PathVariable Long itemId) {
         User currentUser = getCurrentUser();
         if (currentUser == null) {
@@ -140,7 +140,7 @@ public class CartWebController {
 
     // Processes payment for the pending order and completes purchase with
     // data validation.
-    @PostMapping("/cart/checkout")
+    @PostMapping("/cart/payments")
     public String checkout(
             CheckoutRequestDTO checkoutRequest,
             HttpServletRequest request,

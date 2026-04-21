@@ -82,7 +82,7 @@
                                                         {{priceInEuros}}€
                                                     </td>
                                                     <td class="text-end">
-                                                        <form action="/cart/remove/{{id}}" method="post" class="d-inline">
+                                                        <form action="/cart/items/{{id}}" method="post" class="d-inline">
                                                             <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
                                                             <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
                                                         </form>
@@ -147,7 +147,7 @@
                                         <h5 class="mb-0">Información de Tarjeta</h5>
                                     </div>
                                     <div class="card-body">
-                                        <form action="/cart/checkout" method="post" id="checkoutForm" novalidate>
+                                        <form action="/cart/payments" method="post" id="checkoutForm" novalidate>
                                             <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
                                             <div class="mb-3">
                                                 <label for="cardName" class="form-label">Nombre en la tarjeta</label>

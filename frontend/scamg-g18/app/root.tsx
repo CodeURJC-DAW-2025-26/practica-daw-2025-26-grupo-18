@@ -5,6 +5,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useNavigation,
 } from "react-router";
 import { useEffect } from "react";
 
@@ -12,6 +13,7 @@ import type { Route } from "./+types/root";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./app.css";
+import { useGlobalStore } from "~/stores/globalStore";
 
 export const links: Route.LinksFunction = () => [
   { rel: "icon", href: "/favicon.ico" },
@@ -36,11 +38,26 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  const navigation = useNavigation();
+  const authLoading = useGlobalStore((state) => state.authLoading);
+  const pendingRequests = useGlobalStore((state) => state.pendingRequests);
+
   useEffect(() => {
     void import("~/main");
   }, []);
 
-  return <Outlet />;
+  const showGlobalSpinner = navigation.state !== "idle" || authLoading || pendingRequests > 0;
+
+  return (
+    <>
+      <Outlet />
+      {showGlobalSpinner && (
+        <div className="global-loading-overlay" role="status" aria-live="polite" aria-label="Cargando contenido">
+          <div className="global-loading-spinner" />
+        </div>
+      )}
+    </>
+  );
 }
 
 export function HydrateFallback() {

@@ -1,14 +1,8 @@
-import { useEffect } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { useGlobalStore } from "~/stores/globalStore";
 
 export default function AppLayout() {
     const globalData = useGlobalStore().globalData;
-    const fetchGlobalData = useGlobalStore().fetchGlobalData;
-
-    useEffect(() => {
-        void fetchGlobalData();
-    }, [fetchGlobalData]);
 
     const isUserLoggedIn = globalData?.isUserLoggedIn ?? false;
     const isPublisher = globalData?.isPublisher ?? false;
@@ -749,7 +743,7 @@ export default function AppLayout() {
                                         isPublisher ? (
                                             <span className="btn btn-choose w-100 disabled">Ya tienes Premium</span>
                                         ) : (
-                                            <form action="/new/cart/add/subscription" method="post">
+                                            <form action="/new/cart/subscriptions" method="post">
                                                 <button type="submit" className="btn btn-choose w-100">
                                                     Comprar por 10€
                                                 </button>

@@ -2,11 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router";
 
 import {
-  deleteAdminReview,
   getAdminCourses,
   getAdminEvents,
   getAdminOrders,
-  getAdminReviews,
   getAdminUsers,
   updateAdminCourseStatus,
   updateAdminEventStatus,
@@ -16,12 +14,19 @@ import type {
   AdminCourseDTO,
   AdminEventDTO,
   AdminOrderDTO,
-  AdminReviewDTO,
   AdminUserDTO,
 } from "~/dtos/AdminDTO";
 import { useGlobalStore } from "~/stores/globalStore";
+import { loadGlobalDataIntoStore } from "~/services/globalService";
 
-type TabKey = "users" | "courses" | "events" | "orders" | "reviews";
+export async function clientLoader() {
+  await loadGlobalDataIntoStore();
+  return null;
+}
+
+clientLoader.hydrate = true;
+
+type TabKey = "users" | "courses" | "events" | "orders";
 
 const PAGE_SIZE = 10;
 
@@ -36,10 +41,9 @@ export default function AdminRoute() {
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get("tab");
   const activeTab: TabKey =
-    tabParam === "users" || tabParam === "courses" || tabParam === "events" || tabParam === "orders" || tabParam === "reviews" ? tabParam : "users";
+    tabParam === "users" || tabParam === "courses" || tabParam === "events" || tabParam === "orders" ? tabParam : "users";
 
   const globalData = useGlobalStore().globalData;
-  const fetchGlobalData = useGlobalStore().fetchGlobalData;
 
   const [error, setError] = useState<string | null>(null);
 
@@ -66,13 +70,6 @@ export default function AdminRoute() {
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [ordersHasMore, setOrdersHasMore] = useState(true);
 
-  const [reviews, setReviews] = useState<AdminReviewDTO[]>([]);
-  const [reviewsLoading, setReviewsLoading] = useState(false);
-
-  useEffect(() => {
-    void fetchGlobalData();
-  }, [fetchGlobalData]);
-
   const isAdmin = globalData?.isAdmin ?? false;
 
   const tabButtons = useMemo(
@@ -81,7 +78,6 @@ export default function AdminRoute() {
       { key: "courses" as const, icon: "bi-journal-text", text: "Cursos" },
       { key: "events" as const, icon: "bi-calendar-event", text: "Eventos" },
       { key: "orders" as const, icon: "bi-receipt", text: "Pedidos" },
-      { key: "reviews" as const, icon: "bi-chat-left-quote", text: "Reseñas" },
     ],
     []
   );
@@ -150,19 +146,6 @@ export default function AdminRoute() {
     }
   }
 
-  async function loadReviews() {
-    try {
-      setReviewsLoading(true);
-      setError(null);
-      const data = await getAdminReviews();
-      setReviews(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudieron cargar reseñas");
-    } finally {
-      setReviewsLoading(false);
-    }
-  }
-
   useEffect(() => {
     if (!isAdmin) return;
 
@@ -177,9 +160,6 @@ export default function AdminRoute() {
     }
     if (activeTab === "orders" && orders.length === 0 && !ordersLoading) {
       void loadOrders(true);
-    }
-    if (activeTab === "reviews" && reviews.length === 0 && !reviewsLoading) {
-      void loadReviews();
     }
   }, [activeTab, isAdmin]);
 
@@ -207,18 +187,6 @@ export default function AdminRoute() {
       setEvents((prev) => prev.map((it) => (it.id === event.id ? { ...it, status: publish ? "PUBLISHED" : "DRAFT" } : it)));
     } catch (err) {
       setError(err instanceof Error ? err.message : "No se pudo actualizar el estado del evento");
-    }
-  }
-
-  async function handleDeleteReview(id: number) {
-    const confirmed = window.confirm("¿Eliminar esta reseña? Esta acción no se puede deshacer.");
-    if (!confirmed) return;
-
-    try {
-      await deleteAdminReview(id);
-      setReviews((prev) => prev.filter((review) => review.id !== id));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo eliminar la reseña");
     }
   }
 
@@ -675,52 +643,6 @@ export default function AdminRoute() {
                       </button>
                     </div>
                   )}
-                </div>
-              </div>
-            )}
-
-            {activeTab === "reviews" && (
-              <div className="card border-0 shadow-sm">
-                <div className="card-body p-0">
-                  <div className="table-responsive">
-                    <table className="table table-hover align-middle mb-0">
-                      <thead className="table-light">
-                        <tr>
-                          <th>ID</th>
-                          <th>Curso</th>
-                          <th>Usuario</th>
-                          <th>Valoración</th>
-                          <th>Contenido</th>
-                          <th>Fecha</th>
-                          <th className="text-end">Acciones</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {reviews.map((review) => (
-                          <tr key={review.id}>
-                            <td className="fw-semibold">#{review.id}</td>
-                            <td>{review.courseId}</td>
-                            <td>{review.userId}</td>
-                            <td>{review.rating}/5</td>
-                            <td className="text-muted">{review.content}</td>
-                            <td>{formatDate(review.createdAt)}</td>
-                            <td className="text-end">
-                              <button type="button" className="btn btn-sm btn-delete" onClick={() => void handleDeleteReview(review.id)}>
-                                Eliminar
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                        {!reviewsLoading && reviews.length === 0 && (
-                          <tr>
-                            <td colSpan={7} className="text-center text-muted py-4">
-                              No hay reseñas registradas.
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
                 </div>
               </div>
             )}

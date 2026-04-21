@@ -181,7 +181,7 @@
                                 <span>Evento completo. No se pueden comprar más entradas.</span>
                             </div>
                             {{/event.soldOut}}
-                            <form action="/cart/add/event/{{event.id}}" method="post">
+                            <form action="/cart/events/{{event.id}}" method="post">
                                 <input type="hidden" name="_csrf" value="{{_csrf.token}}">
                                 <button type="submit" class="btn-primary" {{#event.soldOut}}disabled{{/event.soldOut}}>
                                     {{#event.soldOut}}Entradas agotadas{{/event.soldOut}}
