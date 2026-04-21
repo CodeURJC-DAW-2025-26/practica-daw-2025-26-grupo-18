@@ -6,6 +6,8 @@ import { getCourseImageUrl, getUserProfileImageUrl } from "~/utils/imageUrls";
 import { useGlobalStore } from "~/stores/globalStore";
 import type { LoaderFunctionArgs } from "react-router";
 import type { CourseDetailDTO } from "~/dtos/CourseDTO";
+import { GET_COURSE_AGES, GET_COURSE_GENDERS, GET_COURSE_TAGS } from "../constants/constants";
+import { useEffect, useState } from "react";
 
 export async function clientLoader({ params }: LoaderFunctionArgs) {
   const id = Number(params.id);
@@ -41,7 +43,14 @@ export default function CourseDetail() {
       alert("Error al suscribirse: " + (error instanceof Error ? error.message : String(error)));
     }
   };
-
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const slides = [
+    { info: GET_COURSE_AGES },
+    { info: GET_COURSE_GENDERS },
+    ...(isUserLoggedIn ? [{ info: GET_COURSE_TAGS }] : [])
+  ];
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
+  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   return (
     <main className="main">
       <div className="container mt-3 pt-3">
@@ -106,6 +115,36 @@ export default function CourseDetail() {
                       <div className="card stats-modern-card" style={{ border: 0, borderRadius: "16px", boxShadow: "0 12px 28px rgba(16, 24, 40, 0.08)", background: "linear-gradient(180deg, rgba(217, 109, 60, 0.08) 0%, rgba(255, 255, 255, 1) 52%)", overflow: "hidden" }}>
                         <div className="card-body" style={{ padding: "0.75rem 0.75rem 1.2rem" }}>
                           {/* Placeholder para carrusel de stats */}
+                          <div id="courseStatsCarousel" className="carousel slide">
+                            <div className="carousel-inner pb-2">
+                              {slides.map((slide, index) => (
+                                <div key={index} className={`carousel-item ${index === currentSlide ? 'active' : ''}`}>
+                                  <div className="stats-modern-frame" style={{ height: "300px", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                                    <Chart 
+                                      info={slide.info} 
+                                      infoUser={userId} 
+                                      infoCourse={course.id} 
+                                    />
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* Controles del carrusel */}
+                            {slides.length > 1 && (
+                              <>
+                                <button className="carousel-control-prev" type="button" onClick={prevSlide} style={{ filter: "invert(1)" }}>
+                                  <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                                  <span className="visually-hidden">Anterior</span>
+                                </button>
+                                <button className="carousel-control-next" type="button" onClick={nextSlide} style={{ filter: "invert(1)" }}>
+                                  <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                                  <span className="visually-hidden">Siguiente</span>
+                                </button>
+                              </>
+                            )}
+                          </div>
+
                           <div className="stats-modern-frame" style={{ height: "210px", width: "100%", borderRadius: "12px", background: "#ffffff", border: "1px solid rgba(0, 0, 0, 0.06)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                              <span className="text-muted small">Cargando estadísticas...</span>
                           </div>
@@ -120,6 +159,7 @@ export default function CourseDetail() {
                     )}
                   </div>
                 )}
+
               </div>
 
               <div className="card border-0 shadow-sm mb-5 bg-light">

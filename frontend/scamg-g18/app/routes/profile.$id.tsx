@@ -4,6 +4,8 @@ import { Link, useParams } from "react-router";
 import { getProfileById, updateProfile } from "~/services/profileService";
 import type { ProfileDTO, ProfileUpdateDTO } from "~/dtos/ProfileDTO";
 import { getUserProfileImageUrl } from "~/utils/imageUrls";
+import Chart from "../components/Chart";
+import { GET_COURSE_PROGRESS, GET_LESSONS_LEARNED, GET_CREATED_COURSE_STATUS } from "../constants/constants";
 
 type ProfileFormState = {
   username: string;
@@ -96,7 +98,11 @@ export default function ProfileRoute() {
         }
       }
     }
-
+    const [currentSlide, setCurrentSlide] = useState(0);
+    const slides = [
+    ];
+    const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
+    const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
     void fetchProfile();
 
     return () => {
@@ -426,6 +432,14 @@ export default function ProfileRoute() {
                       <div className="course-progress-bar">
                         <div className="course-progress-fill" style={{ width: `${Math.max(0, Math.min(profile.averageProgress, 100))}%` }} />
                       </div>
+                      <div className="text-center mt-3 profile-stats-chart-frame profile-stats-chart-frame--tall" style={{ height: "300px" }}>
+                        <Chart 
+                          info={GET_COURSE_PROGRESS} 
+                          infoUser={profile.id} 
+                          infoCourse={0} 
+                        />
+                      </div>
+
                     </div>
                   </div>
                 </div>
@@ -440,6 +454,13 @@ export default function ProfileRoute() {
                     </div>
                     <h3>Lecciones aprendidas</h3>
                     <p>Has completado {profile.totalLessonsCompleted} lecciones en total.</p>
+                    <div className="text-center mt-3 mb-3 profile-stats-chart-frame" style={{ height: "300px" }}>
+                      <Chart 
+                        info={GET_LESSONS_LEARNED} 
+                        infoUser={profile.id} 
+                        infoCourse={0} 
+                      />
+                    </div>
                     <ul className="feature-list">
                       <li>
                         <i className="bi bi-check-circle" /> {profile.completedLessonsThisMonth} lecciones este mes
