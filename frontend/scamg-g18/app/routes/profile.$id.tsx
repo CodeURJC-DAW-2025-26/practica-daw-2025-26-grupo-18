@@ -60,7 +60,7 @@ export default function ProfileRoute() {
 
   const profileImageUrl = useMemo(() => {
     if (!profile) return "/services/default_avatar.png";
-    return profile.profileImage || getUserProfileImageUrl(profile.id);
+    return getUserProfileImageUrl(profile.id);
   }, [profile]);
 
   useEffect(() => {
@@ -98,11 +98,7 @@ export default function ProfileRoute() {
         }
       }
     }
-    const [currentSlide, setCurrentSlide] = useState(0);
-    const slides = [
-    ];
-    const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
-    const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+
     void fetchProfile();
 
     return () => {
@@ -235,7 +231,9 @@ export default function ProfileRoute() {
                 <div className="card-body p-4 text-center">
                   {!isEditing && (
                     <div id="profile-view">
-                      <img src={profileImageUrl} alt="Foto de perfil" className="rounded-circle mb-3" width={120} height={120} />
+                      <div className="profile-avatar-wrap">
+                        <img src={profileImageUrl} alt="Foto de perfil" className="rounded-circle mb-3" width={120} height={120} />
+                      </div>
                       <h3 className="h5 fw-bold mb-1">{profile.username}</h3>
                       <p className="text-muted mb-1">@{profile.username}</p>
                       <p className="text-muted mb-3">{profile.userType}</p>
@@ -273,7 +271,7 @@ export default function ProfileRoute() {
                           <p className="text-muted small mb-0">Actualiza tus datos para que tu perfil destaque más.</p>
                         </div>
 
-                        <div className="mb-3">
+                        <div className="mb-3 profile-avatar-editor">
                           <img
                             id="preview-img"
                             src={previewImageUrl || profileImageUrl}
@@ -282,7 +280,7 @@ export default function ProfileRoute() {
                             width={120}
                             height={120}
                           />
-                          <div>
+                          <div className="profile-avatar-input-wrap">
                             <label htmlFor="imageFile" className="form-label small text-muted">
                               Cambiar imagen
                             </label>
@@ -547,15 +545,12 @@ export default function ProfileRoute() {
                                       )}
                                     </div>
                                     <div className="col-md-7 text-center">
-                                      {hasSubscribers ? (
+                                      {hasSubscribers && id ? (
                                         <div className="instructor-chart-frame">
-                                          <iframe
-                                            src={`/statistics/created-course-status?courseId=${id}`}
-                                            title="Estadísticas del curso"
-                                            width="100%"
-                                            height="100%"
-                                            style={{ border: "none", overflow: "hidden" }}
-                                            scrolling="no"
+                                          <Chart
+                                            info={GET_CREATED_COURSE_STATUS}
+                                            infoUser={profile.id}
+                                            infoCourse={id}
                                           />
                                         </div>
                                       ) : (

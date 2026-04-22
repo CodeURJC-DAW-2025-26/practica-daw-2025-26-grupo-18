@@ -8,7 +8,7 @@
  *   <img src={getUserProfileImageUrl(user.id)} alt={user.username} />
  */
 
-const BASE = "/images";
+const BASE = "/api/v1/images";
 
 /** URL of the image for a course */
 export function getCourseImageUrl(courseId: number): string {

@@ -5200,6 +5200,19 @@ section,
     min-height: 96px;
 }
 
+#profile-view .profile-avatar-wrap,
+#profile-edit .profile-avatar-editor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#profile-edit .profile-avatar-input-wrap {
+    width: 100%;
+    max-width: 320px;
+}
+
 #profile-edit #preview-img {
     width: 132px;
     height: 132px;
