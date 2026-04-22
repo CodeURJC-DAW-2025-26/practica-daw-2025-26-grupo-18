@@ -4,6 +4,7 @@ import * as ChartService from "../services/chartService";
 import * as C from "../constants/constants";
 import { PieChart, BarChart } from '@mui/x-charts';
 
+
 function RenderBarChart({ data }: { data: ChartDataDTO }) {
   return (
     <BarChart
@@ -15,30 +16,46 @@ function RenderBarChart({ data }: { data: ChartDataDTO }) {
 }
 
 function RenderPieChart({ data, isDonut }: { data: ChartDataDTO, isDonut: boolean }) {
-  const formattedData = data.chartLabels.map((name, i) => ({
-    id: i,
-    value: data.chartValues[i],
-    label: name
-  }));
+  const formattedData = data.chartLabels.map((name, i) => {
+    let color: string | undefined;
+    if (name === "Completado") color = "#D58B66";
+    else if (name === "En progreso") color = "#907963";
+
+    return {
+      id: i,
+      value: data.chartValues[i] || 0,
+      label: name,
+      ...(color ? { color } : {}),
+    };
+  });
 
   return (
     <PieChart
+      colors={['#D58B66', '#907963', '#4e79a7', '#f28e2c', '#e15759']}
       series={[
         {
           data: formattedData,
+          outerRadius: 90,
           ...(isDonut && {
             innerRadius: 30,
-            outerRadius: 100,
             paddingAngle: 5,
             cornerRadius: 5,
           }),
         },
       ]}
       width={400}
-      height={200}
+      height={320}
+      margin={{ top: 10, bottom: 70, left: 10, right: 10 }}
+      slotProps={{
+        legend: {
+          direction: 'horizontal', // 'horizontal' es el valor correcto para una leyenda en fila
+          position: { vertical: 'bottom', horizontal: 'center' }, // 'center' es el valor correcto para centrar horizontalmente
+        },
+}}
     />
   );
 }
+
 
 export default function Chart({ info, infoUser, infoCourse }: { 
   info: string, 

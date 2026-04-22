@@ -7,6 +7,7 @@ import { useGlobalStore } from "~/stores/globalStore";
 import type { LoaderFunctionArgs } from "react-router";
 import type { CourseDetailDTO, ModuleDTO, LessonDTO } from "~/dtos/CourseDTO";
 import { GET_COURSE_AGES, GET_COURSE_GENDERS, GET_COURSE_TAGS } from "../constants/constants";
+import Chart from "../components/Chart";
 import { useEffect, useState } from "react";
 
 export async function clientLoader({ params }: LoaderFunctionArgs) {
@@ -48,12 +49,25 @@ export default function CourseDetail() {
     }
   };
   const [currentSlide, setCurrentSlide] = useState(0);
+  const globalData = useGlobalStore((state) => state.globalData);
+  const isUserLoggedIn = globalData?.isUserLoggedIn ?? false;
+  const userId = isUserLoggedIn ? (globalData?.userId ?? null) : null;
+
   const slides = [
     { info: GET_COURSE_AGES },
     { info: GET_COURSE_GENDERS },
     ...(isUserLoggedIn ? [{ info: GET_COURSE_TAGS }] : [])
   ];
+
+  // Si el usuario se desloguea estando en la slide de tags (índice 2), volver al inicio
+  useEffect(() => {
+    if (currentSlide >= slides.length) {
+      setCurrentSlide(0);
+    }
+  }, [isUserLoggedIn, slides.length, currentSlide]);
+
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
+
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   return (
     <main className="main">
@@ -126,7 +140,7 @@ export default function CourseDetail() {
                                   <div className="stats-modern-frame" style={{ height: "300px", display: "flex", justifyContent: "center", alignItems: "center" }}>
                                     <Chart 
                                       info={slide.info} 
-                                      infoUser={userId} 
+                                      infoUser={userId ?? 0} 
                                       infoCourse={course.id} 
                                     />
                                   </div>
@@ -149,10 +163,6 @@ export default function CourseDetail() {
                             )}
                           </div>
 
-                          <div className="stats-modern-frame" style={{ height: "210px", width: "100%", borderRadius: "12px", background: "#ffffff", border: "1px solid rgba(0, 0, 0, 0.06)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            {/* Grafico */}
-                            <span className="text-muted small">Cargando estadísticas...</span>
-                          </div>
                         </div>
                       </div>
                     ) : (
