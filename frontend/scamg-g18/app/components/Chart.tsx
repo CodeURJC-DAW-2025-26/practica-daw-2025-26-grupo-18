@@ -6,26 +6,31 @@ import { PieChart, BarChart } from '@mui/x-charts';
 
 
 function RenderBarChart({ data }: { data: ChartDataDTO }) {
+  if (!data || !data.chartLabels || !data.chartValues) {
+    return <div>Cargando gráfico...</div>;
+  }
+  const alternatingColors = ['#D58B66', '#907963'];
+  const series = data.chartValues.map((value, i) => ({
+    data: data.chartValues.map((_, j) => (i === j ? value : null)),
+    stack: 'total',
+    color: alternatingColors[i % 2],
+    label: i === 0 ? data.chartTitle : undefined,
+  }));
   return (
     <BarChart
-      xAxis={[{ data: data.chartLabels, scaleType: 'band' }]}
-      series={[{ data: data.chartValues, label: data.chartTitle }]}
-      height={300}
+      xAxis={[{ scaleType: 'band', data: data.chartLabels }]}
+      series={series}
+      height={270}
     />
   );
 }
 
 function RenderPieChart({ data, isDonut }: { data: ChartDataDTO, isDonut: boolean }) {
   const formattedData = data.chartLabels.map((name, i) => {
-    let color: string | undefined;
-    if (name === "Completado") color = "#D58B66";
-    else if (name === "En progreso") color = "#907963";
-
     return {
       id: i,
       value: data.chartValues[i] || 0,
       label: name,
-      ...(color ? { color } : {}),
     };
   });
 
@@ -43,15 +48,15 @@ function RenderPieChart({ data, isDonut }: { data: ChartDataDTO, isDonut: boolea
           }),
         },
       ]}
-      width={400}
-      height={320}
-      margin={{ top: 10, bottom: 70, left: 10, right: 10 }}
+      width={313}
+      height={250}
+      margin={{ top: 5, bottom: 5, left: 5, right: 5 }} // Ajusta los márgenes para acercar el gráfico y la leyenda
       slotProps={{
         legend: {
-          direction: 'horizontal', // 'horizontal' es el valor correcto para una leyenda en fila
-          position: { vertical: 'bottom', horizontal: 'center' }, // 'center' es el valor correcto para centrar horizontalmente
+          position: { vertical: 'bottom', horizontal: 'center' },
+          direction: 'horizontal',
         },
-}}
+      }}
     />
   );
 }
@@ -74,8 +79,8 @@ export default function Chart({ info, infoUser, infoCourse }: {
         switch (info) {
           case C.GET_COURSE_PROGRESS: dtoResult = await ChartService.getCourseProgress(infoUser); break;
           case C.GET_LESSONS_LEARNED: dtoResult = await ChartService.getLessonsLearned(infoUser); break;
-          case C.GET_COURSE_GENDERS: dtoResult = await ChartService.getCourseGenders(infoUser); break;
-          case C.GET_COURSE_AGES: dtoResult = await ChartService.getCourseAges(infoUser); break;
+          case C.GET_COURSE_GENDERS: dtoResult = await ChartService.getCourseGenders(infoCourse); break;
+          case C.GET_COURSE_AGES: dtoResult = await ChartService.getCourseAges(infoCourse); break;
           case C.GET_COURSE_TAGS: dtoResult = await ChartService.getCourseTags(infoUser, infoCourse); break;
           case C.GET_COURSE_USER_PROGRESS: dtoResult = await ChartService.getCourseUserProgress(infoCourse, infoUser); break;
           case C.GET_CREATED_COURSE_STATUS: dtoResult = await ChartService.getCreatedCourseStatus(infoCourse); break;
@@ -96,6 +101,9 @@ export default function Chart({ info, infoUser, infoCourse }: {
 
   if (loading) return <>Cargando estadísticas...</>;
   if (error || !data) return <>Error al cargar el contenido</>;
+  if (!data.chartLabels || data.chartLabels.length === 0 || !data.chartValues || data.chartValues.length === 0) {
+    return <span className="text-muted small">Sin datos disponibles aún</span>;
+  }
 
   switch (data.chartType) { 
     case C.GRAPHIC_BAR:

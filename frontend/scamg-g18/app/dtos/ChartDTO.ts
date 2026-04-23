@@ -1,6 +1,6 @@
 export interface ChartDataDTO {
   chartTitle: string;
-  chartType: 'bar' | 'line' | 'pie' | 'doughnut';
+  chartType: string;
   chartLabels: string[];
   chartValues: number[];
 }

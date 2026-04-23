@@ -8,6 +8,7 @@ export default function Cart() {
     const [loading, setLoading] = useState(true);
     const [errorNoSeats, setErrorNoSeats] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [showPaymentForm, setShowPaymentForm] = useState(false);
     
     // Checkout form state
     const [checkoutForm, setCheckoutForm] = useState<CheckoutRequestDTO>({
@@ -50,10 +51,50 @@ export default function Cart() {
         }
     };
 
+    // Validation helpers
+    const validateCardName = (v: string) => v.trim().length >= 3;
+    const validateEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+    const validateCardNumber = (v: string) => v.replace(/\D/g, '').length === 16;
+    const validateExpiry = (v: string) => {
+        if (!/^\d{2}\/\d{2}$/.test(v)) return false;
+        const [mm, yy] = v.split('/').map(Number);
+        if (mm < 1 || mm > 12) return false;
+        const now = new Date();
+        const expDate = new Date(2000 + yy, mm - 1, 1);
+        return expDate > now;
+    };
+    const validateCvv = (v: string) => /^\d{3}$/.test(v);
+
+    const formErrors = {
+        cardName: !validateCardName(checkoutForm.cardName),
+        billingEmail: !validateEmail(checkoutForm.billingEmail),
+        cardNumber: !validateCardNumber(checkoutForm.cardNumber),
+        cardExpiry: !validateExpiry(checkoutForm.cardExpiry),
+        cardCvv: !validateCvv(checkoutForm.cardCvv),
+    };
+
+    // Only show validation feedback if user has started typing in that field
+    const [touched, setTouched] = useState<Record<string, boolean>>({});
+
     const handleCheckoutChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setCheckoutForm(prev => ({ ...prev, [name]: value }));
+        // Auto-format card number with spaces every 4 digits
+        if (name === 'cardNumber') {
+            const digits = value.replace(/\D/g, '').slice(0, 16);
+            const formatted = digits.replace(/(\d{4})(?=\d)/g, '$1 ');
+            setCheckoutForm(prev => ({ ...prev, cardNumber: formatted }));
+        } else if (name === 'cardExpiry') {
+            // Auto-format expiry as MM/YY
+            const digits = value.replace(/\D/g, '').slice(0, 4);
+            const formatted = digits.length > 2 ? digits.slice(0, 2) + '/' + digits.slice(2) : digits;
+            setCheckoutForm(prev => ({ ...prev, cardExpiry: formatted }));
+        } else {
+            setCheckoutForm(prev => ({ ...prev, [name]: value }));
+        }
+        setTouched(prev => ({ ...prev, [name]: true }));
     };
+
+    const isFormValid = Object.values(formErrors).every(e => !e);
 
     const handleCheckoutSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -61,8 +102,12 @@ export default function Cart() {
         setErrorMessage("");
 
         try {
-            await checkout(checkoutForm);
-            navigate("/"); // Redirect to home or success page after successful checkout
+            const payload = {
+                ...checkoutForm,
+                cardNumber: checkoutForm.cardNumber.replace(/\D/g, ''), // Strip spaces before sending
+            };
+            await checkout(payload);
+            navigate("/new"); // Redirect to home or success page after successful checkout
         } catch (error: any) {
             if (error.message.includes("EVENT_FULL") || error.message.includes("eventFull")) {
                 setErrorNoSeats(true);
@@ -231,19 +276,16 @@ export default function Cart() {
                                             className="btn btn-primary btn-lg"
                                             type="button"
                                             style={{ backgroundColor: "#d96d3c", borderColor: "#d96d3c" }}
-                                            data-bs-toggle="collapse"
-                                            data-bs-target="#paymentForm"
-                                            aria-expanded="false"
-                                            aria-controls="paymentForm"
+                                            onClick={() => setShowPaymentForm(prev => !prev)}
                                             disabled={!order || !order.items || order.items.length === 0}>
-                                            Pagar Ahora
+                                            {showPaymentForm ? "Cancelar" : "Pagar Ahora"}
                                         </button>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Payment Form Container (Bootstrap Collapse) */}
-                            <div className="collapse mt-4" id="paymentForm">
+                            {/* Payment Form */}
+                            {showPaymentForm && <div className="mt-4">
                                 <div className="card shadow-sm">
                                     <div className="card-header bg-white py-3">
                                         <h5 className="mb-0">Información de Tarjeta</h5>
@@ -252,46 +294,56 @@ export default function Cart() {
                                         <form id="checkoutForm" onSubmit={handleCheckoutSubmit} noValidate>
                                             <div className="mb-3">
                                                 <label htmlFor="cardName" className="form-label">Nombre en la tarjeta</label>
-                                                <input type="text" className="form-control" id="cardName" name="cardName" 
-                                                    value={checkoutForm.cardName} onChange={handleCheckoutChange} required />
-                                                <div className="invalid-feedback">Introduce el nombre del titular.</div>
+                                                <input type="text"
+                                                    className={`form-control ${touched.cardName ? (formErrors.cardName ? 'is-invalid' : 'is-valid') : ''}`}
+                                                    id="cardName" name="cardName"
+                                                    value={checkoutForm.cardName} onChange={handleCheckoutChange} />
+                                                <div className="invalid-feedback">Introduce el nombre del titular (mín. 3 caracteres).</div>
                                             </div>
                                             <div className="mb-3">
                                                 <label htmlFor="billingEmail" className="form-label">Email para factura</label>
-                                                <input type="email" className="form-control" id="billingEmail" name="billingEmail" 
-                                                    value={checkoutForm.billingEmail} onChange={handleCheckoutChange} required />
+                                                <input type="email"
+                                                    className={`form-control ${touched.billingEmail ? (formErrors.billingEmail ? 'is-invalid' : 'is-valid') : ''}`}
+                                                    id="billingEmail" name="billingEmail"
+                                                    value={checkoutForm.billingEmail} onChange={handleCheckoutChange} />
                                                 <div className="invalid-feedback">Introduce un email válido.</div>
                                             </div>
                                             <div className="mb-3">
                                                 <label htmlFor="cardNumber" className="form-label">Número de tarjeta</label>
-                                                <input type="text" className="form-control" id="cardNumber" name="cardNumber" 
-                                                       placeholder="0000 0000 0000 0000" maxLength={19} 
-                                                       value={checkoutForm.cardNumber} onChange={handleCheckoutChange} required />
+                                                <input type="text"
+                                                    className={`form-control ${touched.cardNumber ? (formErrors.cardNumber ? 'is-invalid' : 'is-valid') : ''}`}
+                                                    id="cardNumber" name="cardNumber"
+                                                    placeholder="0000 0000 0000 0000" maxLength={19}
+                                                    value={checkoutForm.cardNumber} onChange={handleCheckoutChange} />
                                                 <div className="invalid-feedback">El número de tarjeta debe tener 16 dígitos.</div>
                                             </div>
                                             <div className="row">
                                                 <div className="col-6 mb-3">
                                                     <label htmlFor="cardExpiry" className="form-label">Caducidad (MM/YY)</label>
-                                                    <input type="text" className="form-control" id="cardExpiry" name="cardExpiry" 
-                                                           placeholder="MM/YY" maxLength={5} 
-                                                           value={checkoutForm.cardExpiry} onChange={handleCheckoutChange} required />
+                                                    <input type="text"
+                                                        className={`form-control ${touched.cardExpiry ? (formErrors.cardExpiry ? 'is-invalid' : 'is-valid') : ''}`}
+                                                        id="cardExpiry" name="cardExpiry"
+                                                        placeholder="MM/YY" maxLength={5}
+                                                        value={checkoutForm.cardExpiry} onChange={handleCheckoutChange} />
                                                     <div className="invalid-feedback">Introduce una fecha válida (MM/YY) no expirada.</div>
                                                 </div>
                                                 <div className="col-6 mb-3">
                                                     <label htmlFor="cardCvv" className="form-label">CVV</label>
-                                                    <input type="password" className="form-control" id="cardCvv" name="cardCvv"
-                                                           maxLength={3} autoComplete="off" 
-                                                           value={checkoutForm.cardCvv} onChange={handleCheckoutChange} required />
+                                                    <input type="password"
+                                                        className={`form-control ${touched.cardCvv ? (formErrors.cardCvv ? 'is-invalid' : 'is-valid') : ''}`}
+                                                        id="cardCvv" name="cardCvv"
+                                                        maxLength={3} autoComplete="off"
+                                                        value={checkoutForm.cardCvv} onChange={handleCheckoutChange} />
                                                     <div className="invalid-feedback">El CVV debe tener 3 dígitos.</div>
                                                 </div>
                                             </div>
                                             <div className="d-grid gap-2">
-                                                <button type="submit" className="btn btn-success">Confirmar Pago</button>
+                                                <button type="submit" className="btn btn-success" disabled={!isFormValid}>Confirmar Pago</button>
                                             </div>
                                         </form>
                                     </div>
                                 </div>
-                            </div>
+                            </div>}
                         </div>
                     </div>
                 </div>
