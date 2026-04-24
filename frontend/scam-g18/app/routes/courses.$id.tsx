@@ -29,7 +29,7 @@ export default function CourseDetail() {
     course,
     modules,
     reviews,
-    isSubscribedToCourse: isSubscribed,
+    isSuscribedToCourse: isSubscribed,
     canEdit: isOwner,
     courseProgressPercentage,
     averageRating,
@@ -84,7 +84,7 @@ export default function CourseDetail() {
       <section id="course-details" className="section pt-3">
         <Container data-aos="fade-up">
           <Row className="gy-5">
-            <Col lg={isSubscribed ? 10 : 8} className={isSubscribed ? "mx-auto" : ""}>
+            <Col lg={8}>
               <div className="mb-5">
                 <div className="d-flex justify-content-between align-items-start mb-2">
                   <span className="badge" style={{ backgroundColor: "var(--accent-color)" }}>Actualizado {course.updatedAt}</span>
@@ -138,10 +138,10 @@ export default function CourseDetail() {
                               {slides.map((slide, index) => (
                                 <div key={index} className={`carousel-item ${index === currentSlide ? 'active' : ''}`}>
                                   <div className="stats-modern-frame" style={{ height: "300px", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                                    <Chart 
-                                      info={slide.info} 
-                                      infoUser={userId ?? 0} 
-                                      infoCourse={course.id} 
+                                    <Chart
+                                      info={slide.info}
+                                      infoUser={userId ?? 0}
+                                      infoCourse={course.id}
                                     />
                                   </div>
                                 </div>
@@ -316,37 +316,41 @@ export default function CourseDetail() {
               ))}
             </Col>
 
-            {!isSubscribed && (
-              <Col lg={4}>
-                <div className="sticky-top" style={{ top: "100px", zIndex: 10 }}>
-                  <article className="price-card border-0 shadow-lg h-auto mb-4 bg-white rounded-4 overflow-hidden">
-                    <div className="card-head pt-4 pb-2 text-center">
-                      <img src={getCourseImageUrl(course.id)} alt={course.title} className="img-fluid rounded-4 mb-3 px-3" />
-                      <h3 className="title fs-4 mb-0">Acceso Completo</h3>
-                      <div className="price-wrap mt-3 mb-3 justify-content-center">
-                        <span className="price display-4 fw-bold text-dark">{priceInEuros} €</span>
-                      </div>
+            <Col lg={4}>
+              <div className="sticky-top" style={{ top: "100px", zIndex: 10 }}>
+                <article className="price-card border-0 shadow-lg h-auto mb-4 bg-white rounded-4 overflow-hidden">
+                  <div className="card-head pt-4 pb-2 text-center">
+                    <img src={getCourseImageUrl(course.id)} alt={course.title} className="img-fluid rounded-4 mb-3 px-3" />
+                    <h3 className="title fs-4 mb-0">Acceso Completo</h3>
+                    <div className="price-wrap mt-3 mb-3 justify-content-center">
+                      <span className="price display-4 fw-bold text-dark">{priceInEuros} €</span>
                     </div>
+                  </div>
 
-                    <div className="px-4 pb-4">
-                      <div className="cta mb-4">
+                  <div className="px-4 pb-4">
+                    <div className="cta mb-4">
+                      {isSubscribed ? (
+                        <Button disabled className="w-100 py-3 fw-bold fs-5" style={{ backgroundColor: "#6c757d", borderColor: "#6c757d", color: "white", cursor: "not-allowed", opacity: 0.8 }}>
+                          Suscrito
+                        </Button>
+                      ) : (
                         <Button onClick={handleSubscribe} className="w-100 py-3 fw-bold fs-5" style={{ backgroundColor: "#d96d3c", borderColor: "#d96d3c", color: "white" }}>
                           Suscribirse ahora
                         </Button>
-                      </div>
-
-                      <p className="fw-bold text-dark mb-2 small text-uppercase">Este curso incluye:</p>
-                      <ul className="feature-list list-unstyled small text-secondary mb-4">
-                        <li className="mb-2 d-flex align-items-center gap-2"><i className="bi bi-camera-video" style={{ color: "var(--accent-color)" }}></i> {course.videoHours} horas de video</li>
-                        <li className="mb-2 d-flex align-items-center gap-2"><i className="bi bi-file-earmark-arrow-down" style={{ color: "var(--accent-color)" }}></i> {course.downloadableResources} recursos descargables</li>
-                        <li className="mb-2 d-flex align-items-center gap-2"><i className="bi bi-trophy" style={{ color: "var(--accent-color)" }}></i> Certificado digital</li>
-                        <li className="mb-2 d-flex align-items-center gap-2"><i className="bi bi-infinity" style={{ color: "var(--accent-color)" }}></i> Acceso de por vida</li>
-                      </ul>
+                      )}
                     </div>
-                  </article>
-                </div>
-              </Col>
-            )}
+
+                    <p className="fw-bold text-dark mb-2 small text-uppercase">Este curso incluye:</p>
+                    <ul className="feature-list list-unstyled small text-secondary mb-4">
+                      <li className="mb-2 d-flex align-items-center gap-2"><i className="bi bi-camera-video" style={{ color: "var(--accent-color)" }}></i> {course.videoHours} horas de video</li>
+                      <li className="mb-2 d-flex align-items-center gap-2"><i className="bi bi-file-earmark-arrow-down" style={{ color: "var(--accent-color)" }}></i> {course.downloadableResources} recursos descargables</li>
+                      <li className="mb-2 d-flex align-items-center gap-2"><i className="bi bi-trophy" style={{ color: "var(--accent-color)" }}></i> Certificado digital</li>
+                      <li className="mb-2 d-flex align-items-center gap-2"><i className="bi bi-infinity" style={{ color: "var(--accent-color)" }}></i> Acceso de por vida</li>
+                    </ul>
+                  </div>
+                </article>
+              </div>
+            </Col>
           </Row>
         </Container>
       </section>

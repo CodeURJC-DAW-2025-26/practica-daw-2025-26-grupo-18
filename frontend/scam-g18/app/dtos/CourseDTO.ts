@@ -58,6 +58,6 @@ export interface CourseDetailDTO {
   averageRatingStars: string;
   hasSubscribers: boolean;
   courseProgressPercentage: number;
-  isSubscribedToCourse: boolean;
+  isSuscribedToCourse: boolean;
   canEdit: boolean;
 }
