@@ -130,7 +130,17 @@ export default function EventDetail() {
                   )}
                   {canDelete && (
                     <button className="btn btn-outline-danger btn-sm"
-                      onClick={() => { if (confirm('¿Estás seguro de eliminar este evento?')) { /* Lógica de borrado */ } }}>
+                      onClick={async () => {
+                        if (confirm('¿Estás seguro de eliminar este evento?')) {
+                          try {
+                            const { deleteEvent } = await import('~/services/eventService');
+                            await deleteEvent(event.id);
+                            navigate("/new/events");
+                          } catch (error) {
+                            alert("Error al eliminar el evento: " + (error instanceof Error ? error.message : String(error)));
+                          }
+                        }
+                      }}>
                       <i className="bi bi-trash me-1"></i> Eliminar evento
                     </button>
                   )}

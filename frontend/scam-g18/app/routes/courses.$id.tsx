@@ -94,7 +94,17 @@ export default function CourseDetail() {
                         <Link to={`/new/courses/${course.id}/edit`} className="btn btn-outline-secondary btn-sm">
                           <i className="bi bi-pencil me-1"></i> Editar curso
                         </Link>
-                        <button className="btn btn-outline-danger btn-sm" onClick={() => { if (confirm('¿Seguro?')) { /* delete */ } }}>
+                        <button className="btn btn-outline-danger btn-sm" onClick={async () => {
+                          if (confirm('¿Seguro que deseas eliminar este curso?')) {
+                            try {
+                              const { deleteCourse } = await import('~/services/courseService');
+                              await deleteCourse(course.id);
+                              navigate("/new/courses");
+                            } catch (error) {
+                              alert("Error al eliminar el curso: " + (error instanceof Error ? error.message : String(error)));
+                            }
+                          }
+                        }}>
                           <i className="bi bi-trash me-1"></i> Eliminar curso
                         </button>
                       </>
