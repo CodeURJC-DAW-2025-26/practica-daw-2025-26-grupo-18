@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import type { CartDTO, CheckoutRequestDTO } from "../dtos/CartDTO";
 import { getCart, removeItemFromCart, checkout } from "../services/cartService";
+import { loadGlobalDataIntoStore } from "../services/globalService";
 
 export default function Cart() {
     const [order, setOrder] = useState<CartDTO | null>(null);
@@ -107,6 +108,8 @@ export default function Cart() {
                 cardNumber: checkoutForm.cardNumber.replace(/\D/g, ''), // Strip spaces before sending
             };
             await checkout(payload);
+            // Refresh global data to update user roles (e.g. if they just bought a subscription)
+            await loadGlobalDataIntoStore(true);
             navigate("/new"); // Redirect to home or success page after successful checkout
         } catch (error: any) {
             if (error.message.includes("EVENT_FULL") || error.message.includes("eventFull")) {

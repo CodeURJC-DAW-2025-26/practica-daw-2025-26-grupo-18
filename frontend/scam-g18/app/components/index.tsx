@@ -1,11 +1,25 @@
+import { useNavigate } from "react-router";
 import { Col, Container, Row } from "react-bootstrap";
 import { useGlobalStore } from "~/stores/globalStore";
+import { addSubscriptionToCart } from "../services/cartService";
 
 export default function AppLayout() {
     const globalData = useGlobalStore().globalData;
 
     const isUserLoggedIn = globalData?.isUserLoggedIn ?? false;
     const isPublisher = globalData?.isPublisher ?? false;
+    const navigate = useNavigate();
+
+    const handleAddSubscription = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        try {
+            await addSubscriptionToCart();
+            navigate("/new/cart");
+        } catch (error) {
+            console.error("Error adding subscription to cart:", error);
+            alert("Error al añadir la suscripción al carrito. Inténtalo de nuevo.");
+        }
+    };
 
     return (
         <main className="main">
@@ -743,11 +757,11 @@ export default function AppLayout() {
                                         isPublisher ? (
                                             <span className="btn btn-choose w-100 disabled">Ya tienes Premium</span>
                                         ) : (
-                                            <form action="/new/cart/subscriptions" method="post">
-                                                <button type="submit" className="btn btn-choose w-100">
-                                                    Comprar por 10€
-                                                </button>
-                                            </form>
+                                            <button 
+                                                onClick={handleAddSubscription}
+                                                className="btn btn-choose w-100">
+                                                Comprar por 10€
+                                            </button>
                                         )
                                     ) : (
                                         <a href="/new/login" className="btn btn-choose w-100">
