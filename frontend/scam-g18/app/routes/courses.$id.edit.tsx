@@ -5,9 +5,25 @@ import { getCourseById, updateCourse } from "~/services/courseService";
 import type { CourseDTO } from "~/dtos/CourseDTO";
 import type { LoaderFunctionArgs } from "react-router";
 
+import { loadGlobalDataIntoStore } from "~/services/globalService";
+import { redirect } from "react-router";
+
 export async function clientLoader({ params }: LoaderFunctionArgs) {
+  const globalData = await loadGlobalDataIntoStore();
+  if (!globalData?.isUserLoggedIn) {
+    return redirect("/new/login");
+  }
+  if (!globalData?.canCreateCourse && !globalData?.isAdmin) {
+    return redirect(`/new/error?message=${encodeURIComponent("Necesitas tener el plan de creador para editar cursos.")}`);
+  }
+
   const id = Number(params.id);
   const data = await getCourseById(id);
+  
+  if (!data.canEdit && !globalData?.isAdmin) {
+    return redirect(`/new/error?message=${encodeURIComponent("No tienes permiso para editar este curso. Solo el creador del curso o un administrador pueden hacerlo.")}`);
+  }
+
   return { 
     course: {
       ...data.course,

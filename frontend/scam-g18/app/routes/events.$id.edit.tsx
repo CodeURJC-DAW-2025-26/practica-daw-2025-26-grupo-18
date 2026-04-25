@@ -5,9 +5,25 @@ import { getEventById, updateEvent } from "~/services/eventService";
 import type { EventDTO } from "~/dtos/EventDTO";
 import type { LoaderFunctionArgs } from "react-router";
 
+import { loadGlobalDataIntoStore } from "~/services/globalService";
+import { redirect } from "react-router";
+
 export async function clientLoader({ params }: LoaderFunctionArgs) {
+  const globalData = await loadGlobalDataIntoStore();
+  if (!globalData?.isUserLoggedIn) {
+    return redirect("/new/login");
+  }
+  if (!globalData?.canCreateEvent && !globalData?.isAdmin) {
+    return redirect(`/new/error?message=${encodeURIComponent("Necesitas tener el plan de creador para editar eventos.")}`);
+  }
+
   const id = Number(params.id);
   const event = await getEventById(id);
+
+  if (!event.canEdit && !globalData?.isAdmin) {
+    return redirect(`/new/error?message=${encodeURIComponent("No tienes permiso para editar este evento. Solo el creador del evento o un administrador pueden hacerlo.")}`);
+  }
+
   return { event: event as unknown as EventDTO };
 }
 clientLoader.hydrate = true;

@@ -4,8 +4,20 @@ import CourseForm from "~/components/CourseForm";
 import { createCourse } from "~/services/courseService";
 import type { CourseDTO } from "~/dtos/CourseDTO";
 
-import { Link } from "react-router";
+import { Link, redirect } from "react-router";
+import { loadGlobalDataIntoStore } from "~/services/globalService";
 
+export async function clientLoader() {
+  const globalData = await loadGlobalDataIntoStore();
+  if (!globalData?.isUserLoggedIn) {
+    return redirect("/new/login");
+  }
+  if (!globalData?.canCreateCourse && !globalData?.isAdmin) {
+    return redirect(`/new/error?message=${encodeURIComponent("Necesitas tener el plan de creador para poder crear cursos.")}`);
+  }
+  return null;
+}
+clientLoader.hydrate = true;
 export default function NewCourse() {
   const navigate = useNavigate();
 

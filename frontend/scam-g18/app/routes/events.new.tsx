@@ -4,8 +4,20 @@ import EventForm from "~/components/EventForm";
 import { createEvent } from "~/services/eventService";
 import type { EventDTO } from "~/dtos/EventDTO";
 
-import { Link } from "react-router";
+import { Link, redirect } from "react-router";
+import { loadGlobalDataIntoStore } from "~/services/globalService";
 
+export async function clientLoader() {
+  const globalData = await loadGlobalDataIntoStore();
+  if (!globalData?.isUserLoggedIn) {
+    return redirect("/new/login");
+  }
+  if (!globalData?.canCreateEvent && !globalData?.isAdmin) {
+    return redirect(`/new/error?message=${encodeURIComponent("Necesitas tener el plan de creador para poder crear eventos.")}`);
+  }
+  return null;
+}
+clientLoader.hydrate = true;
 export default function NewEvent() {
   const navigate = useNavigate();
 

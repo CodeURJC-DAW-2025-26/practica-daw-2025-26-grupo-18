@@ -9,6 +9,7 @@ export default [
     route("profile/me", "routes/profile.me.tsx"),
     route("profile/:id", "routes/profile.$id.tsx"),
     route("cart", "routes/cart.tsx"),
+    route("error", "routes/error.tsx"),
     
     // Courses
     route("courses", "routes/courses.tsx"),
