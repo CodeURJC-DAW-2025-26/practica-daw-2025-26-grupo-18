@@ -1,9 +1,9 @@
-import { useState } from "react";
 import type { FormEvent } from "react";
+import { useState } from "react";
 import { Link, redirect, useNavigate, useSearchParams } from "react-router";
 
-import { loadGlobalDataIntoStore } from "~/services/globalService";
 import { login as loginRequest } from "~/services/authService";
+import { loadGlobalDataIntoStore } from "~/services/globalService";
 
 export async function clientLoader() {
   const globalData = await loadGlobalDataIntoStore();
@@ -22,27 +22,9 @@ export default function LoginRoute() {
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [touched, setTouched] = useState<Record<string, boolean>>({});
-
-  const validateUsername = (v: string) => v.trim().length >= 3;
-  const validatePassword = (v: string) => /^(?=.*[0-9])(?=.*[A-Z])(?=\S+$).{8,}$/.test(v);
-
-  const formErrors = {
-    username: !validateUsername(username),
-    password: !validatePassword(password),
-  };
-
-  const isFormValid = Object.values(formErrors).every(e => !e);
-
-  const handleFieldChange = (name: string, value: string) => {
-    if (name === "username") setUsername(value);
-    if (name === "password") setPassword(value);
-    setTouched(prev => ({ ...prev, [name]: true }));
-  };
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!isFormValid) return;
 
     try {
       setSubmitting(true);
@@ -79,38 +61,36 @@ export default function LoginRoute() {
             </div>
 
             <div className="col-lg-6 bg-white d-flex align-items-center">
-                <div className="p-5 w-100">
-                    <div className="text-center mb-4">
-                        <h2 className="fw-bold text-dark">Iniciar Sesion</h2>
-                        <p className="text-muted">Bienvenido de nuevo a SCAM</p>
-                    </div>
+              <div className="p-5 w-100">
+                <div className="text-center mb-4">
+                  <h2 className="fw-bold text-dark">Iniciar Sesion</h2>
+                  <p className="text-muted">Bienvenido de nuevo a SCAM</p>
+                </div>
 
                 {error && (
-                    <div className="alert alert-danger" role="alert">
+                  <div className="alert alert-danger" role="alert">
                     {error}
-                    </div>
+                  </div>
                 )}
 
-                <form id="loginForm" onSubmit={onSubmit} noValidate>
+                <form id="loginForm" onSubmit={onSubmit}>
                   <div className="mb-3">
                     <label htmlFor="loginEmail" className="form-label small fw-bold">
                       Usuario o Correo electronico
                     </label>
-                    <div className="input-group has-validation">
+                    <div className="input-group">
                       <span className="input-group-text">
                         <i className="bi bi-person" />
                       </span>
                       <input
                         type="text"
-                        className={`form-control ${formErrors.username ? 'is-invalid' : 'is-valid'}`}
+                        className="form-control"
                         id="loginEmail"
                         value={username}
-                        onChange={(event) => handleFieldChange("username", event.target.value)}
+                        onChange={(event) => setUsername(event.target.value)}
                         placeholder="Usuario o correo electronico"
                         autoComplete="username"
-                        required
                       />
-                      <div className="invalid-feedback">Introduce tu usuario (mín. 3 caracteres).</div>
                     </div>
                   </div>
 
@@ -118,26 +98,24 @@ export default function LoginRoute() {
                     <label htmlFor="loginPassword" className="form-label small fw-bold">
                       Contrasena
                     </label>
-                    <div className="input-group has-validation">
+                    <div className="input-group">
                       <span className="input-group-text">
                         <i className="bi bi-lock" />
                       </span>
                       <input
                         type="password"
-                        className={`form-control ${formErrors.password ? 'is-invalid' : 'is-valid'}`}
+                        className="form-control"
                         id="loginPassword"
                         value={password}
-                        onChange={(event) => handleFieldChange("password", event.target.value)}
+                        onChange={(event) => setPassword(event.target.value)}
                         placeholder="********"
                         autoComplete="current-password"
-                        required
                       />
-                      <div className="invalid-feedback">Mín. 8 caracteres: 1 mayúscula, 1 número y 7 letras.</div>
                     </div>
                   </div>
 
                   <div className="d-grid mb-3">
-                    <button type="submit" className="btn btn-primary py-2 fw-bold" disabled={submitting || !isFormValid}>
+                    <button type="submit" className="btn btn-primary py-2 fw-bold" disabled={submitting}>
                       {submitting ? "Iniciando..." : "Iniciar Sesion"}
                     </button>
                   </div>
