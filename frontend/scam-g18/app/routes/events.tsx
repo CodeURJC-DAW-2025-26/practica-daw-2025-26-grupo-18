@@ -1,22 +1,46 @@
-import { useState, useEffect } from "react";
-import { Container, Row, Col, Form, InputGroup, Button, Badge, Spinner, Alert } from "react-bootstrap";
-import { Link, useSearchParams } from "react-router";
+import { useState } from "react";
+import { Container, Form, InputGroup, Button, Badge, Spinner, Alert } from "react-bootstrap";
+import { Link, useLoaderData, useSearchParams } from "react-router";
 import { getEvents } from "~/services/eventService";
-import { getGlobalData } from "~/services/globalService";
-import { getEventImageUrl } from "~/utils/imageUrls";
-import type { GlobalDataDTO } from "~/dtos/GlobalDataDTO";
+import { loadGlobalDataIntoStore } from "~/services/globalService";
+import { useAuthStore } from "~/stores/authStore";
+import type { LoaderFunctionArgs } from "react-router";
+
+type EventsLoaderData = {
+  initialEvents: Array<Record<string, any>>;
+  initialSearch: string;
+};
+
+export async function clientLoader({ request }: LoaderFunctionArgs): Promise<EventsLoaderData> {
+  const url = new URL(request.url);
+  const search = url.searchParams.get("search") ?? "";
+
+  await loadGlobalDataIntoStore();
+  const initialEvents = await getEvents(0, search || undefined);
+
+  return {
+    initialEvents,
+    initialSearch: search,
+  };
+}
+
+clientLoader.hydrate = true;
 
 export default function EventsPage() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [events, setEvents] = useState<Record<string, any>[]>([]);
-  const [globalData, setGlobalData] = useState<GlobalDataDTO | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState(0);
-  const [hasMore, setHasMore] = useState(false);
-  const [search, setSearch] = useState(searchParams.get("search") ?? "");
 
   const PAGE_SIZE = 10;
+
+  const { initialEvents, initialSearch } = useLoaderData<typeof clientLoader>();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [events, setEvents] = useState<Array<Record<string, any>>>(initialEvents);
+  const canCreateEvent = useAuthStore((state) => state.user?.canCreateEvent ?? false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(initialEvents.length === PAGE_SIZE);
+  const [search, setSearch] = useState(initialSearch || searchParams.get("search") || "");
+
+
 
   const fetchEvents = async (currentPage: number, currentSearch: string, append: boolean) => {
     try {
@@ -33,16 +57,6 @@ export default function EventsPage() {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    getGlobalData().then(setGlobalData).catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    setLoading(true);
-    setPage(0);
-    fetchEvents(0, search, false);
-  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,7 +118,7 @@ export default function EventsPage() {
                   </InputGroup>
                 </div>
 
-                {globalData?.canCreateEvent && (
+                {canCreateEvent && (
                   <Link 
                     to="/new/events/new" 
                     className="btn btn-primary btn-lg fw-bold px-4 rounded-pill shadow-sm"

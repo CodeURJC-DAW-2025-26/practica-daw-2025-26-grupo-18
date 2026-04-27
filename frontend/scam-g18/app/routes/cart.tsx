@@ -1,12 +1,30 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router";
+import { useState } from "react";
+import { Link, redirect, useLoaderData, useNavigate } from "react-router";
 import type { CartDTO, CheckoutRequestDTO } from "../dtos/CartDTO";
 import { getCart, removeItemFromCart, checkout } from "../services/cartService";
 import { loadGlobalDataIntoStore } from "../services/globalService";
 
+type CartLoaderData = {
+    initialOrder: CartDTO | null;
+};
+
+export async function clientLoader(): Promise<CartLoaderData> {
+    try {
+        const cartData = await getCart();
+        return { initialOrder: cartData };
+    } catch (error: any) {
+        if (error?.message?.includes("401")) {
+            throw redirect("/new/login");
+        }
+        return { initialOrder: null };
+    }
+}
+
+clientLoader.hydrate = true;
+
 export default function Cart() {
-    const [order, setOrder] = useState<CartDTO | null>(null);
-    const [loading, setLoading] = useState(true);
+    const { initialOrder } = useLoaderData<typeof clientLoader>();
+    const [order, setOrder] = useState<CartDTO | null>(initialOrder);
     const [errorNoSeats, setErrorNoSeats] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [showPaymentForm, setShowPaymentForm] = useState(false);
@@ -21,27 +39,6 @@ export default function Cart() {
     });
 
     const navigate = useNavigate();
-
-    useEffect(() => {
-        loadCart();
-    }, []);
-
-    const loadCart = async () => {
-        try {
-            setLoading(true);
-            const cartData = await getCart();
-            setOrder(cartData);
-            setErrorMessage("");
-        } catch (error: any) {
-            if (error.message.includes("401")) {
-                navigate("/login");
-            } else {
-                setErrorMessage("No se pudo cargar el carrito. Inténtalo más tarde.");
-            }
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleRemoveItem = async (itemId: number) => {
         try {
@@ -124,18 +121,6 @@ export default function Cart() {
     const totalEuros = order ? order.totalAmountCents / 100 : 0;
     const subtotalEuros = totalEuros / 1.21;
     const taxEuros = totalEuros - subtotalEuros;
-
-    if (loading) {
-        return (
-            <main className="main">
-                <div className="container py-5 text-center">
-                    <div className="spinner-border text-primary" role="status">
-                        <span className="visually-hidden">Cargando...</span>
-                    </div>
-                </div>
-            </main>
-        );
-    }
 
     return (
         <main className="main">

@@ -2,19 +2,19 @@ import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router";
 import { Container, Dropdown, Navbar } from "react-bootstrap";
 import { useGlobalStore } from "~/stores/globalStore";
+import { useAuthStore } from "~/stores/authStore";
 import { logout } from "~/services/authService";
 
 export default function Header() {
     const navigate = useNavigate();
-    const globalData = useGlobalStore().globalData;
-    const clearGlobalData = useGlobalStore().clearGlobalData;
+    const user = useAuthStore((state) => state.user);
+    const isLoggedIn = useAuthStore((state) => state.isLoggedIn());
+    const isAdmin = useGlobalStore((state) => state.globalData?.isAdmin ?? false);
     const [loggingOut, setLoggingOut] = useState(false);
 
-    const isUserLoggedIn = globalData?.isUserLoggedIn ?? false;
-    const isAdmin = globalData?.isAdmin ?? false;
-    const userId = globalData?.userId;
-    const userName = globalData?.userName ?? "Usuario";
-    const userProfileImage = globalData?.userProfileImage ?? "/services/default_avatar.png";
+    const userName = user?.username ?? "Usuario";
+    const userProfileImage = user?.profileImage ?? "/services/default_avatar.png";
+    const userId = user?.id;
 
     async function handleLogout() {
         try {
@@ -23,7 +23,6 @@ export default function Header() {
         } catch {
             // Even when logout fails server-side, clear local auth state to avoid stale UI.
         } finally {
-            clearGlobalData();
             setLoggingOut(false);
             navigate("/new/login", { replace: true });
         }
@@ -49,7 +48,7 @@ export default function Header() {
                                 Cursos
                             </NavLink>
                         </li>
-                        {isUserLoggedIn && (
+                        {isLoggedIn && (
                             <li>
                                 <NavLink to="/new/courses/subscribed" className={({ isActive }) => (isActive ? "active" : "")}>
                                     Cursos suscritos
@@ -61,7 +60,7 @@ export default function Header() {
                                 Eventos
                             </NavLink>
                         </li>
-                        {isUserLoggedIn && (
+                        {isLoggedIn && (
                             <li>
                                 <NavLink to="/new/events/purchased" className={({ isActive }) => (isActive ? "active" : "")}>
                                     Eventos comprados
@@ -87,7 +86,7 @@ export default function Header() {
                         <i className="bi bi-bag" />
                     </Link>
 
-                    {isUserLoggedIn ? (
+                    {isLoggedIn ? (
                         <Dropdown align="end" className="header-profile dropdown">
                             <Dropdown.Toggle as="a" id="profileDropdown" href="#" className="d-flex align-items-center gap-3 text-decoration-none dropdown-toggle" style={{ fontFamily: "var(--nav-font)", color: "var(--nav-color)", fontSize: "16px" }}>
                                 <span className="profile-name">{userName}</span>

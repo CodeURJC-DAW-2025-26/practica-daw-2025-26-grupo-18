@@ -1,31 +1,22 @@
-import { useState, useEffect } from "react";
-import { Container, Row, Col, Badge, Spinner, Alert } from "react-bootstrap";
-import { Link } from "react-router";
+import { Container, Badge, Alert } from "react-bootstrap";
+import { Link, useLoaderData } from "react-router";
 import { getPurchasedEvents } from "~/services/eventService";
-import { getGlobalData } from "~/services/globalService";
-import type { GlobalDataDTO } from "~/dtos/GlobalDataDTO";
+import { loadGlobalDataIntoStore } from "~/services/globalService";
+
+type PurchasedEventsLoaderData = {
+  events: Array<Record<string, any>>;
+};
+
+export async function clientLoader(): Promise<PurchasedEventsLoaderData> {
+  await loadGlobalDataIntoStore();
+  const events = await getPurchasedEvents();
+  return { events };
+}
+
+clientLoader.hydrate = true;
 
 export default function PurchasedEventsPage() {
-  const [events, setEvents] = useState<Record<string, any>[]>([]);
-  const [globalData, setGlobalData] = useState<GlobalDataDTO | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchEvents = async () => {
-    try {
-      const data = await getPurchasedEvents();
-      setEvents(data);
-    } catch {
-      setError("Error al cargar los eventos comprados. Inténtalo de nuevo.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    getGlobalData().then(setGlobalData).catch(() => {});
-    fetchEvents();
-  }, []);
+  const { events } = useLoaderData<typeof clientLoader>();
 
   return (
     <main className="main">
@@ -46,13 +37,7 @@ export default function PurchasedEventsPage() {
       <section className="courses-catalog section py-4">
         <Container data-aos="fade-up">
           {/* Content */}
-          {loading ? (
-            <div className="text-center py-5">
-              <Spinner animation="border" style={{ color: "var(--accent-color)" }} />
-            </div>
-          ) : error ? (
-            <Alert variant="danger" className="rounded-3 shadow-sm">{error}</Alert>
-          ) : events.length === 0 ? (
+          {events.length === 0 ? (
             <div className="text-center py-5 bg-white rounded-3 shadow-sm border">
                <i className="bi bi-calendar-x display-4 text-muted mb-3 d-block"></i>
                <h3 className="text-dark fw-bold">No tienes entradas compradas</h3>

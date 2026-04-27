@@ -1,31 +1,22 @@
-import { useState, useEffect } from "react";
-import { Container, Row, Col, Badge, Spinner, Alert } from "react-bootstrap";
-import { Link } from "react-router";
+import { Container, Badge, Alert } from "react-bootstrap";
+import { Link, useLoaderData } from "react-router";
 import { getSubscribedCourses } from "~/services/courseService";
-import { getGlobalData } from "~/services/globalService";
-import type { GlobalDataDTO } from "~/dtos/GlobalDataDTO";
+import { loadGlobalDataIntoStore } from "~/services/globalService";
+
+type SubscribedCoursesLoaderData = {
+  courses: Array<Record<string, any>>;
+};
+
+export async function clientLoader(): Promise<SubscribedCoursesLoaderData> {
+  await loadGlobalDataIntoStore();
+  const courses = await getSubscribedCourses();
+  return { courses };
+}
+
+clientLoader.hydrate = true;
 
 export default function SubscribedCoursesPage() {
-  const [courses, setCourses] = useState<Record<string, any>[]>([]);
-  const [globalData, setGlobalData] = useState<GlobalDataDTO | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchCourses = async () => {
-    try {
-      const data = await getSubscribedCourses();
-      setCourses(data);
-    } catch {
-      setError("Error al cargar los cursos suscritos. Inténtalo de nuevo.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    getGlobalData().then(setGlobalData).catch(() => { });
-    fetchCourses();
-  }, []);
+  const { courses } = useLoaderData<typeof clientLoader>();
 
   return (
     <main className="main">
@@ -46,15 +37,7 @@ export default function SubscribedCoursesPage() {
       <section className="courses-catalog section py-4">
         <Container data-aos="fade-up">
           {/* Content */}
-          {loading ? (
-            <div className="text-center py-5">
-              <div className="spinner-border text-primary" role="status" style={{ color: "var(--accent-color)" }}>
-                <span className="visually-hidden">Cargando...</span>
-              </div>
-            </div>
-          ) : error ? (
-            <Alert variant="danger" className="rounded-4 shadow-sm border-0">{error}</Alert>
-          ) : courses.length === 0 ? (
+          {courses.length === 0 ? (
             <div className="text-center py-5 bg-white rounded-4 shadow-sm border border-dashed">
               <i className="bi bi-journal-x display-1 text-muted opacity-25 mb-3 d-block"></i>
               <h3 className="text-dark fw-bold">No tienes cursos suscritos</h3>
