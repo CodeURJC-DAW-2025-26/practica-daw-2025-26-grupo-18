@@ -1,0 +1,1 @@
+import{n as e}from"./chunk-Dr_oqji0.js";import{t}from"./react-0Dxv8i5B.js";var n=e(t()).createContext(null);n.displayName=`InputGroupContext`;export{n as t};

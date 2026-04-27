@@ -1,0 +1,1 @@
+import{n as e}from"./courseService-Dcxzz5pJ.js";export{e as deleteCourse};

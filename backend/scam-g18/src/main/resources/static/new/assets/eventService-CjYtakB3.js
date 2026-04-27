@@ -1,0 +1,1 @@
+import{n as e}from"./eventService-BH04sOPO.js";export{e as deleteEvent};

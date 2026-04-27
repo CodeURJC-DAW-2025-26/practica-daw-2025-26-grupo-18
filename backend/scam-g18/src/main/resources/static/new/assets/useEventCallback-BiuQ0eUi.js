@@ -1,0 +1,1 @@
+import{n as e}from"./chunk-Dr_oqji0.js";import{t}from"./react-0Dxv8i5B.js";var n=e(t());function r(e){let t=(0,n.useRef)(e);return(0,n.useEffect)(()=>{t.current=e},[e]),t}function i(e){let t=r(e);return(0,n.useCallback)(function(...e){return t.current&&t.current(...e)},[t])}export{i as t};
