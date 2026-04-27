@@ -7,6 +7,7 @@ import { getUserProfileImageUrl } from "~/utils/imageUrls";
 import type { LoaderFunctionArgs } from "react-router";
 import Chart from "../components/Chart";
 import { GET_COURSE_PROGRESS, GET_LESSONS_LEARNED, GET_CREATED_COURSE_STATUS } from "../constants/constants";
+import { publicAsset } from "~/utils/publicAsset";
 
 type ProfileLoaderData = {
   profile: ProfileDTO;
@@ -73,7 +74,7 @@ export default function ProfileRoute() {
   });
 
   const profileImageUrl = useMemo(() => {
-    if (!profile) return "/services/default_avatar.png";
+    if (!profile) return publicAsset("services/default_avatar.png");
     return getUserProfileImageUrl(profile.id);
   }, [profile]);
 

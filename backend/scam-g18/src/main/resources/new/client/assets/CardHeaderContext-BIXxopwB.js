@@ -1,0 +1,1 @@
+import{r as e}from"./chunk-CDc5Ow5G.js";import{L as t}from"./chunk-QFMPRPBF-yDv_3whF.js";var n=e(t()).createContext(null);n.displayName=`CardHeaderContext`;export{n as t};

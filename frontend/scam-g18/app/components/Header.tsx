@@ -4,6 +4,7 @@ import { Container, Dropdown, Navbar } from "react-bootstrap";
 import { useGlobalStore } from "~/stores/globalStore";
 import { useAuthStore } from "~/stores/authStore";
 import { logout } from "~/services/authService";
+import { publicAsset } from "~/utils/publicAsset";
 
 export default function Header() {
     const navigate = useNavigate();
@@ -13,7 +14,7 @@ export default function Header() {
     const [loggingOut, setLoggingOut] = useState(false);
 
     const userName = user?.username ?? "Usuario";
-    const userProfileImage = user?.profileImage ?? "/services/default_avatar.png";
+    const userProfileImage = user?.profileImage ?? publicAsset("services/default_avatar.png");
     const userId = user?.id;
 
     async function handleLogout() {
@@ -31,7 +32,7 @@ export default function Header() {
         <Navbar id="header" className="header d-flex align-items-center sticky-top">
             <Container className="position-relative d-flex align-items-center justify-content-between">
                 <Navbar.Brand as={Link} to="/new" className="logo d-flex align-items-center me-auto me-xl-0">
-                    <img src="/logo.png" alt="SCAM" style={{ height: 36 }} />
+                    <img src={publicAsset("logo.png")} alt="SCAM" style={{ height: 36 }} />
                     <h1>SCAM</h1>
                 </Navbar.Brand>
 
@@ -66,9 +67,12 @@ export default function Header() {
                                 </NavLink>
                             </li>
                         )}
+                        
+                        {/* CORREGIDO: Usamos <Link> en lugar de <a> para el ancla */}
                         <li>
-                            <a href="/new#pricing">Pricing</a>
+                            <Link to="/new#pricing">Pricing</Link>
                         </li>
+
                         {isAdmin && (
                             <li>
                                 <NavLink to="/new/admin" className={({ isActive }) => (isActive ? "active" : "")}>
@@ -87,13 +91,21 @@ export default function Header() {
 
                     {isLoggedIn ? (
                         <Dropdown align="end" className="header-profile dropdown">
-                            <Dropdown.Toggle as="a" id="profileDropdown" className="d-flex align-items-center gap-3 text-decoration-none dropdown-toggle" style={{ fontFamily: "var(--nav-font)", color: "var(--nav-color)", fontSize: "16px" }}>
+                            <Dropdown.Toggle 
+                                as="a" 
+                                id="profileDropdown" 
+                                className="d-flex align-items-center gap-3 text-decoration-none dropdown-toggle" 
+                                style={{ fontFamily: "var(--nav-font)", color: "var(--nav-color)", fontSize: "16px", cursor: "pointer" }}
+                            >
                                 <span className="profile-name">{userName}</span>
                                 <img src={userProfileImage} alt="Profile" className="rounded-circle" style={{ width: 40, height: 40, objectFit: "cover" }} />
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu className="dropdown-menu-end profile-dropdown" aria-labelledby="profileDropdown">
-                                <Dropdown.Item href={userId ? `/new/profile/${userId}` : "/new/profile/me"}>
+                                <Dropdown.Item 
+                                    as={Link} 
+                                    to={userId ? `/new/profile/${userId}` : "/new/profile/me"}
+                                >
                                     <i className="bi bi-person-circle" /> Mi Perfil
                                 </Dropdown.Item>
                                 <Dropdown.Divider />
@@ -103,9 +115,9 @@ export default function Header() {
                             </Dropdown.Menu>
                         </Dropdown>
                     ) : (
-                        <a href="/new/login" className="btn-getstarted">
+                        <Link to="/new/login" className="btn-getstarted">
                             Iniciar sesión/Registrarse
-                        </a>
+                        </Link>
                     )}
                 </div>
             </Container>

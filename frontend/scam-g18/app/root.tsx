@@ -14,9 +14,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./app.css";
 import { useGlobalStore } from "~/stores/globalStore";
+import { publicAsset } from "~/utils/publicAsset";
 
 export const links: Route.LinksFunction = () => [
-  { rel: "icon", href: "/favicon.ico" },
+  { rel: "icon", href: publicAsset("favicon.ico") },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -37,6 +38,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+function GlobalSpinnerUI() {
+  return (
+    <div className="global-loading-overlay" role="status" aria-live="polite" aria-label="Cargando contenido">
+      <div className="global-loading-spinner" />
+    </div>
+  );
+}
+
 export default function App() {
   const navigation = useNavigation();
   const authLoading = useGlobalStore((state) => state.authLoading);
@@ -51,21 +60,13 @@ export default function App() {
   return (
     <>
       <Outlet />
-      {showGlobalSpinner && (
-        <div className="global-loading-overlay" role="status" aria-live="polite" aria-label="Cargando contenido">
-          <div className="global-loading-spinner" />
-        </div>
-      )}
+      {showGlobalSpinner && <GlobalSpinnerUI />}
     </>
   );
 }
 
 export function HydrateFallback() {
-  return (
-    <main className="container py-5 text-center">
-      <p className="mb-0">Cargando aplicacion...</p>
-    </main>
-  );
+  return <GlobalSpinnerUI />;
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

@@ -18,9 +18,9 @@ RUN mvn dependency:go-offline
 # Copy the source code into the container
 COPY backend/scam-g18/src /project/src
 
-# Replace backend static assets with the React build output
-RUN rm -rf /project/src/main/resources/static/*
-COPY --from=frontend-builder /frontend/build/client/ /project/src/main/resources/static/
+# Replace backend static/new assets with the React build output
+RUN rm -rf /project/src/main/resources/static/new/*
+COPY --from=frontend-builder /frontend/build/client/ /project/src/main/resources/static/new/
 
 # Build the application
 RUN mvn -B package -DskipTests

@@ -128,6 +128,8 @@ public class SecurityConfiguration {
                                                 .requestMatchers("/css/**", "/js/**", "/img/**", "/images/**", "/*.css",
                                                                 "/*.js", "/webjars/**")
                                                 .permitAll()
+                                                .requestMatchers("/new", "/new/**")
+                                                .permitAll()
                                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**",
                                                                 "/swagger-ui.html")
                                                 .permitAll()
