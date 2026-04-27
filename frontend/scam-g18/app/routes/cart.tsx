@@ -3,6 +3,7 @@ import { Link, redirect, useLoaderData, useNavigate } from "react-router";
 import type { CartDTO, CheckoutRequestDTO } from "../dtos/CartDTO";
 import { getCart, removeItemFromCart, checkout } from "../services/cartService";
 import { loadGlobalDataIntoStore } from "../services/globalService";
+import { useGlobalStore } from "~/stores/globalStore";
 
 type CartLoaderData = {
     initialOrder: CartDTO | null;
@@ -39,6 +40,8 @@ export default function Cart() {
     });
 
     const navigate = useNavigate();
+    const startRequest = useGlobalStore(state => state.startRequest);
+    const endRequest = useGlobalStore(state => state.endRequest);
 
     const handleRemoveItem = async (itemId: number) => {
         try {
@@ -98,6 +101,7 @@ export default function Cart() {
         e.preventDefault();
         setErrorNoSeats(false);
         setErrorMessage("");
+        startRequest();
 
         try {
             const payload = {
@@ -114,6 +118,8 @@ export default function Cart() {
             } else {
                 setErrorMessage(error.message || "Error al procesar el pago. Por favor, revisa los datos introducidos.");
             }
+        } finally {
+            endRequest();
         }
     };
 

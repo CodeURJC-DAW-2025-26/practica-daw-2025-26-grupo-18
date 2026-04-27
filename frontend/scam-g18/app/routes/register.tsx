@@ -122,7 +122,7 @@ export default function RegisterRoute() {
 
       const globalData = await loadGlobalDataIntoStore(true);
       if (globalData?.isUserLoggedIn) {
-        navigate("/new/profile/me", { replace: true });
+        navigate("/new/", { replace: true });
       } else {
         navigate("/new/login", { replace: true });
       }
