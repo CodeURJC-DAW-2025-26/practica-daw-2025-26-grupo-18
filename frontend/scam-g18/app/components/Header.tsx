@@ -21,7 +21,6 @@ export default function Header() {
             setLoggingOut(true);
             await logout();
         } catch {
-            // Even when logout fails server-side, clear local auth state to avoid stale UI.
         } finally {
             setLoggingOut(false);
             navigate("/new/login", { replace: true });
@@ -88,7 +87,7 @@ export default function Header() {
 
                     {isLoggedIn ? (
                         <Dropdown align="end" className="header-profile dropdown">
-                            <Dropdown.Toggle as="a" id="profileDropdown" href="#" className="d-flex align-items-center gap-3 text-decoration-none dropdown-toggle" style={{ fontFamily: "var(--nav-font)", color: "var(--nav-color)", fontSize: "16px" }}>
+                            <Dropdown.Toggle as="a" id="profileDropdown" className="d-flex align-items-center gap-3 text-decoration-none dropdown-toggle" style={{ fontFamily: "var(--nav-font)", color: "var(--nav-color)", fontSize: "16px" }}>
                                 <span className="profile-name">{userName}</span>
                                 <img src={userProfileImage} alt="Profile" className="rounded-circle" style={{ width: 40, height: 40, objectFit: "cover" }} />
                             </Dropdown.Toggle>
