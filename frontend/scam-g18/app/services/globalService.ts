@@ -51,6 +51,7 @@ export async function getGlobalData(): Promise<GlobalDataDTO> {
   return normalizeGlobalData(data);
 }
 
+// Sync stores with latest user data
 export async function loadGlobalDataIntoStore(force = false): Promise<GlobalDataDTO | null> {
   const globalState = useGlobalStore.getState();
   const authState = useAuthStore.getState();
