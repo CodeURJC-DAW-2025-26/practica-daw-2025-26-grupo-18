@@ -757,7 +757,7 @@ export default function AppLayout() {
                                         isPublisher ? (
                                             <span className="btn btn-choose w-100 disabled">Ya tienes Premium</span>
                                         ) : (
-                                            <button 
+                                            <button
                                                 onClick={handleAddSubscription}
                                                 className="btn btn-choose w-100">
                                                 Comprar por 10€
