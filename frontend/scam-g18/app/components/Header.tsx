@@ -22,7 +22,6 @@ export default function Header() {
             setLoggingOut(true);
             await logout();
         } catch {
-            // Even when logout fails server-side, clear local auth state to avoid stale UI.
         } finally {
             setLoggingOut(false);
             navigate("/new/login", { replace: true });
@@ -68,9 +67,12 @@ export default function Header() {
                                 </NavLink>
                             </li>
                         )}
+                        
+                        {/* CORREGIDO: Usamos <Link> en lugar de <a> para el ancla */}
                         <li>
-                            <a href="/new#pricing">Pricing</a>
+                            <Link to="/new#pricing">Pricing</Link>
                         </li>
+
                         {isAdmin && (
                             <li>
                                 <NavLink to="/new/admin" className={({ isActive }) => (isActive ? "active" : "")}>
@@ -89,13 +91,21 @@ export default function Header() {
 
                     {isLoggedIn ? (
                         <Dropdown align="end" className="header-profile dropdown">
-                            <Dropdown.Toggle as="a" id="profileDropdown" href="#" className="d-flex align-items-center gap-3 text-decoration-none dropdown-toggle" style={{ fontFamily: "var(--nav-font)", color: "var(--nav-color)", fontSize: "16px" }}>
+                            <Dropdown.Toggle 
+                                as="a" 
+                                id="profileDropdown" 
+                                className="d-flex align-items-center gap-3 text-decoration-none dropdown-toggle" 
+                                style={{ fontFamily: "var(--nav-font)", color: "var(--nav-color)", fontSize: "16px", cursor: "pointer" }}
+                            >
                                 <span className="profile-name">{userName}</span>
                                 <img src={userProfileImage} alt="Profile" className="rounded-circle" style={{ width: 40, height: 40, objectFit: "cover" }} />
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu className="dropdown-menu-end profile-dropdown" aria-labelledby="profileDropdown">
-                                <Dropdown.Item href={userId ? `/new/profile/${userId}` : "/new/profile/me"}>
+                                <Dropdown.Item 
+                                    as={Link} 
+                                    to={userId ? `/new/profile/${userId}` : "/new/profile/me"}
+                                >
                                     <i className="bi bi-person-circle" /> Mi Perfil
                                 </Dropdown.Item>
                                 <Dropdown.Divider />
@@ -105,9 +115,9 @@ export default function Header() {
                             </Dropdown.Menu>
                         </Dropdown>
                     ) : (
-                        <a href="/new/login" className="btn-getstarted">
+                        <Link to="/new/login" className="btn-getstarted">
                             Iniciar sesión/Registrarse
-                        </a>
+                        </Link>
                     )}
                 </div>
             </Container>

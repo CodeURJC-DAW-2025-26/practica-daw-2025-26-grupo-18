@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Container, Form, InputGroup, Button, Badge, Alert } from "react-bootstrap";
+import { Alert, Badge, Button, Container, Form, InputGroup } from "react-bootstrap";
+import type { LoaderFunctionArgs } from "react-router";
 import { Link, useLoaderData, useSearchParams } from "react-router";
 import { getCourses } from "~/services/courseService";
 import { loadGlobalDataIntoStore } from "~/services/globalService";
 import { useAuthStore } from "~/stores/authStore";
-import type { LoaderFunctionArgs } from "react-router";
 
 type CoursesLoaderData = {
   initialCourses: Array<Record<string, any>>;
