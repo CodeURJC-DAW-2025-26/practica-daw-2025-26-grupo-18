@@ -43,7 +43,7 @@ export default function AdminRoute() {
   const activeTab: TabKey =
     tabParam === "users" || tabParam === "courses" || tabParam === "events" || tabParam === "orders" ? tabParam : "users";
 
-  const globalData = useGlobalStore().globalData;
+  const { globalData, startRequest, endRequest } = useGlobalStore();
 
   const [error, setError] = useState<string | null>(null);
 
@@ -84,6 +84,7 @@ export default function AdminRoute() {
 
   async function loadUsers(reset = false, query = userQuery) {
     try {
+      startRequest();
       setUsersLoading(true);
       setError(null);
       const pageToLoad = reset ? 0 : userPage;
@@ -95,11 +96,13 @@ export default function AdminRoute() {
       setError(err instanceof Error ? err.message : "No se pudieron cargar usuarios");
     } finally {
       setUsersLoading(false);
+      endRequest();
     }
   }
 
   async function loadCourses(reset = false, query = courseQuery) {
     try {
+      startRequest();
       setCoursesLoading(true);
       setError(null);
       const pageToLoad = reset ? 0 : coursePage;
@@ -111,11 +114,13 @@ export default function AdminRoute() {
       setError(err instanceof Error ? err.message : "No se pudieron cargar cursos");
     } finally {
       setCoursesLoading(false);
+      endRequest();
     }
   }
 
   async function loadEvents(reset = false, query = eventQuery) {
     try {
+      startRequest();
       setEventsLoading(true);
       setError(null);
       const pageToLoad = reset ? 0 : eventPage;
@@ -127,11 +132,13 @@ export default function AdminRoute() {
       setError(err instanceof Error ? err.message : "No se pudieron cargar eventos");
     } finally {
       setEventsLoading(false);
+      endRequest();
     }
   }
 
   async function loadOrders(reset = false) {
     try {
+      startRequest();
       setOrdersLoading(true);
       setError(null);
       const pageToLoad = reset ? 0 : orderPage;
@@ -143,6 +150,7 @@ export default function AdminRoute() {
       setError(err instanceof Error ? err.message : "No se pudieron cargar pedidos");
     } finally {
       setOrdersLoading(false);
+      endRequest();
     }
   }
 
@@ -165,28 +173,37 @@ export default function AdminRoute() {
 
   async function handleUserStatusChange(user: AdminUserDTO) {
     try {
+      startRequest();
       await updateAdminUserStatus(user.id, !user.isActive);
       setUsers((prev) => prev.map((it) => (it.id === user.id ? { ...it, isActive: !it.isActive } : it)));
     } catch (err) {
       setError(err instanceof Error ? err.message : "No se pudo actualizar el estado del usuario");
+    } finally {
+      endRequest();
     }
   }
 
   async function handleCourseStatusChange(course: AdminCourseDTO, publish: boolean) {
     try {
+      startRequest();
       await updateAdminCourseStatus(course.id, publish ? "PUBLISHED" : "DRAFT");
       setCourses((prev) => prev.map((it) => (it.id === course.id ? { ...it, status: publish ? "PUBLISHED" : "DRAFT" } : it)));
     } catch (err) {
       setError(err instanceof Error ? err.message : "No se pudo actualizar el estado del curso");
+    } finally {
+      endRequest();
     }
   }
 
   async function handleEventStatusChange(event: AdminEventDTO, publish: boolean) {
     try {
+      startRequest();
       await updateAdminEventStatus(event.id, publish ? "PUBLISHED" : "DRAFT");
       setEvents((prev) => prev.map((it) => (it.id === event.id ? { ...it, status: publish ? "PUBLISHED" : "DRAFT" } : it)));
     } catch (err) {
       setError(err instanceof Error ? err.message : "No se pudo actualizar el estado del evento");
+    } finally {
+      endRequest();
     }
   }
 
