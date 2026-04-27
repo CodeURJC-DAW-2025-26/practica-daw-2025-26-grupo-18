@@ -1,4 +1,5 @@
 import type { CourseDTO } from "~/dtos/CourseDTO";
+import { apiFetch } from "~/services/apiClient";
 
 const BASE_URL = "/api/v1/courses";
 
@@ -17,7 +18,7 @@ export async function getCourses(
     tags.forEach((t) => params.append("tags", t));
   }
 
-  const res = await fetch(`${BASE_URL}/?${params.toString()}`);
+  const res = await apiFetch(`${BASE_URL}/?${params.toString()}`);
   if (!res.ok) throw new Error(`Error fetching courses: ${res.status}`);
   return res.json();
 }
@@ -26,7 +27,7 @@ export async function getCourses(
  * GET /api/v1/courses/:id — Get course detail
  */
 export async function getCourseById(id: number): Promise<Record<string, any>> {
-  const res = await fetch(`${BASE_URL}/${id}`);
+  const res = await apiFetch(`${BASE_URL}/${id}`);
   if (!res.ok) throw new Error(`Error fetching course ${id}: ${res.status}`);
   return res.json();
 }
@@ -35,7 +36,7 @@ export async function getCourseById(id: number): Promise<Record<string, any>> {
  * GET /api/v1/courses/subscribed — Courses subscribed by the authenticated user
  */
 export async function getSubscribedCourses(): Promise<Record<string, any>[]> {
-  const res = await fetch(`${BASE_URL}/subscribed`);
+  const res = await apiFetch(`${BASE_URL}/subscribed`);
   if (!res.ok) throw new Error(`Error fetching subscribed courses: ${res.status}`);
   return res.json();
 }
@@ -47,7 +48,7 @@ export async function getLessonVideoUrl(
   courseId: number,
   lessonId: number
 ): Promise<{ videoUrl: string }> {
-  const res = await fetch(`${BASE_URL}/${courseId}/lesson/${lessonId}/video`);
+  const res = await apiFetch(`${BASE_URL}/${courseId}/lesson/${lessonId}/video`);
   if (!res.ok) throw new Error(`Error fetching lesson video: ${res.status}`);
   return res.json();
 }
@@ -59,7 +60,7 @@ export async function markLessonAsCompleted(
   courseId: number,
   lessonId: number
 ): Promise<Record<string, any>> {
-  const res = await fetch(`${BASE_URL}/${courseId}/lesson/${lessonId}/complete`, {
+  const res = await apiFetch(`${BASE_URL}/${courseId}/lesson/${lessonId}/complete`, {
     method: "POST",
   });
   if (!res.ok) throw new Error(`Error completing lesson: ${res.status}`);
@@ -83,7 +84,7 @@ export async function createCourse(
     formData.append("imageFile", imageFile);
   }
 
-  const res = await fetch(`${BASE_URL}/`, { method: "POST", body: formData });
+  const res = await apiFetch(`${BASE_URL}/`, { method: "POST", body: formData });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     throw new Error(body.error || `Error creating course: ${res.status}`);
@@ -109,7 +110,7 @@ export async function updateCourse(
     formData.append("imageFile", imageFile);
   }
 
-  const res = await fetch(`${BASE_URL}/${id}`, { method: "PUT", body: formData });
+  const res = await apiFetch(`${BASE_URL}/${id}`, { method: "PUT", body: formData });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     throw new Error(body.error || `Error updating course: ${res.status}`);
@@ -121,7 +122,7 @@ export async function updateCourse(
  * DELETE /api/v1/courses/:id — Delete a course
  */
 export async function deleteCourse(id: number): Promise<void> {
-  const res = await fetch(`${BASE_URL}/${id}`, { method: "DELETE" });
+  const res = await apiFetch(`${BASE_URL}/${id}`, { method: "DELETE" });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     throw new Error(body.error || `Error deleting course: ${res.status}`);
@@ -140,7 +141,7 @@ export async function addCourseReview(
   params.set("rating", String(rating));
   params.set("content", content);
 
-  const res = await fetch(`${BASE_URL}/${courseId}/review?${params.toString()}`, {
+  const res = await apiFetch(`${BASE_URL}/${courseId}/review?${params.toString()}`, {
     method: "POST",
   });
   if (!res.ok) {

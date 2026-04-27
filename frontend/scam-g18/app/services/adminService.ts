@@ -5,6 +5,7 @@ import type {
   AdminReviewDTO,
   AdminUserDTO,
 } from "~/dtos/AdminDTO";
+import { apiFetch } from "~/services/apiClient";
 
 const BASE_URL = "/api/v1/admin";
 
@@ -18,7 +19,7 @@ function buildPageQuery(page: number, query?: string): string {
 }
 
 async function noContentPut(url: string, body: unknown): Promise<void> {
-  const res = await fetch(url, {
+  const res = await apiFetch(url, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -32,7 +33,7 @@ async function noContentPut(url: string, body: unknown): Promise<void> {
 }
 
 export async function getAdminUsers(page = 0, query?: string): Promise<AdminUserDTO[]> {
-  const res = await fetch(`${BASE_URL}/users?${buildPageQuery(page, query)}`);
+  const res = await apiFetch(`${BASE_URL}/users?${buildPageQuery(page, query)}`);
   if (!res.ok) throw new Error(`Error fetching users: ${res.status}`);
   return res.json();
 }
@@ -42,7 +43,7 @@ export async function updateAdminUserStatus(id: number, active: boolean): Promis
 }
 
 export async function getAdminCourses(page = 0, query?: string): Promise<AdminCourseDTO[]> {
-  const res = await fetch(`${BASE_URL}/courses?${buildPageQuery(page, query)}`);
+  const res = await apiFetch(`${BASE_URL}/courses?${buildPageQuery(page, query)}`);
   if (!res.ok) throw new Error(`Error fetching courses: ${res.status}`);
   return res.json();
 }
@@ -52,7 +53,7 @@ export async function updateAdminCourseStatus(id: number, status: "PUBLISHED" | 
 }
 
 export async function getAdminEvents(page = 0, query?: string): Promise<AdminEventDTO[]> {
-  const res = await fetch(`${BASE_URL}/events?${buildPageQuery(page, query)}`);
+  const res = await apiFetch(`${BASE_URL}/events?${buildPageQuery(page, query)}`);
   if (!res.ok) throw new Error(`Error fetching events: ${res.status}`);
   return res.json();
 }
@@ -65,18 +66,18 @@ export async function getAdminOrders(page = 0): Promise<AdminOrderDTO[]> {
   const params = new URLSearchParams();
   params.set("page", String(page));
 
-  const res = await fetch(`${BASE_URL}/orders?${params.toString()}`);
+  const res = await apiFetch(`${BASE_URL}/orders?${params.toString()}`);
   if (!res.ok) throw new Error(`Error fetching orders: ${res.status}`);
   return res.json();
 }
 
 export async function getAdminReviews(): Promise<AdminReviewDTO[]> {
-  const res = await fetch(`${BASE_URL}/reviews`);
+  const res = await apiFetch(`${BASE_URL}/reviews`);
   if (!res.ok) throw new Error(`Error fetching reviews: ${res.status}`);
   return res.json();
 }
 
 export async function deleteAdminReview(id: number): Promise<void> {
-  const res = await fetch(`${BASE_URL}/reviews/${id}`, { method: "DELETE" });
+  const res = await apiFetch(`${BASE_URL}/reviews/${id}`, { method: "DELETE" });
   if (!res.ok) throw new Error(`Error deleting review ${id}: ${res.status}`);
 }

@@ -32,7 +32,9 @@ async function loadExternalStyle(href: string, id: string): Promise<void> {
 
 export async function clientLoader({ params }: LoaderFunctionArgs) {
   const id = Number(params.id);
-  if (isNaN(id)) throw new Error("ID de evento no válido");
+  if (!Number.isFinite(id) || id <= 0) {
+    throw new Response("Evento no valido", { status: 400 });
+  }
   const event = await getEventById(id);
   return { event: event as EventDTO };
 }

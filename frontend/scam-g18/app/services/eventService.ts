@@ -1,4 +1,5 @@
 import type { EventDTO } from "~/dtos/EventDTO";
+import { apiFetch } from "~/services/apiClient";
 
 const BASE_URL = "/api/v1/events";
 
@@ -32,7 +33,7 @@ export async function getEvents(
     tags.forEach((t) => params.append("tags", t));
   }
 
-  const res = await fetch(`${BASE_URL}/?${params.toString()}`);
+  const res = await apiFetch(`${BASE_URL}/?${params.toString()}`);
   if (!res.ok) throw new Error(`Error fetching events: ${res.status}`);
   const data = await res.json();
   return Array.isArray(data) ? data.map(normalizeEvent) : data;
@@ -42,7 +43,7 @@ export async function getEvents(
  * GET /api/v1/events/:id — Get event detail
  */
 export async function getEventById(id: number): Promise<Record<string, any>> {
-  const res = await fetch(`${BASE_URL}/${id}`);
+  const res = await apiFetch(`${BASE_URL}/${id}`);
   if (!res.ok) throw new Error(`Error fetching event ${id}: ${res.status}`);
   const data = await res.json();
   return normalizeEvent(data);
@@ -52,7 +53,7 @@ export async function getEventById(id: number): Promise<Record<string, any>> {
  * GET /api/v1/events/purchased — Events purchased by the authenticated user
  */
 export async function getPurchasedEvents(): Promise<Record<string, any>[]> {
-  const res = await fetch(`${BASE_URL}/purchased`);
+  const res = await apiFetch(`${BASE_URL}/purchased`);
   if (!res.ok) throw new Error(`Error fetching purchased events: ${res.status}`);
   const data = await res.json();
   return Array.isArray(data) ? data.map(normalizeEvent) : data;
@@ -63,7 +64,7 @@ export async function getPurchasedEvents(): Promise<Record<string, any>[]> {
  */
 export async function searchLocations(query: string): Promise<string> {
   const params = new URLSearchParams({ q: query });
-  const res = await fetch(`${BASE_URL}/location-search?${params.toString()}`);
+  const res = await apiFetch(`${BASE_URL}/location-search?${params.toString()}`);
   if (!res.ok) throw new Error(`Error searching locations: ${res.status}`);
   return res.json();
 }
@@ -85,7 +86,7 @@ export async function createEvent(
     formData.append("imageFile", imageFile);
   }
 
-  const res = await fetch(`${BASE_URL}/`, { method: "POST", body: formData });
+  const res = await apiFetch(`${BASE_URL}/`, { method: "POST", body: formData });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     throw new Error(body.error || `Error creating event: ${res.status}`);
@@ -111,7 +112,7 @@ export async function updateEvent(
     formData.append("imageFile", imageFile);
   }
 
-  const res = await fetch(`${BASE_URL}/${id}`, { method: "PUT", body: formData });
+  const res = await apiFetch(`${BASE_URL}/${id}`, { method: "PUT", body: formData });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     throw new Error(body.error || `Error updating event: ${res.status}`);
@@ -123,7 +124,7 @@ export async function updateEvent(
  * DELETE /api/v1/events/:id — Delete an event
  */
 export async function deleteEvent(id: number): Promise<void> {
-  const res = await fetch(`${BASE_URL}/${id}`, { method: "DELETE" });
+  const res = await apiFetch(`${BASE_URL}/${id}`, { method: "DELETE" });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     throw new Error(body.error || `Error deleting event: ${res.status}`);

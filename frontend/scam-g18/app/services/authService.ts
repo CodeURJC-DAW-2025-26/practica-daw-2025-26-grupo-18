@@ -1,4 +1,5 @@
 import { loadGlobalDataIntoStore } from "~/services/globalService";
+import { apiFetch } from "~/services/apiClient";
 
 type AuthStatus = "SUCCESS" | "FAILURE";
 
@@ -26,9 +27,10 @@ export type RegisterRequest = {
 const BASE_URL = "/api/v1/auth";
 
 export async function login(request: LoginRequest): Promise<AuthResponse> {
-  const response = await fetch(`${BASE_URL}/login`, {
+  const response = await apiFetch(`${BASE_URL}/login`, {
     method: "POST",
     credentials: "include",
+    skipRefreshRetry: true,
     headers: {
       "Content-Type": "application/json",
     },
@@ -48,9 +50,10 @@ export async function login(request: LoginRequest): Promise<AuthResponse> {
 }
 
 export async function logout(): Promise<void> {
-  const response = await fetch(`${BASE_URL}/logout`, {
+  const response = await apiFetch(`${BASE_URL}/logout`, {
     method: "POST",
     credentials: "include",
+    skipRefreshRetry: true,
   });
 
   if (!response.ok) {
@@ -73,9 +76,10 @@ export async function register(request: RegisterRequest): Promise<AuthResponse> 
     formData.append("image", request.image);
   }
 
-  const response = await fetch(`${BASE_URL}/register`, {
+  const response = await apiFetch(`${BASE_URL}/register`, {
     method: "POST",
     credentials: "include",
+    skipRefreshRetry: true,
     body: formData,
   });
 
