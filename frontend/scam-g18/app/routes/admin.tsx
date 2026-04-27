@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router";
+import { Link, useSearchParams, redirect } from "react-router";
 
 import {
   getAdminCourses,
@@ -20,7 +20,11 @@ import { useGlobalStore } from "~/stores/globalStore";
 import { loadGlobalDataIntoStore } from "~/services/globalService";
 
 export async function clientLoader() {
-  await loadGlobalDataIntoStore();
+  const globalData = await loadGlobalDataIntoStore();
+  if (!globalData?.isAdmin) {
+    // No admin privileges, redirect to error page with message
+    throw redirect(`/new/error?message=${encodeURIComponent("No tienes permisos para acceder al dashboard de administrador.")}`);
+  }
   return null;
 }
 
