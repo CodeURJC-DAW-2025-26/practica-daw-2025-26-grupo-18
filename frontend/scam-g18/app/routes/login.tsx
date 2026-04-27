@@ -22,13 +22,27 @@ export default function LoginRoute() {
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  const validateUsername = (v: string) => v.trim().length >= 3;
+  const validatePassword = (v: string) => /^(?=.*[0-9])(?=.*[A-Z])(?=\S+$).{8,}$/.test(v);
+
+  const formErrors = {
+    username: !validateUsername(username),
+    password: !validatePassword(password),
+  };
+
+  const isFormValid = Object.values(formErrors).every(e => !e);
+
+  const handleFieldChange = (name: string, value: string) => {
+    if (name === "username") setUsername(value);
+    if (name === "password") setPassword(value);
+    setTouched(prev => ({ ...prev, [name]: true }));
+  };
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!username.trim() || !password.trim()) {
-      setError("Debes introducir usuario y contraseña.");
-      return;
-    }
+    if (!isFormValid) return;
 
     try {
       setSubmitting(true);
@@ -77,25 +91,26 @@ export default function LoginRoute() {
                     </div>
                 )}
 
-                <form id="loginForm" onSubmit={onSubmit}>
+                <form id="loginForm" onSubmit={onSubmit} noValidate>
                   <div className="mb-3">
                     <label htmlFor="loginEmail" className="form-label small fw-bold">
                       Usuario o Correo electronico
                     </label>
-                    <div className="input-group">
+                    <div className="input-group has-validation">
                       <span className="input-group-text">
                         <i className="bi bi-person" />
                       </span>
                       <input
                         type="text"
-                        className="form-control"
+                        className={`form-control ${formErrors.username ? 'is-invalid' : 'is-valid'}`}
                         id="loginEmail"
                         value={username}
-                        onChange={(event) => setUsername(event.target.value)}
+                        onChange={(event) => handleFieldChange("username", event.target.value)}
                         placeholder="Usuario o correo electronico"
                         autoComplete="username"
                         required
                       />
+                      <div className="invalid-feedback">Introduce tu usuario (mín. 3 caracteres).</div>
                     </div>
                   </div>
 
@@ -103,25 +118,26 @@ export default function LoginRoute() {
                     <label htmlFor="loginPassword" className="form-label small fw-bold">
                       Contrasena
                     </label>
-                    <div className="input-group">
+                    <div className="input-group has-validation">
                       <span className="input-group-text">
                         <i className="bi bi-lock" />
                       </span>
                       <input
                         type="password"
-                        className="form-control"
+                        className={`form-control ${formErrors.password ? 'is-invalid' : 'is-valid'}`}
                         id="loginPassword"
                         value={password}
-                        onChange={(event) => setPassword(event.target.value)}
+                        onChange={(event) => handleFieldChange("password", event.target.value)}
                         placeholder="********"
                         autoComplete="current-password"
                         required
                       />
+                      <div className="invalid-feedback">Mín. 8 caracteres: 1 mayúscula, 1 número y 7 letras.</div>
                     </div>
                   </div>
 
                   <div className="d-grid mb-3">
-                    <button type="submit" className="btn btn-primary py-2 fw-bold" disabled={submitting}>
+                    <button type="submit" className="btn btn-primary py-2 fw-bold" disabled={submitting || !isFormValid}>
                       {submitting ? "Iniciando..." : "Iniciar Sesion"}
                     </button>
                   </div>
