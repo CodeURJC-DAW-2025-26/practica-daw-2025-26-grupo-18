@@ -12,6 +12,9 @@ import { useEffect, useState } from "react";
 
 export async function clientLoader({ params }: LoaderFunctionArgs) {
   const id = Number(params.id);
+  if (!Number.isFinite(id) || id <= 0) {
+    throw new Response("Curso no valido", { status: 400 });
+  }
   const data = await getCourseById(id);
   return data as CourseDetailDTO;
 }

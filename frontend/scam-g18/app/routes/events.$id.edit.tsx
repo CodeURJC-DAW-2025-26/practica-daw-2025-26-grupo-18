@@ -61,6 +61,9 @@ export async function clientLoader({ params }: LoaderFunctionArgs) {
   }
 
   const id = Number(params.id);
+  if (!Number.isFinite(id) || id <= 0) {
+    throw new Response("Evento no valido", { status: 400 });
+  }
   const event = await getEventById(id);
 
   if (!event.canEdit && !globalData?.isAdmin) {

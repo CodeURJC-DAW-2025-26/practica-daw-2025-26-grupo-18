@@ -1,7 +1,7 @@
 import type { FormEvent } from "react";
 import { useState } from "react";
 import { Alert, Button, Col, Container, Form, InputGroup, Row } from "react-bootstrap";
-import { Link, redirect, useNavigate, useSearchParams } from "react-router";
+import { Link, redirect, useNavigate } from "react-router";
 
 import { login as loginRequest } from "~/services/authService";
 import { loadGlobalDataIntoStore } from "~/services/globalService";

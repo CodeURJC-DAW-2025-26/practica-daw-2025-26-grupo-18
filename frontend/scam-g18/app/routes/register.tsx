@@ -1,11 +1,12 @@
 import type { FormEvent } from "react";
 import { useState } from "react";
-import { Link, redirect, useNavigate } from "react-router";
 import { Alert, Button, Col, Container, Form, InputGroup, Row } from "react-bootstrap";
+import { Link, redirect, useNavigate } from "react-router";
 
 import { register as registerRequest } from "~/services/authService";
 import { loadGlobalDataIntoStore } from "~/services/globalService";
 import { publicAsset } from "~/utils/publicAsset";
+import { useGlobalStore } from "~/stores/globalStore";
 
 export async function clientLoader() {
   const globalData = await loadGlobalDataIntoStore();
@@ -54,6 +55,8 @@ const SORTED_COUNTRIES = [...COUNTRIES].sort((a, b) => a.localeCompare(b, "es"))
 
 export default function RegisterRoute() {
   const navigate = useNavigate();
+  const startRequest = useGlobalStore((state) => state.startRequest);
+  const endRequest = useGlobalStore((state) => state.endRequest);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState<RegisterFormState>({
@@ -104,6 +107,7 @@ export default function RegisterRoute() {
 
     try {
       setSubmitting(true);
+      startRequest();
       setError(null);
 
       const response = await registerRequest({
@@ -130,6 +134,7 @@ export default function RegisterRoute() {
       setError(err instanceof Error ? err.message : "Error al registrarte.");
     } finally {
       setSubmitting(false);
+      endRequest();
     }
   }
 
@@ -316,8 +321,8 @@ export default function RegisterRoute() {
                   </Form.Group>
 
                   <div className="d-grid mb-4">
-                    <Button type="submit" variant="primary" className="py-2 fw-bold" disabled={submitting || !isFormValid}>
-                      {submitting ? "Registrando..." : "Registrarse"}
+                    <Button type="submit" variant="primary" className="py-2" disabled={submitting || !isFormValid} style={{ backgroundColor: "var(--accent-color)", borderColor: "var(--accent-color)" }}>
+                      {submitting ? "Registrando..." : "Registrar"}
                     </Button>
                   </div>
                 </Form>
