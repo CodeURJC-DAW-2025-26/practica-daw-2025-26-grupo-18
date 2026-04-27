@@ -393,6 +393,7 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
                 size="sm" 
                 className="rounded-pill px-3"
                 style={{ borderColor: "var(--accent-color)", color: "var(--accent-color)" }}
+                type="button"
                 onClick={addItem}
               >
                 + Añadir Sesión
@@ -407,6 +408,7 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
                           variant="outline-danger" 
                           size="sm" 
                           className="border-0 bg-transparent text-danger p-0"
+                          type="button"
                           onClick={() => removeItem(idx)}
                         >
                           Eliminar
@@ -515,6 +517,7 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
                     </Button>
                     <Button 
                       variant="light" 
+                      type="button"
                       onClick={() => window.history.back()}
                       className="py-2 text-muted fw-medium rounded-3 border bg-white"
                     >

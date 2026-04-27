@@ -8,6 +8,27 @@ import type { LoaderFunctionArgs } from "react-router";
 import { loadGlobalDataIntoStore } from "~/services/globalService";
 import { redirect } from "react-router";
 
+function normalizeCourseForEdit(data: any): CourseDTO {
+  const baseCourse = data?.course ?? data ?? {};
+  const modules = data?.modules ?? baseCourse.modules ?? [];
+
+  const normalizedModules = modules.map((module: any) => ({
+    ...module,
+    description: module.description ?? "",
+    lessons: (module.lessons ?? []).map((lesson: any) => ({
+      ...lesson,
+      description: lesson.description ?? "",
+      videoUrl: lesson.videoUrl ?? "",
+      orderIndex: lesson.orderIndex ?? 0,
+    })),
+  }));
+
+  return {
+    ...baseCourse,
+    modules: normalizedModules,
+  } as CourseDTO;
+}
+
 export async function clientLoader({ params }: LoaderFunctionArgs) {
   const globalData = await loadGlobalDataIntoStore();
   if (!globalData?.isUserLoggedIn) {
@@ -24,11 +45,8 @@ export async function clientLoader({ params }: LoaderFunctionArgs) {
     return redirect(`/new/error?message=${encodeURIComponent("No tienes permiso para editar este curso. Solo el creador del curso o un administrador pueden hacerlo.")}`);
   }
 
-  return { 
-    course: {
-      ...data.course,
-      modules: data.modules
-    } as unknown as CourseDTO 
+  return {
+    course: normalizeCourseForEdit(data),
   };
 }
 clientLoader.hydrate = true;

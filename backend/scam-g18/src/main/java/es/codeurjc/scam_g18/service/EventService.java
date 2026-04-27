@@ -483,7 +483,14 @@ public class EventService {
         eventData.put("id", event.getId());
         eventData.put("title", event.getTitle());
         eventData.put("description", event.getDescription());
+        eventData.put("price", event.getPrice());
+        eventData.put("priceCents", event.getPriceCents());
         eventData.put("priceEuros", getPriceInEuros(event));
+        eventData.put("startDate", event.getStartDate());
+        eventData.put("endDate", event.getEndDate());
+        eventData.put("capacity", event.getCapacity());
+        eventData.put("category", event.getCategory());
+        eventData.put("speakerNames", event.getSpeakers());
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
@@ -526,6 +533,21 @@ public class EventService {
         eventData.put("tags", event.getTags());
         eventData.put("speakers", event.getSpeakers());
         eventData.put("sessions", event.getSessions());
+
+        List<String> sessionTimes = new ArrayList<>();
+        List<String> sessionTitles = new ArrayList<>();
+        List<String> sessionDescriptions = new ArrayList<>();
+        if (event.getSessions() != null) {
+            for (EventSession session : event.getSessions()) {
+                sessionTimes.add(session != null && session.getTime() != null ? session.getTime() : "");
+                sessionTitles.add(session != null && session.getTitle() != null ? session.getTitle() : "");
+                sessionDescriptions
+                        .add(session != null && session.getDescription() != null ? session.getDescription() : "");
+            }
+        }
+        eventData.put("sessionTimes", sessionTimes);
+        eventData.put("sessionTitles", sessionTitles);
+        eventData.put("sessionDescriptions", sessionDescriptions);
 
         return eventData;
     }

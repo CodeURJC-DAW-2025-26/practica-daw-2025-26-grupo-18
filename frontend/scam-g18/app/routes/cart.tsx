@@ -155,7 +155,7 @@ export default function Cart() {
 
                     {/* Back Button */}
                     <div className="mb-4">
-                        <Link to="/" className="btn btn-secondary d-inline-flex align-items-center gap-2" style={{ backgroundColor: "#85613d", borderColor: "#85613d" }}>
+                        <Link to="/new" className="btn btn-secondary d-inline-flex align-items-center gap-2" style={{ backgroundColor: "#85613d", borderColor: "#85613d" }}>
                             <i className="bi bi-arrow-left"></i> Volver
                         </Link>
                     </div>
