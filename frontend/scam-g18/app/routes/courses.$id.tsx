@@ -1,6 +1,6 @@
 import { Container, Row, Col, Badge, Accordion, Button, ProgressBar, ListGroup, Card } from "react-bootstrap";
 import { useLoaderData, useNavigate, Link } from "react-router";
-import { getCourseById } from "~/services/courseService";
+import { getCourseById, getLessonVideoUrl } from "~/services/courseService";
 import { addCourseToCart } from "~/services/cartService";
 import { getCourseImageUrl, getUserProfileImageUrl } from "~/utils/imageUrls";
 import { useGlobalStore } from "~/stores/globalStore";
@@ -48,6 +48,16 @@ export default function CourseDetail() {
       alert("Error al suscribirse: " + (error instanceof Error ? error.message : String(error)));
     }
   };
+
+  const handleOpenLessonVideo = async (lessonId: number) => {
+    try {
+      const { videoUrl } = await getLessonVideoUrl(course.id, lessonId);
+      window.open(videoUrl, "_blank", "noopener,noreferrer");
+    } catch (error) {
+      alert("Error al abrir el video: " + (error instanceof Error ? error.message : String(error)));
+    }
+  };
+
   const [currentSlide, setCurrentSlide] = useState(0);
   const globalData = useGlobalStore((state) => state.globalData);
   const isUserLoggedIn = globalData?.isUserLoggedIn ?? false;
@@ -258,7 +268,13 @@ export default function CourseDetail() {
                               {(isSubscribed || isOwner) ? (
                                 <>
                                   <i className="bi bi-play-circle me-3 fs-5 text-primary"></i>
-                                  <a href={`/course/${course.id}/lesson/${lesson.id}/video`} className="text-decoration-none fw-semibold text-dark">{lesson.title}</a>
+                                  <button
+                                    type="button"
+                                    className="btn btn-link p-0 text-decoration-none fw-semibold text-dark text-start"
+                                    onClick={() => void handleOpenLessonVideo(lesson.id)}
+                                  >
+                                    {lesson.title}
+                                  </button>
                                 </>
                               ) : (
                                 <>

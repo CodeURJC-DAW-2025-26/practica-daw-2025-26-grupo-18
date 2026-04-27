@@ -284,6 +284,7 @@ public class CourseService {
             moduleData.put("id", module.getId());
             moduleData.put("orderIndex", module.getOrderIndex());
             moduleData.put("title", module.getTitle());
+            moduleData.put("description", module.getDescription());
             moduleData.put("first", index == 0);
 
             List<Map<String, Object>> lessonsData = new ArrayList<>();
@@ -293,6 +294,9 @@ public class CourseService {
                 lessonData.put("id", lesson.getId());
                 lessonData.put("courseId", course.getId());
                 lessonData.put("title", lesson.getTitle());
+                lessonData.put("description", lesson.getDescription());
+                lessonData.put("videoUrl", lesson.getVideoUrl());
+                lessonData.put("orderIndex", lesson.getOrderIndex());
                 lessonData.put("completed", completedLessonIds.contains(lesson.getId()));
                 lessonsData.add(lessonData);
             }

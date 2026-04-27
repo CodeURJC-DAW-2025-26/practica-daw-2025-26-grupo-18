@@ -644,12 +644,6 @@ export default function ProfileRoute() {
                             <i className="bi bi-person" /> {creatorName}
                           </div>
                         </div>
-                        <div className="course-progress mt-3">
-                          <small className="course-progress-label">Avance actual</small>
-                          <div className="course-progress-bar" style={{ height: 10 }}>
-                            <div className="course-progress-fill" style={{ width: `${progress}%` }} />
-                          </div>
-                        </div>
                         {id && (
                           <div className="course-card-actions">
                             <a href={`/new/course/${id}`} className="btn btn-sm btn-accent-outline course-card-btn">

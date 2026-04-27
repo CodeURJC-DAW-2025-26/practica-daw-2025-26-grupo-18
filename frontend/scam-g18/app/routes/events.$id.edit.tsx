@@ -8,6 +8,49 @@ import type { LoaderFunctionArgs } from "react-router";
 import { loadGlobalDataIntoStore } from "~/services/globalService";
 import { redirect } from "react-router";
 
+function toDateParts(value?: string) {
+  if (!value) {
+    return { date: "", time: "" };
+  }
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return { date: "", time: "" };
+  }
+
+  const date = parsed.toISOString().slice(0, 10);
+  const time = parsed.toTimeString().slice(0, 5);
+  return { date, time };
+}
+
+function normalizeEventForEdit(event: any): EventDTO {
+  const startParts = toDateParts(event.startDate);
+  const endParts = toDateParts(event.endDate);
+
+  return {
+    ...event,
+    price: event.price ?? (event.priceCents != null ? event.priceCents / 100 : 0),
+    priceCents: event.priceCents ?? 0,
+    capacity: event.capacity ?? 50,
+    category: event.category ?? "Networking",
+    startDateStr: event.startDateStr ?? startParts.date,
+    startTimeStr: event.startTimeStr ?? startParts.time,
+    endDateStr: event.endDateStr ?? endParts.date,
+    endTimeStr: event.endTimeStr ?? endParts.time,
+    locationName: event.locationName ?? "",
+    locationAddress: event.locationAddress ?? "",
+    locationCity: event.locationCity ?? "Madrid",
+    locationCountry: event.locationCountry ?? "España",
+    locationLatitude: event.locationLatitude ?? event.locationLat ?? 40.4168,
+    locationLongitude: event.locationLongitude ?? event.locationLon ?? -3.7038,
+    speakerNames: event.speakerNames ?? event.speakers ?? [""],
+    sessionTitles: event.sessionTitles ?? event.sessions?.map((s: any) => s.title) ?? [""],
+    sessionTimes: event.sessionTimes ?? event.sessions?.map((s: any) => s.time) ?? [""],
+    sessionDescriptions:
+      event.sessionDescriptions ?? event.sessions?.map((s: any) => s.description) ?? [""],
+  } as EventDTO;
+}
+
 export async function clientLoader({ params }: LoaderFunctionArgs) {
   const globalData = await loadGlobalDataIntoStore();
   if (!globalData?.isUserLoggedIn) {
@@ -24,7 +67,7 @@ export async function clientLoader({ params }: LoaderFunctionArgs) {
     return redirect(`/new/error?message=${encodeURIComponent("No tienes permiso para editar este evento. Solo el creador del evento o un administrador pueden hacerlo.")}`);
   }
 
-  return { event: event as unknown as EventDTO };
+  return { event: normalizeEventForEdit(event) };
 }
 clientLoader.hydrate = true;
 

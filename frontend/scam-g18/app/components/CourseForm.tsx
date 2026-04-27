@@ -244,6 +244,7 @@ export default function CourseForm({ initialData, onSubmit, isSubmitting }: Cour
                 size="sm"
                 className="rounded-pill px-3"
                 style={{ borderColor: "var(--accent-color)", color: "var(--accent-color)" }}
+                  type="button"
                 onClick={() => addArrayItem("learningPoints")}
               >
                 + Añadir
@@ -263,6 +264,7 @@ export default function CourseForm({ initialData, onSubmit, isSubmitting }: Cour
                   <Button
                     variant="outline-secondary"
                     className="border-start-0 px-3 bg-light text-muted"
+                    type="button"
                     onClick={() => removeArrayItem("learningPoints", i)}
                   >×</Button>
                 </InputGroup>
@@ -279,6 +281,7 @@ export default function CourseForm({ initialData, onSubmit, isSubmitting }: Cour
                 size="sm"
                 className="rounded-pill px-3"
                 style={{ borderColor: "var(--accent-color)", color: "var(--accent-color)" }}
+                  type="button"
                 onClick={() => addArrayItem("prerequisites")}
               >
                 + Añadir
@@ -298,6 +301,7 @@ export default function CourseForm({ initialData, onSubmit, isSubmitting }: Cour
                   <Button
                     variant="outline-secondary"
                     className="border-start-0 px-3 bg-light text-muted"
+                    type="button"
                     onClick={() => removeArrayItem("prerequisites", i)}
                   >×</Button>
                 </InputGroup>
@@ -313,6 +317,7 @@ export default function CourseForm({ initialData, onSubmit, isSubmitting }: Cour
                 variant="success"
                 size="sm"
                 className="rounded-pill px-3 shadow-sm border-0"
+                type="button"
                 onClick={addModule}
               >
                 + Añadir Módulo
@@ -343,6 +348,7 @@ export default function CourseForm({ initialData, onSubmit, isSubmitting }: Cour
                       variant="outline-danger"
                       size="sm"
                       className="rounded-pill px-3 border-0 bg-white shadow-sm"
+                      type="button"
                       onClick={() => removeModule(mIdx)}
                     >
                       Eliminar
@@ -371,6 +377,7 @@ export default function CourseForm({ initialData, onSubmit, isSubmitting }: Cour
                         <Button
                           variant="outline-secondary"
                           className="border-0 px-3 bg-white text-muted"
+                          type="button"
                           onClick={() => removeLesson(mIdx, lIdx)}
                         >×</Button>
                       </div>
@@ -379,6 +386,7 @@ export default function CourseForm({ initialData, onSubmit, isSubmitting }: Cour
                       variant="link"
                       size="sm"
                       className="text-decoration-none p-0 fw-bold mt-2 d-flex align-items-center gap-1"
+                      type="button"
                       onClick={() => addLesson(mIdx)}
                     >
                       <i className="bi bi-plus-circle"></i> Añadir Lección
