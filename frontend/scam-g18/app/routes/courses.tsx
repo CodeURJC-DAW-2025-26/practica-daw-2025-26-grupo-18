@@ -1,22 +1,43 @@
-import { useState, useEffect } from "react";
-import { Container, Row, Col, Form, InputGroup, Button, Badge, Spinner, Alert } from "react-bootstrap";
-import { Link, useSearchParams } from "react-router";
+import { useState } from "react";
+import { Container, Form, InputGroup, Button, Badge, Alert } from "react-bootstrap";
+import { Link, useLoaderData, useSearchParams } from "react-router";
 import { getCourses } from "~/services/courseService";
-import { getGlobalData } from "~/services/globalService";
-import { getCourseImageUrl } from "~/utils/imageUrls";
-import type { GlobalDataDTO } from "~/dtos/GlobalDataDTO";
+import { loadGlobalDataIntoStore } from "~/services/globalService";
+import { useAuthStore } from "~/stores/authStore";
+import type { LoaderFunctionArgs } from "react-router";
+
+type CoursesLoaderData = {
+  initialCourses: Array<Record<string, any>>;
+  initialSearch: string;
+};
+
+export async function clientLoader({ request }: LoaderFunctionArgs): Promise<CoursesLoaderData> {
+  const url = new URL(request.url);
+  const search = url.searchParams.get("search") ?? "";
+
+  await loadGlobalDataIntoStore();
+  const initialCourses = await getCourses(0, search || undefined);
+
+  return {
+    initialCourses,
+    initialSearch: search,
+  };
+}
+
+clientLoader.hydrate = true;
 
 export default function CoursesPage() {
+  const PAGE_SIZE = 10;
+
+  const { initialCourses, initialSearch } = useLoaderData<typeof clientLoader>();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [courses, setCourses] = useState<Record<string, any>[]>([]);
-  const [globalData, setGlobalData] = useState<GlobalDataDTO | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [courses, setCourses] = useState<Array<Record<string, any>>>(initialCourses);
+  const canCreateCourse = useAuthStore((state) => state.user?.canCreateCourse ?? false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(0);
-  const [hasMore, setHasMore] = useState(false);
-  const [search, setSearch] = useState(searchParams.get("search") ?? "");
-
-  const PAGE_SIZE = 10;
+  const [hasMore, setHasMore] = useState(initialCourses.length === PAGE_SIZE);
+  const [search, setSearch] = useState(initialSearch || searchParams.get("search") || "");
 
   const fetchCourses = async (currentPage: number, currentSearch: string, append: boolean) => {
     try {
@@ -33,16 +54,6 @@ export default function CoursesPage() {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    getGlobalData().then(setGlobalData).catch(() => { });
-  }, []);
-
-  useEffect(() => {
-    setLoading(true);
-    setPage(0);
-    fetchCourses(0, search, false);
-  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,7 +115,7 @@ export default function CoursesPage() {
                   </InputGroup>
                 </div>
 
-                {globalData?.canCreateCourse && (
+                {canCreateCourse && (
                   <Link
                     to="/new/courses/new"
                     className="btn btn-primary btn-lg fw-bold px-4 rounded-pill shadow-sm"
@@ -118,13 +129,7 @@ export default function CoursesPage() {
           </Form>
 
           {/* Content */}
-          {loading ? (
-            <div className="text-center py-5">
-              <div className="spinner-border text-primary" role="status" style={{ color: "var(--accent-color)" }}>
-                <span className="visually-hidden">Cargando...</span>
-              </div>
-            </div>
-          ) : error ? (
+          {error ? (
             <Alert variant="danger" className="rounded-4 shadow-sm border-0">{error}</Alert>
           ) : courses.length === 0 ? (
             <div className="text-center py-5 bg-white rounded-4 shadow-sm border border-dashed">

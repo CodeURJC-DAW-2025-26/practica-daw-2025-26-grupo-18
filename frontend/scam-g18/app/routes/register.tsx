@@ -1,6 +1,7 @@
 import type { FormEvent } from "react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Link, redirect, useNavigate } from "react-router";
+import { Alert, Button, Col, Container, Form, InputGroup, Row } from "react-bootstrap";
 
 import { register as registerRequest } from "~/services/authService";
 import { loadGlobalDataIntoStore } from "~/services/globalService";
@@ -48,6 +49,8 @@ const COUNTRIES = [
   "Puerto Rico",
 ];
 
+const SORTED_COUNTRIES = [...COUNTRIES].sort((a, b) => a.localeCompare(b, "es"));
+
 export default function RegisterRoute() {
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
@@ -60,9 +63,8 @@ export default function RegisterRoute() {
     birthDate: "",
     country: "",
   });
+  // Save touched fields to show it after validation, if required
   const [touched, setTouched] = useState<Record<string, boolean>>({});
-
-  const sortedCountries = useMemo(() => [...COUNTRIES].sort((a, b) => a.localeCompare(b, "es")), []);
 
   // Validation functions
   const validateUsername = (v: string) => v.trim().length >= 3 && v.trim().length <= 20;
@@ -70,7 +72,7 @@ export default function RegisterRoute() {
   const validatePassword = (v: string) => /^(?=.*[0-9])(?=.*[A-Z])(?=\S+$).{8,}$/.test(v);
   const validateGender = (v: string) => !!v;
   const validateBirthDate = (v: string) => {
-    if (!v) return false;
+  if (!v) return false;
     const date = new Date(v);
     const now = new Date();
     const eighteenYearsAgo = new Date();
@@ -133,18 +135,18 @@ export default function RegisterRoute() {
   return (
     <main className="main">
       <section className="section">
-        <div className="container">
-          <div className="row g-0 shadow-lg rounded-4 overflow-hidden" style={{ minHeight: 600 }}>
-            <div className="col-lg-6 d-none d-lg-block position-relative">
+        <Container>
+          <Row className="g-0 shadow-lg rounded-4 overflow-hidden" style={{ minHeight: 600 }}>
+            <Col lg={6} className="d-none d-lg-block position-relative">
               <img src="/services/Services-3.webp" alt="Join SCAM" className="img-fluid w-100 h-100" style={{ objectFit: "cover", objectPosition: "center" }} />
               <div className="position-absolute top-0 start-0 w-100 h-100" style={{ background: "rgba(0, 0, 0, 0.3)" }} />
               <div className="position-absolute bottom-0 start-0 p-5 text-white">
                 <h3 className="fw-bold text-white">Unete a nuestra comunidad</h3>
                 <p className="lead mb-0">Aprende de los mejores expertos y transforma tu carrera profesional hoy mismo.</p>
               </div>
-            </div>
+            </Col>
 
-            <div className="col-lg-6 bg-white d-flex align-items-center">
+            <Col lg={6} className="bg-white d-flex align-items-center">
               <div className="p-5 w-100">
                 <div className="text-center mb-4">
                   <h2 className="fw-bold text-dark">Crear Cuenta</h2>
@@ -152,88 +154,88 @@ export default function RegisterRoute() {
                 </div>
 
                 {error && (
-                  <div className="alert alert-danger" role="alert">
+                  <Alert variant="danger" role="alert">
                     {error}
-                  </div>
+                  </Alert>
                 )}
 
-                <form id="registerForm" onSubmit={onSubmit} encType="multipart/form-data" noValidate>
-                  <div className="mb-3">
-                    <label htmlFor="regUsername" className="form-label small fw-bold">
+                <Form id="registerForm" onSubmit={onSubmit} encType="multipart/form-data" noValidate>
+                  <Form.Group className="mb-3" controlId="regUsername">
+                    <Form.Label className="small fw-bold">
                       Nombre de usuario
-                    </label>
-                    <div className="input-group has-validation">
-                      <span className="input-group-text">
+                    </Form.Label>
+                    <InputGroup hasValidation>
+                      <InputGroup.Text>
                         <i className="bi bi-person" />
-                      </span>
-                      <input
+                      </InputGroup.Text>
+                      <Form.Control
                         type="text"
-                        className={`form-control ${formErrors.username ? 'is-invalid' : 'is-valid'}`}
-                        id="regUsername"
                         value={form.username}
                         onChange={(event) => handleFieldChange("username", event.target.value)}
                         placeholder="Tu nombre de usuario"
+                        isInvalid={!!touched.username && formErrors.username}
+                        isValid={!!touched.username && !formErrors.username}
                         required
                       />
-                      <div className="invalid-feedback">El usuario debe tener entre 3 y 20 caracteres.</div>
-                    </div>
-                  </div>
+                      <Form.Control.Feedback type="invalid">El usuario debe tener entre 3 y 20 caracteres.</Form.Control.Feedback>
+                    </InputGroup>
+                  </Form.Group>
 
-                  <div className="mb-3">
-                    <label htmlFor="regEmail" className="form-label small fw-bold">
+                  <Form.Group className="mb-3" controlId="regEmail">
+                    <Form.Label className="small fw-bold">
                       Correo electronico
-                    </label>
-                    <div className="input-group has-validation">
-                      <span className="input-group-text">
+                    </Form.Label>
+                    <InputGroup hasValidation>
+                      <InputGroup.Text>
                         <i className="bi bi-envelope" />
-                      </span>
-                      <input
+                      </InputGroup.Text>
+                      <Form.Control
                         type="email"
-                        className={`form-control ${formErrors.email ? 'is-invalid' : 'is-valid'}`}
-                        id="regEmail"
                         value={form.email}
                         onChange={(event) => handleFieldChange("email", event.target.value)}
                         placeholder="nombre@ejemplo.com"
+                        isInvalid={!!touched.email && formErrors.email}
+                        isValid={!!touched.email && !formErrors.email}
                         required
                       />
-                      <div className="invalid-feedback">Introduce un correo electrónico válido.</div>
-                    </div>
-                  </div>
+                      <Form.Control.Feedback type="invalid">Introduce un correo electrónico válido.</Form.Control.Feedback>
+                    </InputGroup>
+                  </Form.Group>
 
-                  <div className="mb-3">
-                    <label htmlFor="regPassword" className="form-label small fw-bold">
+                  <Form.Group className="mb-3" controlId="regPassword">
+                    <Form.Label className="small fw-bold">
                       Contrasena
-                    </label>
-                    <div className="input-group has-validation">
-                      <span className="input-group-text">
+                    </Form.Label>
+                    <InputGroup hasValidation>
+                      <InputGroup.Text>
                         <i className="bi bi-lock" />
-                      </span>
-                      <input
+                      </InputGroup.Text>
+                      <Form.Control
                         type="password"
-                        className={`form-control ${formErrors.password ? 'is-invalid' : 'is-valid'}`}
-                        id="regPassword"
                         value={form.password}
                         onChange={(event) => handleFieldChange("password", event.target.value)}
                         placeholder="********"
+                        isInvalid={!!touched.password && formErrors.password}
+                        isValid={!!touched.password && !formErrors.password}
                         required
                       />
-                      <div className="invalid-feedback">Mín. 8 caracteres: 1 mayúscula, 1 número y 7 letras.</div>
-                    </div>
-                  </div>
+                      <Form.Control.Feedback type="invalid">Min. 8 caracteres: 1 mayuscula, 1 numero y 7 letras.</Form.Control.Feedback>
+                    </InputGroup>
+                  </Form.Group>
 
-                  <div className="mb-3">
-                    <label htmlFor="regGender" className="form-label small fw-bold">
+                  <Form.Group className="mb-3" controlId="regGender">
+                    <Form.Label className="small fw-bold">
                       Genero
-                    </label>
-                    <div className="input-group has-validation">
-                      <span className="input-group-text">
+                    </Form.Label>
+                    <InputGroup hasValidation>
+                      <InputGroup.Text>
                         <i className="bi bi-gender-ambiguous" />
-                      </span>
-                      <select
-                        className={`form-select ${formErrors.gender ? 'is-invalid' : 'is-valid'}`}
-                        id="regGender"
+                      </InputGroup.Text>
+                      <Form.Select
                         value={form.gender}
                         onChange={(event) => handleFieldChange("gender", event.target.value)}
+                        isInvalid={!!touched.gender && formErrors.gender}
+                        isValid={!!touched.gender && !formErrors.gender}
                         required
                       >
                         <option value="" disabled>
@@ -242,86 +244,82 @@ export default function RegisterRoute() {
                         <option value="MALE">Masculino</option>
                         <option value="FEMALE">Femenino</option>
                         <option value="PREFER_NOT_TO_SAY">Prefiero no decirlo</option>
-                      </select>
-                      <div className="invalid-feedback">Selecciona un género.</div>
-                    </div>
-                  </div>
+                      </Form.Select>
+                      <Form.Control.Feedback type="invalid">Selecciona un genero.</Form.Control.Feedback>
+                    </InputGroup>
+                  </Form.Group>
 
-                  <div className="mb-3">
-                    <label htmlFor="regBirthDate" className="form-label small fw-bold">
+                  <Form.Group className="mb-3" controlId="regBirthDate">
+                    <Form.Label className="small fw-bold">
                       Fecha de nacimiento
-                    </label>
-                    <div className="input-group has-validation">
-                      <span className="input-group-text">
+                    </Form.Label>
+                    <InputGroup hasValidation>
+                      <InputGroup.Text>
                         <i className="bi bi-calendar" />
-                      </span>
-                      <input
+                      </InputGroup.Text>
+                      <Form.Control
                         type="date"
-                        className={`form-control ${formErrors.birthDate ? 'is-invalid' : 'is-valid'}`}
-                        id="regBirthDate"
                         value={form.birthDate}
                         onChange={(event) => handleFieldChange("birthDate", event.target.value)}
+                        isInvalid={!!touched.birthDate && formErrors.birthDate}
+                        isValid={!!touched.birthDate && !formErrors.birthDate}
                         required
                       />
-                      <div className="invalid-feedback">Debes ser mayor de 18 años para registrarte.</div>
-                    </div>
-                  </div>
+                      <Form.Control.Feedback type="invalid">Debes ser mayor de 18 anos para registrarte.</Form.Control.Feedback>
+                    </InputGroup>
+                  </Form.Group>
 
-                  <div className="mb-3">
-                    <label htmlFor="regCountry" className="form-label small fw-bold">
+                  <Form.Group className="mb-3" controlId="regCountry">
+                    <Form.Label className="small fw-bold">
                       Pais
-                    </label>
-                    <div className="input-group has-validation">
-                      <span className="input-group-text">
+                    </Form.Label>
+                    <InputGroup hasValidation>
+                      <InputGroup.Text>
                         <i className="bi bi-globe" />
-                      </span>
-                      <select
-                        className={`form-select ${formErrors.country ? 'is-invalid' : 'is-valid'}`}
-                        id="regCountry"
+                      </InputGroup.Text>
+                      <Form.Select
                         value={form.country}
                         onChange={(event) => handleFieldChange("country", event.target.value)}
+                        isInvalid={!!touched.country && formErrors.country}
+                        isValid={!!touched.country && !formErrors.country}
                         required
                       >
                         <option value="" disabled>
                           Selecciona tu pais
                         </option>
-                        {sortedCountries.map((country) => (
+                        {SORTED_COUNTRIES.map((country) => (
                           <option key={country} value={country}>
                             {country}
                           </option>
                         ))}
-                      </select>
-                      <div className="invalid-feedback">Selecciona un país.</div>
-                    </div>
-                  </div>
+                      </Form.Select>
+                      <Form.Control.Feedback type="invalid">Selecciona un pais.</Form.Control.Feedback>
+                    </InputGroup>
+                  </Form.Group>
 
-                  <div className="mb-4">
-                    <label htmlFor="regImage" className="form-label small fw-bold">
+                  <Form.Group className="mb-4" controlId="regImage">
+                    <Form.Label className="small fw-bold">
                       Foto de perfil <span className="text-muted fw-normal">(opcional)</span>
-                    </label>
-                    <div className="input-group">
-                      <span className="input-group-text">
+                    </Form.Label>
+                    <InputGroup>
+                      <InputGroup.Text>
                         <i className="bi bi-image" />
-                      </span>
-                      <input
+                      </InputGroup.Text>
+                      <Form.Control
                         type="file"
-                        className="form-control"
-                        id="regImage"
                         accept="image/*"
-                        onChange={(event) =>
-                          handleFieldChange("image", event.target.files?.[0])
-                        }
+                        onChange={(event) => handleFieldChange("image", (event.currentTarget as HTMLInputElement).files?.[0])}
                       />
-                    </div>
-                    <div className="form-text text-muted">Si no subes ninguna, se usara una imagen por defecto.</div>
-                  </div>
+                    </InputGroup>
+                    <Form.Text className="text-muted">Si no subes ninguna, se usara una imagen por defecto.</Form.Text>
+                  </Form.Group>
 
                   <div className="d-grid mb-4">
-                    <button type="submit" className="btn btn-primary py-2 fw-bold" disabled={submitting || !isFormValid}>
+                    <Button type="submit" variant="primary" className="py-2 fw-bold" disabled={submitting || !isFormValid}>
                       {submitting ? "Registrando..." : "Registrarse"}
-                    </button>
+                    </Button>
                   </div>
-                </form>
+                </Form>
 
                 <div className="text-center p-3 rounded bg-light">
                   <p className="mb-0 small">
@@ -332,9 +330,9 @@ export default function RegisterRoute() {
                   </p>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
+            </Col>
+          </Row>
+        </Container>
       </section>
     </main>
   );

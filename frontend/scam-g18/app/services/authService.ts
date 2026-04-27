@@ -1,3 +1,5 @@
+import { loadGlobalDataIntoStore } from "~/services/globalService";
+
 type AuthStatus = "SUCCESS" | "FAILURE";
 
 export type AuthResponse = {
@@ -39,6 +41,9 @@ export async function login(request: LoginRequest): Promise<AuthResponse> {
     throw new Error(body.message || body.error || `Error en login (${response.status})`);
   }
 
+  // Sync stores with latest user data
+  await loadGlobalDataIntoStore(true);
+
   return body;
 }
 
@@ -51,6 +56,9 @@ export async function logout(): Promise<void> {
   if (!response.ok) {
     throw new Error(`Error en logout (${response.status})`);
   }
+
+  // Sync stores with latest user data
+  await loadGlobalDataIntoStore(true);
 }
 
 export async function register(request: RegisterRequest): Promise<AuthResponse> {
@@ -75,6 +83,9 @@ export async function register(request: RegisterRequest): Promise<AuthResponse> 
   if (!response.ok) {
     throw new Error(body.message || body.error || `Error en registro (${response.status})`);
   }
+
+  // Sync stores with latest user data
+  await loadGlobalDataIntoStore(true);
 
   return body;
 }

@@ -1,13 +1,12 @@
 import { useNavigate } from "react-router";
 import { Col, Container, Row } from "react-bootstrap";
+import { useAuthStore } from "~/stores/authStore";
 import { useGlobalStore } from "~/stores/globalStore";
 import { addSubscriptionToCart } from "../services/cartService";
 
 export default function AppLayout() {
-    const globalData = useGlobalStore().globalData;
-
-    const isUserLoggedIn = globalData?.isUserLoggedIn ?? false;
-    const isPublisher = globalData?.isPublisher ?? false;
+    const isLoggedIn = useAuthStore((state) => state.isLoggedIn());
+    const isPublisher = useGlobalStore((state) => state.globalData?.isPublisher ?? false);
     const navigate = useNavigate();
 
     const handleAddSubscription = async (e: React.MouseEvent) => {
@@ -709,7 +708,7 @@ export default function AppLayout() {
                                     </li>
                                 </ul>
                                 <div className="cta">
-                                    {isUserLoggedIn ? (
+                                    {isLoggedIn ? (
                                         isPublisher ? (
                                             <span className="btn btn-choose w-100 disabled">Incluido en Premium</span>
                                         ) : (
@@ -753,7 +752,7 @@ export default function AppLayout() {
                                     </li>
                                 </ul>
                                 <div className="cta">
-                                    {isUserLoggedIn ? (
+                                    {isLoggedIn ? (
                                         isPublisher ? (
                                             <span className="btn btn-choose w-100 disabled">Ya tienes Premium</span>
                                         ) : (

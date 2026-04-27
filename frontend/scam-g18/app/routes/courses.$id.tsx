@@ -3,7 +3,7 @@ import { useLoaderData, useNavigate, Link } from "react-router";
 import { getCourseById, getLessonVideoUrl } from "~/services/courseService";
 import { addCourseToCart } from "~/services/cartService";
 import { getCourseImageUrl, getUserProfileImageUrl } from "~/utils/imageUrls";
-import { useGlobalStore } from "~/stores/globalStore";
+import { useAuthStore } from "~/stores/authStore";
 import type { LoaderFunctionArgs } from "react-router";
 import type { CourseDetailDTO, ModuleDTO, LessonDTO } from "~/dtos/CourseDTO";
 import { GET_COURSE_AGES, GET_COURSE_GENDERS, GET_COURSE_TAGS } from "../constants/constants";
@@ -59,14 +59,14 @@ export default function CourseDetail() {
   };
 
   const [currentSlide, setCurrentSlide] = useState(0);
-  const globalData = useGlobalStore((state) => state.globalData);
-  const isUserLoggedIn = globalData?.isUserLoggedIn ?? false;
-  const userId = isUserLoggedIn ? (globalData?.userId ?? null) : null;
+  const user = useAuthStore((state) => state.user);
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn());
+  const userId = isLoggedIn ? user?.id ?? null : null;
 
   const slides = [
     { info: GET_COURSE_AGES },
     { info: GET_COURSE_GENDERS },
-    ...(isUserLoggedIn ? [{ info: GET_COURSE_TAGS }] : [])
+    ...(isLoggedIn ? [{ info: GET_COURSE_TAGS }] : [])
   ];
 
   // Si el usuario se desloguea estando en la slide de tags (índice 2), volver al inicio
@@ -74,7 +74,7 @@ export default function CourseDetail() {
     if (currentSlide >= slides.length) {
       setCurrentSlide(0);
     }
-  }, [isUserLoggedIn, slides.length, currentSlide]);
+  }, [isLoggedIn, slides.length, currentSlide]);
 
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
 

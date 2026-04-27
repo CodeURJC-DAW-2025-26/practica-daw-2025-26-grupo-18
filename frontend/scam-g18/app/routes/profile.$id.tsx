@@ -1,11 +1,29 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router";
+import { useMemo, useState } from "react";
+import { Link, useLoaderData } from "react-router";
 
 import { getProfileById, updateProfile } from "~/services/profileService";
 import type { ProfileDTO, ProfileUpdateDTO } from "~/dtos/ProfileDTO";
 import { getUserProfileImageUrl } from "~/utils/imageUrls";
+import type { LoaderFunctionArgs } from "react-router";
 import Chart from "../components/Chart";
 import { GET_COURSE_PROGRESS, GET_LESSONS_LEARNED, GET_CREATED_COURSE_STATUS } from "../constants/constants";
+
+type ProfileLoaderData = {
+  profile: ProfileDTO;
+};
+
+export async function clientLoader({ params }: LoaderFunctionArgs): Promise<ProfileLoaderData> {
+  const userId = Number(params.id);
+
+  if (!Number.isFinite(userId) || userId <= 0) {
+    throw new Response("Perfil no valido", { status: 400 });
+  }
+
+  const profile = await getProfileById(userId);
+  return { profile };
+}
+
+clientLoader.hydrate = true;
 
 type ProfileFormState = {
   username: string;
@@ -34,12 +52,8 @@ function getNumberValue(record: Record<string, unknown>, keys: string[]): number
 }
 
 export default function ProfileRoute() {
-  const params = useParams();
-  const userId = Number(params.id);
-
-  const [profile, setProfile] = useState<ProfileDTO | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { profile: initialProfile } = useLoaderData<typeof clientLoader>();
+  const [profile, setProfile] = useState<ProfileDTO | null>(initialProfile);
 
   const [isEditing, setIsEditing] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -49,62 +63,19 @@ export default function ProfileRoute() {
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
 
   const [form, setForm] = useState<ProfileFormState>({
-    username: "",
-    email: "",
-    country: "",
-    shortDescription: "",
-    currentGoal: "",
-    weeklyRoutine: "",
-    comunity: "",
+    username: initialProfile.username ?? "",
+    email: initialProfile.email ?? "",
+    country: initialProfile.country ?? "",
+    shortDescription: initialProfile.shortDescription ?? "",
+    currentGoal: initialProfile.currentGoal ?? "",
+    weeklyRoutine: initialProfile.weeklyRoutine ?? "",
+    comunity: initialProfile.comunity ?? "",
   });
 
   const profileImageUrl = useMemo(() => {
     if (!profile) return "/services/default_avatar.png";
     return getUserProfileImageUrl(profile.id);
   }, [profile]);
-
-  useEffect(() => {
-    if (!Number.isFinite(userId) || userId <= 0) {
-      setError("Perfil no válido");
-      setLoading(false);
-      return;
-    }
-
-    let cancelled = false;
-
-    async function fetchProfile() {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await getProfileById(userId);
-        if (cancelled) return;
-
-        setProfile(data);
-        setForm({
-          username: data.username ?? "",
-          email: data.email ?? "",
-          country: data.country ?? "",
-          shortDescription: data.shortDescription ?? "",
-          currentGoal: data.currentGoal ?? "",
-          weeklyRoutine: data.weeklyRoutine ?? "",
-          comunity: data.comunity ?? "",
-        });
-      } catch (err) {
-        if (cancelled) return;
-        setError(err instanceof Error ? err.message : "No se pudo cargar el perfil");
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    }
-
-    void fetchProfile();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [userId]);
 
   function updateFormField(field: keyof ProfileFormState, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -174,25 +145,13 @@ export default function ProfileRoute() {
     reader.readAsDataURL(file);
   }
 
-  if (loading) {
-    return (
-      <main className="main" id="profile-page-main">
-        <section className="section">
-          <div className="container">
-            <div className="text-center py-5">Cargando perfil...</div>
-          </div>
-        </section>
-      </main>
-    );
-  }
-
-  if (error || !profile) {
+  if (!profile) {
     return (
       <main className="main" id="profile-page-main">
         <section className="section">
           <div className="container">
             <div className="alert alert-warning" role="alert">
-              {error || "No se encontró el perfil"}
+              No se encontro el perfil
             </div>
           </div>
         </section>
