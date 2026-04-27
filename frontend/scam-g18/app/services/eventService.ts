@@ -3,6 +3,21 @@ import type { EventDTO } from "~/dtos/EventDTO";
 const BASE_URL = "/api/v1/events";
 
 /**
+ * Helper para normalizar los datos del evento que vienen del backend.
+ * El backend envía 'locationLat' y 'locationLon' en los GET, pero espera 
+ * 'locationLatitude' y 'locationLongitude' en los POST/PUT.
+ * El frontend usa los nombres largos en sus DTOs y componentes.
+ */
+function normalizeEvent(event: any): any {
+  if (!event) return event;
+  return {
+    ...event,
+    locationLatitude: event.locationLatitude ?? event.locationLat,
+    locationLongitude: event.locationLongitude ?? event.locationLon
+  };
+}
+
+/**
  * GET /api/v1/events/ — List paginated published events
  */
 export async function getEvents(
@@ -19,7 +34,8 @@ export async function getEvents(
 
   const res = await fetch(`${BASE_URL}/?${params.toString()}`);
   if (!res.ok) throw new Error(`Error fetching events: ${res.status}`);
-  return res.json();
+  const data = await res.json();
+  return Array.isArray(data) ? data.map(normalizeEvent) : data;
 }
 
 /**
@@ -28,7 +44,8 @@ export async function getEvents(
 export async function getEventById(id: number): Promise<Record<string, any>> {
   const res = await fetch(`${BASE_URL}/${id}`);
   if (!res.ok) throw new Error(`Error fetching event ${id}: ${res.status}`);
-  return res.json();
+  const data = await res.json();
+  return normalizeEvent(data);
 }
 
 /**
@@ -37,7 +54,8 @@ export async function getEventById(id: number): Promise<Record<string, any>> {
 export async function getPurchasedEvents(): Promise<Record<string, any>[]> {
   const res = await fetch(`${BASE_URL}/purchased`);
   if (!res.ok) throw new Error(`Error fetching purchased events: ${res.status}`);
-  return res.json();
+  const data = await res.json();
+  return Array.isArray(data) ? data.map(normalizeEvent) : data;
 }
 
 /**
