@@ -23,11 +23,12 @@ export default function NewEvent() {
 
   const handleSubmit = async (data: EventDTO, imageFile?: File) => {
     try {
-      const newEvent = await createEvent(data, [], imageFile);
-      navigate(`/new/events/${newEvent.id}`);
+      await createEvent(data, [], imageFile);
+      navigate("/new/events");
     } catch (error) {
       console.error(error);
-      alert("Error al crear el evento: " + (error instanceof Error ? error.message : String(error)));
+      const msg = error instanceof Error ? error.message : String(error);
+      navigate(`/new/error?message=${encodeURIComponent("Error al crear el evento: " + msg)}`);
     }
   };
 

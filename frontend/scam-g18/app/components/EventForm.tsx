@@ -54,7 +54,56 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
     sessionTimes: initialData?.sessionTimes || [""],
     sessionDescriptions: initialData?.sessionDescriptions || [""],
   });
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [imageFile, setImageFile] = useState<File | undefined>();
+
+  const isFieldInvalid = (name: string) => {
+    if (!touched[name]) return false;
+    const value = (formData as any)[name];
+
+    switch (name) {
+      case "title":
+        return !value || value.length < 3;
+      case "description":
+        return !value || value.length < 10;
+      case "startDateStr":
+      case "startTimeStr":
+      case "endDateStr":
+      case "endTimeStr":
+      case "locationName":
+      case 'locationAddress':
+      case 'locationCity':
+      case 'locationCountry':
+        return !value;
+      case "price":
+        return value === undefined || value === null || isNaN(value) || value < 0;
+      case "capacity":
+        return value === undefined || value === null || isNaN(value) || value < 1;
+      default:
+        return false;
+    }
+  };
+
+  const isFormValid = () => {
+    return (
+      (formData.title?.length || 0) >= 3 &&
+      (formData.description?.length || 0) >= 10 &&
+      formData.startDateStr &&
+      formData.startTimeStr &&
+      formData.endDateStr &&
+      formData.endTimeStr &&
+      formData.locationName &&
+      formData.locationAddress &&
+      formData.locationCity &&
+      formData.locationCountry &&
+      formData.price !== undefined &&
+      !isNaN(formData.price as number) &&
+      (formData.price as number) >= 0 &&
+      formData.capacity !== undefined &&
+      !isNaN(formData.capacity as number) &&
+      (formData.capacity as number) >= 1
+    );
+  };
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const mapRef = useRef<any>(null);
@@ -143,9 +192,16 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
     const form = event.currentTarget;
     event.preventDefault();
     
-    if (form.checkValidity() === false) {
+    if (form.checkValidity() === false || !isFormValid()) {
       event.stopPropagation();
       setValidated(true);
+      
+      // Mark all visible fields as touched to show errors
+      const allTouched: Record<string, boolean> = { ...touched };
+      ['title', 'description', 'startDateStr', 'startTimeStr', 'endDateStr', 'endTimeStr', 'locationName', 'locationAddress', 'locationCity', 'locationCountry', 'price', 'capacity'].forEach(field => {
+        allTouched[field] = true;
+      });
+      setTouched(allTouched);
       return;
     }
 
@@ -157,6 +213,7 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
     const { name, value, type } = e.target;
     const val = type === "number" ? parseFloat(value) : value;
     setFormData((prev) => ({ ...prev, [name]: val }));
+    setTouched((prev) => ({ ...prev, [name]: true }));
   };
 
   const updateArrayItem = (key: "speakerNames" | "sessionTitles" | "sessionTimes" | "sessionDescriptions", index: number, value: string) => {
@@ -216,9 +273,9 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
                   value={formData.title}
                   onChange={handleInputChange}
                   placeholder="Ej: Foro de Innovación 2026"
-                  className="rounded-3 shadow-none border"
+                  className={`rounded-3 shadow-none border ${isFieldInvalid('title') ? 'is-invalid' : touched.title ? 'is-valid' : ''}`}
                 />
-                <Form.Control.Feedback type="invalid">El título del evento es obligatorio.</Form.Control.Feedback>
+                <Form.Control.Feedback type="invalid">El título debe tener al menos 3 caracteres.</Form.Control.Feedback>
               </Form.Group>
 
               <Form.Group className="mb-3">
@@ -231,9 +288,9 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
                   value={formData.description}
                   onChange={handleInputChange}
                   placeholder="Detalles completos del evento..."
-                  className="rounded-3 shadow-none border"
+                  className={`rounded-3 shadow-none border ${isFieldInvalid('description') ? 'is-invalid' : touched.description ? 'is-valid' : ''}`}
                 />
-                <Form.Control.Feedback type="invalid">La descripción del evento es obligatoria.</Form.Control.Feedback>
+                <Form.Control.Feedback type="invalid">La descripción debe tener al menos 10 caracteres.</Form.Control.Feedback>
               </Form.Group>
 
               <Row>
@@ -246,8 +303,9 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
                       name="startDateStr" 
                       value={formData.startDateStr} 
                       onChange={handleInputChange} 
-                      className="rounded-3 shadow-none border"
+                      className={`rounded-3 shadow-none border ${isFieldInvalid('startDateStr') ? 'is-invalid' : touched.startDateStr ? 'is-valid' : ''}`}
                     />
+                    <Form.Control.Feedback type="invalid">Fecha de inicio obligatoria.</Form.Control.Feedback>
                   </Form.Group>
                 </Col>
                 <Col md={6}>
@@ -259,8 +317,9 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
                       name="startTimeStr" 
                       value={formData.startTimeStr} 
                       onChange={handleInputChange} 
-                      className="rounded-3 shadow-none border"
+                      className={`rounded-3 shadow-none border ${isFieldInvalid('startTimeStr') ? 'is-invalid' : touched.startTimeStr ? 'is-valid' : ''}`}
                     />
+                    <Form.Control.Feedback type="invalid">Hora de inicio obligatoria.</Form.Control.Feedback>
                   </Form.Group>
                 </Col>
               </Row>
@@ -274,8 +333,9 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
                       name="endDateStr" 
                       value={formData.endDateStr} 
                       onChange={handleInputChange} 
-                      className="rounded-3 shadow-none border"
+                      className={`rounded-3 shadow-none border ${isFieldInvalid('endDateStr') ? 'is-invalid' : touched.endDateStr ? 'is-valid' : ''}`}
                     />
+                    <Form.Control.Feedback type="invalid">Fecha de fin obligatoria.</Form.Control.Feedback>
                   </Form.Group>
                 </Col>
                 <Col md={6}>
@@ -287,8 +347,9 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
                       name="endTimeStr" 
                       value={formData.endTimeStr} 
                       onChange={handleInputChange} 
-                      className="rounded-3 shadow-none border"
+                      className={`rounded-3 shadow-none border ${isFieldInvalid('endTimeStr') ? 'is-invalid' : touched.endTimeStr ? 'is-valid' : ''}`}
                     />
+                    <Form.Control.Feedback type="invalid">Hora de fin obligatoria.</Form.Control.Feedback>
                   </Form.Group>
                 </Col>
               </Row>
@@ -311,9 +372,10 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
                         value={formData.locationName} 
                         onChange={(e) => handleLocationSearch(e.target.value)} 
                         placeholder="Nombre del lugar"
-                        className="border-0 shadow-none py-2"
+                        className={`border-0 shadow-none py-2 ${isFieldInvalid('locationName') ? 'is-invalid' : touched.locationName ? 'is-valid' : ''}`}
                         autoComplete="off"
                     />
+                    <Form.Control.Feedback type="invalid">El nombre de la ubicación es obligatorio.</Form.Control.Feedback>
                   </InputGroup>
                   
                   {searchResults.length > 0 && (
@@ -347,8 +409,9 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
                           value={formData.locationAddress} 
                           onChange={handleInputChange} 
                           placeholder="Calle, número, etc."
-                          className="rounded-3 shadow-none border"
+                          className={`rounded-3 shadow-none border ${isFieldInvalid('locationAddress') ? 'is-invalid' : touched.locationAddress ? 'is-valid' : ''}`}
                         />
+                        <Form.Control.Feedback type="invalid">La dirección es obligatoria.</Form.Control.Feedback>
                     </Form.Group>
 
                     <Form.Group className="mb-3">
@@ -359,8 +422,9 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
                             value={formData.locationCity} 
                             onChange={handleInputChange} 
                             placeholder="Madrid"
-                            className="rounded-3 shadow-none border"
+                            className={`rounded-3 shadow-none border ${isFieldInvalid('locationCity') ? 'is-invalid' : touched.locationCity ? 'is-valid' : ''}`}
                         />
+                        <Form.Control.Feedback type="invalid">La ciudad es obligatoria.</Form.Control.Feedback>
                     </Form.Group>
 
                     <Form.Group className="mb-3">
@@ -371,8 +435,9 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
                             value={formData.locationCountry} 
                             onChange={handleInputChange} 
                             placeholder="España"
-                            className="rounded-3 shadow-none border"
+                            className={`rounded-3 shadow-none border ${isFieldInvalid('locationCountry') ? 'is-invalid' : touched.locationCountry ? 'is-valid' : ''}`}
                         />
+                        <Form.Control.Feedback type="invalid">El país es obligatorio.</Form.Control.Feedback>
                     </Form.Group>
                  </Col>
                  <Col lg={7}>
@@ -469,8 +534,9 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
                           min="0"
                           value={formData.price}
                           onChange={handleInputChange}
-                          className="border-0 shadow-none py-2"
+                          className={`border-0 shadow-none py-2 ${isFieldInvalid('price') ? 'is-invalid' : touched.price ? 'is-valid' : ''}`}
                        />
+                       <Form.Control.Feedback type="invalid">El precio no puede ser negativo.</Form.Control.Feedback>
                     </InputGroup>
                  </Form.Group>
 
@@ -483,8 +549,9 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
                        min="1"
                        value={formData.capacity}
                        onChange={handleInputChange}
-                       className="rounded-3 shadow-none border py-2"
+                       className={`rounded-3 shadow-none border py-2 ${isFieldInvalid('capacity') ? 'is-invalid' : touched.capacity ? 'is-valid' : ''}`}
                     />
+                    <Form.Control.Feedback type="invalid">La capacidad debe ser al menos 1.</Form.Control.Feedback>
                  </Form.Group>
 
                  <Form.Group className="mb-4">
