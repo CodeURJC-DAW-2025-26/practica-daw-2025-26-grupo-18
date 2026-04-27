@@ -1,5 +1,6 @@
 import type { GlobalDataDTO } from "~/dtos/GlobalDataDTO";
 import { useGlobalStore } from "~/stores/globalStore";
+import { useAuthStore, type AuthUser } from "~/stores/authStore";
 
 const BASE_URL = "/api/v1";
 
@@ -24,6 +25,22 @@ function normalizeGlobalData(data: GlobalDataDTO): GlobalDataDTO {
   };
 }
 
+function mapGlobalDataToAuthUser(data: GlobalDataDTO): AuthUser | null {
+  if (!data.isUserLoggedIn || !data.userId || !data.userName) {
+    return null;
+  }
+
+  return {
+    id: data.userId,
+    username: data.userName,
+    profileImage: normalizeUserProfileImage(data.userProfileImage),
+    canCreateEvent: data.canCreateEvent,
+    canCreateCourse: data.canCreateCourse,
+    isAdmin: data.isAdmin,
+    isPublisher: data.isPublisher,
+  };
+}
+
 /**
  * GET /api/v1/global — Returns global session and permissions data
  */
@@ -35,21 +52,34 @@ export async function getGlobalData(): Promise<GlobalDataDTO> {
 }
 
 export async function loadGlobalDataIntoStore(force = false): Promise<GlobalDataDTO | null> {
-  const state = useGlobalStore.getState();
+  const globalState = useGlobalStore.getState();
+  const authState = useAuthStore.getState();
 
-  if (!force && (state.authResolved || state.authLoading)) {
-    return state.globalData;
+  if (!force && (globalState.authResolved || globalState.authLoading)) {
+    return globalState.globalData;
   }
 
-  state.setAuthLoading(true);
+  globalState.setAuthLoading(true);
   try {
     const data = await getGlobalData();
-    useGlobalStore.getState().setGlobalData(data);
+    globalState.setGlobalData(data);
+
+    // Sync auth store with user information
+    const authUser = mapGlobalDataToAuthUser(data);
+    if (authUser) {
+      authState.setUser(authUser);
+    } else {
+      authState.clearUser();
+    }
+    authState.resolve();
+
     return data;
-  } catch {
-    useGlobalStore.getState().clearGlobalData();
+  } catch (error) {
+    globalState.clearGlobalData();
+    authState.clearUser();
+    authState.resolve();
     return null;
   } finally {
-    useGlobalStore.getState().setAuthLoading(false);
+    globalState.setAuthLoading(false);
   }
 }
