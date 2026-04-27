@@ -1,26 +1,44 @@
-FROM maven:3.9-eclipse-temurin-21 AS builder
+FROM node:20-alpine AS frontend-builder
+
+WORKDIR /frontend
+COPY frontend/scam-g18/package*.json ./
+RUN npm ci
+COPY frontend/scam-g18/ ./
+RUN npm run build
+
+FROM maven:3.9-eclipse-temurin-21 AS backend-builder
 
 # set the working directory in the container
 WORKDIR /project
-COPY pom.xml /project/
+COPY backend/scam-g18/pom.xml /project/
 
 # Download the dependencies
 RUN mvn dependency:go-offline
 
 # Copy the source code into the container
-COPY /src /project/src
+COPY backend/scam-g18/src /project/src
+
+# Replace backend static assets with the React build output
+RUN rm -rf /project/src/main/resources/static/*
+COPY --from=frontend-builder /frontend/build/client/ /project/src/main/resources/static/
+
 # Build the application
 RUN mvn -B package -DskipTests
+
 # Use a smaller base image for the runtime stage
 FROM eclipse-temurin:21-jre
+
 # Set the working directory in the container
 WORKDIR /usr/src/app/
+
 # Copy the built jar file from the builder stage to the runtime stage
-COPY --from=builder /project/target/*.jar /usr/src/app/app.jar
+COPY --from=backend-builder /project/target/*.jar /usr/src/app/app.jar
+
 # Expose the port that the application will run on
 EXPOSE 8443
+
 # Run the application
-CMD [ "java", "-jar", "app.jar" ] 
+CMD [ "java", "-jar", "app.jar" ]
 
 
 

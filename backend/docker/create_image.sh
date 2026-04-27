@@ -17,15 +17,20 @@ TAG="${2:-latest}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 DOCKERFILE_PATH="$SCRIPT_DIR/DockerFile"
-BUILD_CONTEXT="$SCRIPT_DIR/../scam-g18"
+BUILD_CONTEXT="$SCRIPT_DIR/../.."
 
 if [ ! -f "$DOCKERFILE_PATH" ]; then
   echo "Error: No se encontro $DOCKERFILE_PATH" >&2
   exit 1
 fi
 
-if [ ! -f "$BUILD_CONTEXT/pom.xml" ]; then
-  echo "Error: No se encontro pom.xml en $BUILD_CONTEXT" >&2
+if [ ! -f "$BUILD_CONTEXT/backend/scam-g18/pom.xml" ]; then
+  echo "Error: No se encontro backend/scam-g18/pom.xml en $BUILD_CONTEXT" >&2
+  exit 1
+fi
+
+if [ ! -f "$BUILD_CONTEXT/frontend/scam-g18/package.json" ]; then
+  echo "Error: No se encontro frontend/scam-g18/package.json en $BUILD_CONTEXT" >&2
   exit 1
 fi
 
