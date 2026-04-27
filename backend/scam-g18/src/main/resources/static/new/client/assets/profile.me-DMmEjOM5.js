@@ -1,0 +1,1 @@
+import{E as e,N as t}from"./chunk-QFMPRPBF-yDv_3whF.js";import{a as n}from"./authStore-Bq1DUXbG.js";import{t as r}from"./profileService-D3TLwq2b.js";async function i(){if(!(await n())?.isUserLoggedIn)return e(`/new/login`);try{return e(`/new/profile/${await r()}`)}catch{return e(`/new/login`)}}i.hydrate=!0;var a=t(function(){return null});export{i as clientLoader,a as default};

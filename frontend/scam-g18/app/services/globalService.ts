@@ -1,14 +1,15 @@
 import type { GlobalDataDTO } from "~/dtos/GlobalDataDTO";
 import { useGlobalStore } from "~/stores/globalStore";
 import { useAuthStore, type AuthUser } from "~/stores/authStore";
+import { publicAsset } from "~/utils/publicAsset";
 
 const BASE_URL = "/api/v1";
 
 function normalizeUserProfileImage(path?: string | null): string {
-  if (!path) return "/services/default_avatar.png";
+  if (!path) return publicAsset("services/default_avatar.png");
 
   if (path === "/img/default_avatar.png") {
-    return "/services/default_avatar.png";
+    return publicAsset("services/default_avatar.png");
   }
 
   if (path.startsWith("/images/")) {

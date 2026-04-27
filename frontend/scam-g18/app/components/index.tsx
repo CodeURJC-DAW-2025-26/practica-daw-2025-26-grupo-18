@@ -3,6 +3,7 @@ import { Col, Container, Row } from "react-bootstrap";
 import { useAuthStore } from "~/stores/authStore";
 import { useGlobalStore } from "~/stores/globalStore";
 import { addSubscriptionToCart } from "../services/cartService";
+import { publicAsset } from "~/utils/publicAsset";
 
 export default function AppLayout() {
     const isLoggedIn = useAuthStore((state) => state.isLoggedIn());
@@ -57,7 +58,7 @@ export default function AppLayout() {
                         <Col lg={6} className="order-1 order-lg-2" data-aos="fade-left" data-aos-delay="300">
                             <div className="hero-visual">
                                 <div className="hero-image-wrapper">
-                                    <img src="/illustration/illustration-15.webp" className="img-fluid hero-image" alt="Hero Image" />
+                                    <img src={publicAsset("illustration/illustration-15.webp")} className="img-fluid hero-image" alt="Hero Image" />
                                     <div className="floating-elements">
                                         <div className="floating-card card-1">
                                             <i className="bi bi-lightbulb" />
@@ -116,7 +117,7 @@ export default function AppLayout() {
                         <Col lg={6} data-aos="fade-left" data-aos-delay="300">
                             <div className="visual-section">
                                 <div className="main-image-container">
-                                    <img src="/about/about-8.webp" alt="Estudiantes colaborando" className="img-fluid main-visual" />
+                                    <img src={publicAsset("about/about-8.webp")} alt="Estudiantes colaborando" className="img-fluid main-visual" />
                                     <div className="overlay-card">
                                         <div className="card-content">
                                             <h4>Mentores Exitosos</h4>
@@ -130,10 +131,10 @@ export default function AppLayout() {
                                 <div className="secondary-images">
                                     <Row className="g-3">
                                         <Col xs={6}>
-                                            <img src="/about/about-11.webp" alt="Team meeting" className="img-fluid secondary-img" />
+                                            <img src={publicAsset("about/about-11.webp")} alt="Team meeting" className="img-fluid secondary-img" />
                                         </Col>
                                         <Col xs={6}>
-                                            <img src="/about/about-5.webp" alt="Office workspace" className="img-fluid secondary-img" />
+                                            <img src={publicAsset("about/about-5.webp")} alt="Office workspace" className="img-fluid secondary-img" />
                                         </Col>
                                     </Row>
                                 </div>
@@ -283,7 +284,7 @@ export default function AppLayout() {
                                     <Col lg={7}>
                                         <div className="visual-content">
                                             <div className="main-image">
-                                                <img src="/features/features-4.webp" alt="" className="img-fluid" />
+                                                <img src={publicAsset("features/features-4.webp")} alt="" className="img-fluid" />
                                                 <div className="floating-card">
                                                     <i className="bi bi-graph-up-arrow" />
                                                     <div className="card-content">
@@ -345,7 +346,7 @@ export default function AppLayout() {
                                     <Col lg={7}>
                                         <div className="visual-content">
                                             <div className="main-image">
-                                                <img src="/features/features-2.webp" alt="" className="img-fluid" />
+                                                <img src={publicAsset("features/features-2.webp")} alt="" className="img-fluid" />
                                                 <div className="floating-card">
                                                     <i className="bi bi-shield-check" />
                                                     <div className="card-content">
@@ -407,7 +408,7 @@ export default function AppLayout() {
                                     <Col lg={7}>
                                         <div className="visual-content">
                                             <div className="main-image">
-                                                <img src="/features/features-6.webp" alt="" className="img-fluid" />
+                                                <img src={publicAsset("features/features-6.webp")} alt="" className="img-fluid" />
                                                 <div className="floating-card">
                                                     <i className="bi bi-speedometer2" />
                                                     <div className="card-content">
@@ -469,7 +470,7 @@ export default function AppLayout() {
                                     <Col lg={7}>
                                         <div className="visual-content">
                                             <div className="main-image">
-                                                <img src="/features/features-1.webp" alt="" className="img-fluid" />
+                                                <img src={publicAsset("features/features-1.webp")} alt="" className="img-fluid" />
                                                 <div className="floating-card">
                                                     <i className="bi bi-headset" />
                                                     <div className="card-content">
@@ -497,7 +498,7 @@ export default function AppLayout() {
                                     <h4>Libertad Financiera</h4>
                                     <p>Cada día más cerca de tomar decisiones basadas en deseos, no en necesidades.</p>
                                 </div>
-                                <img src="/misc/misc-6.webp" alt="Libertad Financiera" className="img-fluid main-image" />
+                                <img src={publicAsset("misc/misc-6.webp")} alt="Libertad Financiera" className="img-fluid main-image" />
                             </div>
                         </Col>
                         <Col lg={6} className="offset-lg-1 order-lg-1" data-aos="fade-right" data-aos-delay="100">
@@ -545,7 +546,7 @@ export default function AppLayout() {
                                 <p>Pasé de ganar $2000/mes a $8000/mes en 4 meses. Ahora tengo dos negocios online que me generan ingresos pasivos. ¡Finalmente respiro tranquila!.</p>
                                 <div className="client-info">
                                     <div className="client-image">
-                                        <img src="/person/person-f-7.webp" alt="Client" />
+                                        <img src={publicAsset("person/person-f-7.webp")} alt="Client" />
                                     </div>
                                     <div className="client-details">
                                         <h3>Rachel Bennett</h3>
@@ -562,7 +563,7 @@ export default function AppLayout() {
                                 <p>Dejé mi empleo después de 6 meses en SCAM. Hoy mi negocio genera $15K/mes y tengo libertad total para vivir donde quiero. Este programa cambió mi perspectiva completamente.</p>
                                 <div className="client-info">
                                     <div className="client-image">
-                                        <img src="/person/person-m-7.webp" alt="Client" />
+                                        <img src={publicAsset("person/person-m-7.webp")} alt="Client" />
                                     </div>
                                     <div className="client-details">
                                         <h3>Daniel Morgan</h3>
@@ -579,7 +580,7 @@ export default function AppLayout() {
                                 <p>Creé un negocio de consultoría digital y en 5 meses alcancé mis primeros $20K. Los sistemas de SCAM funcionan y son adaptables a cualquier nicho.</p>
                                 <div className="client-info">
                                     <div className="client-image">
-                                        <img src="/person/person-f-8.webp" alt="Client" />
+                                        <img src={publicAsset("person/person-f-8.webp")} alt="Client" />
                                     </div>
                                     <div className="client-details">
                                         <h3>Emma Thompson</h3>
@@ -596,7 +597,7 @@ export default function AppLayout() {
                                 <p>Nunca pensé que podría emprender. Ahora tengo 3 fuentes de ingresos pasivos y trabajo solo 10 horas a la semana. SCAM me enseñó el roadmap exacto.</p>
                                 <div className="client-info">
                                     <div className="client-image">
-                                        <img src="/person/person-m-8.webp" alt="Client" />
+                                        <img src={publicAsset("person/person-m-8.webp")} alt="Client" />
                                     </div>
                                     <div className="client-details">
                                         <h3>Christopher Lee</h3>
@@ -613,7 +614,7 @@ export default function AppLayout() {
                                 <p>Lo que más me gustó fue lo práctico. No es teoría, es lo que funciona AHORA en el mercado. Generé $5K en mi primer mes y sigo creciendo. Increíble.</p>
                                 <div className="client-info">
                                     <div className="client-image">
-                                        <img src="/person/person-f-9.webp" alt="Client" />
+                                        <img src={publicAsset("person/person-f-9.webp")} alt="Client" />
                                     </div>
                                     <div className="client-details">
                                         <h3>Olivia Carter</h3>
@@ -630,7 +631,7 @@ export default function AppLayout() {
                                 <p>Hace un año estaba endeudado. Ahora tengo 2 negocios generando ingresos pasivos mensuales. La mentoría de SCAM fue el catalizador que necesitaba.</p>
                                 <div className="client-info">
                                     <div className="client-image">
-                                        <img src="/person/person-m-13.webp" alt="Client" />
+                                        <img src={publicAsset("person/person-m-13.webp")} alt="Client" />
                                     </div>
                                     <div className="client-details">
                                         <h3>Nathan Brooks</h3>
@@ -666,7 +667,7 @@ export default function AppLayout() {
                         </Col>
                         <Col lg={6}>
                             <div className="hero-visual" data-aos="fade-left" data-aos-delay="150">
-                                <img src="/services/services-1.webp" alt="Cursos" className="img-fluid" />
+                                <img src={publicAsset("services/services-1.webp")} alt="Cursos" className="img-fluid" />
                             </div>
                         </Col>
                     </Row>

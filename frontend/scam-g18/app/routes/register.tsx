@@ -5,6 +5,7 @@ import { Alert, Button, Col, Container, Form, InputGroup, Row } from "react-boot
 
 import { register as registerRequest } from "~/services/authService";
 import { loadGlobalDataIntoStore } from "~/services/globalService";
+import { publicAsset } from "~/utils/publicAsset";
 
 export async function clientLoader() {
   const globalData = await loadGlobalDataIntoStore();
@@ -138,7 +139,7 @@ export default function RegisterRoute() {
         <Container>
           <Row className="g-0 shadow-lg rounded-4 overflow-hidden" style={{ minHeight: 600 }}>
             <Col lg={6} className="d-none d-lg-block position-relative">
-              <img src="/services/Services-3.webp" alt="Join SCAM" className="img-fluid w-100 h-100" style={{ objectFit: "cover", objectPosition: "center" }} />
+              <img src={publicAsset("services/Services-3.webp")} alt="Join SCAM" className="img-fluid w-100 h-100" style={{ objectFit: "cover", objectPosition: "center" }} />
               <div className="position-absolute top-0 start-0 w-100 h-100" style={{ background: "rgba(0, 0, 0, 0.3)" }} />
               <div className="position-absolute bottom-0 start-0 p-5 text-white">
                 <h3 className="fw-bold text-white">Unete a nuestra comunidad</h3>

@@ -4,6 +4,7 @@ import { Container, Dropdown, Navbar } from "react-bootstrap";
 import { useGlobalStore } from "~/stores/globalStore";
 import { useAuthStore } from "~/stores/authStore";
 import { logout } from "~/services/authService";
+import { publicAsset } from "~/utils/publicAsset";
 
 export default function Header() {
     const navigate = useNavigate();
@@ -13,7 +14,7 @@ export default function Header() {
     const [loggingOut, setLoggingOut] = useState(false);
 
     const userName = user?.username ?? "Usuario";
-    const userProfileImage = user?.profileImage ?? "/services/default_avatar.png";
+    const userProfileImage = user?.profileImage ?? publicAsset("services/default_avatar.png");
     const userId = user?.id;
 
     async function handleLogout() {
@@ -32,7 +33,7 @@ export default function Header() {
         <Navbar id="header" className="header d-flex align-items-center sticky-top">
             <Container className="position-relative d-flex align-items-center justify-content-between">
                 <Navbar.Brand as={Link} to="/new" className="logo d-flex align-items-center me-auto me-xl-0">
-                    <img src="/logo.png" alt="SCAM" style={{ height: 36 }} />
+                    <img src={publicAsset("logo.png")} alt="SCAM" style={{ height: 36 }} />
                     <h1>SCAM</h1>
                 </Navbar.Brand>
 

@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 @Controller
 public class IndexWebController {
 
-
     // Displays the application's home page.
     @GetMapping("/")
     public String index(Model model) {

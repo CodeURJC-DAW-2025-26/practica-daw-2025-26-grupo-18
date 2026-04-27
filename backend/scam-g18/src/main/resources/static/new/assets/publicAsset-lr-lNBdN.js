@@ -1,0 +1,1 @@
+var e=`/new/`;function t(t){return`${e}${t.startsWith(`/`)?t.slice(1):t}`}export{t};

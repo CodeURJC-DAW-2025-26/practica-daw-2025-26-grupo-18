@@ -14,9 +14,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./app.css";
 import { useGlobalStore } from "~/stores/globalStore";
+import { publicAsset } from "~/utils/publicAsset";
 
 export const links: Route.LinksFunction = () => [
-  { rel: "icon", href: "/favicon.ico" },
+  { rel: "icon", href: publicAsset("favicon.ico") },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
