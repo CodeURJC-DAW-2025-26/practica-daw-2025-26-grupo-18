@@ -1,1 +1,0 @@
-var e=`/api/v1/images`;function t(t){return`${e}/courses/${t}`}function n(t){return`${e}/events/${t}`}function r(t){return`${e}/users/${t}/profile`}export{n,r,t};
