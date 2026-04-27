@@ -40,7 +40,7 @@ export async function clientLoader({ params }: LoaderFunctionArgs) {
 
   const id = Number(params.id);
   const data = await getCourseById(id);
-  
+
   if (!data.canEdit && !globalData?.isAdmin) {
     return redirect(`/new/error?message=${encodeURIComponent("No tienes permiso para editar este curso. Solo el creador del curso o un administrador pueden hacerlo.")}`);
   }

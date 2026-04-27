@@ -199,7 +199,7 @@ export default function CourseForm({ initialData, onSubmit, isSubmitting }: Cour
               </Form.Group>
 
               <Row>
-                <Col md={6}>
+                <Col md={12}>
                   <Form.Group className="mb-3">
                     <Form.Label className="fw-medium small text-muted">Idioma</Form.Label>
                     <Form.Select
@@ -216,21 +216,7 @@ export default function CourseForm({ initialData, onSubmit, isSubmitting }: Cour
                     </Form.Select>
                   </Form.Group>
                 </Col>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label className="fw-medium small text-muted">Estado</Form.Label>
-                    <Form.Select
-                      name="status"
-                      value={formData.status}
-                      onChange={handleInputChange}
-                      className="rounded-3 shadow-none border"
-                    >
-                      <option value="DRAFT">Borrador</option>
-                      <option value="PENDING_REVIEW">En revisión</option>
-                      <option value="PUBLISHED">Publicado</option>
-                    </Form.Select>
-                  </Form.Group>
-                </Col>
+
               </Row>
             </Card.Body>
           </Card>

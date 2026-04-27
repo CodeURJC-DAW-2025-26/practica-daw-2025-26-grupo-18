@@ -23,11 +23,12 @@ export default function NewCourse() {
 
   const handleSubmit = async (data: any, imageFile?: File) => {
     try {
-      const newCourse = await createCourse(data, data.tagNames || [], imageFile);
-      navigate(`/new/courses/${newCourse.id}`);
+      await createCourse(data, data.tagNames || [], imageFile);
+      navigate("/new/courses");
     } catch (error) {
       console.error(error);
-      alert("Error al crear el curso: " + (error instanceof Error ? error.message : String(error)));
+      const msg = error instanceof Error ? error.message : String(error);
+      navigate(`/new/error?message=${encodeURIComponent("Error al crear el curso: " + msg)}`);
     }
   };
 
