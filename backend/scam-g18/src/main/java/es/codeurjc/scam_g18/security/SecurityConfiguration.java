@@ -88,6 +88,8 @@ public class SecurityConfiguration {
                                                                 "/api/v1/auth/logout", "/api/v1/auth/register",
                                                                 "/api/v1/auth/register/check-availability")
                                                 .permitAll()
+                                                .requestMatchers("/api/v1/images/**", "/images/**")
+                                                .permitAll()
                                                 .requestMatchers("/api/v1/global")
                                                 .permitAll()
                                                 .requestMatchers("/api/v1/courses", "/api/v1/courses/",
