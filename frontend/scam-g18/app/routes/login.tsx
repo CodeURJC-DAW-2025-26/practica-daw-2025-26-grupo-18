@@ -1,5 +1,6 @@
 import type { FormEvent } from "react";
 import { useState } from "react";
+import { Alert, Button, Col, Container, Form, InputGroup, Row } from "react-bootstrap";
 import { Link, redirect, useNavigate, useSearchParams } from "react-router";
 
 import { login as loginRequest } from "~/services/authService";
@@ -17,7 +18,6 @@ clientLoader.hydrate = true;
 
 export default function LoginRoute() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -37,8 +37,7 @@ export default function LoginRoute() {
 
       await loadGlobalDataIntoStore(true);
 
-      const redirectTo = searchParams.get("redirectTo");
-      navigate(redirectTo && redirectTo.startsWith("/new") ? redirectTo : "/new", { replace: true });
+      navigate("/new", { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al iniciar sesión.");
     } finally {
@@ -49,18 +48,18 @@ export default function LoginRoute() {
   return (
     <main className="main">
       <section className="section">
-        <div className="container">
-          <div className="row g-0 shadow-lg rounded-4 overflow-hidden" style={{ minHeight: 600 }}>
-            <div className="col-lg-6 d-none d-lg-block position-relative">
+        <Container>
+          <Row className="g-0 shadow-lg rounded-4 overflow-hidden" style={{ minHeight: 600 }}>
+            <Col lg={6} className="d-none d-lg-block position-relative">
               <img src="/services/Services-3.webp" alt="Join SCAM" className="img-fluid w-100 h-100" style={{ objectFit: "cover", objectPosition: "center" }} />
               <div className="position-absolute top-0 start-0 w-100 h-100" style={{ background: "rgba(0, 0, 0, 0.3)" }} />
               <div className="position-absolute bottom-0 start-0 p-5 text-white">
                 <h3 className="fw-bold text-white">Unete a nuestra comunidad</h3>
                 <p className="lead mb-0">Aprende de los mejores expertos y transforma tu carrera profesional hoy mismo.</p>
               </div>
-            </div>
+            </Col>
 
-            <div className="col-lg-6 bg-white d-flex align-items-center">
+            <Col lg={6} className="bg-white d-flex align-items-center">
               <div className="p-5 w-100">
                 <div className="text-center mb-4">
                   <h2 className="fw-bold text-dark">Iniciar Sesion</h2>
@@ -68,58 +67,54 @@ export default function LoginRoute() {
                 </div>
 
                 {error && (
-                  <div className="alert alert-danger" role="alert">
+                  <Alert variant="danger" role="alert">
                     {error}
-                  </div>
+                  </Alert>
                 )}
 
-                <form id="loginForm" onSubmit={onSubmit}>
-                  <div className="mb-3">
-                    <label htmlFor="loginEmail" className="form-label small fw-bold">
+                <Form id="loginForm" onSubmit={onSubmit}>
+                  <Form.Group className="mb-3" controlId="loginEmail">
+                    <Form.Label className="small fw-bold">
                       Usuario o Correo electronico
-                    </label>
-                    <div className="input-group">
-                      <span className="input-group-text">
+                    </Form.Label>
+                    <InputGroup>
+                      <InputGroup.Text>
                         <i className="bi bi-person" />
-                      </span>
-                      <input
+                      </InputGroup.Text>
+                      <Form.Control
                         type="text"
-                        className="form-control"
-                        id="loginEmail"
                         value={username}
                         onChange={(event) => setUsername(event.target.value)}
                         placeholder="Usuario o correo electronico"
                         autoComplete="username"
                       />
-                    </div>
-                  </div>
+                    </InputGroup>
+                  </Form.Group>
 
-                  <div className="mb-4">
-                    <label htmlFor="loginPassword" className="form-label small fw-bold">
+                  <Form.Group className="mb-4" controlId="loginPassword">
+                    <Form.Label className="small fw-bold">
                       Contrasena
-                    </label>
-                    <div className="input-group">
-                      <span className="input-group-text">
+                    </Form.Label>
+                    <InputGroup>
+                      <InputGroup.Text>
                         <i className="bi bi-lock" />
-                      </span>
-                      <input
+                      </InputGroup.Text>
+                      <Form.Control
                         type="password"
-                        className="form-control"
-                        id="loginPassword"
                         value={password}
                         onChange={(event) => setPassword(event.target.value)}
                         placeholder="********"
                         autoComplete="current-password"
                       />
-                    </div>
-                  </div>
+                    </InputGroup>
+                  </Form.Group>
 
                   <div className="d-grid mb-3">
-                    <button type="submit" className="btn btn-primary py-2 fw-bold" disabled={submitting}>
+                    <Button type="submit" className="py-2" style={{ backgroundColor: "var(--accent-color)", borderColor: "var(--accent-color)" }} disabled={submitting}>
                       {submitting ? "Iniciando..." : "Iniciar Sesion"}
-                    </button>
+                    </Button>
                   </div>
-                </form>
+                </Form>
 
                 <div className="text-center p-3 rounded bg-light">
                   <p className="mb-0 small">
@@ -130,9 +125,9 @@ export default function LoginRoute() {
                   </p>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
+            </Col>
+          </Row>
+        </Container>
       </section>
     </main>
   );
