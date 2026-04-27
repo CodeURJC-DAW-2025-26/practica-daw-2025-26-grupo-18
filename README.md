@@ -730,7 +730,7 @@ npm run start
 
 Diagrama mostrando los componentes React, hooks personalizados, servicios y sus relaciones:
 
-![Diagrama de Componentes React](images/spa-classes-diagram.png)
+![Diagrama de Componentes React](readmeImgs/SPAarchitecture.svg)
 
 ### **Participación de Miembros en la Práctica 3**
 
