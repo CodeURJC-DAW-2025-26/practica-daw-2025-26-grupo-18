@@ -50,21 +50,21 @@ export async function getEventById(id: number): Promise<Record<string, any>> {
 }
 
 /**
- * GET /api/v1/events/purchased — Events purchased by the authenticated user
+ * GET /api/v1/events/purchases — Events purchased by the authenticated user
  */
 export async function getPurchasedEvents(): Promise<Record<string, any>[]> {
-  const res = await apiFetch(`${BASE_URL}/purchased`);
+  const res = await apiFetch(`${BASE_URL}/purchases`);
   if (!res.ok) throw new Error(`Error fetching purchased events: ${res.status}`);
   const data = await res.json();
   return Array.isArray(data) ? data.map(normalizeEvent) : data;
 }
 
 /**
- * GET /api/v1/events/location-search?q= — Search locations via geocoding
+ * GET /api/v1/events/locations?q= — Search locations via geocoding
  */
 export async function searchLocations(query: string): Promise<string> {
   const params = new URLSearchParams({ q: query });
-  const res = await apiFetch(`${BASE_URL}/location-search?${params.toString()}`);
+  const res = await apiFetch(`${BASE_URL}/locations?${params.toString()}`);
   if (!res.ok) throw new Error(`Error searching locations: ${res.status}`);
   return res.json();
 }

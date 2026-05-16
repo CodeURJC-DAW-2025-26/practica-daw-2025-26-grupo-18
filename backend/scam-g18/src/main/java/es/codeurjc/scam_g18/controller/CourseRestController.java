@@ -1,9 +1,9 @@
 package es.codeurjc.scam_g18.controller;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -112,7 +112,7 @@ public class CourseRestController {
         return ResponseEntity.ok(responseData);
     }
 
-    @GetMapping("/{courseId}/lesson/{lessonId}/video")
+    @GetMapping("/{courseId}/lessons/{lessonId}/video")
     @Operation(summary = "Get lesson video URL", description = "Returns the lesson video URL if the user has access rights.")
     public ResponseEntity<Map<String, String>> getLessonVideoUrl(
             @PathVariable long courseId, 
@@ -145,7 +145,7 @@ public class CourseRestController {
         return ResponseEntity.ok(Map.of("videoUrl", videoUrlOpt.get()));
     }
 
-    @PostMapping("/{courseId}/lesson/{lessonId}/complete")
+    @PostMapping("/{courseId}/lessons/{lessonId}/completions")
     @Operation(summary = "Complete lesson", description = "Marks a lesson as completed and returns updated course progress information.")
     public ResponseEntity<Map<String, Object>> markLessonAsCompleted(
             @PathVariable long courseId,
@@ -256,7 +256,7 @@ public class CourseRestController {
         }
     }
 
-    @PostMapping("/{id}/review")
+    @PostMapping("/{id}/reviews")
     @Operation(summary = "Add review", description = "Adds a review to a course from the authenticated user.")
     public ResponseEntity<Object> addReview(
             @PathVariable long id,

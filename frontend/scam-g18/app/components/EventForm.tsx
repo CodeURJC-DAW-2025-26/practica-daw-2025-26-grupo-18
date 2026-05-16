@@ -156,7 +156,7 @@ export default function EventForm({ initialData, onSubmit, isSubmitting }: Event
     searchTimeoutRef.current = setTimeout(async () => {
       setIsSearching(true);
       try {
-        const res = await fetch(`/api/v1/events/location-search?q=${encodeURIComponent(query)}`);
+        const res = await fetch(`/api/v1/events/locations?q=${encodeURIComponent(query)}`);
         if (res.ok) {
           const data = await res.json();
           setSearchResults(data);

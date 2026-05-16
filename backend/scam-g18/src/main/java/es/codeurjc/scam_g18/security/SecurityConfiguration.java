@@ -3,9 +3,9 @@ package es.codeurjc.scam_g18.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -96,7 +96,7 @@ public class SecurityConfiguration {
                                                                 "/api/v1/courses/{id}")
                                                 .permitAll()
                                                 .requestMatchers("/api/v1/events", "/api/v1/events/",
-                                                                "/api/v1/events/{id}", "/api/v1/events/location-search")
+                                                                "/api/v1/events/{id}", "/api/v1/events/locations")
                                                 .permitAll()
                                                 .requestMatchers(
                                                                 "/api/v1/statistics/course-ages",
@@ -134,7 +134,7 @@ public class SecurityConfiguration {
                                                                 "/swagger-ui.html")
                                                 .permitAll()
                                                 .requestMatchers("/", "/courses", "/events").permitAll()
-                                                .requestMatchers("/api/courses", "/api/events", "/api/location-search")
+                                                .requestMatchers("/api/courses", "/api/events", "/api/v1/events/locations")
                                                 .permitAll()
                                                 .requestMatchers("/login", "/register", "/register/check-availability",
                                                                 "/error")

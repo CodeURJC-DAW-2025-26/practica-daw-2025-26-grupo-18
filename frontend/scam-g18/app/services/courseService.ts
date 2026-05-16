@@ -42,25 +42,25 @@ export async function getSubscribedCourses(): Promise<Record<string, any>[]> {
 }
 
 /**
- * GET /api/v1/courses/:courseId/lesson/:lessonId/video — Get lesson video URL
+ * GET /api/v1/courses/:courseId/lessons/:lessonId/video — Get lesson video URL
  */
 export async function getLessonVideoUrl(
   courseId: number,
   lessonId: number
 ): Promise<{ videoUrl: string }> {
-  const res = await apiFetch(`${BASE_URL}/${courseId}/lesson/${lessonId}/video`);
+  const res = await apiFetch(`${BASE_URL}/${courseId}/lessons/${lessonId}/video`);
   if (!res.ok) throw new Error(`Error fetching lesson video: ${res.status}`);
   return res.json();
 }
 
 /**
- * POST /api/v1/courses/:courseId/lesson/:lessonId/complete — Mark lesson as completed
+ * POST /api/v1/courses/:courseId/lessons/:lessonId/completions — Mark lesson as completed
  */
 export async function markLessonAsCompleted(
   courseId: number,
   lessonId: number
 ): Promise<Record<string, any>> {
-  const res = await apiFetch(`${BASE_URL}/${courseId}/lesson/${lessonId}/complete`, {
+  const res = await apiFetch(`${BASE_URL}/${courseId}/lessons/${lessonId}/completions`, {
     method: "POST",
   });
   if (!res.ok) throw new Error(`Error completing lesson: ${res.status}`);
@@ -130,7 +130,7 @@ export async function deleteCourse(id: number): Promise<void> {
 }
 
 /**
- * POST /api/v1/courses/:id/review — Add a review to a course
+ * POST /api/v1/courses/:id/reviews — Add a review to a course
  */
 export async function addCourseReview(
   courseId: number,
@@ -141,7 +141,7 @@ export async function addCourseReview(
   params.set("rating", String(rating));
   params.set("content", content);
 
-  const res = await apiFetch(`${BASE_URL}/${courseId}/review?${params.toString()}`, {
+  const res = await apiFetch(`${BASE_URL}/${courseId}/reviews?${params.toString()}`, {
     method: "POST",
   });
   if (!res.ok) {

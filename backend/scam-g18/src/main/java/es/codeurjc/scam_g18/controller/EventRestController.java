@@ -57,13 +57,13 @@ public class EventRestController {
         return ResponseEntity.ok(events);
     }
 
-    @GetMapping(value = "/location-search", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/locations", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Search locations", description = "Searches event locations using the external geocoding service.")
     public ResponseEntity<String> searchLocations(@RequestParam("q") String query) {
         return ResponseEntity.ok(eventService.searchLocations(query));
     }
 
-    @GetMapping("/purchased")
+    @GetMapping("/purchases")
     @Operation(summary = "List purchased events", description = "Returns events purchased by the authenticated user.")
     public ResponseEntity<List<Map<String, Object>>> purchasedEvents() {
         var userOpt = userService.getCurrentAuthenticatedUser();

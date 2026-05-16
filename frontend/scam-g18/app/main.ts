@@ -1282,7 +1282,7 @@ function initEventLocationSearch() {
     var map = null;
     var marker = null;
     var searchTimeout = null;
-    var locationSearchEndpoint = "/api/location-search";
+    var locationSearchEndpoint = "/api/v1/events/locations";
 
     function initMap(lat, lon) {
         if (typeof L === "undefined") {

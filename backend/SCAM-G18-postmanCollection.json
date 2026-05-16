@@ -571,7 +571,7 @@
                           }
                         ],
                         "url": {
-                          "raw": "{{baseUrl}}/api/v1/events/purchased",
+                          "raw": "{{baseUrl}}/api/v1/events/purchases",
                           "host": [
                             "{{baseUrl}}"
                           ],
@@ -579,7 +579,7 @@
                             "api",
                             "v1",
                             "events",
-                            "purchased"
+                            "purchases"
                           ]
                         },
                         "description": "Returns events purchased by the authenticated user."
@@ -596,7 +596,7 @@
                               }
                             ],
                             "url": {
-                              "raw": "{{baseUrl}}/api/v1/events/purchased",
+                              "raw": "{{baseUrl}}/api/v1/events/purchases",
                               "host": [
                                 "{{baseUrl}}"
                               ],
@@ -604,7 +604,7 @@
                                 "api",
                                 "v1",
                                 "events",
-                                "purchased"
+                                "purchases"
                               ]
                             }
                           },
@@ -638,7 +638,7 @@
                           }
                         ],
                         "url": {
-                          "raw": "{{baseUrl}}/api/v1/events/location-search?q=string",
+                          "raw": "{{baseUrl}}/api/v1/events/locations?q=string",
                           "host": [
                             "{{baseUrl}}"
                           ],
@@ -646,7 +646,7 @@
                             "api",
                             "v1",
                             "events",
-                            "location-search"
+                            "locations"
                           ],
                           "query": [
                             {
@@ -669,7 +669,7 @@
                               }
                             ],
                             "url": {
-                              "raw": "{{baseUrl}}/api/v1/events/location-search?q=string",
+                              "raw": "{{baseUrl}}/api/v1/events/locations?q=string",
                               "host": [
                                 "{{baseUrl}}"
                               ],
@@ -677,7 +677,7 @@
                                 "api",
                                 "v1",
                                 "events",
-                                "location-search"
+                                "locations"
                               ],
                               "query": [
                                 {
@@ -913,7 +913,7 @@
                               }
                             ],
                             "url": {
-                              "raw": "{{baseUrl}}/api/v1/courses/:id/review?rating=8890&content=string",
+                              "raw": "{{baseUrl}}/api/v1/courses/:id/reviews?rating=8890&content=string",
                               "host": [
                                 "{{baseUrl}}"
                               ],
@@ -922,7 +922,7 @@
                                 "v1",
                                 "courses",
                                 ":id",
-                                "review"
+                                "reviews"
                               ],
                               "query": [
                                 {
@@ -955,7 +955,7 @@
                                   }
                                 ],
                                 "url": {
-                                  "raw": "{{baseUrl}}/api/v1/courses/:id/review?rating=8890&content=string",
+                                  "raw": "{{baseUrl}}/api/v1/courses/:id/reviews?rating=8890&content=string",
                                   "host": [
                                     "{{baseUrl}}"
                                   ],
@@ -964,7 +964,7 @@
                                     "v1",
                                     "courses",
                                     ":id",
-                                    "review"
+                                    "reviews"
                                   ],
                                   "query": [
                                     {
@@ -1300,7 +1300,7 @@
                                       }
                                     ],
                                     "url": {
-                                      "raw": "{{baseUrl}}/api/v1/courses/:courseId/lesson/:lessonId/complete",
+                                      "raw": "{{baseUrl}}/api/v1/courses/:courseId/lessons/:lessonId/completions",
                                       "host": [
                                         "{{baseUrl}}"
                                       ],
@@ -1309,9 +1309,9 @@
                                         "v1",
                                         "courses",
                                         ":courseId",
-                                        "lesson",
+                                        "lessons",
                                         ":lessonId",
-                                        "complete"
+                                        "completions"
                                       ],
                                       "variable": [
                                         {
@@ -1338,7 +1338,7 @@
                                           }
                                         ],
                                         "url": {
-                                          "raw": "{{baseUrl}}/api/v1/courses/:courseId/lesson/:lessonId/complete",
+                                          "raw": "{{baseUrl}}/api/v1/courses/:courseId/lessons/:lessonId/completions",
                                           "host": [
                                             "{{baseUrl}}"
                                           ],
@@ -1347,9 +1347,9 @@
                                             "v1",
                                             "courses",
                                             ":courseId",
-                                            "lesson",
+                                            "lessons",
                                             ":lessonId",
-                                            "complete"
+                                            "completions"
                                           ],
                                           "variable": [
                                             {

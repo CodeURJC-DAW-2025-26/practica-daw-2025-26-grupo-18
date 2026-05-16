@@ -23,7 +23,7 @@ tags:
   - name: Cart API
     description: Shopping cart and checkout endpoints
   - name: Global API
-    description: Common global data for frontend clients
+  /api/v1/events/purchases:
 paths:
   /api/v1/profile/{id}:
     get:
@@ -44,7 +44,7 @@ paths:
           description: OK
           content:
             "*/*":
-              schema:
+  /api/v1/events/locations:
                 $ref: "#/components/schemas/ProfileDTO"
     put:
       tags:
@@ -101,7 +101,7 @@ paths:
         "200":
           description: OK
           content:
-            "*/*":
+  /api/v1/courses/{courseId}/lessons/{lessonId}/completions:
               schema:
                 type: object
                 additionalProperties:
@@ -131,7 +131,7 @@ paths:
           multipart/form-data:
             schema:
               type: object
-              properties:
+  /api/v1/courses/{courseId}/lessons/{lessonId}/video:
                 event:
                   $ref: "#/components/schemas/EventDTO"
                 imageFile:
@@ -396,7 +396,7 @@ paths:
             "*/*":
               schema:
                 type: object
-  /api/v1/courses/{id}/review:
+  /api/v1/courses/{id}/reviews:
     post:
       tags:
         - Course API
@@ -428,7 +428,7 @@ paths:
             "*/*":
               schema:
                 type: object
-  /api/v1/courses/{courseId}/lesson/{lessonId}/complete:
+  /api/v1/courses/{courseId}/lessons/{lessonId}/completions:
     post:
       tags:
         - Course API
@@ -980,7 +980,7 @@ paths:
             "*/*":
               schema:
                 $ref: "#/components/schemas/GlobalDataDTO"
-  /api/v1/events/purchased:
+  /api/v1/events/purchases:
     get:
       tags:
         - Event API
@@ -998,7 +998,7 @@ paths:
                   type: object
                   additionalProperties:
                     type: object
-  /api/v1/events/location-search:
+  /api/v1/events/locations:
     get:
       tags:
         - Event API
@@ -1018,7 +1018,7 @@ paths:
             application/json:
               schema:
                 type: string
-  /api/v1/courses/{courseId}/lesson/{lessonId}/video:
+  /api/v1/courses/{courseId}/lessons/{lessonId}/video:
     get:
       tags:
         - Course API
