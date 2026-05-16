@@ -7,6 +7,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://db/${DB_NAME:-test}
       - SPRING_DATASOURCE_USERNAME=${DB_USER:-root}
       - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-SC@M2026-2027}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-none}
     depends_on:
       db:
         condition: service_healthy

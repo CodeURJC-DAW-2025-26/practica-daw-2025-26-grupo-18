@@ -1,0 +1,6 @@
+
+services:
+  web:
+    environment:
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
+      - LOAD_SAMPLE_DATA=true
